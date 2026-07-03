@@ -7,8 +7,8 @@ A user-invoked, standalone skill for capturing session state into a resumable, c
 ```
 handoff
 /handoff
-handoff SHB-283
-/handoff SHB-283
+handoff ISSUE-123
+/handoff ISSUE-123
 handoff auth-refactor
 save a checkpoint
 continue this later
@@ -18,17 +18,20 @@ The skill writes the handoff document and reports its path. The next session is 
 
 ## What it captures
 
-The handoff is designed for continuation, not just summary. Each document includes:
+The handoff is designed for continuation, not summary. Each document includes:
 
-- The main goal.
-- The current task list and status.
-- What has been tried and the outcome.
-- What failed or is blocked.
-- The immediate next action.
-- User clarifications and preferences from the session.
-- Paths to relevant artifacts with one-line summaries.
-- Recommended skills for the next session.
-- A link to the previous handoff in the chain.
+- **Goal** — the single main objective.
+- **Current state** — one sentence describing where the session is right now.
+- **Task list** — tasks with status: done, in-progress, blocked, pending.
+- **Tried** — what has been attempted this session, as `(action → outcome)` pairs.
+- **Blockers** — failures, errors, and unresolved issues.
+- **Next** — the single immediate next action.
+- **Changes this session** — deltas from the previous handoff.
+- **User clarifications** — explicit decisions or answers the user gave.
+- **User preferences** — preferences stated in this session.
+- **Referenced artifacts** — paths to useful files with one-line summaries.
+- **Recommended skills** — skills that may be useful next.
+- **Chain** — link to previous handoff and one-line summary of prior sessions.
 
 ## Handoff document schema
 
@@ -37,7 +40,7 @@ The handoff is designed for continuation, not just summary. Each document includ
 ```yaml
 ---
 handoff_version: "2.0"
-ticket_key: "SHB-283"            # omitted for unticketed handoffs
+ticket_key: "ISSUE-123"            # omitted for unticketed handoffs
 session_alias: "auth-refactor"   # optional, user-supplied readable alias
 sequence: 3
 previous_handoff: "handoff-002.md"
@@ -51,28 +54,40 @@ summary: "OAuth refactor: middleware extracted, token validation tests failing, 
 ### Body sections
 
 1. **Goal** — the single main objective.
-2. **Task list** — tasks with status: done, in-progress, blocked, pending.
-3. **What has been tried** — attempts and outcomes.
-4. **What failed / blockers** — failures, errors, and unresolved issues.
-5. **What is next** — the immediate next action.
-6. **User clarifications** — explicit decisions or answers the user gave.
-7. **User preferences** — preferences stated in this session (style, tools, format, etc.).
-8. **Referenced artifacts** — paths to useful files with one-line summaries.
-9. **Recommended skills** — skills that may be useful next, listed without invocation syntax.
-10. **Chain history** — one-line summary of previous handoffs and a link to the previous document.
+2. **Current state** — one sentence describing where the session is right now.
+3. **Task list** — tasks with status: done, in-progress, blocked, pending.
+4. **Tried** — attempts and outcomes this session, as `(action → outcome)` pairs.
+5. **Blockers** — failures, errors, and unresolved issues.
+6. **Next** — the single immediate next action.
+7. **Changes this session** — deltas from the previous handoff.
+8. **User clarifications** — explicit decisions or answers the user gave.
+9. **User preferences** — preferences stated in this session.
+10. **Referenced artifacts** — paths to useful files with one-line summaries.
+11. **Recommended skills** — skills that may be useful next, listed without invocation syntax.
+12. **Chain** — link to previous handoff and one-line summary of prior sessions.
 
 ## Chaining
 
 When you provide a ticket key or session alias, the skill appends to the chain:
 
 ```
-.agents/context/handoffs/SHB-283/
+.agents/context/handoffs/ISSUE-123/
 ├── handoff-001.md
 ├── handoff-002.md
 └── handoff-003.md
 ```
 
-Each handoff references the previous one, so a fresh session can follow the chain back to the start.
+Each handoff references the previous one, so a fresh session can follow the chain back to the start. Record only deltas in the current handoff; never duplicate the body of previous handoffs.
+
+## Compression rules
+
+To keep handoffs concise and loss-resistant:
+
+- **Inline** only what the next session needs immediately: goal, current state, next action, user preferences, and clarifications.
+- **Reference** all artifacts by path. Never duplicate full content.
+- **Chain** previous handoffs by path. Summarize older sessions in one line; never duplicate their body.
+- **Use deltas**: record what changed in this session, not the full history.
+- **Target**: keep each handoff under 4k tokens. If a handoff exceeds 8k, summarize older chain links.
 
 ## Unticketed handoffs
 
@@ -96,7 +111,7 @@ Example:
 
 ```bash
 python scripts/handoff-helper.py discover --context-dir .agents/context
-python scripts/handoff-helper.py resolve --key SHB-283 --context-dir .agents/context
+python scripts/handoff-helper.py resolve --key ISSUE-123 --context-dir .agents/context
 python scripts/handoff-helper.py prune --context-dir .agents/context --limit 10
 ```
 
