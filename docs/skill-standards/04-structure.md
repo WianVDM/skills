@@ -59,6 +59,7 @@ description: What this skill does and when to trigger it.
 metadata:
   author: your-name
   version: "1.0"
+invocation: model-invoked
 ---
 ```
 
@@ -87,6 +88,10 @@ A skill is either **model-invoked** or **user-invoked**. The choice trades two l
 Choose model-invocation only when the agent or another skill must reach the skill on its own. If it only ever fires by hand, make it user-invoked and pay no context load.
 
 When user-invoked skills multiply past what the user can remember, the cure is a **router skill**: a single user-invoked skill that names the others and when to reach for each. A router skill can only hint; it cannot invoke user-invoked skills on the user's behalf.
+
+#### Declaring the invocation mode
+
+The frontmatter should declare the invocation mode explicitly. Use `invocation: model-invoked` or `invocation: user-invoked`. For harnesses that only recognize the boolean flag, `disable-model-invocation: true` is equivalent to `invocation: user-invoked`. If both fields are present, they must agree. Model-invoked is the default when neither field is present.
 
 ### Description as a context pointer
 
@@ -122,6 +127,8 @@ Run the queries against the agent and check which trigger. If activation is unre
 
 Avoid easy negatives like "write a Fibonacci function" for a UI review skill. Test the boundary, not the obvious miss.
 
+For user-invoked skills, the description is primarily human-facing, but a clarity eval still helps: collect realistic prompts that should and should not lead a human to reach for the skill. The 10/10 numeric target is most critical for model-invoked skills.
+
 ---
 
 ## README.md
@@ -148,6 +155,8 @@ Progressive disclosure means putting detail where it belongs on the information 
 4. **External reference** — shared reference outside the skill system, reachable by any skill. The only shared home two user-invoked skills can use, since neither can invoke the other.
 
 Push too little down and the top of `SKILL.md` bloats. Push too much and you hide material the agent actually needs. The test is **branching**: inline what every branch needs, and disclose what only some branches reach. If a pointer to must-have material fires unreliably, sharpen the pointer wording before inlining.
+
+When a skill has multiple branches with long step-by-step workflows, disclose the detailed workflows behind a pointer. Keep in `SKILL.md` only the branch summary, its completion criterion, and the pointer. This keeps the top-level contract legible while preserving the full process for the branch that needs it.
 
 **Co-location** is the within-file companion to the hierarchy: keep a concept's definition, rules, and caveats under one heading rather than scattered, so reading one part brings its neighbours with it.
 

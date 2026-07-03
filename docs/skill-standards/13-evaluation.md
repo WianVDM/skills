@@ -41,6 +41,8 @@ Test the description separately from the body:
 
 See [04-structure.md](./04-structure.md) for description optimization guidance.
 
+For user-invoked skills, the description is primarily human-facing, but a clarity eval still helps: collect realistic prompts that should and should not lead a human to reach for the skill. The 10/10 numeric target is most critical for model-invoked skills.
+
 ### What to watch for
 
 - The skill makes the agent *worse* by over-constraining it.
