@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PR Report: {{key}}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; color: #1a1a1a; }
+    h1 { font-size: 1.5rem; }
+    .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin: 1rem 0; }
+    .card { padding: 1rem; border-radius: 8px; background: #f5f5f5; }
+    .card.blocker { background: #ffe5e5; }
+    .card.required { background: #fff4e5; }
+    .card.ok { background: #e5f7e5; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { text-align: left; padding: 0.5rem; border-bottom: 1px solid #ddd; }
+    th { font-weight: 600; }
+    .severity-blocker { color: #d32f2f; font-weight: bold; }
+    .severity-required { color: #f57c00; font-weight: bold; }
+    .severity-recommended { color: #1976d2; }
+    .severity-informational { color: #616161; }
+  </style>
+</head>
+<body>
+  <h1>PR Report: {{pr_title}}</h1>
+  <p>PR #{{pr_number}} · {{repo}} · {{branch}} → {{base}}</p>
+
+  <div class="summary">
+    <div class="card {{overall_class}}">
+      <strong>Open items</strong>
+      <div>{{open_items}}</div>
+    </div>
+    <div class="card {{ci_class}}">
+      <strong>CI / Build</strong>
+      <div>{{ci_status}}</div>
+    </div>
+    <div class="card">
+      <strong>Review state</strong>
+      <div>{{review_state}}</div>
+    </div>
+    <div class="card">
+      <strong>Resolved since last check</strong>
+      <div>{{resolved_count}}</div>
+    </div>
+  </div>
+
+  <h2>Issues Requiring Action</h2>
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Source</th><th>Severity</th><th>Why Address</th><th>Related</th></tr>
+    </thead>
+    <tbody>
+      {{#issues}}
+      <tr>
+        <td>{{id}}</td>
+        <td>{{source}}</td>
+        <td class="severity-{{severity}}">{{severity}}</td>
+        <td>{{why}}</td>
+        <td>{{related}}</td>
+      </tr>
+      {{/issues}}
+    </tbody>
+  </table>
+
+  <h2>CI / Build Status</h2>
+  {{ci_section}}
+
+  <h2>Reviewer Status</h2>
+  {{reviewer_section}}
+
+  <h2>Scope Flags</h2>
+  {{scope_section}}
+
+  <footer>
+    <p>Canonical report: <a href="{{report_md_path}}">{{report_md_path}}</a></p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,59 @@
+# Angular/TypeScript-specific standards rules.
+# Add these to a project-specific standards file or override as needed.
+
+rules:
+  - id: angular-onpush
+    category: performance
+    severity: consideration
+    description: "New Angular components should use ChangeDetectionStrategy.OnPush where appropriate."
+    examples:
+      - bad: "changeDetection: ChangeDetectionStrategy.Default"
+      - good: "changeDetection: ChangeDetectionStrategy.OnPush"
+
+  - id: angular-signal-inputs
+    category: api
+    severity: consideration
+    description: "Prefer signal-based inputs/outputs (`input()`, `output()`) over `@Input()`/`@Output()` in new Angular code."
+    examples:
+      - bad: "@Input() user: User;"
+      - good: "user = input<User>();"
+
+  - id: no-i-prefix-interfaces
+    category: naming
+    severity: violation
+    description: "Do not prefix TypeScript interfaces with `I`."
+    examples:
+      - bad: "interface IUser { ... }"
+      - good: "interface User { ... }"
+
+  - id: observable-naming
+    category: naming
+    severity: violation
+    description: "Observable variables and properties should end with `$`."
+    examples:
+      - bad: "const users = getUsers();"
+      - good: "const users$ = getUsers();"
+
+  - id: explicit-return-types
+    category: types
+    severity: consideration
+    description: "Consider adding explicit return types for public functions and methods."
+    examples:
+      - bad: "save() { ... }"
+      - good: "save(): Result { ... }"
+
+  - id: no-any
+    category: types
+    severity: violation
+    description: "Avoid using `any` in new TypeScript code. Prefer `unknown`, generics, or concrete types."
+    examples:
+      - bad: "const data: any = fetch();"
+      - good: "const data: Response = fetch();"
+
+  - id: angular-service-inject
+    category: api
+    severity: consideration
+    description: "Use the `inject()` helper for dependency injection in Angular services/components where applicable."
+    examples:
+      - bad: "constructor(private http: HttpClient) {}"
+      - good: "private http = inject(HttpClient);"

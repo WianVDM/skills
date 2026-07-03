@@ -1,0 +1,92 @@
+# Python ecosystem starter config.
+# Copy to .agents/config/verify-branch.yaml and adjust as needed.
+
+preferences:
+  fail_fast: false
+  max_concurrent_gates: 1
+  report_template: default
+  include_uncommitted: true
+  default_branch: null
+  base_ref: null
+  adapter_paths: []
+
+  gates:
+    test:
+      enabled: auto
+      importance: required
+      type: command
+      fail_fast: false
+      detect_commands:
+        - source: pyproject.toml
+        - source: pytest.ini
+        - source: setup.py
+      commands:
+        - name: "pytest"
+          command: "pytest"
+          cwd: "."
+          timeout: 300
+          env: {}
+          importance: required
+          run_when:
+            - "src/**/*.py"
+            - "tests/**/*.py"
+
+    spec-coverage:
+      enabled: auto
+      importance: required
+      type: mapper
+      fail_fast: false
+      default_mappings:
+        - source_pattern: "src/**/*.py"
+          spec_pattern: "tests/**/*.py"
+          area: "unit"
+      mappings: []
+      exemptions:
+        - pattern: "src/**/__init__.py"
+          reason: "Package init files usually contain no logic."
+
+    standards:
+      enabled: auto
+      importance: required
+      type: standards
+      fail_fast: false
+      sources: []
+      ai_inference:
+        enabled: false
+        source_paths: []
+        edit_before_use: true
+      overrides: []
+
+    dead-code:
+      enabled: auto
+      importance: optional
+      type: custom
+      adapter: null
+      fallback_adapters: []
+      command: "vulture ."
+      cwd: "."
+      timeout: 300
+
+    complexity:
+      enabled: auto
+      importance: optional
+      type: custom
+      adapter: null
+      fallback_adapters: []
+      command: "radon cc -nc src"
+      cwd: "."
+      timeout: 300
+
+    style:
+      enabled: auto
+      importance: optional
+      type: custom
+      adapter: null
+      fallback_adapters: []
+      command: "ruff check ."
+      cwd: "."
+      timeout: 300
+
+notes:
+  - text: "Python starter config."
+    category: decision

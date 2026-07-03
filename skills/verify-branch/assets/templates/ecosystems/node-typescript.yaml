@@ -1,0 +1,111 @@
+# Node.js / TypeScript ecosystem starter config.
+# Copy to .agents/config/verify-branch.yaml and adjust as needed.
+
+preferences:
+  fail_fast: false
+  max_concurrent_gates: 1
+  report_template: default
+  include_uncommitted: true
+  default_branch: null
+  base_ref: null
+  adapter_paths: []
+
+  gates:
+    test:
+      enabled: auto
+      importance: required
+      type: command
+      fail_fast: false
+      detect_commands:
+        - source: package.json:scripts
+          priority: ["test:ci", "test-headless", "test:unit", "test"]
+      commands:
+        - name: "Unit tests"
+          command: "npm run test:ci"
+          cwd: "."
+          timeout: 300
+          env: {}
+          importance: required
+          run_when:
+            - "src/**/*"
+            - "tests/**/*"
+
+    spec-coverage:
+      enabled: auto
+      importance: required
+      type: mapper
+      fail_fast: false
+      default_mappings:
+        - source_pattern: "src/**/*.ts"
+          spec_pattern: "src/**/*.spec.ts"
+          area: "unit"
+      mappings: []
+      exemptions:
+        - pattern: "src/**/*.d.ts"
+          reason: "Type declaration files contain no logic to test."
+
+    standards:
+      enabled: auto
+      importance: required
+      type: standards
+      fail_fast: false
+      sources: []
+      ai_inference:
+        enabled: false
+        source_paths: []
+        edit_before_use: true
+      overrides: []
+
+    dead-code:
+      enabled: auto
+      importance: optional
+      type: custom
+      adapter: knip
+      fallback_adapters: [depcheck, ts-unused]
+      command: null
+      cwd: "."
+      timeout: 300
+
+    complexity:
+      enabled: auto
+      importance: optional
+      type: custom
+      adapter: eslint-sonarjs
+      fallback_adapters: []
+      command: null
+      cwd: "."
+      timeout: 300
+
+    duplication:
+      enabled: auto
+      importance: optional
+      type: custom
+      adapter: jscpd
+      fallback_adapters: []
+      command: null
+      cwd: "."
+      timeout: 300
+
+    security:
+      enabled: auto
+      importance: optional
+      type: custom
+      adapter: npm-audit
+      fallback_adapters: [snyk]
+      command: null
+      cwd: "."
+      timeout: 300
+
+    style:
+      enabled: auto
+      importance: optional
+      type: custom
+      adapter: eslint
+      fallback_adapters: [biome]
+      command: null
+      cwd: "."
+      timeout: 300
+
+notes:
+  - text: "Node/TypeScript starter config."
+    category: decision

@@ -1,0 +1,13 @@
+{
+  "name": "verify-branch-skill",
+  "version": "4.0.0",
+  "private": true,
+  "description": "Runtime dependencies for the verify-branch agent skill.",
+  "license": "UNLICENSED",
+  "optionalDependencies": {
+    "js-yaml": "^4.1.0"
+  },
+  "scripts": {
+    "test": "node scripts/tests/run-tests.js"
+  }
+}

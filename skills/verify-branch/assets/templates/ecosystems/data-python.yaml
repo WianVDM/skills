@@ -1,0 +1,78 @@
+# Data / Python ecosystem starter config.
+# Copy to .agents/config/verify-branch.yaml and adjust as needed.
+
+preferences:
+  fail_fast: false
+  max_concurrent_gates: 1
+  report_template: default
+  include_uncommitted: true
+  default_branch: null
+  base_ref: null
+  adapter_paths: []
+
+  gates:
+    test:
+      enabled: auto
+      importance: required
+      type: command
+      fail_fast: false
+      detect_commands:
+        - source: pyproject.toml
+        - source: pytest.ini
+      commands:
+        - name: "pytest"
+          command: "pytest"
+          cwd: "."
+          timeout: 300
+          env: {}
+          importance: required
+          run_when:
+            - "src/**/*.py"
+            - "tests/**/*.py"
+            - "notebooks/**/*.ipynb"
+
+    notebooks:
+      enabled: auto
+      importance: optional
+      type: custom
+      adapter: null
+      fallback_adapters: []
+      command: "nbval-lax notebooks/"
+      cwd: "."
+      timeout: 300
+
+    data-contracts:
+      enabled: auto
+      importance: optional
+      type: custom
+      adapter: null
+      fallback_adapters: []
+      command: "PLACEHOLDER_DATA_CONTRACT_COMMAND"
+      cwd: "."
+      timeout: 300
+
+    standards:
+      enabled: auto
+      importance: required
+      type: standards
+      fail_fast: false
+      sources: []
+      ai_inference:
+        enabled: false
+        source_paths: []
+        edit_before_use: true
+      overrides: []
+
+    style:
+      enabled: auto
+      importance: optional
+      type: custom
+      adapter: null
+      fallback_adapters: []
+      command: "ruff check ."
+      cwd: "."
+      timeout: 300
+
+notes:
+  - text: "Data/Python starter config. Replace the data-contract placeholder with your schema validation tool (e.g., great_expectations, pandera)."
+    category: decision

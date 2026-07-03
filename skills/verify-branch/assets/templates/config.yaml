@@ -1,0 +1,95 @@
+# Default verify-branch configuration template.
+# Copy this file to {project-root}/.agents/config/verify-branch.yaml and adjust
+# the values for your project. The bootstrap subagent can also generate this file
+# by detecting your ecosystem and loading the matching starter template.
+
+preferences:
+  # Stop after the first required gate fails.
+  fail_fast: false
+
+  # Maximum number of gates to run in parallel.
+  max_concurrent_gates: 1
+
+  # Report template: default | compact | detailed | custom
+  report_template: default
+
+  # Execution mode: quick | full | security-audit
+  # - quick: required gates + gates tagged 'fast' only
+  # - full: all enabled gates
+  # - security-audit: only gates tagged 'security'
+  execution_mode: full
+
+  # Optional tag filter: only gates with all listed tags are included.
+  tags: []
+
+  # If true, report the execution plan without running gates.
+  dry_run: false
+
+  # Override the default branch if auto-detection fails.
+  default_branch: null
+
+  # Override the diff base if you want something other than the default branch.
+  base_ref: null
+
+  # Optional paths for project-specific adapters. These are searched before the
+  # built-in adapters and the default project adapter directory.
+  adapter_paths: []
+
+  # Open gate registry. Each gate has a `type` that determines which subagent
+  # fulfills it:
+  #   - command: runs shell commands (test gate subagent)
+  #   - mapper: maps source files to expected files (spec-coverage subagent)
+  #   - standards: applies rules from sources (standards subagent)
+  #   - custom: runs a named adapter through run-gate.js
+  #
+  # You can add, remove, or rename gates. Required gates must be listed here.
+  gates:
+    test:
+      enabled: auto
+      importance: required
+      type: command
+      fail_fast: false
+      # Optional tags for execution-mode filtering.
+      tags: [fast]
+      # Optional gate dependencies: these gates must run first.
+      depends_on: []
+      detect_commands:
+        - source: package.json:scripts
+          priority: ["test:ci", "test-headless", "test:unit", "test"]
+      commands:
+        - name: "Tests"
+          command: "PLACEHOLDER_TEST_COMMAND"
+          cwd: "."
+          timeout: 300
+          env: {}
+          importance: required
+          run_when:
+            - "**/*"
+
+    spec-coverage:
+      enabled: auto
+      importance: required
+      type: mapper
+      fail_fast: false
+      default_mappings:
+        - source_pattern: "PLACEHOLDER_SOURCE_PATTERN"
+          spec_pattern: "PLACEHOLDER_SPEC_PATTERN"
+          area: "default"
+      mappings: []
+      exemptions: []
+
+    standards:
+      enabled: auto
+      importance: required
+      type: standards
+      fail_fast: false
+      sources: []
+      ai_inference:
+        enabled: false
+        source_paths: []
+        edit_before_use: true
+      overrides: []
+
+notes:
+  - text: "Default open-registry verify-branch config."
+    category: decision

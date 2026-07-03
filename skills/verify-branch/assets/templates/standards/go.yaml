@@ -1,0 +1,59 @@
+# Go-specific standards rules.
+# Add these to a project-specific standards file or override as needed.
+
+rules:
+  - id: go-error-handling
+    category: reliability
+    severity: violation
+    description: "Always handle errors returned by functions. Do not ignore `err` values."
+    examples:
+      - bad: "f, _ := os.Open(file)"
+      - good: "f, err := os.Open(file); if err != nil { return err }"
+
+  - id: go-naming-export
+    category: naming
+    severity: violation
+    description: "Exported identifiers must start with an uppercase letter."
+    examples:
+      - bad: "func process() {}"
+      - good: "func Process() {}"
+
+  - id: go-package-naming
+    category: naming
+    severity: violation
+    description: "Package names should be short and lowercase. Avoid underscores or mixed case."
+    examples:
+      - bad: "package myPackage"
+      - good: "package mypackage"
+
+  - id: go-format
+    category: style
+    severity: violation
+    description: "Go source files must be formatted with gofmt."
+    examples:
+      - bad: "func foo(){}"
+      - good: "func foo() {}"
+
+  - id: go-context-propagation
+    category: api
+    severity: consideration
+    description: "Pass `context.Context` as the first argument to functions that perform I/O or long-running work."
+    examples:
+      - bad: "func fetch(url string) (*Response, error)"
+      - good: "func fetch(ctx context.Context, url string) (*Response, error)"
+
+  - id: go-avoid-panic
+    category: reliability
+    severity: consideration
+    description: "Avoid `panic` in production code. Return errors instead."
+    examples:
+      - bad: "if err != nil { panic(err) }"
+      - good: "if err != nil { return err }"
+
+  - id: go-interface-naming
+    category: naming
+    severity: consideration
+    description: "Name interfaces with a `-er` suffix or a descriptive noun, and avoid prefixing concrete types."
+    examples:
+      - bad: "type IReader interface"
+      - good: "type Reader interface"

@@ -1,0 +1,59 @@
+# React/TypeScript-specific standards rules.
+# Add these to a project-specific standards file or override as needed.
+
+rules:
+  - id: react-component-naming
+    category: naming
+    severity: violation
+    description: "React component names should be PascalCase."
+    examples:
+      - bad: "const userCard = () => { ... }"
+      - good: "const UserCard = () => { ... }"
+
+  - id: hook-naming
+    category: naming
+    severity: violation
+    description: "Custom hooks should start with `use`."
+    examples:
+      - bad: "function fetchData() { ... }"
+      - good: "function useFetchData() { ... }"
+
+  - id: no-unnecessary-state
+    category: state
+    severity: consideration
+    description: "Avoid storing derived values in state. Derive them from props or other state instead."
+    examples:
+      - bad: "const [fullName, setFullName] = useState(firstName + ' ' + lastName);"
+      - good: "const fullName = firstName + ' ' + lastName;"
+
+  - id: react-key-prop
+    category: rendering
+    severity: violation
+    description: "Always provide a stable `key` prop when rendering lists."
+    examples:
+      - bad: "items.map((item) => <li>{item}</li>);"
+      - good: "items.map((item) => <li key={item.id}>{item}</li>);"
+
+  - id: no-any
+    category: types
+    severity: violation
+    description: "Avoid using `any` in new TypeScript code. Prefer `unknown`, generics, or concrete types."
+    examples:
+      - bad: "const data: any = fetch();"
+      - good: "const data: Response = fetch();"
+
+  - id: effect-dependencies
+    category: hooks
+    severity: violation
+    description: "React `useEffect` dependencies should include all values used inside the effect."
+    examples:
+      - bad: "useEffect(() => { fetch(userId); }, []);"
+      - good: "useEffect(() => { fetch(userId); }, [userId]);"
+
+  - id: prefer-early-return
+    category: complexity
+    severity: consideration
+    description: "Prefer early returns over deeply nested conditionals in JSX and handlers."
+    examples:
+      - bad: "if (a) { if (b) { return <X />; } else { return <Y />; } }"
+      - good: "if (!a) return null; if (!b) return <Y />; return <X />;"

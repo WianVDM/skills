@@ -1,0 +1,74 @@
+# Default ecosystem-agnostic verify-branch configuration.
+# This template uses the open gate registry. Any gate under `gates` can be
+# customized, removed, or replaced. Projects typically start from one of the
+# ecosystem templates under `assets/templates/ecosystems/` instead.
+
+preferences:
+  # Stop after the first required gate failure.
+  fail_fast: false
+
+  # Maximum gates to run in parallel.
+  max_concurrent_gates: 1
+
+  # Report template: default | compact | detailed | custom
+  report_template: default
+
+  # Include staged, unstaged, and untracked files in the verification set.
+  include_uncommitted: true
+
+  # Auto-detected default branch if null.
+  default_branch: null
+
+  # Diff base if not the default branch.
+  base_ref: null
+
+  # Optional paths for project-specific adapters.
+  adapter_paths: []
+
+  # Open gate registry. Each gate has a `type` that determines which subagent
+  # fulfills it: command | mapper | standards | custom
+  gates:
+    # Example command gate. Replace `command` with your test command.
+    test:
+      enabled: auto
+      importance: required
+      type: command
+      fail_fast: false
+      commands:
+        - name: "Tests"
+          command: "PLACEHOLDER_TEST_COMMAND"
+          cwd: "."
+          timeout: 300
+          env: {}
+          importance: required
+          run_when:
+            - "**/*"
+
+    # Example mapper gate. Replace patterns with your source/spec conventions.
+    spec-coverage:
+      enabled: auto
+      importance: required
+      type: mapper
+      fail_fast: false
+      mappings:
+        - source_pattern: "PLACEHOLDER_SOURCE_PATTERN"
+          spec_pattern: "PLACEHOLDER_SPEC_PATTERN"
+          area: "default"
+      exemptions: []
+
+    # Example standards gate.
+    standards:
+      enabled: auto
+      importance: required
+      type: standards
+      fail_fast: false
+      sources: []
+      ai_inference:
+        enabled: false
+        source_paths: []
+        edit_before_use: true
+      overrides: []
+
+notes:
+  - text: "Default open-registry verify-branch config."
+    category: decision

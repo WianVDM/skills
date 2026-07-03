@@ -1,0 +1,3 @@
+# Runtime dependencies for the verify-branch agent skill.
+# These are optional at runtime, but required for full functionality.
+PyYAML>=6.0

@@ -1,0 +1,51 @@
+# Python-specific standards rules.
+# Add these to a project-specific standards file or override as needed.
+
+rules:
+  - id: pep8-naming
+    category: naming
+    severity: violation
+    description: "Follow PEP 8 naming conventions: snake_case for functions and variables, PascalCase for classes."
+    examples:
+      - bad: "def getUser(): ..."
+      - good: "def get_user(): ..."
+
+  - id: type-hints
+    category: types
+    severity: consideration
+    description: "Add type hints to public function signatures where appropriate."
+    examples:
+      - bad: "def save(data): ..."
+      - good: "def save(data: dict) -> bool: ..."
+
+  - id: no-bare-except
+    category: reliability
+    severity: violation
+    description: "Do not use bare `except:` clauses. Catch specific exceptions."
+    examples:
+      - bad: "try: ... except: ..."
+      - good: "try: ... except ValueError: ..."
+
+  - id: explicit-return-None
+    category: style
+    severity: consideration
+    description: "Return `None` explicitly from functions that are expected to return a value when no result is found."
+    examples:
+      - bad: "def find(id): if not found: return"
+      - good: "def find(id): if not found: return None"
+
+  - id: single-responsibility
+    category: architecture
+    severity: consideration
+    description: "Functions and classes should have a single responsibility."
+    examples:
+      - bad: "A function that validates, queries, and sends email."
+      - good: "Separate validation, persistence, and notification concerns."
+
+  - id: docstrings-public
+    category: documentation
+    severity: consideration
+    description: "Public modules, classes, and functions should have docstrings."
+    examples:
+      - bad: "def calculate(a, b): return a + b"
+      - good: "def calculate(a, b):\n    \"\"\"Return the sum of a and b.\"\"\"\n    return a + b"

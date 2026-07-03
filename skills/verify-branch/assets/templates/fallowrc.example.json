@@ -1,0 +1,21 @@
+{
+  "//": "Example project-level fallow configuration. Copy and adapt this into the target project if the project uses fallow.",
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+  "ignorePatterns": [
+    "**/*.generated.ts",
+    "**/*.d.ts",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/.angular/**",
+    "**/coverage/**",
+    "**/UAID/**",
+    "**/browser-support/**",
+    "**/*.min.js"
+  ],
+  "dupes": {
+    "minLines": 5,
+    "minTokens": 30,
+    "mode": "mild",
+    "ignoreImports": true
+  }
+}

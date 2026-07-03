@@ -1,0 +1,87 @@
+# Framework-agnostic standards rules.
+# These rules apply to any project regardless of language or framework.
+# Add project-specific rules in .agents/config/standards.yaml or override
+# individual rules in .agents/config/verify-branch.yaml.
+
+rules:
+  - id: no-dead-code
+    category: maintenance
+    severity: violation
+    description: "Remove or justify unused code, exports, variables, and imports that are not reachable."
+    examples:
+      - bad: "const unused = 42;"
+      - good: "Remove the variable or use it."
+
+  - id: meaningful-assertions
+    category: tests
+    severity: violation
+    description: "Every test must contain at least one assertion or explicit expectation. Empty tests or tests that only log do not count."
+    examples:
+      - bad: "it('does something', () => { console.log('ok'); });"
+      - good: "it('does something', () => { expect(result).toBe(true); });"
+
+  - id: method-length
+    category: complexity
+    severity: consideration
+    threshold: 50
+    description: "Methods or functions should not exceed the configured line count. Long methods are harder to read, test, and maintain."
+    examples:
+      - bad: "A function with 120 lines of logic."
+      - good: "Split into smaller functions with clear names."
+
+  - id: nesting-depth
+    category: complexity
+    severity: consideration
+    threshold: 4
+    description: "Avoid deeply nested conditionals, loops, or callbacks. Prefer early returns or extracted helpers."
+    examples:
+      - bad: "if (a) { if (b) { if (c) { if (d) { ... } } } }"
+      - good: "Use guard clauses to reduce nesting."
+
+  - id: boolean-naming
+    category: naming
+    severity: violation
+    description: "Boolean variables and functions should read as predicates, e.g., isReady, hasPermission, shouldRetry."
+    examples:
+      - bad: "const ready = true;"
+      - good: "const isReady = true;"
+
+  - id: meaningful-test-names
+    category: tests
+    severity: violation
+    description: "Test names should describe the behavior under test, not just the method name."
+    examples:
+      - bad: "it('testUser', () => { ... });"
+      - good: "it('returns 401 when the user is not authenticated', () => { ... });"
+
+  - id: no-commented-code
+    category: maintenance
+    severity: consideration
+    description: "Do not leave large blocks of commented-out code in the codebase. Use version control to recover old code."
+    examples:
+      - bad: "// oldImplementation();\n// anotherOldCall();"
+      - good: "Remove commented-out code before committing."
+
+  - id: single-responsibility
+    category: architecture
+    severity: consideration
+    description: "Functions, modules, and classes should have a single reason to change."
+    examples:
+      - bad: "A function that validates input, queries the database, and sends an email."
+      - good: "Separate validation, persistence, and notification concerns."
+
+  - id: magic-values
+    category: maintainability
+    severity: consideration
+    description: "Replace unexplained literal values with named constants or variables."
+    examples:
+      - bad: "if (status === 7) { ... }"
+      - good: "const PENDING_REVIEW = 7; if (status === PENDING_REVIEW) { ... }"
+
+  - id: error-handling
+    category: reliability
+    severity: violation
+    description: "Errors and exceptions should be handled or propagated explicitly, not silently swallowed."
+    examples:
+      - bad: "try { risky(); } catch (e) { /* ignore */ }"
+      - good: "try { risky(); } catch (e) { log(e); throw new DomainError('risky failed', e); }"

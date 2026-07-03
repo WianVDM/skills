@@ -1,0 +1,73 @@
+# Infrastructure / Terraform ecosystem starter config.
+# Copy to .agents/config/verify-branch.yaml and adjust as needed.
+
+preferences:
+  fail_fast: false
+  max_concurrent_gates: 1
+  report_template: default
+  include_uncommitted: true
+  default_branch: null
+  base_ref: null
+  adapter_paths: []
+
+  gates:
+    validate:
+      enabled: auto
+      importance: required
+      type: command
+      fail_fast: false
+      detect_commands:
+        - source: "*.tf"
+        - source: "terraform/"
+      commands:
+        - name: "terraform validate"
+          command: "terraform validate"
+          cwd: "."
+          timeout: 300
+          env: {}
+          importance: required
+          run_when:
+            - "**/*.tf"
+            - "**/*.tfvars"
+
+    plan:
+      enabled: auto
+      importance: optional
+      type: command
+      fail_fast: false
+      commands:
+        - name: "terraform plan"
+          command: "terraform plan -input=false"
+          cwd: "."
+          timeout: 600
+          env: {}
+          importance: optional
+          run_when:
+            - "**/*.tf"
+            - "**/*.tfvars"
+
+    standards:
+      enabled: auto
+      importance: required
+      type: standards
+      fail_fast: false
+      sources: []
+      ai_inference:
+        enabled: false
+        source_paths: []
+        edit_before_use: true
+      overrides: []
+
+    security:
+      enabled: auto
+      importance: optional
+      type: custom
+      adapter: null
+      fallback_adapters: []
+      command: "tflint --enable-rule=terraform_required_providers"
+      cwd: "."
+      timeout: 300
+
+notes:
+  - text: "Terraform starter config. Add policy-as-code tools (e.g., Open Policy Agent, Checkov) as custom gates if needed."
+    category: decision
