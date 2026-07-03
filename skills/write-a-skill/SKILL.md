@@ -1,17 +1,18 @@
 ---
 name: write-a-skill
-description: Design, create, review, and upgrade agent skills according to project skill standards. Use when creating a new skill, refactoring an existing skill, reviewing a skill against conventions, deciding whether a problem deserves a skill, or upgrading a project-specific skill to global.
+description: Skill-design partner. Use when creating, reviewing, upgrading, or deciding whether a problem deserves a skill.
 license: Proprietary
 metadata:
   author: Wian van der Merwe
-  version: "3.0"
+  version: "3.1"
+  scope: global
+invocation: user-invoked
+disable-model-invocation: true
 ---
 
 # write-a-skill
 
-This is a **conductor skill** that helps design, create, review, and upgrade agent skills. It ensures every skill follows the project skill standards by walking the user through a structured design process before any files are written.
-
-A skill is a compact operating philosophy for a domain. This skill makes sure the user knows what they are building, why, and how it fits into the broader skill library — before implementation begins.
+Use this skill as a design partner that will not draft files until the design and a self-audit pass the fundamentals.
 
 ## Purpose
 
@@ -19,141 +20,127 @@ Help the user produce skills that are:
 
 - Focused on one core objective.
 - Portable and composable.
-- Self-configuring and self-improving.
-- Built through delegation and shared context.
-- Validated against the project skill standards.
+- Self-configuring through detection and explicit config.
+- Validated against the fundamentals before implementation.
 
 ## When to use
 
-- Creating a new skill from scratch.
-- Refactoring an existing skill.
-- Reviewing a skill against project skill standards.
-- Deciding whether a problem deserves a skill or a simpler solution.
-- Upgrading a project-specific skill to global status.
-- Adding configuration, context sharing, delegation, or scripts to a skill.
+- **Create a new skill** from scratch.
+- **Review an existing skill** against the fundamentals.
+- **Upgrade a project-specific skill** toward global portability.
+- **Decide whether a problem deserves a skill**, or whether a script, MCP server, extension, prompt template, or existing skill is enough.
 
 ## Out of scope
 
 - This skill does not write production application code.
 - It does not replace the user's judgment on whether a skill is needed.
-- It does not perform destructive changes without user confirmation.
+- It does not perform destructive changes without explicit confirmation.
+- It does not choose an alternative for the user without first exploring it.
 
-## Phases of engagement
+## Portability and invocation
 
-The conductor moves through a series of design phases. It delegates focused work to subagents, integrates their findings, and never implements before the design is confirmed.
+- **Invocation mode:** user-invoked. The skill is a meta-design conversation and should not stay loaded during normal work. The frontmatter declares both `invocation: user-invoked` and `disable-model-invocation: true` so the mode is unambiguous across harnesses.
+- **Scope:** global. It must work in any project with any harness.
+- **Pluggability:** the skill detects the project layout (skills directory, context directory, config directory) and **always confirms** with the user before writing files. See [references/PLUGGABILITY.md](references/PLUGGABILITY.md).
+- **No hardcoded project paths:** paths are resolved through detection or user confirmation. The only acceptable hardcoded strings are the detection rules themselves.
 
-### Phase 1: Clarify intent
+## Branch entry
 
-Understand what the user wants and whether a skill is the right solution.
+The first thing the conductor does is classify the user's intent into one branch. This keeps the workflow short and appropriate for the request. If the intent is unclear, ask one clarifying question with a proposed default.
 
-- What problem is the user trying to solve?
-- What triggered the request?
-- What would success look like?
+| Branch | Trigger | Outcome |
+|---|---|---|
+| **New** | User wants to design a new skill from scratch. | Full design workflow + draft. |
+| **Quick** | User wants a minimal skill based on a brief description. | Compressed design workflow + draft. |
+| **Review** | User wants to audit an existing skill. | Audit report with ratings. |
+| **Upgrade** | User wants to make a project-specific skill global-ready. | Remediation plan + optional changes. |
 
-Delegate to [intent-analyzer](subagents/intent-analyzer.md) when the request is vague or when alternatives might exist.
+**Completion criterion:** the branch is one of {new, quick, review, upgrade} and the user has confirmed or corrected the default.
 
-### Phase 2: Classify the skill
+## New skill workflow
 
-Determine the shape of the skill before designing it.
+**Why this branch exists:** building the wrong skill is expensive. A structured design process prevents scope creep, hidden assumptions, and bloated drafts before any files are written.
 
-- Skill type: standalone / atomic, building-block / vocabulary, conductor / orchestrator, or hybrid.
-- Portability target: global or project-specific.
-- Core objective and boundaries.
-- Autonomy level: how much should the skill decide vs consult.
+The conductor walks through: clarify intent → classify → explore alternatives → design → curate scripts → assess global readiness → self-audit → confirm → draft → validate. See the detailed phases in [references/BRANCH_WORKFLOWS.md](references/BRANCH_WORKFLOWS.md).
 
-Delegate to [skill-classifier](subagents/skill-classifier.md).
+**Completion criterion:** a final review report exists and the user has chosen to iterate or close.
 
-### Phase 3: Explore alternatives
+## Quick skill workflow
 
-Before committing to a new skill, consider whether an existing skill, tool, MCP server, prompt template, or script already solves the problem.
+**Why this branch exists:** a minimal skill still needs a clear problem, a sound shape, and a fundamentals check, even when deep design is skipped.
 
-Delegate to [alternative-advisor](subagents/alternative-advisor.md).
+A compressed version of the New workflow. See the detailed phases in [references/BRANCH_WORKFLOWS.md](references/BRANCH_WORKFLOWS.md).
 
-### Phase 4: Design the skill
+**Completion criterion:** a final review report exists and the user has chosen to iterate or close.
 
-Produce a structured design artifact covering:
+## Review workflow
 
-- Objective and boundaries.
-- Skill type and portability.
-- Config needs and bootstrap behavior.
-- Context interface: reports produced and consumed.
-- Delegation strategy: subagents, other skills, or tools.
-- Script inventory: deterministic checks or detections.
-- State lifecycle if stateful.
-- Security considerations.
+**Why this branch exists:** skills drift. A periodic audit against the rubric keeps the skill library aligned with the fundamentals.
 
-Delegate to [skill-architect](subagents/skill-architect.md).
+Read the existing skill, classify it, audit it against [references/AUDIT_RUBRIC.md](references/AUDIT_RUBRIC.md), and produce a structured report. See the detailed phases in [references/BRANCH_WORKFLOWS.md](references/BRANCH_WORKFLOWS.md).
 
-### Phase 5: Curate scripts
+**Completion criterion:** the audit report is complete, structured, and references the rubric criteria by id.
 
-Identify where repeatable logic should live in deterministic scripts rather than AI inference.
+## Upgrade workflow
 
-Delegate to [script-curator](subagents/script-curator.md).
+**Why this branch exists:** project-specific skills are useful, but making one global requires a precise inventory of assumptions and a confirmed remediation plan.
 
-### Phase 6: Assess global readiness
+Read the existing skill, identify project-specific assumptions and missing dependency declarations, propose concrete remediation steps with effort estimates, and apply changes only after explicit approval. See the detailed phases in [references/BRANCH_WORKFLOWS.md](references/BRANCH_WORKFLOWS.md).
 
-If the skill is project-specific, identify what blocks it from being global and what it would take to remove those blockers.
-
-Delegate to [global-readiness-assessor](subagents/global-readiness-assessor.md).
-
-### Phase 7: Audit against guidelines
-
-Check the design against the skill standard references and produce a review report.
-
-Delegate to [guideline-auditor](subagents/guideline-auditor.md).
-
-### Phase 8: Confirm with the user
-
-Present the design and audit. Do not proceed to implementation until the user confirms or revises the design.
-
-### Phase 9: Draft the skill
-
-Once confirmed, produce the skill files: `SKILL.md`, `README.md`, references, subagents, scripts, assets, and templates.
-
-Delegate to [skill-drafter](subagents/skill-drafter.md).
-
-### Phase 10: Validate and close
-
-Run a final audit on the drafted files, capture any gaps, and ask the user whether to iterate or finish.
+**Completion criterion:** a remediation plan exists and the user has approved or declined each proposed change.
 
 ## State and artifacts
 
-This skill maintains working state to survive context compaction and resume later.
+The skill maintains working state so it can survive context compaction and resume later. All artifact paths are relative to the **detected** context directory. See [references/STATE_SCHEMA.md](references/STATE_SCHEMA.md) for frontmatter and body schemas.
 
 | Artifact | Location | Purpose |
-|----------|----------|---------|
-| Intent note | `.agents/context/skill-design/{skill-name}-intent.md` | Captured user intent and trigger. |
-| Design draft | `.agents/context/skill-design/{skill-name}-design.md` | Structured skill design. |
-| Review report | `.agents/context/skill-review/{skill-name}-review.md` | Skill standard audit results. |
-| Global readiness report | `.agents/context/skill-review/{skill-name}-global-readiness.md` | Blockers to global portability. |
-| Decision log | `.agents/context/skill-design/{skill-name}-decisions.md` | Record of decisions and rationale. |
+|---|---|---|
+| Intent note | `{context}/skill-design/{skill-name}-intent.md` | Captured user intent and constraints. |
+| Design draft | `{context}/skill-design/{skill-name}-design.md` | Structured skill design. |
+| Alternatives report | `{context}/skill-design/{skill-name}-alternatives.md` | Existing options and recommendation. |
+| Scripts plan | `{context}/skill-design/{skill-name}-scripts.md` | Proposed deterministic scripts. |
+| Global readiness report | `{context}/skill-review/{skill-name}-global-readiness.md` | Blockers to global portability. |
+| Self-audit | `{context}/skill-review/{skill-name}-self-audit.md` | Fundamentals check results. |
+| Review report | `{context}/skill-review/{skill-name}-audit.md` | Guideline audit results. |
+| Decision log | `{context}/skill-design/{skill-name}-decisions.md` | Record of decisions and rationale. |
 
-Update these artifacts as decisions are made. Append decisions rather than overwriting them.
+Append decisions rather than overwriting them. Never overwrite an existing file without asking.
+
+## Resumption logic
+
+If the conversation is compacted, resume by reading the latest state files in this order:
+
+1. Decision log.
+2. Intent note.
+3. Design draft or review report (whichever is most recent).
+4. Latest self-audit or audit report.
+
+Summarize completed work, pending work, current focus, and the recommended next action before continuing.
 
 ## User interaction rules
 
-- Ask questions one at a time when the answer shapes later decisions.
-- Present recommendations, not just options.
-- Be explicit about assumptions and blockers.
-- Pause and consult the user when ambiguity would require a guess.
-- Never implement before confirming the design.
+- **Confirm before any destructive action.** Drafting files, overwriting config, or modifying existing skills requires explicit approval.
+- **In an untrusted project, prefer read-only inspection.** Confirm before reading skill files from a project you do not trust.
+- **Ask one question at a time** when the answer shapes later decisions.
+- **Present recommendations, not just options.** Propose a default and explain why.
+- **Be explicit about assumptions and blockers.** Do not proceed on a guess about user intent.
+- **Pair every negation with a positive directive.** For example: *Confirm the design before drafting; do not draft until the design is confirmed.*
+- **Block on principle violations.** Explain the principle, why it matters, and offer a concrete alternative.
+- **Warn on preference choices.** Explain the trade-off and recommend a default.
+- **Ask when detection is ambiguous.** Present detected options and let the user choose.
 
 ## References
 
-- [What is a skill](../docs/skill-standards/01-what-is-a-skill.md)
-- [Skill types](../docs/skill-standards/02-skill-types.md)
-- [Form and style](../docs/skill-standards/03-form-and-style.md)
-- [Structure and progressive disclosure](../docs/skill-standards/04-structure.md)
-- [Common mistakes](../docs/skill-standards/05-common-mistakes.md)
-- [When to create a skill](../docs/skill-standards/06-when-to-create-a-skill.md)
-- [Global vs project-specific skills](../docs/skill-standards/07-global-vs-project-skills.md)
-- [State](../docs/skill-standards/08-state.md)
-- [Configuration](../docs/skill-standards/09-configuration.md)
-- [Context and reports](../docs/skill-standards/10-context-and-reports.md)
-- [Delegation](../docs/skill-standards/11-delegation.md)
-- [Reusability](../docs/skill-standards/12-reusability.md)
-- [Evaluation](../docs/skill-standards/13-evaluation.md)
-- [Skill lifecycle](../docs/skill-standards/14-skill-lifecycle.md)
-- [Examples](../docs/skill-standards/15-examples.md)
-- [Security](../docs/skill-standards/16-security.md)
-- [Dependencies](references/DEPENDENCIES.md)
+- [Audit rubric](references/AUDIT_RUBRIC.md)
+- [Branch workflows](references/BRANCH_WORKFLOWS.md)
+- [Pluggability and detection](references/PLUGGABILITY.md)
+- [Dependencies and required capabilities](references/DEPENDENCIES.md)
+- [State and artifact schemas](references/STATE_SCHEMA.md)
+- [Context report schemas](references/CONTEXT_REPORTS.md)
+- [Self-audit checklist](references/SELF_AUDIT_CHECKLIST.md)
+- [Worker return contract](references/WORKER_CONTRACT.md)
+- [Glossary](references/GLOSSARY.md)
+- [Script curation guidance](references/GUIDE_SCRIPT_CURATION.md)
+- [Skill examples](references/GUIDE_EXAMPLES.md)
+- [Evaluation and testing](references/EVAL.md)
+- [Maintenance and versioning](references/MAINTENANCE.md)

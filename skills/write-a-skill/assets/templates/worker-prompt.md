@@ -18,11 +18,23 @@ Describe the specific task this worker performs in one or two sentences.
 - What decisions it must escalate to the main skill.
 - What user interaction it must not perform.
 
-## Tools and capabilities
+## Tools you may use
 
-- Which tools or capabilities the worker may use.
-- Any constraints on how to use them.
+Name the exact tools the worker may use. For example:
+
+- `read` to examine files.
+- `bash` to list directories or run safe, read-only commands.
+- `find` to search for files or patterns.
+- `edit` to apply targeted changes only when explicitly authorized.
+- `write` to create files only when explicitly authorized.
+
+## Forbidden actions
+
+- Do not ask the user directly. Return `needs_input` to the conductor.
+- Do not make final decisions that belong to the user.
+- Do not perform destructive actions unless explicitly authorized.
+- Do not write files outside your approved scope.
 
 ## Return format
 
-Return a structured result using the standard worker return contract. Include a summary, findings, decisions made, open questions, and any blockers.
+Return a structured result using the standard worker return contract in `references/WORKER_CONTRACT.md`. Include a summary, findings, decisions made, open questions, and any blockers.

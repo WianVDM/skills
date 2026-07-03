@@ -1,17 +1,20 @@
 ---
 name: skill-name
-description: What this skill does and when to trigger it. Include trigger keywords.
+description: Leading-word summary of what this skill does and when to trigger it. Include one trigger per branch.
 license: Proprietary
 metadata:
   author: your-name
   version: "1.0"
+  scope: global | project-specific
+invocation: model-invoked | user-invoked
+disable-model-invocation: true  # only when user-invoked
 ---
 
 # skill-name
 
 ## Purpose
 
-State the single problem this skill owns. Be specific about the outcome it produces.
+State the single problem this skill owns and the specific outcome it produces.
 
 ## When to use
 
@@ -19,19 +22,22 @@ State the single problem this skill owns. Be specific about the outcome it produ
 - Another skill needs ...
 - The user mentions trigger keywords: ...
 
-## Core workflow
-
-- Describe the first decision or action the agent takes.
-- Describe the next phase or fallback.
-- Describe how the skill produces or updates its output.
-
 ## Out of scope
 
 - This skill does not ...
 - It does not ...
 
+## Core workflow
+
+1. **First step.** Describe the first action and its completion criterion.
+2. **Next step.** Describe the next action and its completion criterion.
+3. **Output.** Describe how the skill produces or updates its output.
+
+For each step, include a **Completion criterion:** line that defines a checkable end state. If the skill has multiple branches with long workflows, disclose the detailed workflows in `references/BRANCH_WORKFLOWS.md` and keep only the branch summary and completion criterion here.
+
 ## References
 
 - [Config pattern](references/CONFIG_PATTERN.md)
 - [Context reports](references/CONTEXT_REPORTS.md)
-- [Subagent delegation](references/SUBAGENTS.md)
+- [Worker contract](references/WORKER_CONTRACT.md)
+- [Branch workflows](references/BRANCH_WORKFLOWS.md) — if applicable

@@ -23,7 +23,7 @@ skill-name/
 ├── references/
 │   ├── CONFIG_PATTERN.md
 │   ├── CONTEXT_REPORTS.md
-│   └── SUBAGENTS.md
+│   └── WORKER_CONTRACT.md
 ├── subagents/
 │   └── worker-name.md
 └── scripts/
@@ -35,3 +35,4 @@ skill-name/
 - Describe where the skill reads or writes shared context.
 - Describe how the skill detects the environment or uses config.
 - Describe any important delegation or state rules.
+- Describe the invocation mode and scope.

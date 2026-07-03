@@ -2,7 +2,9 @@
 
 ## Config location
 
-This skill reads configuration from `.agents/config/skill-name.yaml` and shared values from `.agents/config/shared.yaml`.
+This skill reads configuration from `{config}/skill-name.yaml` and shared values from `{config}/shared.yaml`.
+
+`{config}` is the detected config directory for the project. See `references/PLUGGABILITY.md` in the `write-a-skill` conductor for detection rules.
 
 ## Config keys
 
