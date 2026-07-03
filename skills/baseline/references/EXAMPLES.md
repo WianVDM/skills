@@ -1,15 +1,19 @@
 # Baseline Examples
 
+Replace placeholders with values detected or confirmed for the project.
+
+---
+
 ## Example 1: bug reproduction baseline
 
 ### Input
 
 - Scope: `OC-4644` auth guard race condition
-- Debrief: describes the race condition.
-- Method: Playwright MCP.
+- Related context: a report describing the race condition
+- Method: `ui-browser` (detected)
 - Branch: `main`
 - Commit: `abc1234`
-- Dev server: `http://localhost:4200`.
+- Target URL: detected from project
 
 ### Generated report
 
@@ -18,18 +22,18 @@
 ```markdown
 ---
 skill: baseline
-version: 3
+version: 4
 scope: OC-4644
 branch: main
 commit: abc1234
 type: bug
 reproducible: true
-method: playwright-mcp
+method: ui-browser
 consumed_context:
-  - .agents/context/debrief/OC-4644.md
+  - .agents/context/<skill>/OC-4644.md
 baselined_at: 2026-06-26T08:42:00Z
 artifacts_dir: OC-4644-main
-summary: "Auth guard redirects to login during token refresh."
+summary: "Auth guard redirects to login during token refresh when navigating to /dashboard before the token refresh completes."
 ---
 
 # Baseline: OC-4644 — Auth guard race condition
@@ -37,9 +41,9 @@ summary: "Auth guard redirects to login during token refresh."
 ## Environment
 - Branch: main
 - Commit: abc1234
-- Dev server: http://localhost:4200
-- Browser viewport: 1280x720
-- Method: Playwright MCP
+- Target URL: <detected-url>
+- Method: ui-browser
+- Scope: OC-4644
 
 ## Authentication
 - Method: session-file
@@ -52,21 +56,13 @@ summary: "Auth guard redirects to login during token refresh."
 
 ## Screenshots
 - [initial](OC-4644-main/screenshots/initial.png): Login page loaded.
-- [step-1](OC-4644-main/screenshots/step-1.png): After submitting credentials.
 - [final](OC-4644-main/screenshots/final.png): Redirected to login instead of dashboard.
-
-## Console errors
-```
-No errors.
-```
-
-## Network errors
-```
-No errors.
-```
 
 ## Findings
 The bug is reproducible. Navigating to `/dashboard` during token refresh causes the auth guard to redirect back to `/login`.
+
+## Deviation from consumed context
+None.
 ```
 
 ### Generated artifacts
@@ -77,15 +73,9 @@ The bug is reproducible. Navigating to `/dashboard` during token refresh causes 
 ├── OC-4644-main.html
 └── OC-4644-main/
     ├── screenshots/
-    │   ├── initial.png
-    │   ├── step-1.png
-    │   └── final.png
     ├── logs/
-    │   ├── console.log
-    │   └── network.log
     ├── dom-snapshot.json
     └── session/
-        └── cookies.json
 ```
 
 ---
@@ -95,8 +85,7 @@ The bug is reproducible. Navigating to `/dashboard` during token refresh causes 
 ### Input
 
 - Scope: `OC-3075` rewards dashboard
-- Debrief: describes the new dashboard.
-- Method: project test.
+- Method: `project-test` (detected)
 - Branch: `main`
 - Commit: `def5678`
 
@@ -105,18 +94,17 @@ The bug is reproducible. Navigating to `/dashboard` during token refresh causes 
 ```yaml
 ---
 skill: baseline
-version: 3
+version: 4
 scope: OC-3075
 branch: main
 commit: def5678
 type: feature
-reproducible: n/a
 method: project-test
 consumed_context:
-  - .agents/context/debrief/OC-3075.md
+  - .agents/context/<skill>/OC-3075.md
 baselined_at: 2026-06-26T09:00:00Z
 artifacts_dir: OC-3075-main
-summary: "Rewards dashboard: current layout, empty and loading states."
+summary: "Rewards dashboard current layout, empty and loading states captured before upcoming redesign."
 ---
 ```
 
@@ -129,55 +117,65 @@ summary: "Rewards dashboard: current layout, empty and loading states."
 
 ---
 
-## Example 3: config after first run
+## Example 3: API baseline
 
-`.agents/config/baseline.yaml`:
+### Generated report frontmatter
 
 ```yaml
-preferences:
-  verification_method: playwright-mcp
-  dev_server:
-    url: http://localhost:4200
-    auto_start: true
-    start_command: npm run start
-  viewport: 1280x720
-  auth:
-    method: session-file
-    session_file: .agents/context/baseline/sessions/default.json
-  output:
-    default_format: html-both
-
-notes:
-  - text: "Playwright MCP is the verified UI tool in this project."
-    category: decision
-  - text: "Dev server runs on port 4200 via `npm run start`."
-    category: gotcha
-  - text: "User prefers HTML galleries alongside Markdown reports."
-    category: preference
-  - text: "Auth session persisted to baseline/sessions/default.json after manual sign-in."
-    category: workaround
+---
+skill: baseline
+version: 4
+scope: user-profile-endpoint
+branch: main
+commit: def5678
+type: api
+method: api-http
+consumed_context: []
+baselined_at: 2026-06-26T09:00:00Z
+artifacts_dir: user-profile-endpoint-main
+summary: "User profile endpoint returns 200 with the expected profile payload."
+---
 ```
 
 ---
 
-## Example 4: manual fallback baseline
+## Example 4: code snapshot baseline
 
-When no automation is available, the skill still produces a structured report based on user-provided screenshots and descriptions.
+### Generated report frontmatter
+
+```yaml
+---
+skill: baseline
+version: 4
+scope: auth-guard-module
+branch: main
+commit: def5678
+type: module
+method: code-snapshot
+consumed_context: []
+baselined_at: 2026-06-26T09:00:00Z
+artifacts_dir: auth-guard-module-main
+summary: "Snapshot of the auth guard module before refactoring."
+---
+```
+
+---
+
+## Example 5: manual fallback baseline
 
 ```markdown
 ---
 skill: baseline
-version: 3
+version: 4
 scope: OC-5000
 branch: main
 commit: 789abcd
 type: bug
-reproducible: unknown
 method: manual
 consumed_context: []
 baselined_at: 2026-06-26T08:42:00Z
 artifacts_dir: OC-5000-main
-summary: "Checkout button unresponsive; captured from user evidence."
+summary: "Checkout 'Complete Purchase' button is unresponsive based on user-provided screenshot and description."
 ---
 
 # Baseline: OC-5000 — Checkout button unresponsive
@@ -196,4 +194,37 @@ summary: "Checkout button unresponsive; captured from user evidence."
 
 ## Findings
 Unable to reproduce with automation. Manual baseline captured from user evidence.
+```
+
+---
+
+## Example 6: config after first run
+
+`.agents/config/baseline.yaml`:
+
+```yaml
+preferences:
+  verification_method: auto
+  scope:
+    default: ask
+    feature: null
+  branch:
+    use_current: true
+    target: null
+  runtime:
+    url: null
+    auto_start: ask
+    start_command: null
+  viewport: null
+  auth:
+    method: none
+  output:
+    default_format: md
+    naming: scope-branch
+
+notes:
+  - text: "Default verification method is auto-detection."
+    category: decision
+  - text: "Runtime URL and start command are detected per project."
+    category: gotcha
 ```

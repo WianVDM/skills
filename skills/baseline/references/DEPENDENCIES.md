@@ -6,13 +6,11 @@ None. `baseline` is a standalone skill.
 
 ## Optional consumed context
 
-The skill may scan and read reports from `.agents/context/{type}/{key}.md` when the `key` matches the scope, ticket, or branch. Common report types include:
+The skill may scan and read reports from `.agents/context/{type}/{key}.md` when the `key` matches the scope, ticket, or branch. These reports are produced by other skills or by the user; `baseline` does not depend on any specific skill being present.
 
-- `debrief` — ticket understanding and expected behavior.
-- `handoff` — previous session context and decisions.
-- `plan-next` — planned next steps and known constraints.
+The skill matches context reports generically by comparing the provided `scope`, `ticket`, or `branch` against the report's filename and frontmatter fields (for example, `scope`, `ticket`, `key`, or `branch`).
 
-These reports are optional. The skill must handle their absence gracefully.
+These reports are optional. The skill must handle their absence gracefully and must not fail if they are missing. Any reports produced by the `baseline` skill itself are excluded to avoid circular self-reference.
 
 ## Required capabilities
 

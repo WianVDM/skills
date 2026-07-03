@@ -7,7 +7,8 @@ of the provided terms. Reads the frontmatter of each match and extracts
 skill, version, ticket, key, scope, branch, and summary.
 
 Excludes reports where the producing skill is "baseline" to avoid circular
-self-reference.
+self-reference, and also excludes files inside the baseline output directory
+(.agents/context/baseline/) by path.
 
 Outputs JSON:
     {
@@ -98,6 +99,7 @@ def scan_related_context(terms: list, context_dir: Path):
     if not context_dir.exists():
         return []
 
+    baseline_output_dir = context_dir / "baseline"
     matches = []
     for path in sorted(context_dir.rglob("*.md")):
         try:
@@ -107,8 +109,11 @@ def scan_related_context(terms: list, context_dir: Path):
 
         frontmatter = _parse_frontmatter(text)
 
-        # Exclude baseline's own outputs to avoid circular self-reference
+        # Exclude baseline's own outputs to avoid circular self-reference.
+        # Exclude by frontmatter skill and by output directory path.
         if frontmatter.get("skill", "").lower() == "baseline":
+            continue
+        if baseline_output_dir in path.parents:
             continue
 
         relevance = _calculate_relevance(path, frontmatter, terms)

@@ -23,6 +23,10 @@ Out of scope:
 - Do not produce new analysis or capture new evidence.
 - Do not ask the user directly. If you need input, return `status: needs_input` with the exact question and options.
 
+## Tools
+
+Use standard agent tools (read, bash, find) as needed to scan and read frontmatter.
+
 ## Inputs
 
 The parent skill provides:
@@ -60,6 +64,7 @@ Whether relevant context was found and how useful it is likely to be.
 
 ### Ignored
 - Reports whose `skill` frontmatter field is `baseline`, to avoid circular self-reference.
+- Files inside `.agents/context/baseline/` that are previously generated baseline reports, unless explicitly provided by the parent skill as a non-baseline context source.
 
 ## Decisions made
 - File matched by name containing `scope`/`ticket`/`branch`.
@@ -81,6 +86,7 @@ Whether relevant context was found and how useful it is likely to be.
 - A report is medium relevance when it describes a related area, dependency, or adjacent feature.
 - A report is low relevance when it only mentions the same project or broad domain.
 - Ignore any report whose frontmatter `skill` field equals `baseline`.
+- Ignore any file located inside `.agents/context/baseline/` unless it is explicitly provided by the parent skill as a non-baseline context source.
 
 ## Escalation rules
 

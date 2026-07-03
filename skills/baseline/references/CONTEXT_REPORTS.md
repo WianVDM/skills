@@ -29,21 +29,15 @@ When `output.default_format` is `html-both`, the skill also writes a self-contai
 
 ## Optional consumed context
 
-Before capturing, the skill may scan `.agents/context/` for reports that help clarify scope, expected behavior, and constraints. It looks for keys matching:
+The `baseline` skill may consume existing context reports from other skills or the user. These reports live under `.agents/context/{type}/{key}.md`, where `{type}` is the producing skill or report category and `{key}` is the report identifier.
 
-- the current `scope`,
-- an inferred ticket key from the scope,
-- the current `branch` name.
-
-Common report types consumed:
-
-| Report type | Purpose |
-|-------------|---------|
-| `debrief` | Ticket understanding and expected behavior. |
-| `handoff` | Previous session context and decisions. |
-| `plan-next` | Planned next steps and known constraints. |
+The skill matches context reports generically by comparing the current baseline `scope`, `ticket`, or `branch` against the report filename and frontmatter fields. Any report produced by the `baseline` skill itself is excluded to avoid circular self-reference.
 
 These reports are optional. The skill must handle their absence gracefully and must not fail if they are missing.
+
+### Example context reports
+
+A report at `.agents/context/<skill>/<scope>.md` whose frontmatter includes `scope: <scope>`, `branch: <branch>`, or `ticket: <ticket>` would be considered a candidate for consumption.
 
 ---
 
@@ -54,19 +48,18 @@ Every baseline report must include this frontmatter:
 ```yaml
 ---
 skill: baseline
-version: 3
+version: 4
 scope: auth-guard-race-condition
 branch: main
 commit: abc1234
-method: playwright-mcp
+method: <detected-method>
 consumed_context:
-  - .agents/context/debrief/OC-4644.md
-  - .agents/context/handoff/OC-4644.md
+  - .agents/context/<skill>/<scope>.md
 baselined_at: 2026-06-26T08:42:00Z
 type: bug                          # bug | feature | module | route | api | manual
-reproducible: true                 # omit for non-bug baselines
+reproducible: true                 # only for type: bug; omit for all other types
 artifacts_dir: auth-guard-race-condition-main
-summary: "Auth guard redirects to login during token refresh."
+summary: "Auth guard redirects to login during token refresh."  # required one-sentence synthesis
 ---
 ```
 
@@ -83,13 +76,34 @@ summary: "Auth guard redirects to login during token refresh."
 | `consumed_context` | no | List of context reports read before capture. |
 | `baselined_at` | yes | ISO 8601 timestamp of capture. |
 | `type` | yes | Category of baseline: `bug`, `feature`, `module`, `route`, `api`, `manual`. |
-| `reproducible` | no | For `bug` baselines, whether the bug was reproduced. |
+| `reproducible` | no | For `bug` baselines only: whether the bug was reproduced. Omit for all other types. |
 | `artifacts_dir` | no | Directory containing captured evidence, relative to `.agents/context/baseline/`. |
-| `summary` | no | One-sentence synthesis of the baseline. |
+| `summary` | **yes** | One-sentence synthesis of what the baseline captured and why it matters. |
+
+### Type-specific frontmatter rules
+
+| Type | `reproducible` field | Typical `summary` focus |
+|---|---|---|
+| `bug` | Required. Use `true` if reproduced, `false` if not. | Whether the bug was reproduced and what the observed behavior was. |
+| `feature` | Omit. | Current state of the feature and any UI elements that will change. |
+| `module` | Omit. | Current state of the module or component and its boundaries. |
+| `route` | Omit. | Current state of the route or page. |
+| `api` | Omit. | Current contract/response behavior. |
+| `manual` | Omit. | What was captured from user-provided evidence. |
 
 ### Versioning
 
 The report `version` follows the producing skill's major version. When the skill version changes, report consumers should check the version field and handle older schemas if needed. The skill should document breaking changes in the changelog or migration notes.
+
+### Migrating from version 3
+
+Reports produced by skill versions before 4.0 may:
+
+- Lack the `summary` field.
+- Include `reproducible` on non-bug baseline types.
+- Use `dev_server` in config instead of `runtime`.
+
+Consumers should treat older reports as potentially stale and prefer re-capturing with the current skill version.
 
 ---
 

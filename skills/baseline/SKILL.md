@@ -1,11 +1,11 @@
 ---
 name: baseline
-description: "Capture a reproducible baseline snapshot of a feature, module, route, API, or bug on a specified branch. Use when the user wants to test current app state, reproduce a bug, capture pre-change UI, or mentions 'baseline', 'reproduce', 'check the app', or 'verify UI'."
+description: "Capture a reproducible baseline snapshot of the current state of a feature, module, route, API, or bug on a specified branch. Triggers: test or verify app state; reproduce a bug; capture pre-change evidence; or mention `baseline`, `reproduce`, `check the app`, `verify UI`, `capture state`, or `snapshot`."
 argument-hint: "Scope, ticket key, or feature/bug to baseline"
 license: Proprietary
 metadata:
   author: Wian van der Merwe
-  version: "3.1"
+  version: "4.0"
   scope: global
 invocation: user-invoked
 disable-model-invocation: true
@@ -17,62 +17,61 @@ Capture a reproducible snapshot of the current state of a feature, module, route
 
 ## Skill type
 
-Conductor. It orchestrates a multi-step workflow and delegates scope, method, context discovery, and capture to focused workers.
+Conductor. Delegates scope, context, method selection, and capture to focused workers.
 
 ## When to use
 
-- The user wants to test or verify current app state.
-- The user wants to reproduce a bug.
-- The user wants to capture pre-change evidence.
+- Test or verify current app state.
+- Reproduce a bug.
+- Capture pre-change evidence.
 - The user mentions `baseline`, `reproduce`, `check the app`, `verify UI`, `capture state`, or `snapshot`.
 
 ## Process overview
 
 1. **Load config and detect capabilities.**
-   - Done when: `.agents/config/baseline.yaml` is read, available capture methods are known, and the user is not blocked by missing required tools.
+   - Done when: config is read and available capture methods are known.
 
 2. **Resolve scope.**
-   - Done when: a single, unambiguous scope string is recorded, either from the user or from matching context reports.
+   - Done when: an unambiguous scope is recorded from the user or matching context reports.
 
 3. **Resolve branch and commit.**
-   - Done when: the target branch is confirmed, the current commit hash is recorded, and any branch mismatch is resolved or explicitly acknowledged by the user.
+   - Done when: branch is confirmed, commit is recorded, and any mismatch is resolved with the user.
 
-4. **Optionally consume related context.**
-   - Done when: `.agents/context/` has been scanned for matching `debrief`, `handoff`, or `plan-next` reports, the consumed list is recorded, and missing reports are handled gracefully.
+4. **Consume related context.**
+   - Done when: `.agents/context/` is scanned for matching reports, baseline outputs are excluded, and missing reports are handled gracefully.
 
 5. **Select capture method.**
-   - Done when: a method is chosen from config, detection, or user confirmation, and a fallback is identified if the primary method may fail.
+   - Done when: a method is chosen from config, detection, or user confirmation, with a fallback identified.
 
 6. **Resolve target and authentication.**
-   - Done when: the URL, endpoint, files, or code range is reachable, and required auth is configured without hardcoded secrets.
+   - Done when: the target is reachable and auth is configured without hardcoded secrets.
 
 7. **Capture evidence.**
-   - Done when: artifacts are saved under `.agents/context/baseline/{scope}-{branch}/` and a capture summary is available.
+   - Done when: artifacts are saved and findings are sufficient for a one-sentence summary.
 
 8. **Generate reports.**
-   - Done when: the Markdown report is written at `.agents/context/baseline/{scope}-{branch}.md` with correct frontmatter, and the HTML gallery is generated if requested.
+   - Done when: the report is written with correct frontmatter, including `summary` and type-appropriate `reproducible`, and HTML is generated if requested.
 
-9. **Curate notes and finalize state.**
-   - Done when: `.agents/config/baseline.yaml` is updated with new preferences or gotchas, and the workflow state file is archived or removed.
+9. **Curate notes.**
+   - Done when: config is updated with new notes and the state file is archived or removed.
 
 ## Resumption
 
-The skill writes a small state file at `.agents/context/baseline/.state/{scope}-{branch}.json` at each step.
+The skill writes a state file at `.agents/context/baseline/.state/{scope}-{branch}.json` after each step.
 
-- On invocation, check for a matching state file.
-- If the recorded branch and commit still match the current repo, resume from the last completed step.
-- If the branch or commit differs, archive the state file with a `.stale` suffix and start fresh.
-- If a worker returns `needs_input`, record the pending question in the state file and resume after the user answers.
-- On success, archive the state file to `-completed.json` or remove it.
+- Resume from the last step if branch and commit still match.
+- Archive stale state with `.stale` and start fresh if they differ.
+- Record pending `needs_input` questions and resume after the user answers.
+- On success, archive the state to `-completed.json` or remove it.
 
 ## Hard stops
 
-Stop immediately and ask the user for direction if:
+Stop and ask for direction if:
 
-- Scope is ambiguous and cannot be resolved.
-- The target branch is missing or cannot be checked out.
-- The target is unreachable and cannot be resolved.
-- No capture method is available and the user declines a manual fallback.
+- Scope is ambiguous.
+- The target branch is missing or unreachable.
+- The target is unreachable.
+- No capture method is available and the user declines manual fallback.
 - Authentication is required but cannot be resolved.
 
 ## Out of scope
@@ -80,8 +79,8 @@ Stop immediately and ask the user for direction if:
 - Diagnosing root cause or proposing fixes.
 - Implementing changes.
 - Comparing before/after states.
-- Running project test suites purely for verification.
-- Deploying, releasing, or modifying production systems.
+- Running project tests purely for verification.
+- Deploying or modifying production systems.
 
 ## References
 
@@ -92,5 +91,4 @@ Stop immediately and ask the user for direction if:
 - [Context reports](references/CONTEXT_REPORTS.md)
 - [Authentication handling](references/AUTH.md)
 - [Checklists and report templates](references/REFERENCE.md)
-- [Playwright MCP setup](references/PLAYWRIGHT-SETUP.md)
 - [Examples](references/EXAMPLES.md)

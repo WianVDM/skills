@@ -7,8 +7,8 @@ Checklist for validating the `baseline` skill after changes or before release.
 ## Structure checks
 
 - [x] `SKILL.md` frontmatter is complete: `name`, `description`, `version`, `scope`, `invocation`, `disable-model-invocation`.
-- [x] The skill version matches the report `version` declared in `CONTEXT_REPORTS.md` and `REFERENCE.md` (major version alignment: skill 3.1, report 3).
-- [x] All reference links resolve: `CONFIG_PATTERN.md`, `CAPABILITIES.md`, `CONTEXT_REPORTS.md`, `REFERENCE.md`, `AUTH.md`, `PLAYWRIGHT-SETUP.md`, `WORKFLOW.md`, `DEPENDENCIES.md`, `EXAMPLES.md`.
+- [x] The skill version matches the report `version` declared in `CONTEXT_REPORTS.md` and `REFERENCE.md` (skill 4.0, report 4).
+- [x] All reference links resolve: `CONFIG_PATTERN.md`, `CAPABILITIES.md`, `CONTEXT_REPORTS.md`, `REFERENCE.md`, `AUTH.md`, `WORKFLOW.md`, `DEPENDENCIES.md`, `EXAMPLES.md`.
 - [x] `SKILL.md` is concise and does not duplicate deep detail from `references/`.
 - [x] Progressive disclosure is followed: overview in `SKILL.md`, detail in `references/`.
 - [x] The skill type is declared as `conductor` or `hybrid` and matches the actual delegation pattern.
@@ -16,8 +16,8 @@ Checklist for validating the `baseline` skill after changes or before release.
 
 ## Dependency declaration
 
-- [x] Required skills are declared in `DEPENDENCIES.md` and match `SKILL.md`.
-- [x] Optional consumed context is declared in `DEPENDENCIES.md` and `CONTEXT_REPORTS.md`.
+- [x] Required skills are declared in `DEPENDENCIES.md` and match `SKILL.md` (none; `baseline` is standalone).
+- [x] Optional consumed context is declared in `DEPENDENCIES.md` and `CONTEXT_REPORTS.md` generically, without depending on specific other skills.
 - [x] Required capabilities are declared in `DEPENDENCIES.md`.
 - [x] No hidden harness or vendor dependencies exist in skill files.
 - [x] Auth handling references environment variables or secure stores, not hardcoded secrets.
@@ -25,9 +25,10 @@ Checklist for validating the `baseline` skill after changes or before release.
 ## Context scanning
 
 - [x] The skill scans `.agents/context/` for relevant reports before capture.
-- [x] The scan matches scope, ticket, and branch keys.
+- [x] The scan matches scope, ticket, and branch keys generically by filename and frontmatter.
 - [x] The skill handles missing consumed context gracefully.
 - [x] The skill records consumed context in the report frontmatter.
+- [x] `consumed_context` excludes reports produced by this skill and files inside `.agents/context/baseline/` unless explicitly provided as non-baseline context.
 - [x] The skill does not fail silently when a consumed report is missing but expected by explicit config.
 
 ## Standard worker return contracts
@@ -45,6 +46,13 @@ Checklist for validating the `baseline` skill after changes or before release.
 - [x] The skill records the current commit hash at capture time.
 - [x] The skill checks report freshness by comparing branch and commit on reuse.
 
+## Report schema
+
+- [x] Every report includes all required frontmatter fields: `skill`, `version`, `scope`, `branch`, `commit`, `method`, `baselined_at`, `type`, and `summary`.
+- [x] The report `summary` is a one-sentence synthesis of what was captured and the most important finding.
+- [x] `reproducible` is only present when `type` is `bug`; it is omitted for all other baseline types.
+- [x] `artifacts_dir` matches the directory name used for the report's artifacts.
+
 ## State and resumption
 
 - [x] The skill writes a state file after each step.
@@ -55,7 +63,7 @@ Checklist for validating the `baseline` skill after changes or before release.
 
 ## Config and bootstrap
 
-- [x] Default config does not hardcode project-specific values such as `http://localhost:4200` or `npm run start`.
+- [x] Default config does not hardcode project-specific values such as URLs, ports, or commands.
 - [x] Default `verification_method` is `auto` or detection-based.
 - [x] Bootstrap includes scope resolution, branch resolution, method detection, and validation.
 - [x] The skill persists resolved choices in `.agents/config/baseline.yaml` without overwriting existing values silently.
@@ -64,9 +72,17 @@ Checklist for validating the `baseline` skill after changes or before release.
 ## Method agnosticism
 
 - [x] Capability detection is project-type driven, not UI-only.
-- [x] UI, API, test, code snapshot, and manual methods are documented.
+- [x] UI, API, test, code snapshot, and manual methods are documented generically.
 - [x] The report template generalizes beyond UI screenshots.
 - [x] Checklists cover bug reproduction, feature baseline, API baseline, and code snapshot.
+
+## Global and pluggable
+
+- [x] The skill does not depend on specific other skills being present.
+- [x] The skill does not name specific harnesses, vendors, or project tools in core skill files or reference templates.
+- [x] Project-specific values (URLs, ports, commands, viewports) are placeholders, null, or detection-based, not hardcoded defaults.
+- [x] Detection scripts contain tool-specific logic, but the skill contract and references do not leak project or harness assumptions.
+- [x] The skill fails closed when a required capability is missing rather than assuming a specific project setup.
 
 ## Behavioral scenarios
 
@@ -83,8 +99,9 @@ Checklist for validating the `baseline` skill after changes or before release.
 
 - [x] Trigger evals are documented and test realistic invoke phrases.
 - [x] Behavior evals cover happy path, missing config, ambiguous scope, no capture method, stale report, user rejects branch, and manual fallback.
+- [x] Report evals cover required frontmatter, summary generation, and type-appropriate `reproducible` handling.
 - [x] A review cadence is documented (e.g., on every minor/major version bump and at least quarterly).
-- [x] `EXAMPLES.md` uses the current report schema (`version: 3`, `scope:`, `branch:`, `commit:`).
+- [x] `EXAMPLES.md` uses the current report schema (`version: 4`, `scope:`, `branch:`, `commit:`, `summary:`).
 
 ## Security
 
@@ -105,5 +122,5 @@ After running through this checklist, record the result:
 
 **Result: PASS**
 
-Validated by: baseline redesign session (2026-07-03)
-Notes: All structure, dependency, context, worker, branch/commit, state, config, method, scenario, evaluation, and security checks pass. The skill is ready for the final `write-a-skill` audit.
+Validated by: baseline global/pluggable refactor (2026-07-03)
+Notes: All structure, dependency, context, worker, branch/commit, report schema, state, config, method, global/pluggable, scenario, evaluation, and security checks pass. The skill is fully standalone, global, and pluggable.

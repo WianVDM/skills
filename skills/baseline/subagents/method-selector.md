@@ -21,13 +21,17 @@ Out of scope:
 - Do not modify project files or config.
 - Do not ask the user directly. If you need input, return `status: needs_input` with the exact question and options.
 
+## Tools
+
+Use standard agent tools (read, bash, find) as needed to inspect the project.
+
 ## Inputs
 
 The parent skill provides:
 
 - `scope`: what is being baselined.
 - `project_type`: the detected project type or stack, if known.
-- `available_tools`: a list of tools detected in the environment (for example, playwright, curl, pytest, jest, git, etc.).
+- `available_tools`: a list of tools detected in the environment, as category/tool-name pairs (for example, `ui-browser: <tool>`, `api-http: <tool>`, `test-runner: <tool>`, `code-snapshot: <tool>`).
 - `target`: the URL, route, endpoint, module, or file set to capture.
 - `preferences`: any user preferences from config, if available.
 

@@ -49,6 +49,33 @@ def _load_package_json(cwd: Path):
         return None
 
 
+def _detect_mcp_files(cwd: Path):
+    """Vendor-agnostic detection of MCP configuration files.
+
+    Searches for `mcp.json` in the project root and in immediate subdirectories
+    (including hidden directories such as editor/harness config folders) without
+    naming specific vendors. Also checks the project-agnostic
+    `.agents/config/mcp.json` convention.
+    """
+    mcp_files = []
+    skip_dirs = {"node_modules", ".git", "dist", "build", "out"}
+
+    for entry in sorted(cwd.iterdir()):
+        if entry.is_file() and entry.name == "mcp.json":
+            mcp_files.append(entry)
+        elif entry.is_dir() and entry.name not in skip_dirs:
+            candidate = entry / "mcp.json"
+            if candidate.exists():
+                mcp_files.append(candidate)
+            # Project-agnostic agents config convention
+            if entry.name == ".agents":
+                nested = entry / "config" / "mcp.json"
+                if nested.exists():
+                    mcp_files.append(nested)
+
+    return mcp_files
+
+
 def _detect_ui_browser(cwd: Path):
     """Detect browser automation tooling and MCP configurations."""
     sources = []
@@ -78,14 +105,6 @@ def _detect_ui_browser(cwd: Path):
         if (cwd / name).exists():
             sources.append(label)
 
-    mcp_paths = [
-        cwd / ".cursor" / "mcp.json",
-        cwd / ".vscode" / "mcp.json",
-        cwd / ".claude" / "mcp.json",
-        cwd / ".pi" / "mcp.json",
-        cwd / "mcp.json",
-        cwd / ".agents" / "config" / "mcp.json",
-    ]
     mcp_keywords = [
         ("playwright", "Playwright MCP config"),
         ("stagehand", "Stagehand MCP config"),
@@ -93,9 +112,7 @@ def _detect_ui_browser(cwd: Path):
         ("browser-tools", "Browser-tools MCP config"),
         ("chrome-devtools", "Chrome DevTools MCP config"),
     ]
-    for mcp_path in mcp_paths:
-        if not mcp_path.exists():
-            continue
+    for mcp_path in _detect_mcp_files(cwd):
         text = _read_text(mcp_path).lower()
         for keyword, label in mcp_keywords:
             if keyword in text:

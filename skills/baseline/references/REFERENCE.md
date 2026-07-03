@@ -1,73 +1,70 @@
 # Baseline Reference
 
-Detailed checklists, report templates, and artifact conventions for the `baseline` skill.
+Checklists, templates, and artifact conventions for the `baseline` skill.
 
 ---
 
-## Bug reproduction checklist
+## Checklists
+
+### Bug reproduction
 
 - [ ] Resolve scope and confirm it is unambiguous.
-- [ ] Confirm the target branch and record the current commit.
-- [ ] Verify the chosen capture method is working.
-- [ ] Start the dev server or target service if needed and if user preference allows.
-- [ ] Navigate to the relevant route, endpoint, or code location.
-- [ ] Execute the exact reproduction steps from consumed context or user input.
-- [ ] Capture evidence of the initial state.
-- [ ] Capture evidence after each reproduction step.
-- [ ] Capture evidence of the final or error state.
-- [ ] Capture console errors, network errors, or response logs if applicable.
-- [ ] Note any deviation from the behavior described in consumed context.
+- [ ] Confirm branch and record commit.
+- [ ] Verify the capture method works.
+- [ ] Start the target runtime if needed and allowed.
+- [ ] Navigate to the route, endpoint, or code location.
+- [ ] Execute the reproduction steps from consumed context or user input.
+- [ ] Capture evidence of the initial, intermediate, and final/error states.
+- [ ] Capture console, network, or response logs if applicable.
+- [ ] Note deviations from consumed context.
 - [ ] Document whether the bug is reproducible.
 
-## Feature baseline checklist
+### Feature baseline
 
 - [ ] Resolve scope and confirm it is unambiguous.
-- [ ] Confirm the target branch and record the current commit.
-- [ ] Verify the chosen capture method is working.
-- [ ] Start the dev server or target service if needed and if user preference allows.
-- [ ] Navigate to the affected page, endpoint, or code location.
-- [ ] Capture evidence of the current state.
+- [ ] Confirm branch and record commit.
+- [ ] Verify the capture method works.
+- [ ] Start the target runtime if needed and allowed.
+- [ ] Capture the current state.
 - [ ] Identify all elements that will change.
 - [ ] Note existing similar functionality.
 - [ ] Document current data and empty states.
 - [ ] Capture errors or anomalies.
 
-## API baseline checklist
+### API baseline
 
 - [ ] Resolve scope and confirm the endpoint or contract.
-- [ ] Confirm the target branch and record the current commit.
-- [ ] Verify the chosen HTTP client or API method is working.
-- [ ] Start the target service if needed and if user preference allows.
-- [ ] Capture the request and response for the baseline call.
+- [ ] Confirm branch and record commit.
+- [ ] Verify the HTTP client or API method works.
+- [ ] Start the target runtime if needed and allowed.
+- [ ] Capture the request and response.
 - [ ] Document headers, status codes, and response bodies.
-- [ ] Note any authentication or environment requirements.
+- [ ] Note authentication or environment requirements.
 - [ ] Record deviations from the expected contract.
 
-## Code snapshot checklist
+### Code snapshot
 
-- [ ] Resolve scope and confirm the files or modules to capture.
-- [ ] Confirm the target branch and record the current commit.
+- [ ] Resolve scope and confirm the files or modules.
+- [ ] Confirm branch and record commit.
 - [ ] Capture the current state of the relevant files or directories.
 - [ ] Include dependency or import relationships if relevant.
 - [ ] Document any TODOs, FIXMEs, or known issues in scope.
 - [ ] Record the reason for the snapshot.
 
-## Hard-stop conditions
+### Hard stops
 
 Stop immediately and flag if:
 
-- Scope cannot be resolved unambiguously.
-- The target branch is missing or cannot be checked out.
-- The target is unreachable and cannot be resolved.
-- The capture method stops responding or fails without a viable fallback.
+- Scope is ambiguous.
+- The target branch is missing or unreachable.
+- The target is unreachable.
+- The capture method fails without a viable fallback.
 - Authentication fails and no fallback is available.
-- The reproduction steps do not produce the described behavior and the user cannot clarify.
+- The reproduction steps do not match the described behavior and the user cannot clarify.
 
 ---
 
 ## Artifact directory structure
-
-All artifacts must be saved under `.agents/context/baseline/{scope-key}/` or the directory named by the report filename:
 
 ```text
 .agents/context/baseline/
@@ -75,29 +72,19 @@ All artifacts must be saved under `.agents/context/baseline/{scope-key}/` or the
 ├── {scope}-{branch}.html        # optional
 └── {scope}-{branch}/
     ├── screenshots/
-    │   ├── initial.png
-    │   ├── step-1.png
-    │   ├── step-2.png
-    │   └── final.png
     ├── logs/
-    │   ├── console.log
-    │   └── network.log
     ├── requests/
-    │   ├── request.json
-    │   └── response.json
     ├── code/
-    │   └── affected-files.md
     ├── dom-snapshot.json
     └── session/
-        └── cookies.json
 ```
 
 ### Rules
 
-- Screenshots and step artifacts are named by step, not by timestamp.
-- If the tool cannot save directly to this path, capture to a temporary location and move the files afterward.
-- The main `.md` report references artifacts using relative paths from the report file.
-- On resume, reuse existing artifacts when they are still fresh; overwrite when re-capturing.
+- Name artifacts by step or purpose, not by timestamp.
+- If the tool cannot save directly to the target path, capture to a temporary location and move the files afterward.
+- Reference artifacts from the report using relative paths.
+- Reuse existing artifacts when fresh; overwrite when re-capturing.
 - Keep the artifact directory name consistent with the report filename.
 
 ---
@@ -107,43 +94,41 @@ All artifacts must be saved under `.agents/context/baseline/{scope-key}/` or the
 ```markdown
 ---
 skill: baseline
-version: 3
-scope: auth-guard-race-condition
-branch: main
-commit: abc1234
-method: playwright-mcp
+version: 4
+scope: <scope>
+branch: <branch>
+commit: <commit>
+method: <detected-method>
 consumed_context:
-  - .agents/context/debrief/OC-4644.md
-baselined_at: 2026-06-26T08:42:00Z
-type: bug
-reproducible: true
-artifacts_dir: auth-guard-race-condition-main
-summary: "Auth guard redirects to login during token refresh."
+  - .agents/context/<skill>/<scope>.md
+baselined_at: <timestamp>
+type: <bug|feature|module|route|api|manual>
+reproducible: true              # only when type is bug
+artifacts_dir: <scope>-<branch>
+summary: "<one-sentence synthesis of what was captured and the key finding>"
 ---
 
-# Baseline: auth-guard-race-condition — Auth guard race condition
+# Baseline: <scope> — <title>
 
 ## Environment
-- Branch: main
-- Commit: abc1234
-- Dev server: http://localhost:4200
-- Browser viewport: 1280x720
-- Method: Playwright MCP
-- Scope: auth-guard-race-condition
+- Branch: <branch>
+- Commit: <commit>
+- Target URL/path: <detected-url-or-path>
+- Method: <detected-method>
+- Scope: <scope>
 
 ## Authentication
-- Method: session-file
-- Session: `.agents/context/baseline/auth-guard-race-condition-main/session/cookies.json`
+- Method: <auth-method>
+- Session: <session-reference-if-applicable>
 
 ## Reproduction steps
-1. Navigate to `/login`.
-2. Enter valid credentials and submit.
-3. Quickly navigate to `/dashboard` before the token refresh completes.
+1. <step one>
+2. <step two>
+3. <step three>
 
 ## Screenshots
-- [initial](auth-guard-race-condition-main/screenshots/initial.png): Login page loaded.
-- [step-1](auth-guard-race-condition-main/screenshots/step-1.png): After submitting credentials.
-- [final](auth-guard-race-condition-main/screenshots/final.png): Redirected to login instead of dashboard.
+- [initial](<scope>-<branch>/screenshots/initial.png): Initial state.
+- [final](<scope>-<branch>/screenshots/final.png): Final or error state.
 
 ## Console errors
 ```
@@ -156,25 +141,27 @@ No errors.
 ```
 
 ## Findings
-The bug is reproducible. Navigating to `/dashboard` during token refresh causes the auth guard to redirect back to `/login`.
+<Synthesis of what was captured and the most important observations.>
 
 ## Deviation from consumed context
-None. Behavior matches the description in the debrief report.
+<Any differences from consumed context, or "None.">
 ```
 
 ### Template notes
 
 - `scope` and `branch` are required in the filename and frontmatter.
-- `commit` identifies the exact code state at capture time.
-- `method` records how the baseline was captured.
-- `consumed_context` lists any reports that informed the baseline. Omit if none were read.
+- `commit` identifies the exact code state.
+- `method` records the captured method, not a vendor tool name.
+- `consumed_context` lists reports that informed the baseline; omit if none.
+- `summary` is **required** and must be one sentence.
+- `reproducible` only for `type: bug`.
 - Keep the body focused on evidence, findings, and deviations.
 
 ---
 
 ## HTML gallery template
 
-The optional HTML gallery is a self-contained, human-readable view of the baseline. It is generated alongside the Markdown report when `output.default_format` is set to `html-both`.
+Generated alongside the Markdown report when `output.default_format` is `html-both`. The HTML is for human consumption only; other skills should read the `.md` report.
 
 ```html
 <!DOCTYPE html>
@@ -182,7 +169,7 @@ The optional HTML gallery is a self-contained, human-readable view of the baseli
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Baseline: auth-guard-race-condition</title>
+  <title>Baseline: <scope></title>
   <style>
     body { font-family: system-ui, sans-serif; max-width: 960px; margin: 2rem auto; padding: 0 1rem; }
     h1 { font-size: 1.75rem; }
@@ -195,91 +182,39 @@ The optional HTML gallery is a self-contained, human-readable view of the baseli
   </style>
 </head>
 <body>
-  <h1>Baseline: auth-guard-race-condition — Auth guard race condition</h1>
+  <h1>Baseline: <scope> — <title></h1>
   <p class="meta">
-    <strong>Branch:</strong> main ·
-    <strong>Commit:</strong> abc1234 ·
-    <strong>Type:</strong> bug ·
-    <strong>Reproducible:</strong> true ·
-    <strong>Baselined at:</strong> 2026-06-26T08:42:00Z
+    <strong>Branch:</strong> <branch> ·
+    <strong>Commit:</strong> <commit> ·
+    <strong>Type:</strong> <type> ·
+    <strong>Baselined at:</strong> <timestamp>
   </p>
 
   <h2>Environment</h2>
   <ul>
-    <li>Branch: main</li>
-    <li>Commit: abc1234</li>
-    <li>Dev server: http://localhost:4200</li>
-    <li>Viewport: 1280x720</li>
-    <li>Method: Playwright MCP</li>
+    <li>Branch: <branch></li>
+    <li>Commit: <commit></li>
+    <li>Target URL/path: <detected-url-or-path></li>
+    <li>Method: <detected-method></li>
   </ul>
 
-  <h2>Reproduction steps</h2>
-  <ol>
-    <li>Navigate to <code>/login</code>.</li>
-    <li>Enter valid credentials and submit.</li>
-    <li>Quickly navigate to <code>/dashboard</code> before token refresh completes.</li>
-  </ol>
-
-  <h2>Screenshots</h2>
-
-  <figure>
-    <img src="auth-guard-race-condition-main/screenshots/initial.png" alt="Initial state">
-    <figcaption>Initial state: login page loaded.</figcaption>
-  </figure>
-
-  <figure>
-    <img src="auth-guard-race-condition-main/screenshots/step-1.png" alt="After submitting credentials">
-    <figcaption>After submitting credentials.</figcaption>
-  </figure>
-
-  <figure>
-    <img src="auth-guard-race-condition-main/screenshots/final.png" alt="Final state">
-    <figcaption>Final state: redirected back to login instead of dashboard.</figcaption>
-  </figure>
-
-  <h2>Console errors</h2>
-  <pre>No errors.</pre>
-
-  <h2>Network errors</h2>
-  <pre>No errors.</pre>
-
   <h2>Findings</h2>
-  <p>The bug is reproducible. Navigating to <code>/dashboard</code> during token refresh causes the auth guard to redirect back to <code>/login</code>.</p>
+  <p><one-sentence synthesis of the baseline finding></p>
 </body>
 </html>
 ```
 
-### HTML rules
-
-- The HTML file lives next to the Markdown report.
-- It references artifacts using relative paths.
-- It is for human consumption only. Other skills should read the `.md` report.
-- Keep styling inline and minimal so the file is self-contained.
-
 ---
 
-## Versioning and migration guidance
+## Versioning and migration
 
-### Report version
-
-Reports include `version: 3` to match the producing skill's major version. Consumers should inspect this field and adjust parsing if the version differs from their expected schema.
-
-### Migrating older reports
-
-Reports produced by earlier versions of the skill may:
+Reports include `version: 4` to match the skill's major version. Older reports may:
 
 - Use `ticket` instead of `scope`.
 - Omit `branch` or `commit`.
-- Name files with `{ticket-key}-{slug}.md` instead of `{scope}-{branch}.md`.
+- Use `{ticket-key}-{slug}.md` filenames.
+- Omit `summary`.
+- Include `reproducible` on non-bug types.
+- Use `dev_server` in config instead of `runtime`.
 
-When encountering an older report, treat it as potentially stale. Prefer re-capturing with the current skill version. If re-capture is not possible, record the migration path in the report body and update the frontmatter where feasible.
-
-### Breaking changes to track
-
-If a future version changes the report schema, config schema, or file naming convention, bump the skill version and document:
-
-- What changed.
-- Whether older reports remain compatible.
-- How to migrate or mark stale reports.
-
-Keep the skill version in the frontmatter of `SKILL.md` in sync with the report `version`.
+Treat older reports as potentially stale and prefer re-capturing. If re-capture is not possible, record the migration path in the report body and update the frontmatter where feasible.

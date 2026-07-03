@@ -21,6 +21,10 @@ Out of scope:
 - Do not capture evidence.
 - Do not ask the user directly. If you need input, return `status: needs_input` with the exact question and options.
 
+## Tools
+
+Use standard agent tools (read, bash, find) as needed to resolve git state and context.
+
 ## Inputs
 
 The parent skill provides:

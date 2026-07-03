@@ -25,6 +25,10 @@ Out of scope:
 - Do not write code changes.
 - Do not ask the user directly. If you need input, return `status: needs_input` with the exact question and options.
 
+## Tools
+
+Use standard agent tools (read, bash, write, edit, find) as needed for the selected capture method.
+
 ## Inputs
 
 The parent skill provides:
@@ -50,7 +54,7 @@ artifacts:
 ---
 
 ## Summary
-...
+A one-sentence synthesis of what was captured and the most important finding.
 
 ## Findings
 - ...
@@ -65,6 +69,8 @@ artifacts:
 - ...
 ```
 
+The `Summary` section must contain enough information for the parent skill to construct the report's frontmatter `summary` field.
+
 ## Artifact rules
 
 - Save all artifacts under the provided `artifact_directory`.
@@ -75,7 +81,7 @@ artifacts:
 
 ## Method-specific notes
 
-- UI: use the provided viewport size, auth session, and route. Screenshot at each step.
+- UI: use the provided target path, auth session, and viewport. Screenshot at each step.
 - API: include headers and body excerpts; redact secrets before saving.
 - Test: capture the exact command run, the full output, and any failure traces.
 - Code snapshot: list the files captured and record the current branch/commit.

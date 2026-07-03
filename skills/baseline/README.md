@@ -1,6 +1,8 @@
 # baseline
 
-Capture a reproducible snapshot of the current state of a feature, module, route, API, or bug so later sessions have a trusted reference point.
+Capture a reproducible snapshot of the current state of a feature, module, route, API, or bug on a specified branch. The snapshot becomes a trusted reference point for later work.
+
+This is a standalone, global conductor. It does not depend on other skills, but it can consume context reports from other skills or the user when their filename or frontmatter matches the current scope, ticket, or branch.
 
 ## Usage
 
@@ -21,7 +23,7 @@ verify UI
 | Invocation | User-invoked |
 | Scope | Global |
 | Leading word | Capture |
-| Version | 3.1 |
+| Version | 4.0 |
 
 ## Output paths
 
@@ -31,18 +33,36 @@ verify UI
 
 `{scope}` and `{branch}` are slugified.
 
+## Scripts
+
+Read-only helper scripts. They do not mutate project files.
+
+| Script | Purpose |
+|---|---|
+| `detect-project-type.py` | Classify the project. |
+| `detect-baseline-method.py` | Detect viable capture methods. |
+| `resolve-git-scope.py` | Resolve branch, commit, and scope. |
+| `scan-related-context.py` | Find related context reports, excluding baseline outputs. |
+| `check-target-reachable.py` | Check URL or file path reachability. |
+
 ## State and resumption
 
-The skill writes a state file at `.agents/context/baseline/.state/{scope}-{branch}.json` after each step. If the skill is interrupted, a later invocation can resume from the last completed step as long as the branch and commit still match. If they differ, the stale state is archived and the workflow starts fresh.
+State file: `.agents/context/baseline/.state/{scope}-{branch}.json`.
+
+- Resume from the last step if branch and commit still match.
+- Archive stale state with `.stale` and start fresh if they differ.
+- Record pending `needs_input` questions and resume after the user answers.
+- On success, archive the state to `-completed.json` or remove it.
 
 ## Evaluation plan
 
-- **Trigger evals:** test that `baseline`, `reproduce`, `check the app`, `verify UI`, and `capture state` invoke the skill, and that unrelated phrases do not.
-- **Behavior evals:** missing config, ambiguous scope, no capture method available, stale state file, user rejects branch switch, manual fallback.
+- **Trigger evals:** `baseline`, `reproduce`, `check the app`, `verify UI`, `capture state` invoke the skill; unrelated phrases do not.
+- **Behavior evals:** missing config, ambiguous scope, no capture method, stale state, user rejects branch switch, manual fallback.
+- **Report evals:** required frontmatter present; `reproducible` only for `type: bug`; consumed context excludes baseline outputs.
 - **Review cadence:** validate on every minor/major version bump and at least quarterly.
 
 ## Maintenance
 
-- Keep `SKILL.md` focused on intent and workflow; move detailed guidance to `references/`.
-- Preserve existing user preferences when updating config or defaults.
+- Keep `SKILL.md` focused on intent and workflow; detail lives in `references/`.
+- Preserve existing user preferences when updating config.
 - Keep report `version` in sync with the skill's major version.
