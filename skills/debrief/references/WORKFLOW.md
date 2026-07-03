@@ -1,46 +1,87 @@
 # Workflow
 
-This document is the detailed reference for the `debrief` skill's 13-step workflow. The main [SKILL.md](../SKILL.md) uses a compressed, five-phase overview; use this file when you need the full step-by-step process for implementation or troubleshooting.
+This document is the detailed reference for the `debrief` skill's 7-phase workflow. The main [SKILL.md](../SKILL.md) uses a compressed overview; use this file when you need the full step-by-step process for implementation or troubleshooting.
 
-The 13 steps map to the eight phases defined in [CHECKPOINTING.md](CHECKPOINTING.md). The phase mapping is included after the process overview.
-
----
-
-## 13-step process
-
-1. **Load config and state** — read `.agents/config/debrief.yaml` and `.agents/context/debrief/{key}/state.md` if they exist.
-2. **Resolve ticket key** — from user input, branch name, or previous state.
-3. **Detect context sources** — identify available issue trackers, development info sources, and codebase access. See [CAPABILITIES.md](CAPABILITIES.md).
-4. **Resolve tracker** — if ambiguous, ask the user and persist the choice.
-5. **Create skeleton debrief** — write `.agents/context/debrief/{key}-{slug}.md` with section headers and status markers. See [CHECKPOINTING.md](CHECKPOINTING.md).
-6. **Research ticket** — delegate to `ticket-researcher`. Gather the core ticket, comments, attachments, history, related tickets, and development info.
-7. **Update debrief** — immediately write research results into the debrief document and update the phase checklist.
-8. **Ask checkpoint manager** — delegate to `checkpoint-manager` to update state, verify phase completion, and report current focus.
-9. **Resolve ambiguities** — for each ambiguity:
-   - Delegate code exploration to `code-explorer`.
-   - Form explicit assumptions.
-   - Delegate assumption challenging to `assumption-challenger`.
-   - Revise, confirm, or escalate based on challenge results.
-   - Update the debrief document and phase checklist after each step.
-10. **Capture baseline** — delegate to the `baseline` skill or a baseline subagent. Surface any user questions to the user. See [BASELINE-INTEGRATION.md](BASELINE-INTEGRATION.md).
-11. **Synthesize** — delegate to `synthesis-writer` to finalize incomplete sections of the debrief document.
-12. **Final validation** — ask `checkpoint-manager` to verify all phases are complete and consistent.
-13. **Present findings** — give the user a human-readable summary with confidence, assumptions, and any escalated items.
+The 7 phases are designed for parallel execution where possible. Independent subagents run concurrently up to `max_parallel_subagents` (default 3). The phase mapping is included after the process overview.
 
 ---
 
-## Mapping to the eight phases
+## 7-phase process
 
-| Step(s) | Phase | Name | Output |
-|---------|-------|------|--------|
-| 1–4 | 1 | Resolve ticket key and load context | Project key resolved, config loaded |
-| 5–7 | 2 | Fetch ticket + related data | Debrief sections: Metadata, Discussion Summary, Attachments, Related Tickets, Development Context |
-| 7 | 3 | Build context graph | State: Context Graph populated |
-| 9 (first part) | 4 | Identify ambiguities | State: Ambiguities list populated |
-| 9 (code exploration) | 5 | Resolve ambiguities via code exploration | Debrief section: Codebase Evidence; State: Ambiguities updated |
-| 9 (challenging) | 6 | Challenge assumptions | Debrief section: Assumptions Resolved; State: Ambiguities updated |
-| 10 | 7 | Run baseline | Debrief section: Baseline Status; State: Baseline Status updated |
-| 11–13 | 8 | Synthesize final debrief | All sections marked complete, frontmatter updated |
+### Phase 0 — Bootstrap
+
+1. Detect the project marker directory using `.agents`, `.pi`, `agents`, or a user-specified marker.
+2. Load `{marker_dir}/config/shared.yaml` and `{marker_dir}/config/debrief.yaml`.
+3. Detect available issue trackers (Jira, GitHub, Linear, manual).
+4. Resolve the ticket key from user input, branch, or previous state; ask the user if needed.
+5. Collect manual fallback context if no tracker is available.
+6. Validate required capabilities (filesystem, tracker/user context, codebase access).
+7. Persist resolved config and state with user confirmation.
+
+### Phase 1 — Gather evidence (parallel)
+
+Launch in parallel up to `max_parallel_subagents`:
+
+- `ticket-researcher` — core ticket, comments, attachments, history, related tickets, development info.
+- `code-explorer` — initial codebase sweep based on ticket summary and mentioned files.
+- `related-context-scanner` — discover related artifacts in `{context_dir}/`.
+- `duplicate-detector` — check for duplicate or already-implemented tickets.
+- `task-type-classifier` — classify the ticket type (`code`, `ui`, `docs`, `process`, `unknown`).
+
+### Phase 2 — Build context graph and identify ambiguities
+
+1. Merge evidence from all sources into a context graph.
+2. Compare ticket claims against codebase evidence.
+3. Identify ambiguities: missing info, contradictions, multiple interpretations.
+4. Form explicit assumptions for each ambiguity, with confidence and basis.
+5. Update the debrief document skeleton with sections marked `pending`.
+
+### Phase 3 — Resolve ambiguities (parallel)
+
+For each ambiguity, choose an investigation path:
+
+- **Code-related** → `code-explorer` (time-boxed).
+- **Assumption stress-test** → `assumption-challenger` (searches for disproof).
+- **Missing tracker context** → `ticket-researcher`.
+- **User clarification needed** → surface to the user immediately.
+
+Independent ambiguities are investigated in parallel. Maintain a visited set for related tickets to prevent circular references. Respect `max_related_depth` and `max_investigation_rounds`.
+
+### Phase 4 — Baseline (conditional)
+
+1. Decide if the ticket involves verifiable state using `detect-verifiable-state.py` or task type.
+2. If relevant, invoke the `baseline` skill via `baseline-invoker`.
+3. Handle `needs_input` and failure responses from baseline.
+4. Record baseline status in state and report.
+
+### Phase 5 — Synthesize and validate
+
+1. Delegate to `synthesis-writer` to compile all evidence into the final report.
+2. Update frontmatter with confidence, status, and confidence gap.
+3. Delegate to `checkpoint-manager` to validate all phases are complete and consistent.
+
+### Phase 6 — Present
+
+1. Generate a concise chat summary for the user.
+2. Save the final report to `{context_dir}/debrief/{key}-{slug}.md`.
+3. Update the state file at `{context_dir}/debrief/{key}/state.md`.
+4. If confidence < `confidence_threshold`, save a blocker report to `{context_dir}/debrief/{key}-blockers.md`.
+5. Include tool suggestions if a helpful tool exists but is not configured.
+6. Present the summary, confidence, assumptions, and escalations.
+
+---
+
+## Mapping to the seven phases
+
+| Phase | Name | Output |
+|-------|------|--------|
+| 0 | Bootstrap | Project marker detected, config loaded, ticket key resolved |
+| 1 | Gather evidence | Context graph populated, duplicate status known, task type classified |
+| 2 | Build context graph | Ambiguities list populated, assumptions formed |
+| 3 | Resolve ambiguities | Codebase evidence, assumptions updated, confidence recalculated |
+| 4 | Baseline | Baseline status recorded |
+| 5 | Synthesize and validate | Final debrief report complete and consistent |
+| 6 | Present | Artifacts saved, user informed |
 
 ---
 
@@ -64,8 +105,8 @@ See [CHECKPOINTING.md](CHECKPOINTING.md) for phase definitions and self-validati
 
 If the session context is compacted, the agent must not guess where it left off. Instead:
 
-1. Read `.agents/context/debrief/{key}/state.md`.
-2. Read `.agents/context/debrief/{key}-{slug}.md`.
+1. Read `{context_dir}/debrief/{key}/state.md`.
+2. Read `{context_dir}/debrief/{key}-{slug}.md`.
 3. Ask `checkpoint-manager` to summarize: completed phases, pending phases, current focus, and recommended next action.
 4. Resume from the first pending phase.
 5. Do not restart completed phases unless new information contradicts them.
@@ -122,13 +163,14 @@ Rate overall debrief confidence honestly:
 
 ## Output location
 
-Canonical outputs live at:
+Canonical outputs live under the detected context directory:
 
 ```text
-.agents/context/debrief/
-├── {key}-{slug}.md
+{context_dir}/debrief/
+├── {key}-{slug}.md              # final debrief report
+├── {key}-blockers.md            # blocker report (if confidence < threshold)
 └── {key}/
-    └── state.md
+    └── state.md                 # resume/checkpoint state
 ```
 
 ---

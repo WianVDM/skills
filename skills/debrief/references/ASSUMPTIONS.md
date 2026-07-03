@@ -23,17 +23,28 @@ Do not form an assumption when:
 
 ## Assumption format
 
-Every assumption should include:
+Every assumption must include these fields, matching the frontmatter schema in the debrief report:
 
-```markdown
-### {what was unclear}
-- **Assumption:** {what you believe is most likely intended}
-- **Basis:** {ticket context + code evidence that supports this}
-- **Confidence:** {High | Medium | Low} ({0-100}%)
-- **Alignment:** {Fully aligned | Reasonable inference | Potentially divergent}
-- **What would disprove it:** {specific evidence that would invalidate the assumption}
-- **Impact if wrong:** {how implementation would change}
+```yaml
+assumptions:
+  - assumption: "Token refresh happens in auth.guard.ts."
+    basis: "Code in auth.guard.ts contains refresh logic; no interceptor found."
+    confidence: 85
+    alignment: Reasonable inference
+    disproof_signals: "ADR mentioning interceptor, code in interceptor, tests referencing refresh.interceptor."
+    impact_if_wrong: "Fix would move to interceptor."
+    status: resolved
 ```
+
+| Field | Description |
+|---|---|
+| `assumption` | The explicit guess about intent. |
+| `basis` | Ticket context + evidence that supports the assumption. |
+| `confidence` | 0–100%. |
+| `alignment` | `Fully aligned`, `Reasonable inference`, or `Potentially divergent`. |
+| `disproof_signals` | What evidence would prove the assumption wrong. |
+| `impact_if_wrong` | How implementation would change if the assumption is wrong. |
+| `status` | `resolved`, `escalated`, or `challenged`. |
 
 ---
 
@@ -55,7 +66,11 @@ Every assumption should include:
 
 ## Challenge process
 
-For each assumption, the `assumption-challenger` subagent performs a disproof search:
+For each assumption, the `assumption-challenger` subagent performs a **grilling session** — an aggressive search for disproof, not confirmation.
+
+> **Grilling session guideline:** Your job is not to confirm the assumption. Your job is to destroy it. If you cannot find disproof after a reasonable search, the assumption is allowed to stand — but only because it survived an honest attempt to refute it.
+
+Process:
 
 1. **Restate the assumption** in falsifiable form.
 2. **Identify disproof signals** — what evidence would prove this wrong?

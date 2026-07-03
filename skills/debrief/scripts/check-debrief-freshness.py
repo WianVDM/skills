@@ -27,27 +27,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-
-def _parse_frontmatter(text: str) -> dict:
-    """Parse a simple YAML-like frontmatter block into a dict."""
-    if not text.startswith("---"):
-        return {}
-
-    end = text.find("---", 3)
-    if end == -1:
-        return {}
-
-    fm = text[3:end].strip()
-    data = {}
-    for line in fm.splitlines():
-        if ":" not in line:
-            continue
-        key, value = line.split(":", 1)
-        key = key.strip().lower()
-        value = value.strip().strip('"').strip("'")
-        data[key] = value
-    return data
-
+from _frontmatter import parse_frontmatter
 
 def _parse_iso_timestamp(value: str) -> datetime:
     """Parse an ISO 8601 timestamp, returning a timezone-aware datetime."""
@@ -92,7 +72,7 @@ def check_freshness(report_path: Path, ticket_updated: str = None, branch: str =
     except OSError as exc:
         return {"fresh": False, "reason": f"failed to read report: {exc}"}
 
-    frontmatter = _parse_frontmatter(text)
+    frontmatter = parse_frontmatter(text)
     generated_at = frontmatter.get("generated_at", "")
     report_branch = frontmatter.get("branch", "")
     report_commit = _short_commit(frontmatter.get("commit", ""))

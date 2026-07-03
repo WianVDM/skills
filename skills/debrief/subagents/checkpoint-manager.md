@@ -12,8 +12,8 @@ You are a checkpoint manager. Your job is to read the current state file and deb
 
 In scope:
 
-- Read `.agents/context/debrief/{key}/state.md`.
-- Read `.agents/context/debrief/{key}-{slug}.md`.
+- Read `{context_dir}/debrief/{key}/state.md`.
+- Read `{context_dir}/debrief/{key}-{slug}.md`.
 - Update `## Phase Checklist` based on completed sections in the debrief document.
 - Update `## Current Focus` to reflect the next pending phase.
 - Update `## Last Completed Action`.
@@ -49,7 +49,7 @@ Example return format:
 ---
 status: complete
 artifacts:
-  - state_file: .agents/context/debrief/OC-4644/state.md
+  - state_file: `{context_dir}/debrief/OC-4644/state.md`
 ---
 
 ## Status Summary

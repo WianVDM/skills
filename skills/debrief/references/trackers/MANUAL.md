@@ -18,12 +18,13 @@ The user can provide context via:
 
 ## Prompt
 
-> "No issue tracker is configured. Please provide the ticket details:
+> "I couldn't find a connected issue tracker. To debrief this ticket, please help me understand it by providing:
 > - Ticket key or identifier
-> - Title/summary
+> - Title or summary
 > - Description
 > - Acceptance criteria or expected behavior
-> - Any relevant context, screenshots, or related information"
+> - Any related context, screenshots, links, or files
+> You can paste the details here or point me to a Markdown file."
 
 ## State handling
 

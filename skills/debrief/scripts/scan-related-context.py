@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Scan .agents/context/ for reports related to a ticket or branch.
+"""Scan the project context directory for reports related to a ticket or branch.
 
-Accepts --ticket and optional --branch. Recursively scans .agents/context/ for
-Markdown files whose filename or frontmatter matches the ticket key or branch.
-Reads the frontmatter of each match and extracts skill, version, ticket/scope/branch,
-summary, and generated_at.
+Accepts --ticket and optional --branch. Recursively scans the given context
+directory for Markdown files whose filename or frontmatter matches the ticket
+key or branch. Reads the frontmatter of each match and extracts skill, version,
+ticket/scope/branch, summary, and generated_at.
 
 Excludes reports where the producing skill is "debrief" to avoid self-reference.
 
@@ -30,30 +30,10 @@ import re
 import sys
 from pathlib import Path
 
-CONTEXT_DIR = ".agents/context"
+from _frontmatter import parse_frontmatter
+
+CONTEXT_DIR = "context"
 RELEVANCE_ORDER = {"high": 0, "medium": 1, "low": 2}
-
-
-def _parse_frontmatter(text: str) -> dict:
-    """Parse a simple YAML-like frontmatter block into a dict."""
-    if not text.startswith("---"):
-        return {}
-
-    end = text.find("---", 3)
-    if end == -1:
-        return {}
-
-    fm = text[3:end].strip()
-    data = {}
-    for line in fm.splitlines():
-        if ":" not in line:
-            continue
-        key, value = line.split(":", 1)
-        key = key.strip().lower()
-        value = value.strip().strip('"').strip("'")
-        data[key] = value
-    return data
-
 
 def _normalise(term: str) -> str:
     """Normalise a search term for comparison."""
@@ -105,7 +85,7 @@ def scan_related_context(terms: list, context_dir: Path):
         except OSError:
             continue
 
-        frontmatter = _parse_frontmatter(text)
+        frontmatter = parse_frontmatter(text)
 
         # Exclude debrief's own outputs to avoid self-reference
         if frontmatter.get("skill", "").lower() == "debrief":
@@ -131,13 +111,13 @@ def scan_related_context(terms: list, context_dir: Path):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Scan .agents/context/ for reports related to a ticket or branch."
+        description="Scan the project context directory for reports related to a ticket or branch."
     )
     parser.add_argument("--ticket", help="Ticket key to search for.")
     parser.add_argument("--branch", help="Branch name to search for.")
     parser.add_argument(
         "--context-dir",
-        help="Override the context directory. Default: .agents/context/",
+        help="Override the context directory. Default: {cwd}/context/",
     )
     args = parser.parse_args()
 

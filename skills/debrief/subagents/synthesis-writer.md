@@ -48,7 +48,7 @@ Return the finalized debrief document using the standard worker contract. The ma
 When writing the file:
 
 ```text
-.agents/context/debrief/{key}-{short-slug}.md
+{context_dir}/debrief/{key}-{short-slug}.md
 ```
 
 Use the template from [references/REFERENCE.md](../references/REFERENCE.md).
@@ -59,7 +59,7 @@ Use the template from [references/REFERENCE.md](../references/REFERENCE.md).
 ---
 status: complete
 artifacts:
-  - debrief_document: .agents/context/debrief/OC-4644-auth-guard.md
+  - debrief_document: {context_dir}/debrief/OC-4644-auth-guard.md
 ---
 
 ## Summary

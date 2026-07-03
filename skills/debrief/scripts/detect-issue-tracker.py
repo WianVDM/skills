@@ -39,14 +39,18 @@ MCP_PATHS = [
     ".vscode/mcp.json",
     ".claude/mcp.json",
     ".pi/mcp.json",
+    ".pi/config/mcp.json",
     "mcp.json",
     ".agents/config/mcp.json",
+    "agents/config/mcp.json",
     ".cursor/mcp.yaml",
     ".vscode/mcp.yaml",
     ".claude/mcp.yaml",
     ".pi/mcp.yaml",
+    ".pi/config/mcp.yaml",
     "mcp.yaml",
     ".agents/config/mcp.yaml",
+    "agents/config/mcp.yaml",
 ]
 
 MCP_KEYWORDS = {

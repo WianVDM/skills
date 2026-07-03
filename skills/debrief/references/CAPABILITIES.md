@@ -8,10 +8,15 @@ The `debrief` skill gathers context from multiple sources. It detects what is av
 
 The skill uses small, deterministic scripts to avoid guessing:
 
+- `scripts/detect-project-layout.py` — find the project marker directory (`.agents`, `.pi`, `agents`, or user-specified).
 - `scripts/detect-issue-tracker.py` — lists available trackers (MCP servers, env vars) with confidence.
 - `scripts/extract-ticket-key.py` — extracts a ticket key from a branch name or arbitrary text.
+- `scripts/infer-ticket-type.py` — classifies the ticket type (`code`, `ui`, `docs`, `process`, `unknown`).
+- `scripts/detect-verifiable-state.py` — decides whether baseline is relevant for the ticket.
+- `scripts/scan-related-context.py` — scans `{context_dir}/` for reports related to the current ticket or branch.
 - `scripts/check-debrief-freshness.py` — compares an existing debrief report with the current branch/commit and ticket update time.
-- `scripts/scan-related-context.py` — scans `.agents/context/` for reports related to the current ticket or branch.
+- `scripts/find-related-prs.py` — finds PRs related to the ticket or files.
+- `scripts/trace-bug-origin.py` — traces a bug to its original feature commit.
 
 ---
 
@@ -51,7 +56,7 @@ Code exploration is time-boxed per ambiguity (default 5 minutes, configurable).
 
 ## Baseline capability
 
-The `baseline` skill is a recommended dependency. `debrief` invokes it as a separate workflow when `baseline_mode` is `required` or `optional` and the ticket involves verifiable state. The debrief skill does not directly operate browsers; it delegates to the baseline skill.
+The `baseline` skill is a **soft default building block**. `debrief` invokes it as a separate workflow when `baseline_mode` is `required` or `optional` and the ticket involves verifiable state. The debrief skill does not directly operate browsers; it delegates to the baseline skill. If baseline is unavailable, the user must explicitly approve proceeding without it.
 
 ---
 
@@ -65,7 +70,7 @@ When multiple issue trackers are available, ask:
 > 3. Manual input
 > Which should I use?"
 
-Store the choice in `.agents/config/debrief.yaml`.
+Store the choice in `{marker_dir}/config/debrief.yaml`.
 
 ---
 

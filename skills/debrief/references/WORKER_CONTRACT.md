@@ -21,8 +21,8 @@ Every worker response must include a `status` field in the frontmatter.
 
 Workers may produce artifacts such as:
 
-- `debrief_document` — path to the `.agents/context/debrief/{key}-{slug}.md` file (for `synthesis-writer`).
-- `state_file` — path to the `.agents/context/debrief/{key}/state.md` file (for `checkpoint-manager`).
+- `debrief_document` — path to the `{context_dir}/debrief/{key}-{slug}.md` file (for `synthesis-writer`).
+- `state_file` — path to the `{context_dir}/debrief/{key}/state.md` file (for `checkpoint-manager`).
 - `context_graph` — table of sources with relevance and contribution.
 - `findings` — structured evidence or conclusions.
 - `ambiguities` — list of unresolved or resolved ambiguities.

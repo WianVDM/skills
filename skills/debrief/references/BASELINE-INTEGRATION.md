@@ -1,28 +1,42 @@
 # Baseline Integration
 
-The `baseline` skill is a recommended dependency of `debrief`. It captures current UI, API, or code state and produces a report that the debrief can consume as evidence.
+The `baseline` skill is a **soft default building block** for `debrief`. It captures current UI, API, or code state and produces a report that the debrief can consume as evidence.
+
+Baseline is not a hard dependency. When the ticket involves verifiable state, `debrief` should invoke baseline by default. If baseline is unavailable, the user must explicitly approve proceeding without it.
 
 ---
 
 ## When to invoke baseline
 
-- `baseline_mode: required` — always invoke baseline for tickets that involve verifiable state. Never silently skip it.
-- `baseline_mode: optional` — invoke baseline when the ticket involves verifiable state; consult the user before deciding it does not apply.
-- `baseline_mode: skip` — do not invoke baseline.
+A ticket involves **verifiable state** when it describes something that can be observed, reproduced, or measured in the running system or codebase. Examples:
+- UI behavior, bug reproduction, visual state.
+- API response or error.
+- Code-level output, test result, or performance metric.
 
-A ticket involves verifiable state when it describes a UI behavior, API response, bug reproduction, or code-level outcome that can be observed.
+Non-verifiable examples:
+- Documentation changes.
+- Process or policy decisions.
+- Pure requirements clarification without implementation.
+
+Use `detect-verifiable-state.py` or the task-type classifier to decide if baseline is relevant. Then apply the baseline mode rules:
+
+| Mode | Verifiable state | Non-verifiable state |
+|---|---|---|
+| `required` | Invoke baseline. Stop if unavailable; ask user. | Consult user before skipping; do not skip silently. |
+| `optional` | Invoke baseline. If unavailable, ask user. | Consult user before skipping; do not skip silently. |
+| `skip` | Do not invoke baseline. | Do not invoke baseline. |
 
 ---
 
 ## Invoking the baseline skill
 
-Treat baseline as a skill workflow, not a subagent with a made-up prompt.
+Treat baseline as a skill workflow, not a subagent with a made-up prompt. The main skill delegates invocation to the `baseline-invoker` subagent, which:
 
-1. Pass the ticket key as the `scope` to baseline.
-2. Use the current branch as the default branch.
-3. Include the debrief's understanding of the ticket in the request so baseline does not need to read the incomplete debrief report.
+1. Passes the ticket key as the `scope` to baseline.
+2. Uses the current branch as the default branch.
+3. Includes the debrief's understanding of the ticket so baseline does not need to read the incomplete debrief report.
 
-For example:
+Example request to the baseline invoker:
 
 ```text
 Run the baseline skill for scope {ticket-key} on the current branch.
@@ -38,7 +52,7 @@ This avoids circularity: baseline does not depend on the unfinished debrief docu
 After baseline completes, read its canonical report:
 
 ```text
-{project-root}/.agents/context/baseline/{scope}-{branch}.md
+{context_dir}/baseline/{scope}-{branch}.md
 ```
 
 - `{scope}` is usually the ticket key.
@@ -104,5 +118,5 @@ After baseline completes, extract:
 
 Record these in:
 
-- `.agents/context/debrief/{key}/state.md` under `## Baseline Status`.
+- `{context_dir}/debrief/{key}/state.md` under `## Baseline Status`.
 - The debrief document under `## Baseline Status`.

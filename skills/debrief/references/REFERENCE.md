@@ -1,6 +1,6 @@
 # Debrief Reference
 
-Research checklist, state management, context graph, ambiguity resolution, and output generation for `debrief`.
+Research checklist, state management, context graph, ambiguity resolution, and output generation for `debrief` v4.0.
 
 ---
 
@@ -17,24 +17,27 @@ Gather everything available from the configured issue tracker and related source
 - [ ] **Related tickets** — parent, subtasks, linked issues, duplicates. Search for context if description suggests a duplicate.
 - [ ] **Worklog** — optional; may reveal effort already spent.
 - [ ] **Active PRs** — open PRs linked to the ticket or related area.
+- [ ] **Non-English content** — preserve original text; translate only if a translation tool is configured.
 
 ---
 
 ## Delta mode / reuse existing debrief
 
-Before starting full research, check for existing artifacts:
+Before starting full research, check for existing artifacts under the detected context directory.
 
-1. **Check state file** — `.agents/context/debrief/{key}/state.md`
+1. **Check state file** — `{context_dir}/debrief/{key}/state.md`
    - If exists → read it. Resume from `## Phase Checklist` and `## Current Focus`.
 
-2. **Check debrief document** — `.agents/context/debrief/{key}-{slug}.md`
-   - If exists and `generated_at` is recent (e.g., <24h) → read it as starting context.
+2. **Check debrief document** — `{context_dir}/debrief/{key}-{slug}.md`
+   - If exists and `generated_at` is recent (within `artifact_freshness_hours`) → read it as starting context.
    - Skip re-fetching ticket details unless the user asks for a refresh.
    - Skip re-scanning attachments unless something changed.
    - Re-resolve ambiguities with current codebase state.
    - Update the document in place rather than regenerating from scratch.
 
-3. **If no existing debrief** → proceed with full research.
+3. **Check freshness** — use `check-debrief-freshness.py` to compare branch, commit, and ticket `updated_at` against the report.
+
+4. **If no existing debrief** → proceed with full research.
 
 ---
 
@@ -61,32 +64,31 @@ This allows the agent to resume after context compaction without re-doing comple
 
 ## State file specification
 
-Path: `.agents/context/debrief/{key}/state.md`
+Path: `{context_dir}/debrief/{key}/state.md`
 
 This is the investigator's working memory and the anchor for resuming after context compaction. Read it at the start of every iteration. Write to it before and after every subagent call.
 
 ```markdown
 ---
 skill: debrief
-version: 3
+version: 4.0
 ticket: OC-4644
-updated_at: 2026-06-26T08:42:00Z
+updated_at: 2026-07-03T08:42:00Z
 ---
 
 # Debrief State: OC-4644
 
 ## Phase Checklist
-- [x] Phase 1: Resolve ticket key and load context
-- [x] Phase 2: Fetch ticket + related data
-- [x] Phase 3: Build context graph
-- [ ] Phase 4: Identify ambiguities
-- [ ] Phase 5: Resolve ambiguities via code exploration
-- [ ] Phase 6: Challenge assumptions
-- [ ] Phase 7: Run baseline
-- [ ] Phase 8: Synthesize final debrief
+- [x] Phase 0: Bootstrap
+- [x] Phase 1: Gather evidence
+- [x] Phase 2: Build context graph and identify ambiguities
+- [ ] Phase 3: Resolve ambiguities
+- [ ] Phase 4: Baseline
+- [ ] Phase 5: Synthesize and validate
+- [ ] Phase 6: Present
 
 ## Current Focus
-Identifying ambiguities in ticket OC-4644.
+Resolving ambiguities in ticket OC-4644.
 
 ## Last Completed Action
 Ticket researcher returned normalized ticket data and context graph.
@@ -127,6 +129,12 @@ Ticket researcher returned normalized ticket data and context graph.
 - Acceptance criteria: {cached}
 - Last fetch: {iso}
 
+## Visited Related Tickets
+| Ticket | Depth | Visited At |
+|---|---|---|
+| OC-1234 | 1 | {iso} |
+| OC-5678 | 2 | {iso} |
+
 ## Next Action
 {what the next debrief iteration should do}
 ```
@@ -136,12 +144,13 @@ Ticket researcher returned normalized ticket data and context graph.
 - **Phase Checklist:** Update after every subagent returns. This is the primary resume anchor.
 - **Current Focus:** Update whenever the agent switches tasks. Be specific.
 - **Last Completed Action:** Record what just finished and what it produced.
-- **Session History:** Append only. Every iteration gets a row. Archive old rows when the table grows large.
+- **Session History:** Append only. Every iteration gets a row. Archive old rows when the table exceeds 20 rows.
 - **Context Graph:** Add every source of evidence with relevance and contribution.
 - **Ambiguities:** Update status on each iteration. Do not delete rows.
 - **Codebase Explored:** Append only. Re-explore only if the ambiguity changed.
 - **Baseline Status:** Update after each baseline attempt.
 - **Ticket Context Cached:** Update when fresh tracker data is fetched.
+- **Visited Related Tickets:** Maintain a visited set to prevent circular references.
 - **Next Action:** Update before delegating the next task.
 
 ---
@@ -171,57 +180,73 @@ When exploring the codebase to resolve ambiguities, record findings in a dedicat
 
 ## Debrief confidence
 
-Rate overall confidence in the entire debrief after ambiguity resolution and challenging.
+Rate overall confidence in the entire debrief after ambiguity resolution and challenging. Use the v4 confidence calculation:
+
+1. Start with the average confidence of all resolved assumptions.
+2. Apply penalties:
+   - `-10%` for each unresolved ambiguity that affects acceptance criteria.
+   - `-5%` for each unresolved ambiguity that affects scope or interpretation.
+   - `-15%` if the ticket contradicts related work or the codebase.
+3. Floor at 0%, cap at 100%, round to the nearest 5%.
 
 | Level | Range | Meaning | Action |
 |-------|-------|---------|--------|
-| **Red** | 0-59% | Too many unresolved ambiguities or contradictions. | Stop. Present escalated items to user. |
+| **Red** | 0-59% | Too many unresolved ambiguities or contradictions. | Stop. Produce a blocker report. |
 | **Yellow** | 60-84% | Some assumptions made, documented and reasonable. | Proceed. Note assumptions and risks. |
 | **Green** | 85-100% | Clear understanding. Ambiguities resolved with confidence. | Proceed. |
 
 **Do not inflate confidence.** If you are between Yellow and Green, you are Yellow.
 
+### Confidence gap
+
+When confidence is below 100%, document the gap in the frontmatter and in the report body:
+
+```yaml
+confidence_gap:
+  - blocker: "Ticket does not specify expected behavior after refresh."
+    why_it_blocks_full_confidence: "Could affect acceptance criteria."
+    what_would_resolve_it: "PO confirmation or comment evidence."
+    investigation_done: "Searched comments and related tickets; none found."
+```
+
 ### Red confidence loop
 
-If confidence is Red:
+If confidence is below `confidence_threshold` (default 85%):
 
-1. Present escalated ambiguities to the user in natural language with your assumptions and what is needed.
-2. Wait for clarification.
-3. Update `## Ambiguities` in state.
-4. Re-resolve with user input.
-5. Re-assess confidence.
-6. Only proceed when confidence reaches Yellow or Green.
+1. Produce a blocker report at `{context_dir}/debrief/{key}-blockers.md`.
+2. Present escalated ambiguities to the user in natural language with your assumptions and what is needed.
+3. Wait for clarification.
+4. Update `## Ambiguities` in state and the assumptions in the report.
+5. Re-resolve with user input.
+6. Re-assess confidence.
+7. Only proceed when the user explicitly approves continuing despite low confidence or confidence reaches the threshold.
 
 ---
 
 ## Baseline handling
 
-Baseline verifies the current app state. See [BASELINE-INTEGRATION.md](BASELINE-INTEGRATION.md) for the full workflow.
+Baseline verifies current app state. It is a **soft default building block**: invoke it when the ticket involves verifiable state, but the user must approve proceeding without it. See [BASELINE-INTEGRATION.md](BASELINE-INTEGRATION.md).
 
 ### Success
 
-- Invoke the baseline skill workflow.
+- Delegate invocation to the `baseline-invoker` subagent.
 - Capture UI state and reproduce bugs if applicable.
 - Record findings in state and debrief document.
 
 ### Failure
 
-1. Stop. Do not proceed to document generation.
+1. Stop generating the debrief document until the user decides.
 2. Explain what went wrong.
 3. Present options:
    - **Retry** — try again after the user has fixed the environment.
    - **Fix config** — adjust the relevant configuration.
-   - **Proceed without baseline** — continue debriefing, note baseline unavailable. Requires user approval.
+   - **Proceed without baseline** — continue the debrief, note baseline unavailable. Requires explicit user approval.
    - **Abort** — stop the debrief and wait for direction.
 4. Wait for user response. Do not choose an option yourself.
 5. If user says proceed without:
    - Update state: `Baseline Status → Failed, User Override: Proceed without`.
    - Continue with debrief generation.
    - Note in document: *"Baseline unavailable — user opted to proceed without verification."*
-6. If user guides you:
-   - Attempt baseline again.
-   - If success → proceed normally.
-   - If still failing → return to step 2.
 
 ---
 
@@ -234,31 +259,79 @@ If the ticket has minimal description:
 3. Check related tickets aggressively.
 4. Lower confidence threshold — a sparse ticket with no code evidence is likely Yellow at best, possibly Red.
 5. Do not invent requirements. If you cannot infer intent, escalate.
+6. Produce a blocker report if confidence remains Red.
+
+---
+
+## Generic artifact discovery
+
+Discover related reports by schema and relationship, not by skill name.
+
+1. Run `related-context-scanner` to scan `{context_dir}/` for `.md` files matching the ticket or branch.
+2. Rank matches by: exact match, skill relevance, recency, user priority.
+3. Process the top 10 by default. If more are needed, continue down the ranked list or ask the user.
+4. Flag stale artifacts (older than `artifact_freshness_hours`) but still consume them with caveats.
+
+---
+
+## Duplicate and already-implemented detection
+
+Before deep investigation, check whether the ticket is already done or duplicated.
+
+1. Run `duplicate-detector` to search the tracker and git state.
+2. Possible statuses: `none`, `duplicate`, `already_implemented`, `partially_implemented`.
+3. Surface the result to the user and ask whether to continue, pivot, or stop.
+
+---
+
+## Task type classification
+
+Classify the ticket early to decide which phases apply.
+
+| Type | Enables |
+|---|---|
+| `code` | `code-explorer`; baseline may be relevant. |
+| `ui` | `code-explorer`; baseline is usually relevant. |
+| `docs` | Skip `code-explorer` unless user overrides; baseline rarely relevant. |
+| `process` | Skip `code-explorer` unless user overrides; baseline rarely relevant. |
+| `unknown` | Ask user or proceed with all phases cautiously. |
+
+Use `infer-ticket-type.py` and `detect-verifiable-state.py` to inform the decision.
 
 ---
 
 ## Output template
 
-Save to `.agents/context/debrief/{key}-{short-slug}.md`.
+Save to `{context_dir}/debrief/{key}-{short-slug}.md`.
 
 ```markdown
 ---
 skill: debrief
-version: 3
+version: 4.0
 ticket: OC-4644
 branch: SHB-362
 commit: abc1234
-generated_at: 2026-06-26T08:42:00Z
-updated_at: 2026-06-26T08:42:00Z
+generated_at: 2026-07-03T08:42:00Z
+updated_at: 2026-07-03T08:42:00Z
 summary: "Auth guard race condition during token refresh."
+task_type: code
 status: In Progress
 priority: High
 debrief_status: complete
 debrief_confidence: Green (90%)
+confidence_gap: []
 baseline_status: complete
 consumed_context:
-  - .agents/context/baseline/OC-4644-SHB-362.md
+  - {context_dir}/baseline/OC-4644-SHB-362.md
 artifacts_dir: OC-4644
+assumptions:
+  - assumption: "Token refresh happens in auth.guard.ts."
+    basis: "Code in auth.guard.ts contains refresh logic; no interceptor found."
+    confidence: 85
+    alignment: Reasonable inference
+    disproof_signals: "ADR mentioning interceptor, code in interceptor, tests referencing refresh.interceptor."
+    impact_if_wrong: "Fix would move to interceptor."
+    status: resolved
 ---
 
 # Debrief: OC-4644 — Auth guard race condition
@@ -313,9 +386,11 @@ artifacts_dir: OC-4644
 ### {what was unclear}
 - **Assumption:** {what you believe}
 - **Basis:** {ticket context + code evidence}
-- **Confidence:** High (85%)
-- **Alignment:** Fully aligned
-- **What would disprove it:** {specific evidence}
+- **Confidence:** 85
+- **Alignment:** Reasonable inference
+- **Disproof signals:** {specific evidence}
+- **Impact if wrong:** {how implementation would change}
+- **Status:** resolved
 
 <!-- STATUS: completed --> ## Assumptions Requiring Clarification
 > Only include ambiguities with Low confidence or direct contradictions.
@@ -331,8 +406,51 @@ artifacts_dir: OC-4644
 |--------|-------|
 | Complete | 3 screenshots captured, drag crash reproduced |
 
+<!-- STATUS: completed --> ## Confidence Gap
+> Only include when confidence is below 100%.
+
+- **Blocker:** {what is missing}
+- **Why it blocks full confidence:** {impact}
+- **What would resolve it:** {specific evidence or clarification}
+- **Investigation done:** {what was searched}
+
 <!-- STATUS: completed --> ## Debrief Confidence
 Green (90%) — root cause is clear, codebase evidence supports the assumption, baseline confirms reproduction.
+```
+
+---
+
+## Blocker report template
+
+Save to `{context_dir}/debrief/{key}-blockers.md` when confidence is below `confidence_threshold`.
+
+```markdown
+---
+skill: debrief
+type: blocker-report
+version: 4.0
+ticket: OC-4644
+branch: SHB-362
+commit: abc1234
+generated_at: 2026-07-03T08:42:00Z
+updated_at: 2026-07-03T08:42:00Z
+summary: "Ticket is too vague to proceed with confidence."
+---
+
+## What is known
+- ...
+
+## What was investigated
+- ...
+
+## What is missing
+- ...
+
+## Why the risk is too high
+- ...
+
+## What the user needs to clarify
+1. ...
 ```
 
 ---
@@ -341,8 +459,8 @@ Green (90%) — root cause is clear, codebase evidence supports the assumption, 
 
 Debrief reports and state files follow the version in `SKILL.md`. See [VERSIONING.md](VERSIONING.md) for migration guidance.
 
-- Current report frontmatter version: `3`.
-- Current state frontmatter version: `3`.
+- Current report frontmatter version: `4.0`.
+- Current state frontmatter version: `4.0`.
 - Older reports may be reused, but consumers should check freshness and version.
 
 ### Baseline report path
@@ -350,10 +468,10 @@ Debrief reports and state files follow the version in `SKILL.md`. See [VERSIONIN
 Baseline reports are read from:
 
 ```text
-.agents/context/baseline/{scope}-{branch}.md
+{context_dir}/baseline/{scope}-{branch}.md
 ```
 
-Not from the old `.agents/context/baseline/{key}/` directory.
+Not from the old `{context_dir}/baseline/{key}/` directory.
 
 ---
 
@@ -376,5 +494,6 @@ Stream feedback during the process and summarize at the end.
 4. **Escalated ambiguities** — numbered list with your assumptions and what is needed (only if any).
 5. **Baseline status** — complete or unavailable with reason.
 6. **Key evidence** — most important files or related tickets.
+7. **Suggested tools** — if a helpful tool exists but is not configured (generic categories only).
 
-If confidence is Red, present escalated items and wait for user response before proceeding.
+If confidence is Red, present the blocker report and wait for user response before proceeding.

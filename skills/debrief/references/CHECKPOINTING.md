@@ -12,27 +12,27 @@
 
 ## Report and state paths
 
-- Debrief document: `{project-root}/.agents/context/debrief/{key}-{slug}.md`
-- State file: `{project-root}/.agents/context/debrief/{key}/state.md`
+- Debrief document: `{context_dir}/debrief/{key}-{slug}.md`
+- Blocker report: `{context_dir}/debrief/{key}-blockers.md`
+- State file: `{context_dir}/debrief/{key}/state.md`
 
-`{key}` is the resolved ticket key. `{slug}` is a short, stable suffix derived from the ticket summary.
+`{context_dir}` is detected from the project marker directory (`.agents`, `.pi`, `agents`, or user-specified). `{key}` is the resolved ticket key. `{slug}` is a short, stable suffix derived from the ticket summary.
 
 ---
 
 ## Phases
 
-The debrief workflow is divided into eight phases:
+The debrief workflow is divided into seven phases:
 
 | Phase | Name | Output |
 |-------|------|--------|
-| 1 | Resolve ticket key and load context | Project key resolved, config loaded |
-| 2 | Fetch ticket + related data | Debrief sections: Metadata, Discussion Summary, Attachments, Related Tickets, Development Context |
-| 3 | Build context graph | State: Context Graph populated |
-| 4 | Identify ambiguities | State: Ambiguities list populated |
-| 5 | Resolve ambiguities via code exploration | Debrief section: Codebase Evidence; State: Ambiguities updated |
-| 6 | Challenge assumptions | Debrief section: Assumptions Resolved; State: Ambiguities updated |
-| 7 | Run baseline | Debrief section: Baseline Status; State: Baseline Status updated |
-| 8 | Synthesize final debrief | All sections marked complete, frontmatter updated |
+| 0 | Bootstrap | Project marker detected, config loaded, ticket key resolved |
+| 1 | Gather evidence | Context graph populated, duplicate status known, task type classified |
+| 2 | Build context graph | Ambiguities list populated, assumptions formed |
+| 3 | Resolve ambiguities | Codebase evidence, assumptions updated, confidence recalculated |
+| 4 | Baseline | Baseline status recorded |
+| 5 | Synthesize and validate | Final debrief report complete and consistent |
+| 6 | Present | Artifacts saved, user informed |
 
 Each phase is marked complete in the state file only after its output has been written to the debrief document.
 
@@ -45,20 +45,23 @@ At the start of Phase 2, create the debrief document with all sections marked pe
 ```markdown
 ---
 skill: debrief
-version: 3
+version: 4.0
 ticket: OC-4644
 branch: SHB-362
 commit: abc1234
-generated_at: 2026-06-26T08:00:00Z
-updated_at: 2026-06-26T08:00:00Z
+generated_at: 2026-07-03T08:00:00Z
+updated_at: 2026-07-03T08:00:00Z
 summary: "Auth guard race condition during token refresh."
+task_type: code
 status: In Progress
 priority: High
 debrief_status: in-progress
 debrief_confidence: Red (0%)
+confidence_gap: []
 baseline_status: pending
 consumed_context: []
 artifacts_dir: OC-4644
+assumptions: []
 ---
 
 # Debrief: OC-4644 — [title pending]
@@ -76,6 +79,7 @@ artifacts_dir: OC-4644
 <!-- STATUS: pending --> ## Assumptions Resolved
 <!-- STATUS: pending --> ## Assumptions Requiring Clarification
 <!-- STATUS: pending --> ## Baseline Status
+<!-- STATUS: pending --> ## Confidence Gap
 <!-- STATUS: pending --> ## Debrief Confidence
 ```
 
@@ -131,8 +135,8 @@ Ask the checkpoint manager to:
 
 After context compaction:
 
-1. Read `.agents/context/debrief/{key}/state.md`.
-2. Read `.agents/context/debrief/{key}-{slug}.md`.
+1. Read `{context_dir}/debrief/{key}/state.md`.
+2. Read `{context_dir}/debrief/{key}-{slug}.md`.
 3. Call `checkpoint-manager` for a status summary.
 4. Resume from the first unchecked phase in `## Phase Checklist`.
 5. Do not restart completed phases unless new evidence contradicts them.
@@ -154,7 +158,7 @@ If the agent finds itself doing work that does not serve the current `## Current
 
 ## State history pruning
 
-The `## Session History` table can grow large. When it exceeds 20 rows or the state file becomes unwieldy, archive the oldest rows to a separate history file (e.g., `.agents/context/debrief/{key}/state-history.md`) and keep only the most recent iterations in the active state file.
+The `## Session History` table can grow large. When it exceeds 20 rows or the state file becomes unwieldy, archive the oldest rows to a separate history file (e.g., `{context_dir}/debrief/{key}/state-history.md`) and keep only the most recent iterations in the active state file.
 
 ---
 

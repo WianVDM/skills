@@ -13,18 +13,31 @@
 ```yaml
 ---
 skill: debrief
-version: 3
+version: 4.0
 ticket: OC-4644
 branch: SHB-362
 commit: abc1234
-generated_at: 2026-06-26T08:42:00Z
-updated_at: 2026-06-26T08:42:00Z
+generated_at: 2026-07-03T08:42:00Z
+updated_at: 2026-07-03T08:42:00Z
 summary: "Auth guard race condition during token refresh."
+task_type: code
+status: In Progress
+priority: High
+debrief_status: complete
 debrief_confidence: Green (90%)
+confidence_gap: []
 baseline_status: complete
 consumed_context:
-  - .agents/context/baseline/OC-4644-SHB-362.md
+  - {context_dir}/baseline/OC-4644-SHB-362.md
 artifacts_dir: OC-4644
+assumptions:
+  - assumption: "Token refresh happens in auth.guard.ts."
+    basis: "Code in auth.guard.ts contains refresh logic; no interceptor found."
+    confidence: 85
+    alignment: Reasonable inference
+    disproof_signals: "ADR mentioning interceptor, code in interceptor, tests referencing refresh.interceptor."
+    impact_if_wrong: "Fix would move to interceptor."
+    status: resolved
 ---
 ```
 
@@ -53,14 +66,20 @@ artifacts_dir: OC-4644
 ## Example 4: config after first run
 
 ```yaml
-# .agents/config/debrief.yaml
+# {marker_dir}/config/debrief.yaml
 
 preferences:
-  baseline_mode: required
+  confidence_threshold: 85
+  baseline_mode: optional
   issue_tracker: jira
   project_key: OC
-  auto_resolve_ambiguities: true
+  max_parallel_subagents: 3
+  max_related_depth: 3
+  max_investigation_rounds: 5
   max_code_search_minutes: 5
+  artifact_freshness_hours: 24
+  auto_resolve_ambiguities: true
+  monorepo_workspace: auto
 
   trackers:
     jira:
@@ -98,4 +117,47 @@ notes:
 |-----------|--------|------------|------------|-------|-----------|
 | Which guard handles this? | resolved | High (85%) | auth.guard.ts | Ticket + code | 1 |
 | Refresh location | resolved | Medium (70%) | Stay in guard | Code pattern | 1 |
+```
+
+---
+
+## Example 6: blocker report
+
+Saved when confidence is below `confidence_threshold`.
+
+```yaml
+---
+skill: debrief
+type: blocker-report
+version: 4.0
+ticket: OC-4644
+branch: SHB-362
+commit: abc1234
+generated_at: 2026-07-03T08:42:00Z
+updated_at: 2026-07-03T08:42:00Z
+summary: "Ticket is too vague to proceed with confidence."
+---
+
+## What is known
+- The ticket title mentions "auth guard race condition" but the description is one sentence.
+- No acceptance criteria are provided.
+- No related tickets or recent comments clarify the expected behavior.
+
+## What was investigated
+- Searched `auth.guard.ts`, `auth.service.ts`, and related tests for refresh logic.
+- Checked for related tickets and ADRs mentioning "refresh" or "race condition".
+- Attempted to contact the issue tracker; ticket comments are empty.
+
+## What is missing
+- Expected behavior after token refresh completes.
+- Whether the guard should wait, retry, or redirect during refresh.
+- Acceptance criteria or a reproduction scenario.
+
+## Why the risk is too high
+Any implementation choice would be a guess that changes user-facing auth behavior. The cost of getting it wrong is high and the evidence is low.
+
+## What the user needs to clarify
+1. What should happen when a user navigates to a guarded route during token refresh?
+2. Should the guard block, redirect, or retry?
+3. Is there a reproduction scenario or design note available?
 ```
