@@ -1,0 +1,146 @@
+{
+  "version": "1",
+  "skill": "parse-skill-frontmatter",
+  "tests": [
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Extract the frontmatter from this SKILL.md.",
+      "expected": "parse-skill-frontmatter"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Read the skill name and version from this SKILL.md.",
+      "expected": "parse-skill-frontmatter"
+    },
+    {
+      "id": "trigger-should-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Parse the YAML header of this skill file.",
+      "expected": "parse-skill-frontmatter"
+    },
+    {
+      "id": "trigger-should-04",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Get the canonical frontmatter fields for this skill.",
+      "expected": "parse-skill-frontmatter"
+    },
+    {
+      "id": "trigger-should-05",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Pull out the description, version, and tags from this SKILL.md.",
+      "expected": "parse-skill-frontmatter"
+    },
+    {
+      "id": "trigger-should-06",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Show me the frontmatter metadata of this skill.",
+      "expected": "parse-skill-frontmatter"
+    },
+    {
+      "id": "trigger-should-07",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Extract the name and invocation type from this SKILL.md.",
+      "expected": "parse-skill-frontmatter"
+    },
+    {
+      "id": "trigger-should-08",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Parse the top YAML block of this skill file.",
+      "expected": "parse-skill-frontmatter"
+    },
+    {
+      "id": "trigger-should-09",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Read the frontmatter of this skill so I can use its metadata.",
+      "expected": "parse-skill-frontmatter"
+    },
+    {
+      "id": "trigger-should-10",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Return the frontmatter fields from this SKILL.md.",
+      "expected": "parse-skill-frontmatter"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Validate the frontmatter against the schema.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Audit the skill's frontmatter for quality.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-03",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Write the frontmatter for a new skill.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-04",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Generate evals for this skill.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-05",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Install this skill into the project.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-06",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Parse the entire SKILL.md markdown.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-07",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Extract the Python code from this skill.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-08",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "List all skill frontmatters in the project.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-09",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Detect the project context for this skill.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-10",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Search the registry for this skill's metadata.",
+      "expected": ""
+    }
+  ]
+}

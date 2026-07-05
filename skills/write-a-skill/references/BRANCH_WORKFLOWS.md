@@ -1,134 +1,153 @@
 # Branch workflows
 
-This reference holds the detailed step-by-step workflows for each `write-a-skill` branch. `SKILL.md` keeps only the branch summary and completion criterion; reach this file when the conductor needs the full phase list for a branch.
+This reference holds the detailed step-by-step workflows for each `write-a-skill` internal gate. `SKILL.md` keeps the top-level branch summary and completion criterion; reach this file when the conductor needs the full phase list for a gate.
 
-## New skill workflow
+Top-level branches:
 
-### 1. Clarify intent
+- **Create branch** — for producing a new skill or deciding what shape to build. Internal gates: `full`, `quick`, `decide`.
+- **Change branch** — for auditing or updating an existing skill. Internal gates: `review`, `update`.
 
-**Why this phase exists:** Designing the wrong skill is expensive. Clarifying intent first prevents building a solution for the wrong problem.
+## Conventions
+
+- Each phase ends with a **completion criterion**.
+- The conductor does not advance to the next phase until the criterion is met or the user explicitly overrides it.
+- Destructive actions (writing, overwriting, installing) always require explicit approval.
+
+## Create branch
+
+### Create branch — full gate
+
+This is the full design workflow for a new skill from scratch.
+
+#### 1. Clarify intent
+
+**Why:** designing the wrong skill is expensive. Clarifying intent first prevents building a solution for the wrong problem.
 
 Understand the problem, trigger, success criteria, and whether a skill is warranted. Use grill-me-style questions with proposed defaults.
 
-**Completion criterion:** the intent note contains the problem, trigger, success criteria, and a yes/no/maybe verdict on whether a skill is warranted.
+**Completion criterion:** the intent note contains the problem, trigger, success criteria, and the chosen gate `full`.
 
-### 2. Classify the skill
+#### 2. Explore alternatives
 
-**Why this phase exists:** The shape of the skill (type, invocation, portability, autonomy) determines every later decision.
+**Why:** a new skill should be the last resort, not the first.
 
-Determine the skill type, invocation mode, portability target, core objective, boundaries, and autonomy level.
-
-**Completion criterion:** the design doc records the skill type, invocation mode, portability target, core objective, in-scope items, out-of-scope items, and autonomy level.
-
-### 3. Explore alternatives
-
-**Why this phase exists:** A new skill should be the last resort, not the first. Existing skills, scripts, MCP servers, or prompt templates often solve the problem with less maintenance.
-
-Before committing, check whether an existing skill, tool, MCP server, extension, prompt template, or script already solves the problem.
+Run `list-available-skills` and `search-skills-registry` to find existing skills, scripts, MCP servers, or context files that might cover the problem.
 
 **Completion criterion:** the alternatives report lists existing options and gives a clear recommendation: build new skill, reuse/extend existing skill, or use an alternative.
 
-### 4. Design the skill
+#### 3. Decide shape
 
-**Why this phase exists:** A confirmed design is the contract that prevents scope creep, hidden assumptions, and bloated drafts.
+**Why:** the shape of the solution determines every later decision.
 
-Produce a structured design covering objective, boundaries, skill type, portability, config, context interface, delegation, scripts, state, security, and directory structure.
+Confirm with the user that a new skill is the right shape, not a script, MCP server, context file, or installed skill.
 
-**Completion criterion:** the design doc covers every section in the design template and contains no unresolved blockers.
+**Completion criterion:** the user confirms the chosen shape is a new skill.
 
-### 5. Curate scripts
+#### 4. Define identity
 
-**Why this phase exists:** Deterministic logic belongs in scripts, not in AI inference. This phase forces the design to distinguish judgment from repeatable computation.
+**Why:** a confirmed identity is the contract that prevents scope creep and naming drift.
 
-Identify where repeatable, deterministic logic should live in scripts rather than AI inference. Propose inputs, outputs, and failure behavior.
+Produce a frontmatter skeleton: name, description, version, invocation, author, tags.
 
-**Completion criterion:** a scripts plan exists that lists every proposed script, or explicitly states that no scripts are needed.
+**Completion criterion:** the design draft contains an identity section and the user has confirmed it.
 
-### 6. Assess global readiness
+#### 5. Define scope
 
-**Why this phase exists:** A project-specific skill is fine, but the design should know what it would cost to make it global, even if it never is.
+**Why:** clear boundaries prevent bloat and hidden assumptions.
 
-If the skill is project-specific, identify what blocks it from being global and what remediation would take.
+Write one core objective, explicit in-scope items, and explicit out-of-scope items.
 
-**Completion criterion:** the global readiness report lists project-specific assumptions, missing dependency declarations, and remediation steps with effort estimates.
+**Completion criterion:** the scope boundaries are explicit and do not contradict each other.
 
-### 7. Self-audit against fundamentals
+#### 6. Select patterns
 
-**Why this phase exists:** The conductor should catch principle violations before the user sees the design, not after.
+**Why:** applying the right patterns makes the skill portable, maintainable, and composable.
 
-Challenge the design for over-complication and principle violations before showing it to the user.
+Apply the fundamentals from [references/FUNDAMENTALS.md](references/FUNDAMENTALS.md) and select Layer 2 patterns using [references/PATTERN_HINTS.md](references/PATTERN_HINTS.md).
 
-**Completion criterion:** the design passes every check in [references/SELF_AUDIT_CHECKLIST.md](references/SELF_AUDIT_CHECKLIST.md), or the user explicitly overrides a failed check with a recorded reason.
+**Completion criterion:** the pattern list exists and the user has confirmed it.
 
-### 8. Confirm with the user
+#### 7. Draft artifacts
 
-**Why this phase exists:** Drafting files without approval is the most common destructive action in this skill. This gate makes it explicit.
+**Why:** only after the design is approved does the skill produce concrete files. Drafting is the execution of the design, not the design itself.
 
-Present the design, audit, and alternatives summary. Do not proceed to implementation until the user confirms or revises.
-
-**Completion criterion:** the user has explicitly approved the design or provided a revised version that passes the self-audit.
-
-### 9. Draft the skill
-
-**Why this phase exists:** Only after the design is approved does the skill produce concrete files. Drafting is the execution of the design, not the design itself.
-
-Once confirmed, write the skill files: `SKILL.md`, `README.md`, references, subagents, scripts, and assets/templates.
+Generate `SKILL.md`, optional `README.md`, references, subagents, scripts, and assets/templates.
 
 **Completion criterion:** all files in the approved design are created and the directory structure matches the design.
 
-### 10. Validate and close
+#### 8. Audit and validate
 
-**Why this phase exists:** The design may pass, but the drafted files can still drift. A final audit closes the loop.
+**Why:** the design may pass, but the drafted files can still drift.
 
-Run a final audit against the rubric, capture any remaining gaps, and ask the user whether to iterate or finish.
+Run `audit-skill` and `validate-skill-frontmatter`. Fix blockers before showing the result to the user.
 
-**Completion criterion:** a final review report exists and the user has chosen to iterate or close.
+**Completion criterion:** the audit report exists with no blocking failures, or the user has explicitly recorded a reason for overriding a blocker.
 
-## Quick skill workflow
+#### 9. Generate evals
 
-A compressed version of the New workflow for minimal skills.
+**Why:** model-invoked skills need trigger evals to be testable and reliable.
 
-1. **Clarify intent** (minimal) — capture problem, trigger, and success criteria.  
-   *Why:* Even a quick skill needs a clear problem before it can be designed.
-2. **Classify** — choose type, invocation, portability, and objective.  
-   *Why:* The shape of the skill still determines its files and dependencies.
-3. **Explore alternatives** (light) — check existing skills and simple alternatives.  
-   *Why:* A quick skill should not be created if a script or template suffices.
-4. **Design** (light) — produce a minimal design doc.  
-   *Why:* The design is the contract, even for a small skill.
-5. **Self-audit** — run the fundamentals checklist.  
-   *Why:* Small skills are still bound by the principles.
-6. **Confirm** — present the design and audit before drafting.  
-   *Why:* No drafting without explicit approval.
-7. **Draft** — write the skill files.  
-   *Why:* Execution of the approved design.
-8. **Validate** — final audit and close.  
-   *Why:* Close the loop and capture any gaps.
+Run `run-trigger-evals` for model-invoked skills. If the user declines, record the decision in the decision log.
 
-## Review workflow
+**Completion criterion:** `evals/evals.json` exists or the user has explicitly declined.
 
-1. **Read the skill** — load `SKILL.md`, `README.md`, references, subagents, scripts, and assets.  
-   *Why:* An audit is only as good as the files it reads.
-2. **Classify the skill** — determine its type, form, and portability target.  
-   *Why:* The audit rubric applies differently depending on the skill type.
-3. **Audit against the rubric** — evaluate against [references/AUDIT_RUBRIC.md](references/AUDIT_RUBRIC.md).  
-   *Why:* The rubric is the single canonical standard.
-4. **Produce a report** — ratings per category, positive findings, issues, and optional refactor/upgrade path.  
-   *Why:* The user needs a structured, actionable report.
+#### 10. Confirm and write
 
-**Completion criterion:** the audit report is complete, structured, and references the rubric criteria by id.
+**Why:** drafting files without approval is the most common destructive action in this skill.
 
-## Upgrade workflow
+Present the design, audit, and alternatives summary. Write files only after explicit approval.
 
-1. **Read the skill** — load existing files.  
-   *Why:* The upgrade plan must be grounded in the actual files.
-2. **Identify project-specific assumptions** — hardcoded paths, tool names, APIs, conventions, implicit dependencies.  
-   *Why:* These are the blockers to global portability.
-3. **Identify missing dependency declarations** — required tools, skills, env vars, etc.  
-   *Why:* Global skills must declare everything they need.
-4. **Propose remediation** — concrete steps with effort estimates to make the skill global-ready.  
-   *Why:* The user decides what cost is worth paying.
-5. **Confirm before applying** — present the plan; apply changes only after explicit approval.  
-   *Why:* Upgrading modifies existing files, so it is a destructive action.
+**Completion criterion:** the user has explicitly approved the design and files are written.
 
-**Completion criterion:** a remediation plan exists and the user has approved or declined each proposed change.
+### Create branch — quick gate
+
+A compressed version of the full gate for minimal skills.
+
+1. **Clarify intent** (minimal) — capture problem, trigger, and success criteria.
+2. **Explore alternatives** (light) — check existing skills and simple alternatives.
+3. **Define identity** — name, description, invocation, scope.
+4. **Define scope** — one objective, in-scope, out-of-scope.
+5. **Select patterns** — apply fundamentals.
+6. **Draft** — write the skill files.
+7. **Audit** — run `audit-skill` and `validate-skill-frontmatter`.
+8. **Confirm and write** — get approval before writing.
+
+### Create branch — decide gate
+
+For the full decide workflow, invoke the `decide-skill-shape` skill. It will:
+
+1. Capture the problem.
+2. Explore existing solutions using `list-available-skills` and `search-skills-registry`.
+3. Ask classification questions.
+4. Apply the decision rules from `decide-skill-shape/references/DECISION_RULES.md`.
+5. Present a recommendation with alternatives and trade-offs.
+6. Write a decision report to `{context}/decide-skill-shape/{key}-decision-report.md`.
+
+`write-a-skill` consumes the decision report and offers the user the next step. The `decide` gate does not write skill files.
+
+## Change branch
+
+For both the `review` and `update` gates, invoke the `review-skill` conductor. It will:
+
+1. Read the skill files.
+2. Run `audit-skill` and `validate-skill-frontmatter`.
+3. Produce a structured audit report.
+4. For the `update` gate, produce a remediation plan, confirm each change, apply approved changes, and run a final audit.
+
+`write-a-skill` delegates the `change` branch to `review-skill` and consumes the resulting audit report or remediation plan.
+
+### Change branch — review gate (legacy inline detail)
+
+1. **Read the skill** — load all files.
+2. **Run `audit-skill`** — evaluate against the rubric.
+3. **Run `validate-skill-frontmatter`** — check schema compliance.
+4. **Produce a report** — ratings per category, findings, and optional update path.
+
+### Change branch — update gate (legacy inline detail)
+
+1. **Read the skill** — load `SKILL.md`, `README.md`, references, subagents, scripts, and assets.
+2. **Run `audit-skill`** — evaluate against the rubric.
+3. **Run `validate-skill-frontmatter`** — check schema compliance.
+4. **Produce remediation plan** — list concrete changes with effort estimates.
+5. **Confirm before applying** — present the plan; apply changes only after explicit approval for each change.
+6. **Run final audit** — close the loop.

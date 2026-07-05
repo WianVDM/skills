@@ -1,6 +1,6 @@
 # Example Skills
 
-These examples show how the framework applies to guideline, workflow, and conductor skills.
+These examples show how the framework applies to guideline, workflow, and conductor skills. All names, paths, and tools are fictional.
 
 ---
 
@@ -56,7 +56,7 @@ description: Enforce TypeScript coding conventions for this project. Use when wr
 
 ---
 
-## Example 2: workflow skill — `debrief`
+## Example 2: workflow skill — `ticket-brief`
 
 ### Purpose
 
@@ -65,7 +65,7 @@ Investigate a ticket and produce a structured report that other skills can consu
 ### Structure
 
 ```
-debrief/
+ticket-brief/
 ├── SKILL.md
 ├── README.md
 ├── references/
@@ -78,18 +78,18 @@ debrief/
 ### Config example
 
 ```yaml
-# {config}/debrief.yaml
+# {config}/ticket-brief.yaml
 
 preferences:
-  issue_tracker: jira
+  issue_tracker: generic
   project_key: PROJ
-  baseline_tool: playwright
+  baseline_tool: generic-ui-test
   output_format: md
 
 notes:
-  - text: "Jira Cloud API requires email + token; use JIRA_EMAIL and JIRA_TOKEN env vars."
+  - text: "Generic Cloud API requires email + token; use ISSUE_EMAIL and ISSUE_TOKEN env vars."
     category: gotcha
-  - text: "User prefers debriefs focused on files to change, not full system context."
+  - text: "User prefers briefs focused on files to change, not full system context."
     category: preference
 ```
 
@@ -97,16 +97,16 @@ notes:
 
 ```markdown
 ---
-skill: debrief
+skill: ticket-brief
 version: 1
-ticket: OC-4644
+ticket: PROJ-1234
 generated_at: 2026-06-26T08:42:00Z
 summary: "Auth guard race condition when token refresh overlaps with route navigation"
 artifacts:
-  - {context}/baseline/OC-4644-initial.md
+  - {context}/baseline/PROJ-1234-initial.md
 ---
 
-# Debrief: OC-4644
+# Ticket brief: PROJ-1234
 
 ## Understanding
 ...
@@ -126,11 +126,11 @@ artifacts:
 
 - Stateful: produces a report that can be resumed or consumed by other skills.
 - Configurable: adapts to the project's issue tracker and baseline tools.
-- Cross-skill friendly: `orchestrate` and `pr-report` can read the report.
+- Cross-skill friendly: `ship-feature` and `release-report` can read the report.
 
 ---
 
-## Example 3: conductor skill — `orchestrate`
+## Example 3: conductor skill — `ship-feature`
 
 ### Purpose
 
@@ -139,7 +139,7 @@ Coordinate multiple skills to move from ticket understanding to implementation.
 ### Structure
 
 ```
-orchestrate/
+ship-feature/
 ├── SKILL.md
 ├── README.md
 ├── references/
@@ -157,13 +157,13 @@ orchestrate/
 
 ```markdown
 ---
-skill: orchestrate
+skill: ship-feature
 version: 1
-ticket: OC-4644
+ticket: PROJ-1234
 updated_at: 2026-06-26T09:00:00Z
 ---
 
-# Orchestrate State: OC-4644
+# Ship-feature state: PROJ-1234
 
 ## Understanding
 Auth guard race condition during token refresh.
@@ -177,7 +177,7 @@ Yellow (65%) — root cause is clear, but fix approach is not yet validated.
 ## Skill log
 | # | Skill | Why | Finding | Confidence After |
 |---|-------|-----|---------|------------------|
-| 1 | debrief | initial context | race condition in auth guard | Yellow |
+| 1 | ticket-brief | initial context | race condition in auth guard | Yellow |
 | 2 | diagnose | confirm root cause | guard does not wait for refresh | Yellow |
 
 ## Next action
@@ -198,7 +198,7 @@ Run `prototype` to compare guard-wait vs interceptor approaches.
 
 ```yaml
 preferences:
-  sonarqube:
+  quality_gate:
     method: mcp
 
 notes: []
@@ -210,13 +210,13 @@ The agent discovers the MCP server cannot export issues. It asks the user, then 
 
 ```yaml
 preferences:
-  sonarqube:
+  quality_gate:
     method: api
-    url: https://sonar.example.com
-    token_env: SONAR_TOKEN
+    url: https://quality.example.com
+    token_env: QUALITY_TOKEN
 
 notes:
-  - text: "MCP server lacks issue-export scope. Use web API with SONAR_TOKEN instead."
+  - text: "MCP server lacks issue-export scope. Use web API with QUALITY_TOKEN instead."
     category: workaround
     added: "2026-06-26"
 ```

@@ -1,132 +1,282 @@
-# State and artifact schemas
+# State and context report schemas
 
-This skill keeps working state in the detected context directory. All paths below are relative to that directory. Every artifact is append-only unless the user explicitly asks for a rewrite.
+This reference defines the context-report artifacts used by `write-a-skill` to maintain working state. For the shared context-report conventions (directory layout, envelope, freshness rules, and missing-report handling), see the `context-reports` skill.
 
-## Shared frontmatter
+All artifacts are written as markdown so the session can survive compaction and be resumed.
 
-Every state artifact uses this frontmatter:
+## Paths
+
+All artifacts live under the detected context directory:
+
+- Design artifacts: `{context}/skill-design/{skill-name}-*.md`
+- Review artifacts: `{context}/skill-review/{skill-name}-*.md`
+
+## Common report envelope
+
+Every report should include a header and a small set of required sections.
+
+### Report header
 
 ```yaml
 ---
-skill: skill-name          # name of the skill being designed/reviewed
-version: "1.0"             # proposed version of the target skill
-timestamp: ISO-8601        # when the artifact was last updated
-status: draft | confirmed | approved | rejected | complete
+report: report-name                    # e.g., self-audit, audit, global-readiness
+skill: skill-name                       # the skill being reviewed/designed
+version: "1.0"                          # version of the skill being reviewed/designed
+timestamp: ISO-8601                     # when the report was generated
+status: draft | final | stale | override
 ---
 ```
 
+### Required sections
+
+Every report should contain:
+
+1. **Summary.** One-sentence verdict or recommendation.
+2. **Findings.** Structured observations, ratings, or check results.
+3. **Decisions made.** Any decisions captured during the work.
+4. **Open questions.** Questions still pending.
+5. **Blockers.** Issues that prevent progress.
+
+Specific report types may add additional sections below these.
+
+## Report types
+
+| Report | Filename | Purpose |
+|---|---|---|
+| Intent note | `{skill-name}-intent.md` | Captured user intent, constraints, and chosen branch. |
+| Alternatives report | `{skill-name}-alternatives.md` | Existing skills and third-party options found. |
+| Design draft | `{skill-name}-design.md` | Single source of truth for the skill design before drafting files. |
+| Self-audit report | `{skill-name}-self-audit.md` | Pre-draft fundamentals check. |
+| Audit report | `{skill-name}-audit.md` | Review of an existing or drafted skill. |
+| Decision log | `{skill-name}-decisions.md` | Append-only record of decisions and rationale. |
+| Decision report | `{skill-name}-decision-report.md` | Output of the `decide` branch when the right shape is not a new skill. |
+
 ## Intent note
 
-**Path:** `{context}/skill-design/{skill-name}-intent.md`
+**Location:** `{context}/skill-design/{skill-name}-intent.md`
 
-**Body:**
+**Purpose:** Capture the user’s raw request, the chosen branch, constraints, and any assumptions the conductor makes before designing.
 
-- **Problem:** what the user is trying to solve.
-- **Trigger:** when the skill should be used.
-- **Success criteria:** how to know the skill is working.
-- **Skill warranted:** `yes` / `no` / `maybe`.
-- **Alternatives to consider:** existing skills, tools, scripts, MCP servers, prompt templates.
-- **Open questions:** questions the conductor still needs answered.
-- **Blockers:** anything that prevents progress.
+```markdown
+# Intent: {skill-name}
 
-## Design draft
+## Branch
+{new | quick | update | review | decide}
 
-**Path:** `{context}/skill-design/{skill-name}-design.md`
+## User request
+Verbatim or faithful summary of what the user asked for.
 
-**Body sections:**
+## Objective
+One sentence: this skill makes the agent more predictable at ______ by enforcing ______.
 
-1. **Objective and boundaries.** One core objective, in-scope items, out-of-scope items.
-2. **Skill type and portability.** Type, invocation mode, scope, autonomy level.
-3. **Config needs.** Keys, defaults, bootstrap routine; or explicit "stateless".
-4. **Context interface.** Reports produced, reports consumed, schemas.
-5. **Delegation strategy.** Subagents, other skills, or tools used.
-6. **Script inventory.** Deterministic checks or detections; or explicit "none".
-7. **State lifecycle.** Where state lives, how it is resumed, how freshness is handled; or explicit "stateless".
-8. **Security considerations.** Required capabilities, destructive actions, read-only preference, untrusted-project safety.
-9. **Proposed directory structure.**
+## Constraints
+- Constraint 1.
+- Constraint 2.
+
+## Assumptions
+- Assumption 1.
+
+## Open questions
+- Question 1?
+```
 
 ## Alternatives report
 
-**Path:** `{context}/skill-design/{skill-name}-alternatives.md`
+**Location:** `{context}/skill-design/{skill-name}-alternatives.md`
 
-**Body:**
+**Purpose:** Record existing skills and third-party options found before creating a new skill.
 
-- Existing skills that overlap.
-- Third-party tools, MCP servers, or extensions that could help.
-- Scripts or prompt templates that could replace the skill.
-- **Recommendation:** `build new skill`, `reuse/extend existing skill`, or `use alternative`.
-- Reasoning.
+```markdown
+# Alternatives: {skill-name}
 
-## Scripts plan
+## Local skills
+| Name | Path | Invocation | Relevance |
+|---|---|---|---|
+| ... | ... | ... | ... |
 
-**Path:** `{context}/skill-design/{skill-name}-scripts.md`
+## Registry results
+| Source | Name | Description | Trust | Install command |
+|---|---|---|---|---|
+| ... | ... | ... | ... | ... |
 
-**Body:** for each proposed script:
+## Recommendation
+{create new | reuse local | install from registry | use script/MCP/context file instead}
 
-- **Name.**
-- **Purpose.**
-- **Inputs.**
-- **Outputs.**
-- **Safety considerations.**
-- **Failure behavior.**
-- **Reusable across skills?** yes/no.
+## Rationale
+Why this recommendation was made.
+```
 
-If no scripts are needed, the body contains a single section: **No scripts required** with the reason.
+## Design draft
 
-## Global readiness report
+**Location:** `{context}/skill-design/{skill-name}-design.md`
 
-**Path:** `{context}/skill-review/{skill-name}-global-readiness.md`
+**Purpose:** The single source of truth for the skill design before drafting files.
 
-**Body:**
+```markdown
+# Design: {skill-name}
 
-- **Project-specific assumptions:** paths, tool names, APIs, conventions.
-- **Hardcoded tools or paths:**
-- **Missing dependency declarations:**
-- **Non-portable capabilities:**
-- **Remediation steps:** each with effort estimate.
-- **Recommendation:** ready / ready with changes / not ready for global use.
+## Identity
+- name: {skill-name}
+- description: {one sentence, front-loaded leading word, ≤ 1024 chars}
+- version: {4.0.0 or unset if personal}
+- invocation: {model-invoked | user-invoked}
+- metadata:
+  - author: {name}
+  - tags: [tag1, tag2]
 
-## Self-audit
+## Type
+- primary: {building block | conductor | wrapper | multi-layer}
+- secondary roles: {none or list}
 
-**Path:** `{context}/skill-review/{skill-name}-self-audit.md`
+## Scope
+- In scope:
+  - ...
+- Out of scope:
+  - ...
 
-**Body:** result of the checklist in [SELF_AUDIT_CHECKLIST.md](SELF_AUDIT_CHECKLIST.md). See that file for the required structure.
+## Branches
+| Branch | Trigger | Outcome |
+|---|---|---|
+| ... | ... | ... |
 
-## Review report (audit)
+## Patterns
+- Fundamentals: all apply.
+- Layer 2 patterns:
+  - {pattern}: {why it applies}
 
-**Path:** `{context}/skill-review/{skill-name}-audit.md`
+## Dependencies
+- skills: [...]
+- tools: [...]
+- binaries: [...]
+- mcp_servers: [...]
+- environment_variables: [...]
 
-**Body:**
+## Artifacts to create
+- SKILL.md
+- README.md (if non-trivial)
+- references/... (if needed)
+- subagents/... (if needed)
+- scripts/... (if needed)
+- assets/... (if needed)
+- evals/evals.json (if model-invoked)
 
-- **Overall verdict:** summary and whether the skill is ready.
-- **Per-criterion ratings:** from the audit rubric.
-- **Positive findings:** what the skill does well.
-- **Issues:** red/yellow findings with severity, recommendation, and blocker status.
-- **Optional refactor/upgrade path:** if applicable.
+## Evaluation plan
+- Trigger evals: yes/no
+- Behavioral evals: yes/no
+- Composition tests: yes/no
+- Pressure tests: yes/no
+
+## Open questions
+- ...
+```
+
+## Self-audit report
+
+**Location:** `{context}/skill-review/{skill-name}-self-audit.md`
+
+**Purpose:** The output of `audit-skill` after the draft is produced.
+
+```markdown
+# Self-audit: {skill-name}
+
+## Summary
+- Blockers: N
+- Warnings: N
+- Suggestions: N
+- Overall: PASS / FAIL
+
+## Findings
+| ID | Category | Severity | Check | Result | Recommendation |
+|---|---|---|---|---|---|
+| ... | ... | ... | ... | ... | ... |
+
+## Remediation plan
+- {finding ID}: {action to take}
+```
+
+## Audit report
+
+**Location:** `{context}/skill-review/{skill-name}-audit.md`
+
+**Purpose:** Review of an existing or drafted skill, produced by the `review` or `update` branch.
+
+```markdown
+# Audit: {skill-name}
+
+## Summary
+- Blockers: N
+- Warnings: N
+- Suggestions: N
+- Overall: PASS / FAIL
+
+## Findings
+| ID | Category | Severity | Check | Result | Recommendation |
+|---|---|---|---|---|---|
+| ... | ... | ... | ... | ... | ... |
+
+## Remediation plan
+- {finding ID}: {action to take}
+```
 
 ## Decision log
 
-**Path:** `{context}/skill-design/{skill-name}-decisions.md`
+**Location:** `{context}/skill-design/{skill-name}-decisions.md`
 
-**Body:** append-only entries of the form:
+**Purpose:** Append-only record of decisions made during the design session.
 
 ```markdown
-- **YYYY-MM-DD HH:MM** — Decision: ... | Rationale: ... | Blocked: yes/no
+# Decision log: {skill-name}
+
+## {YYYY-MM-DD HH:MM}
+- **Decision:** ...
+- **Rationale:** ...
+- **Alternatives considered:** ...
+- **Decided by:** user | conductor
 ```
 
-## Resumption rules
+## Decision report
 
-When resuming, read the latest files in this order:
+**Location:** `{context}/skill-design/{skill-name}-decision-report.md`
 
-1. Decision log.
-2. Intent note.
-3. Design draft or most recent audit report.
-4. Most recent self-audit or global readiness report.
+**Purpose:** Output of the `decide` branch when the right shape is not a new skill.
 
-Summarize completed and pending work, current focus, and the next recommended action before continuing.
+```markdown
+# Decision report: {topic}
 
-## Freshness and overwrite rules
+## Problem summary
+...
 
-- Append to decision logs; never overwrite.
-- For other artifacts, overwrite only after explicit user approval.
-- If the underlying skill files have changed since a report was generated, mark the report as stale and ask whether to regenerate.
+## Recommendation
+{skill | script | MCP server | context file | mode | reuse existing}
+
+## Rationale
+...
+
+## Alternatives considered
+- ...
+
+## Suggested next action
+- ...
+```
+
+## Freshness rules
+
+See the `context-reports` skill for the shared freshness and staleness conventions. In addition, `write-a-skill` observes these rules:
+
+- A report is **fresh** if it exists and no underlying source files have changed since its timestamp.
+- A report is **stale** if the source files changed or the skill version changed after the report was generated.
+- A **stale** report should be regenerated unless the user explicitly accepts it.
+- Append decisions rather than overwriting.
+- Overwrite design drafts and audit reports only after the user approves the next version.
+- Never overwrite an existing file without asking.
+
+## Missing report handling
+
+See the `context-reports` skill for the shared missing-report handling conventions. In addition, `write-a-skill` follows this process:
+
+If a workflow step requires a report that does not exist:
+
+1. Check whether the report can be regenerated automatically.
+2. If yes, regenerate it and note the regeneration in the decision log.
+3. If no, ask the user whether to proceed, abort, or provide the missing report.
+4. Never fabricate or silently ignore a missing required report.

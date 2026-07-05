@@ -1,43 +1,41 @@
 ---
-name: skill-name
-description: Leading-word summary of what this skill does and when to trigger it. Include one trigger per branch.
-license: Proprietary
+name: {name}
+description: {description}
+version: {version}
+invocation: {model-invoked | user-invoked}
 metadata:
-  author: your-name
-  version: "1.0"
-  scope: global | project-specific
-invocation: model-invoked | user-invoked
-disable-model-invocation: true  # only when user-invoked
+  author: {author}
+  tags: [{tags}]
 ---
 
-# skill-name
+# {name}
 
 ## Purpose
 
-State the single problem this skill owns and the specific outcome it produces.
+{One sentence objective.}
 
-## When to use
+## In scope
 
-- A user asks for ...
-- Another skill needs ...
-- The user mentions trigger keywords: ...
+- ...
+- ...
 
 ## Out of scope
 
-- This skill does not ...
-- It does not ...
+- {first out-of-scope category}
+- {second out-of-scope category}
+- {guardrail: what the skill must not do}
 
-## Core workflow
+## Steps / Guidelines
 
-1. **First step.** Describe the first action and its completion criterion.
-2. **Next step.** Describe the next action and its completion criterion.
-3. **Output.** Describe how the skill produces or updates its output.
+1. ...
+   - **Completion criterion:** ...
+2. ...
+   - **Completion criterion:** ...
 
-For each step, include a **Completion criterion:** line that defines a checkable end state. If the skill has multiple branches with long workflows, disclose the detailed workflows in `references/BRANCH_WORKFLOWS.md` and keep only the branch summary and completion criterion here.
+## Dependencies
+
+- ...
 
 ## References
 
-- [Config pattern](references/CONFIG_PATTERN.md)
-- [Context reports](references/CONTEXT_REPORTS.md)
-- [Worker contract](references/WORKER_CONTRACT.md)
-- [Branch workflows](references/BRANCH_WORKFLOWS.md) — if applicable
+- ...

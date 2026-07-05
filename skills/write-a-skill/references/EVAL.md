@@ -1,14 +1,18 @@
 # Evaluation and testing
 
-This document defines how to test `write-a-skill` to ensure it behaves correctly across its four branches and does not drift from the fundamentals.
+For the canonical trigger-eval methodology and the `evals/evals.json` schema, see:
+
+- `docs/skill-standards/TRIGGER_EVALS.md`
+- `docs/skill-standards/EVALUATION.md`
+- `eval-format` skill (`skills/eval-format/SKILL.md`)
+
+This file keeps only the `write-a-skill`-specific test cases.
 
 ## Trigger evals
 
-Even though `write-a-skill` is user-invoked, the description must make it obvious to a human when to reach for the skill and must not be confused with a model-facing trigger list. Test the description with realistic prompts.
+`write-a-skill` is **user-invoked**, so the evals below test whether a human reader would correctly reach for the skill. They are not model-routing tests.
 
-### 10 should-trigger queries
-
-These prompts should lead a human to invoke `write-a-skill`:
+### Should-trigger queries
 
 1. "I want to create a skill that helps me write ADRs."
 2. "Can you help me design a new agent skill for code reviews?"
@@ -21,9 +25,7 @@ These prompts should lead a human to invoke `write-a-skill`:
 9. "Give me a skill that drafts release notes from commit messages."
 10. "Help me decide whether this problem needs a skill or a script."
 
-### 10 should-not-trigger queries
-
-These prompts share keywords but should *not* lead a human to invoke `write-a-skill`:
+### Should-not-trigger queries
 
 1. "Write a Python script that checks my PRs." — this is a script, not a skill design request.
 2. "Change the system prompt for my agent." — this is a prompt change, not a skill.
@@ -36,29 +38,27 @@ These prompts share keywords but should *not* lead a human to invoke `write-a-sk
 9. "Update the skill-standards documentation." — this is documentation, not skill design.
 10. "Install a new npm package." — this is dependency management, not a skill.
 
-### Original branch trigger evals
+### Branch classification evals
 
-These verify that the conductor classifies intent into the correct branch:
+These verify that the conductor classifies intent into the correct branch and gate:
 
-- **New branch:** *"I want to create a skill that helps me write ADRs."* → expected branch New.
-- **Quick branch:** *"Give me a minimal skill for daily standup notes."* → expected branch Quick.
-- **Review branch:** *"Can you review my existing skill `triage`?"* → expected branch Review.
-- **Upgrade branch:** *"Make my project-specific skill `triage` global-ready."* → expected branch Upgrade.
+- **Create branch, full gate:** *"I want to create a skill that helps me write ADRs."* → expected branch `create`, gate `full`.
+- **Create branch, quick gate:** *"Give me a minimal skill for daily standup notes."* → expected branch `create`, gate `quick`.
+- **Change branch, review gate:** *"Can you review my existing skill `triage`?"* → expected branch `change`, gate `review`.
+- **Change branch, update gate:** *"Make my project-specific skill `triage` global-ready."* → expected branch `change`, gate `update`.
 
 ## Behavioral evals
 
-Behavioral evals verify that the skill follows its own rules.
-
-1. **No drafting before confirmation.** Start the New branch and verify that the conductor does not write files until the user explicitly confirms the design.
+1. **No drafting before confirmation.** Start the Create branch full gate and verify that the conductor does not write files until the user explicitly confirms the design.
 2. **Self-audit blocks violations.** Present a design with two core objectives and verify that the self-audit fails and drafting is blocked.
 3. **Path detection is used.** Run the skill in a project without `.agents/` and verify that it asks the user for the correct layout.
 4. **Workers do not ask users.** Inspect subagent prompts and outputs to ensure all user questions flow through the conductor.
-5. **Completion criteria exist.** Verify that every branch in `SKILL.md` ends with a completion criterion.
+5. **Completion criteria exist.** Verify that every branch and gate in `SKILL.md` ends with a completion criterion.
 6. **No `.agents/` hardcoding.** Search the skill files for `.agents/` and confirm that only detection rules and historical references contain it.
-7. **Review is read-only.** Run the Review branch and confirm that no files are modified unless the user explicitly asks for changes.
-8. **Upgrade confirms changes.** Run the Upgrade branch and confirm that every proposed change is approved before application.
+7. **Review is read-only.** Run the Change branch review gate and confirm that no files are modified unless the user explicitly asks for changes.
+8. **Update confirms changes.** Run the Change branch update gate and confirm that every proposed change is approved before application.
 9. **Branch workflow disclosure.** Verify that `SKILL.md` points to `references/BRANCH_WORKFLOWS.md` for detailed phase lists and stays under 300 lines.
-10. **Invocation declaration.** Verify that `SKILL.md` frontmatter contains both `invocation: user-invoked` and `disable-model-invocation: true`.
+10. **Invocation declaration.** Verify that `SKILL.md` frontmatter contains `invocation: user-invoked`.
 
 ## Regression checklist
 
@@ -68,10 +68,10 @@ After any change to this skill, run:
 - [ ] All 10 should-not-trigger queries do not lead to invoking `write-a-skill`.
 - [ ] All four branch classification evals.
 - [ ] All 10 behavioral evals.
-- [ ] A self-review of `write-a-skill` using its own Review branch.
-- [ ] A self-upgrade check of `write-a-skill` using its own Upgrade branch.
+- [ ] A self-review of `write-a-skill` using its own Change branch review gate.
+- [ ] A self-update check of `write-a-skill` using its own Change branch update gate.
 - [ ] Verify all reference links in `SKILL.md` and `README.md` resolve.
-- [ ] Verify the detection script returns a valid result for the current project.
+- [ ] Verify `detect-project-context` returns a valid result for the current project.
 
 ## Eval artifacts
 
