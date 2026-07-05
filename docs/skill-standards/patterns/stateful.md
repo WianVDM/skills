@@ -1,4 +1,4 @@
-# 07 — State
+# Stateful
 
 Skills can be stateless or stateful. The choice depends on whether the skill needs memory across invocations, context compactions, or long-running processes.
 
@@ -154,3 +154,13 @@ On re-run, a stateful skill must:
 - Surface to the user when restarting would overwrite prior decisions.
 
 Never silently overwrite existing state without asking.
+
+---
+
+## Research basis
+
+- The distinction between **stateless** and **stateful** skills is our own, but it is supported by the research on context compaction, multi-session work, and the need to recover state after context loss.
+- The `.agents/context/{skill-name}/{key}/` layout is our own convention, aligned with the research emphasis on well-known locations for context and memory.
+- The state lifecycle (skeleton → draft → refined → checkpoint → archive) and the use of status markers are our own practices.
+- The **resumption after compaction** routine is our own, informed by the research finding that agents must not guess where they left off after context compaction.
+- The rule to **never silently overwrite state** is our own safety practice, aligned with the security fundamentals.

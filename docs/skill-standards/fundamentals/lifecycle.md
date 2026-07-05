@@ -1,4 +1,4 @@
-# 14 — Skill lifecycle
+# Skill lifecycle
 
 A skill is a living document. It moves through distinct phases from initial idea to retirement. Treat each phase as intentional, not accidental.
 
@@ -12,7 +12,7 @@ Before writing anything, confirm that a skill is the right solution.
 - Does the agent vary without guidance?
 - Would a script, MCP server, prompt template, or documentation change solve it instead?
 
-See [06-when-to-create-a-skill.md](./06-when-to-create-a-skill.md).
+See [when-to-create-a-skill.md](./when-to-create-a-skill.md).
 
 ---
 
@@ -20,9 +20,9 @@ See [06-when-to-create-a-skill.md](./06-when-to-create-a-skill.md).
 
 Choose the skill type and form before writing files.
 
-- **Type**: standalone, building-block, conductor, or hybrid. See [02-skill-types.md](./02-skill-types.md).
-- **Form**: instruction-heavy, guideline-heavy, or hybrid. See [03-form-and-style.md](./03-form-and-style.md).
-- **Invocation**: model-invoked or user-invoked. See [04-structure.md](./04-structure.md).
+- **Type**: building block, conductor, wrapper, or multi-layer. See [types.md](./types.md).
+- **Form**: instruction-heavy, guideline-heavy, or hybrid. See [form-and-style.md](./form-and-style.md).
+- **Invocation**: model-invoked or user-invoked. See [structure.md](./structure.md).
 - **Scope**: what is in and what is out.
 - **Dependencies**: other skills, tools, APIs, environment variables.
 
@@ -44,7 +44,7 @@ Write the minimal `SKILL.md` plus only the supporting files that are needed.
 - Scripts for deterministic logic.
 - Subagents only if delegation is clearly needed.
 
-Keep `SKILL.md` under 500 lines. Under 300 is better. See [04-structure.md](./04-structure.md).
+Keep `SKILL.md` under 500 lines. Under 300 is better. See [structure.md](./structure.md).
 
 ---
 
@@ -58,7 +58,7 @@ Check the draft against structure and style standards before testing behavior.
 - Are dependencies declared?
 - Is the language harness-agnostic and project-agnostic where required?
 
-See [13-evaluation.md](./13-evaluation.md) for checklists.
+See [evaluation.md](./evaluation.md) for checklists.
 
 ---
 
@@ -70,7 +70,7 @@ Run the skill against representative prompts.
 - **Behavioral evals**: does the skill improve the agent's output compared to no skill?
 - **Edge cases**: missing config, missing context report, ambiguous input, user rejection.
 
-See [13-evaluation.md](./13-evaluation.md) for the eval-driven development loop.
+See [evaluation.md](./evaluation.md) for the eval-driven development loop.
 
 ---
 
@@ -93,7 +93,7 @@ Once the skill is stable, publish or install it.
 - Bump the version if the schema, config, or behavior changed.
 - Document breaking changes.
 - Add or update `README.md` for human maintainers.
-- Declare compatibility and dependencies clearly.
+- Declare compatibility, dependencies, provenance, and verification metadata clearly. See [`../PACKAGE.md`](../PACKAGE.md) for the package envelope.
 
 ---
 
@@ -132,3 +132,14 @@ When deprecating, document the replacement path and update any skills that depen
 - [ ] Iterated based on failures.
 - [ ] Published with version and documentation.
 - [ ] Scheduled maintenance review.
+
+---
+
+## Research basis
+
+- The lifecycle stages are our own synthesis of standard software lifecycle stages, adapted to the research emphasis on evaluation, governance, and provenance.
+- The **Decide** stage and the skill-vs-script-vs-MCP decision tree are our own, but they align with the research finding that not every problem deserves a skill.
+- The **Design** stage and the one-sentence intent statement are our own practice.
+- The **Test** stage emphasis on trigger evals, behavioral evals, and edge cases is our own practice, supported by the research evaluation framework.
+- The **Publish** stage's inclusion of provenance, verification, and dependency declarations is drawn from the research on governance and agent-authored skills.
+- The **Maintain** and **Retire** stages are our own synthesis, aligned with the research observation that skills rot without attention.

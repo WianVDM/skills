@@ -1,4 +1,4 @@
-# 01 — What is a skill?
+# What is a skill?
 
 A skill is the **smallest load-bearing shape** that makes an agent reliably do the right thing for a specific domain.
 
@@ -19,7 +19,7 @@ A skill exists to wrangle determinism out of a stochastic system. The root virtu
 
 Every other concept in these standards serves predictability. Cost, maintainability, and clarity are symptoms of it, not rivals.
 
-See [13-evaluation.md](./13-evaluation.md) for the predictability test.
+See [evaluation.md](./evaluation.md) for the predictability test.
 
 ---
 
@@ -34,7 +34,7 @@ How the skill is reached and the cost paid for that reach.
 - **Model-invoked** skills keep their description, so the agent can fire them and other skills can reach them. They pay **context load**.
 - **User-invoked** skills strip the description, so only the human can reach them by name. They pay **cognitive load**.
 
-See [04-structure.md](./04-structure.md) for invocation mode.
+See [structure.md](./structure.md) for invocation mode.
 
 ### 2. Information hierarchy
 
@@ -45,7 +45,7 @@ How the skill's content is arranged and how far down the ladder each piece sits.
 - **Disclosed reference** — material behind a context pointer in a sibling file.
 - **External reference** — shared reference outside the skill system, reachable by any skill.
 
-See [04-structure.md](./04-structure.md) for progressive disclosure and the information hierarchy.
+See [structure.md](./structure.md) for progressive disclosure and the information hierarchy.
 
 ### 3. Steering
 
@@ -56,7 +56,7 @@ How the skill shapes the agent's runtime behavior.
 - **Legwork** is the digging the agent does within a step.
 - **Post-completion steps** are the later steps that tempt the agent to rush.
 
-See [03-form-and-style.md](./03-form-and-style.md) for steering levers.
+See [form-and-style.md](./form-and-style.md) for steering levers.
 
 ### 4. Pruning
 
@@ -67,7 +67,7 @@ How the skill is kept lean and relevant.
 - **Relevance** — does this line still bear on what the skill does?
 - **Sediment** and **duplication** are the failure modes pruning prevents.
 
-See [05-common-mistakes.md](./05-common-mistakes.md) for failure modes and cures.
+See [common-mistakes.md](./common-mistakes.md) for failure modes and cures.
 
 ---
 
@@ -128,3 +128,14 @@ A skill has failed when:
 - It hides assumptions that later cause the agent to guess wrong.
 
 If any of these are true, the skill needs to be pruned, split, or removed.
+
+---
+
+## Research basis
+
+- The definition of a skill as reusable process guidance injected into the agent's context is a common denominator across Claude Code, Cursor, Codex, Aider, and Hermes. Each treats a skill as a markdown file with a routing description and a body of guidance.
+- The framing of a skill as a **delegation boundary** — a way for a team to encode "how this kind of work is done here" — is supported by the research synthesis across harness makers and practitioner sources.
+- **Predictability** as the root virtue is our own design decision, synthesized from the research on trust, continuity, team-aligned guidance, and resistance to rationalization.
+- The four axes (invocation, information hierarchy, steering, pruning) and the five root virtues are our own analytical framework.
+- The "opposing truths" framing is our own device for capturing the tensions inherent in skill design.
+

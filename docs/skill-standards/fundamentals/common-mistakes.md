@@ -1,4 +1,4 @@
-# 05 — Common mistakes
+# Common mistakes
 
 These are the failure modes that make skills unreliable, bloated, or ineffective. Avoid them. When reviewing a skill, check it against this list.
 
@@ -81,7 +81,7 @@ A step ends with “understand the problem” or “produce a plan.” The agent
 Make completion criteria checkable and, where it matters, exhaustive:
 
 - “The ticket key, summary, acceptance criteria, and status are recorded.”
-- “A failing test exists for the first behaviour and fails for the expected reason.”
+- "A failing test exists for the first behavior and fails for the expected reason."
 
 ---
 
@@ -154,12 +154,12 @@ Forcing a skill into a shape that does not match the problem.
 **Examples**
 
 - A conductor skill that does all the work inline.
-- A standalone skill that tries to coordinate other skills.
+- A building block that tries to coordinate other skills.
 - A building-block skill that includes a workflow.
 
 **Cure**
 
-Revisit [02-skill-types.md](./02-skill-types.md). Choose the type that matches the work.
+Revisit [types.md](./types.md). Choose the type that matches the work.
 
 ---
 
@@ -194,6 +194,8 @@ A user-invoked skill that tries to behave like a model-invoked skill, or vice ve
 
 **Cure**
 
+Choose the invocation mode that matches the skill's consumer. If the skill is meant to be reached by the agent or other skills, make it model-invoked and write a trigger-rich description. If it is meant to be reached only by the user typing its name, make it user-invoked and keep the description concise and human-facing. Do not try to serve both audiences with one description; split the skill if both modes are genuinely needed.
+
 ---
 
 ## Premature completion
@@ -205,4 +207,17 @@ Ending a step before it is genuinely done, because the agent's attention slips t
 **Lever**
 
 Sharpen the completion criterion first. Only if the criterion is irreducibly fuzzy and you observe the rush, hide the later steps by splitting or delegating.
+
+---
+
+## Research basis
+
+- Most of the failure modes here are our own synthesis of skill-review experience, but they are strongly supported by the research emphasis on context cost, routing reliability, and the risk of "skill hell" (too many bloated or overlapping skills).
+- **Sprawl**, **sediment**, and **duplication** are our own terms for the general problem of stale, inflated, or repeated guidance that the research identifies as a primary cause of skill ecosystem quality problems.
+- **No-op instructions** and **vague completion criteria** are our own analytical tools, derived from the predictability root virtue and the observation that agents often rush or skip steps without strong guardrails.
+- **Hidden dependencies** and **manual in disguise** are common denominators across the research sources; every harness and practitioner source warns against both.
+- **Guideline soup** and **over-reliance on priors** are our own framing of the broader problem that LLMs need concrete, checkable guidance rather than generic good advice.
+- **Over-configuring** and **under-declaring scope** are our own practices, aligned with the research on minimalism and explicit boundaries.
+- **Mixing invocation concerns** is our own framing, based on the observed trade-off between context load and cognitive load.
+- **Premature completion** is our own concept, derived from the interplay between completion criteria and attention dynamics in sequential tasks.
 

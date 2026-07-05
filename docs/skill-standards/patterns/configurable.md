@@ -1,4 +1,4 @@
-# 08 — Configuration
+# Configurable
 
 Configuration lets a skill adapt to a project without changing its core contract. It separates invariant principles from project-specific preferences.
 
@@ -90,7 +90,7 @@ Config detail should not live in `SKILL.md`. Use progressive disclosure:
 
 Example from `SKILL.md`:
 
-> This skill reads config from `.agents/config/{skill-name}.yaml` and shared settings from `.agents/config/shared.yaml`. See [references/CONFIG_PATTERN.md](./references/CONFIG_PATTERN.md) for the full schema.
+> This skill reads config from `.agents/config/{skill-name}.yaml` and shared settings from `.agents/config/shared.yaml`. See `references/CONFIG_PATTERN.md` for the full schema.
 
 ---
 
@@ -104,6 +104,15 @@ Existing config represents user decisions. A skill must:
 
 This applies to preferences and notes.
 
+---
+
+## Research basis
+
+- The **configurable** pattern (separating invariant principles from project-specific preferences) is our own, but it is supported by the research finding that skills must adapt to different projects and users without changing their core contract.
+- The `.agents/config/` layout and the distinction between skill-specific config and shared config are our own convention.
+- The **bootstrap routine** (load-detect-validate-resolve-persist-execute-curate) is our own synthesis, informed by the research on initialization and context management.
+- The **detection before config** rule is our own practice, aligned with the research emphasis on reducing friction and making skills pluggable.
+- The note categories (`workaround`, `preference`, `assumption`, `gotcha`, `decision`) are our own taxonomy.
 ---
 
 ## Config schema conventions

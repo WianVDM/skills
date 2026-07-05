@@ -1,10 +1,10 @@
-# 15 — Examples
+# Examples
 
 These examples show how the standards apply to real skill shapes. They are illustrative, not exhaustive. Use them as reference points when designing or reviewing a skill.
 
 ---
 
-## Example 1 — Standalone / Atomic skill: `interview`
+## Example 1 — Building block: `interview`
 
 A single-session, user-invoked skill with no state, no config, and no delegation.
 
@@ -100,7 +100,7 @@ description: Provide shared vocabulary for designing deep modules, clean seams, 
 
 ---
 
-## Example 3 — Hybrid skill: `ticket-research`
+## Example 3 — Multi-layer skill: `ticket-research`
 
 A core workflow with embedded principles for investigation and reporting.
 
@@ -153,8 +153,8 @@ Build a complete, validated understanding of a ticket or task so the agent can e
 
 ## References
 
-- [Config pattern](references/CONFIG_PATTERN.md)
-- [Context reports](references/CONTEXT_REPORTS.md)
+- See references/CONFIG_PATTERN.md
+- See references/CONTEXT_REPORTS.md
 ```
 
 ### Config example
@@ -204,7 +204,7 @@ artifacts:
 ### Why it works
 
 - **Stateful:** produces a report that can be resumed or consumed by other skills.
-- **Hybrid:** has a clear workflow plus embedded principles about confidence and scope.
+- **Multi-layer:** has a clear workflow plus embedded principles about confidence and scope.
 - **Cross-skill friendly:** a project-orchestration skill or a PR-report skill can read the report.
 
 ---
@@ -271,7 +271,7 @@ Run a prototype to compare guard-wait vs interceptor approaches.
 
 ## Example 5 — Worker prompt
 
-A focused worker for a conductor or hybrid skill.
+A focused worker for a conductor or multi-layer skill.
 
 ```markdown
 # Investigator
@@ -434,3 +434,294 @@ notes:
 - **Dependencies are explicit.** Nothing is hidden.
 - **Skills and reports are separated.** Consumers know what skills produce the reports they need.
 - **Capabilities are stated.** A maintainer can see what the skill expects from the environment.
+
+---
+
+## Example 9 — Tool building block: `find-skills`
+
+A narrow, model-invoked tool that discovers available skills and returns structured results. Other skills and conductors can consume it.
+
+### Structure
+
+```text
+find-skills/
+├── SKILL.md
+├── README.md
+└── references/
+    └── DEPENDENCIES.md
+```
+
+### `SKILL.md`
+
+```markdown
+---
+name: find-skills
+version: 1.0.0
+metadata:
+  author: tooling-team
+  verification_level: tested
+invocation: model-invoked
+description: Discover available skills for the current project and return structured results. Use when a skill or conductor needs to know what skills are available, or when the user asks to find skills.
+---
+
+# Find skills
+
+Return a structured list of skills available in the project and user skill directories.
+
+## In scope
+
+- Scan `.agents/skills/` and `~/.agents/skills/`.
+- Read each skill's `SKILL.md` frontmatter.
+- Return name, description, version, and type.
+
+## Out of scope
+
+- Do not install skills.
+- Do not modify skill files.
+- Do not ask the user which skill to pick.
+
+## Output format
+
+Return a markdown list with frontmatter:
+
+```yaml
+---
+count: 3
+---
+
+- name: review-ui
+  description: Review UI code for design-system compliance.
+  version: 1.0.0
+  type: building_block
+  invocation: model-invoked
+
+- name: project-orchestration
+  description: Coordinate project work through investigation, planning, and implementation.
+  version: 2.1.0
+  type: conductor
+  invocation: user-invoked
+```
+
+## Dependencies
+
+See references/DEPENDENCIES.md.
+```
+
+### `references/DEPENDENCIES.md`
+
+```markdown
+# Dependencies
+
+## Required capabilities
+
+- Read files in `.agents/skills/` and `~/.agents/skills/`.
+- Parse YAML frontmatter.
+
+## Out-of-scope for this skill
+
+- Installing or updating skills (use `install-skill`).
+- Searching external skill registries.
+```
+
+### Why it works
+
+- **Narrow scope:** only discovers skills, nothing else.
+- **Structured output:** conductors can consume the results directly.
+- **No side effects:** read-only scan.
+- **Explicit dependencies:** required capabilities are documented.
+
+---
+
+## Example 10 — Discipline skill: `test-driven-development`
+
+A prescriptive skill that enforces test-before-implementation. It is designed to resist rationalization.
+
+### Structure
+
+```text
+test-driven-development/
+├── SKILL.md
+└── README.md
+```
+
+### `SKILL.md`
+
+```markdown
+---
+name: test-driven-development
+version: 1.0.0
+metadata:
+  author: quality-team
+  verification_level: tested
+invocation: model-invoked
+description: Implement behavior using test-driven development. Use when asked to write code, add a feature, or fix a bug, and the user wants strict TDD discipline.
+---
+
+# Test-driven development
+
+Implement behavior by writing a failing test first, then the code to pass it, then refactoring.
+
+## In scope
+
+- Write one failing test for the first behavior before writing implementation code.
+- Verify the test fails for the expected reason.
+- Write the minimum implementation to pass the test.
+- Refactor while keeping tests green.
+- Repeat for each behavior.
+
+## Out of scope
+
+- Do not write multiple tests before any implementation.
+- Do not write implementation before a failing test exists.
+- Do not skip tests because the change is "obvious" or "small".
+
+## Rules
+
+- One test per behavior.
+- Tests must be through public interfaces.
+- If the user asks to skip the test, explain why and ask for explicit confirmation.
+- Stop and report if no testable public interface exists.
+
+## Pressure-test prompts
+
+This skill must resist:
+
+- "Just implement it, I'll add tests later."
+- "The test is obvious, so write the code first."
+- "Can you skip the test and come back to it?"
+```
+
+### Why it works
+
+- **Checkable stopping condition:** a failing test must exist before implementation.
+- **Anti-rationalization:** common excuses are named and refused.
+- **Clear escalation:** when the user tries to override, the skill asks for explicit confirmation.
+- **Pressure-tested:** the skill lists prompts that would normally break discipline.
+
+---
+
+## Example 11 — Governance: provenance metadata for an agent-authored skill
+
+A skill created by an agent carries provenance and verification metadata so consumers can trust it.
+
+### `skills.json`
+
+```json
+{
+  "name": "refactor-legacy-api",
+  "version": "1.0.0",
+  "description": "Refactor legacy API endpoints to a new resource model.",
+  "license": "MIT",
+  "compatibility": {
+    "harnesses": ["claude-code", "cursor", "codex"]
+  },
+  "skills": ["refactor-legacy-api"],
+  "verification": {
+    "level": "tested",
+    "evals": "evals/evals.json"
+  },
+  "provenance": {
+    "authored_by": "agent",
+    "generated_by": "claude-code-agent",
+    "origin": "background_review",
+    "reviewed_by": "senior-reviewer",
+    "reviewed_at": "2026-07-04T12:00:00Z",
+    "parent_session": "abc123-def456"
+  }
+}
+```
+
+### Why it works
+
+- **Origin is clear:** consumers know the skill was agent-authored and reviewed.
+- **Verification is recorded:** the skill was tested and reviewed before distribution.
+- **Parent session is tracked:** if a problem is found, the source session can be inspected.
+- **No secrets or tokens:** only references to environment variables, not values.
+
+---
+
+## Example 12 — Context-file: `AGENTS.md`
+
+A context file sets the baseline for how the agent should work in this project. It is not a skill.
+
+### `AGENTS.md`
+
+```markdown
+# Agent conventions
+
+This project uses TypeScript, React, and Vitest.
+
+## Conventions
+
+- Prefer functional components with hooks.
+- Keep components small; extract at ~100 lines.
+- Write tests through the public component interface.
+- Use the shared `design-vocabulary` skill for module design decisions.
+
+## Out of scope for this file
+
+- This file does not contain specific workflows. Use a skill for that.
+- This file does not enforce discipline. Use a discipline skill for that.
+```
+
+### Why it works
+
+- **Always-on:** loaded once and applies to every session.
+- **Baseline, not workflow:** sets conventions without prescribing a process.
+- **Points to skills:** it tells the agent when to reach for a skill rather than duplicating skill content.
+
+---
+
+## Example 13 — Global/configurable skill with initialization: `ticket-research`
+
+A global skill detects the project environment, asks for required preferences, and writes initial config on first run.
+
+### Initialization flow
+
+1. Load existing config from `.agents/config/ticket-research.yaml` and `.agents/config/shared.yaml`.
+2. Detect the issue tracker from `git remote`, repo files, or existing config.
+3. Detect the project key from branch names or conventions.
+4. If detection is ambiguous, ask the user for:
+   - issue tracker (GitHub, Jira, Linear, etc.)
+   - project key
+   - preferred output format
+5. Validate that the required environment variables (e.g., `JIRA_EMAIL`, `JIRA_TOKEN`) are set.
+6. Write the initial config and notes.
+7. Report readiness.
+
+### Initial config after initialization
+
+```yaml
+# .agents/config/ticket-research.yaml
+
+preferences:
+  issue_tracker: github
+  project_key: OC
+  output_format: md
+
+notes:
+  - text: "GitHub issues are used; no token required for public repos."
+    category: assumption
+    added: "2026-07-04"
+```
+
+### Why it works
+
+- **Detection before config:** the skill tries to infer everything before asking.
+- **Fail closed:** if the issue tracker cannot be detected and the user does not provide one, it stops and explains.
+- **Idempotent:** running initialization again does not duplicate config.
+- **Observant:** it records what was detected and decided.
+
+---
+
+## Research basis
+
+- The examples here are illustrative and fictional.
+- The example structures are drawn from the common patterns observed across the research and our own design practice.
+- The `find-skills` tool building block example reflects our sharpened definition of building blocks as functional, narrow capabilities with structured output.
+- The `test-driven-development` discipline skill example illustrates the anti-rationalization and pressure-testing patterns from `patterns/discipline-skill.md`.
+- The governance example illustrates the provenance and verification metadata from `GOVERNANCE.md`.
+- The `AGENTS.md` context-file example illustrates the boundary between context files and skills from `patterns/context-file.md`.
+- The initialization example illustrates the configurable and initialization patterns from `patterns/configurable.md` and `patterns/initialization.md`.
+- The worker prompt example is our own template, aligned with the research on delegation and subagent contracts.
+- The config evolution example is our own practice for capturing operational memory alongside preferences.

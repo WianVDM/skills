@@ -1,4 +1,4 @@
-# 09 — Context and reports
+# Context reports
 
 Skills share context by reading and writing reports in a well-known location. A shared context layer lets skills compose without being tightly coupled.
 
@@ -139,3 +139,13 @@ A shared `context-reports` skill can define:
 - How to handle missing reports.
 
 Individual skills then reference it.
+
+---
+
+## Research basis
+
+- The **context reports** pattern (structured artifacts shared between skills) is our own, but it is strongly supported by the research on composition, memory, and the need for skills to share findings without tight coupling.
+- The `.agents/context/{report-type}/{key}.md` layout is our own convention, aligned with the research emphasis on well-known locations for shared context.
+- The report schema (frontmatter with skill, version, key, generated_at, summary, artifacts) is our own format.
+- The **freshness** rules and the handling of missing reports are our own practices, informed by the research finding that stale reports can mislead the agent.
+- The recommendation to extract shared context conventions into a vocabulary building block is our own, aligned with the building-block pattern.

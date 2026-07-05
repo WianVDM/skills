@@ -1,4 +1,4 @@
-# 07 — Global vs project-specific skills
+# Global / pluggable
 
 A skill can be built for one project or built to work across any project, user, and harness. The difference is not just portability — it is pluggability. A global skill must drop into an unknown environment and still behave correctly.
 
@@ -93,7 +93,7 @@ Only ask the user when detection is ambiguous or insufficient.
 
 A global skill adapts to user preferences through config and notes, not by changing its core contract. The core stays stable; the config layer changes.
 
-See [09-configuration.md](./09-configuration.md) for the config pattern.
+See [configurable.md](./configurable.md) for the config pattern.
 
 ### 6. Fail closed
 
@@ -126,3 +126,14 @@ Most skills start project-specific. To make one global:
 5. Document the migration path and any breaking changes.
 
 A skill does not have to be global to be good. But if you intend it to be global, pluggability is non-negotiable.
+
+---
+
+## Research basis
+
+- The distinction between **project-specific** and **global** skills is our own framing, but it is supported by the research observation that skills are shared across projects and that portability requires explicit handling of assumptions.
+- The six properties of a truly global skill (harness-agnostic language, project-agnostic conventions, explicit dependencies, self-configuration, user preferences via config, fail closed) are our own synthesis, drawn from the research on cross-harness portability and pluggability.
+- The **pluggability checklist** is our own tool.
+- For the full portability and degradation model, including canonical install paths and plain-markdown export, see [`docs/PORTABILITY.md`](../../PORTABILITY.md).
+
+Many harness-specific portability details (exact trigger thresholds, rule-vs-skill precedence, file-scoping behavior) are **limited** and are documented in [docs/PORTABILITY.md](../../PORTABILITY.md) rather than here.

@@ -1,4 +1,4 @@
-# 04 — Structure
+# Structure
 
 A skill is a directory. The structure should support the skill's purpose, not impose ceremony. Use only the files and directories that add value.
 
@@ -50,15 +50,15 @@ Push deep detail into `references/`. Push worker prompts into `subagents/`. Push
 
 ## Frontmatter
 
-A skill declares its identity in the frontmatter of `SKILL.md`.
+A skill declares its identity in the frontmatter of `SKILL.md`. See [`../FORMAT.md`](../FORMAT.md) for the full portable frontmatter schema and [`../PACKAGE.md`](../PACKAGE.md) for package-level metadata. The rest of this section covers the structural role of frontmatter and how to write a strong description.
 
 ```yaml
 ---
 name: skill-name
+version: "1.0.0"
 description: What this skill does and when to trigger it.
 metadata:
   author: your-name
-  version: "1.0"
 invocation: model-invoked
 ---
 ```
@@ -91,7 +91,7 @@ When user-invoked skills multiply past what the user can remember, the cure is a
 
 #### Declaring the invocation mode
 
-The frontmatter should declare the invocation mode explicitly. Use `invocation: model-invoked` or `invocation: user-invoked`. For harnesses that only recognize the boolean flag, `disable-model-invocation: true` is equivalent to `invocation: user-invoked`. If both fields are present, they must agree. Model-invoked is the default when neither field is present.
+The frontmatter should declare the invocation mode explicitly. Use `invocation: model-invoked` or `invocation: user-invoked`. For harnesses that only recognize the boolean flag, `disable-model-invocation: true` is equivalent to `invocation: user-invoked`. If both fields are present, they must agree. Model-invoked is the default when neither field is present. Declaring the mode is recommended by the portable core standard; omitting it leaves the default to the harness.
 
 ### Description as a context pointer
 
@@ -204,3 +204,14 @@ Templates and static resources. Useful when a skill produces files from a fixed 
 - Deep nesting that hides the skill's contract.
 - Putting reference detail in `SKILL.md` that most invocations do not need.
 - Duplicating the same convention explanation across multiple skills.
+
+---
+
+## Research basis
+
+- The conventional layout (`SKILL.md`, `README.md`, `references/`, `subagents/`, `scripts/`, `assets/`) is supported by the common layout observed across Claude Code, Cursor, Codex, and the agentskills.io ecosystem. The exact directory names vary, but the separation of identity, reference, workers, helpers, and assets is consistent.
+- The **description-as-context-pointer** and **progressive disclosure** concepts are our own analytical framework, informed by the research emphasis on context cost and routing reliability.
+- **Trigger evals** are our own practice, supported by the research finding that description quality is the primary determinant of whether a skill fires at the right time.
+- The **information hierarchy** and **co-location** principles are our own framework for deciding where a piece of content belongs.
+- Harness-agnostic and project-agnostic language is a direct consequence of the portability goal shared across the research sources.
+

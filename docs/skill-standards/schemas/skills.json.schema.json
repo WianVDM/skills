@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentskills.io/schemas/skills.json",
+  "title": "Skill Package Manifest",
+  "description": "Package manifest for a skill or skill collection. Sits around the portable core defined in FORMAT.md and does not change the core format.",
+  "type": "object",
+  "required": ["name", "version", "skills"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Package name. Lowercase, hyphen-separated."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*))?(?:\\+([a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*))?$",
+      "description": "Package version. Semantic versioning recommended."
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "description": "Human-readable purpose of the package."
+    },
+    "license": {
+      "type": "string",
+      "maxLength": 256,
+      "description": "License identifier, preferably an SPDX identifier."
+    },
+    "compatibility": {
+      "type": "object",
+      "properties": {
+        "harnesses": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true,
+          "description": "Agent harnesses the package is known to work with."
+        },
+        "min_aider_version": {
+          "type": "string",
+          "description": "Minimum Aider version when applicable."
+        }
+      },
+      "additionalProperties": true
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9-]+$",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "The skills included in this package."
+    },
+    "namespaces": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-z0-9-]+:[a-z0-9-]+$",
+        "description": "Namespaced skill identifier, e.g. ui-design-kit:review-ui."
+      },
+      "description": "Mapping from local skill name to namespaced identifier."
+    },
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "skills": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true,
+          "description": "Other skills this package expects to be available."
+        },
+        "tools": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true,
+          "description": "Native tools the skills need."
+        },
+        "mcp_servers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": { "type": "string", "minLength": 1 },
+              "capabilities": {
+                "type": "array",
+                "items": { "type": "string", "minLength": 1 },
+                "uniqueItems": true
+              }
+            },
+            "additionalProperties": true
+          },
+          "description": "MCP servers by name and capability."
+        },
+        "binaries": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true,
+          "description": "External binaries the skills need."
+        },
+        "environment_variables": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true,
+          "description": "Environment variables the skills reference."
+        },
+        "sandbox_features": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true,
+          "description": "Sandbox capabilities required at runtime."
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["unverified", "declared", "tested", "formal"],
+          "description": "Verification level. See GOVERNANCE.md."
+        },
+        "evals": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Path to the evaluation artifact, typically evals/evals.json."
+        }
+      },
+      "additionalProperties": true
+    },
+    "provenance": {
+      "type": "object",
+      "description": "Provenance metadata. Required for distributed or agent-authored skills. See GOVERNANCE.md.",
+      "properties": {
+        "authored_by": {
+          "type": "string",
+          "enum": ["human", "agent", "mixed"],
+          "description": "Who authored the skill."
+        },
+        "generated_by": {
+          "type": "string",
+          "description": "Tool or agent that generated the skill."
+        },
+        "origin": {
+          "type": "string",
+          "enum": ["foreground", "background_review", "import"],
+          "description": "Origin of the skill."
+        },
+        "reviewed_by": {
+          "type": "string",
+          "description": "Who reviewed the skill."
+        },
+        "reviewed_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Review timestamp."
+        },
+        "parent_session": {
+          "type": "string",
+          "description": "Session identifier that produced the skill."
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

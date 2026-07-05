@@ -1,4 +1,4 @@
-# 06 — When to create a skill
+# When to create a skill
 
 Not every problem deserves a skill. A skill is one option among several. Choose the right tool for the job.
 
@@ -34,7 +34,7 @@ If yes, design it as a global skill. It must be harness-agnostic and project-agn
 
 If no, a project-specific skill may be fine, but it should still follow the same structural standards.
 
-See [07-global-vs-project-skills.md](./07-global-vs-project-skills.md) for what pluggability requires.
+See [global-pluggable.md](../patterns/global-pluggable.md) for what pluggability requires.
 
 ### 5. Does this only make sense alongside other skills?
 
@@ -127,3 +127,15 @@ Before creating a skill, complete this sentence:
 > This skill makes the agent more predictable at ______ by enforcing ______.
 
 If you cannot fill in both blanks clearly, the skill is not well-defined enough.
+
+---
+
+## Research basis
+
+- The decision tree is our own framework, but it is strongly informed by the research finding that not every problem deserves a skill and that the agent's default behavior is often sufficient.
+- The distinction between **skills** (judgment-shaped guidance) and **scripts** (deterministic logic) is a common denominator across the research sources.
+- The distinction between **skills** and **MCP servers** is supported by the MCP research: MCP exposes structured capabilities; skills decide how to use them.
+- The distinction between **skills** and **prompt templates** is our own framing, supported by the research observation that skills are reusable agent guidance while prompt templates are reusable user input.
+- The **scripts-first rule** is our own practice, aligned with the research emphasis on moving deterministic logic out of the context window and into reliable code.
+- The **litmus test** is our own heuristic for forcing a clear objective before writing a skill.
+

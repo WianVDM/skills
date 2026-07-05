@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentskills.io/schemas/evals.json",
+  "title": "Skill Evaluation Artifact",
+  "description": "Harness-neutral evaluation artifact for a skill package. Each harness adapts its native traces into this common envelope.",
+  "type": "object",
+  "required": ["version", "skill", "tests"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "enum": ["1"],
+      "description": "Schema version of the evaluation artifact."
+    },
+    "skill": {
+      "type": "string",
+      "pattern": "^[a-z0-9-:]+$",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Skill name or namespaced identifier under test."
+    },
+    "tests": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/test" },
+      "minItems": 1,
+      "description": "List of test cases."
+    }
+  },
+  "$defs": {
+    "test": {
+      "type": "object",
+      "required": ["id", "type", "prompt"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "Unique identifier for the test case."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["trigger", "behavior", "composition", "pressure", "security"],
+          "description": "Type of test case."
+        },
+        "category": {
+          "type": "string",
+          "enum": ["should-trigger", "should-not-trigger"],
+          "description": "For trigger tests: whether the prompt should or should not load the skill."
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096,
+          "description": "The user prompt or task input."
+        },
+        "expected": {
+          "type": "string",
+          "description": "Expected skill name for trigger tests."
+        },
+        "baseline_type": {
+          "type": "string",
+          "enum": ["no_skill", "previous_version", "failure_documentation"],
+          "description": "Baseline behavior to compare against for behavior tests."
+        },
+        "available_skills": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true,
+          "description": "Skills available to the agent during composition tests."
+        },
+        "expected_selection": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true,
+          "description": "Expected skills selected during composition tests."
+        },
+        "assertions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/assertion" },
+          "description": "Deterministic checks to run against the agent trace or output."
+        }
+      },
+      "additionalProperties": true
+    },
+    "assertion": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "file_read",
+            "file_write",
+            "command",
+            "output_contains",
+            "output_excludes",
+            "output_format",
+            "regex_match",
+            "regex_exclude"
+          ],
+          "description": "Deterministic assertion type."
+        },
+        "path": {
+          "type": "string",
+          "description": "File or command path for file_read, file_write, or command assertions."
+        },
+        "value": {
+          "type": "string",
+          "description": "Expected literal content for output_contains or output_excludes assertions."
+        },
+        "pattern": {
+          "type": "string",
+          "description": "Regular expression for regex_match or regex_exclude assertions."
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

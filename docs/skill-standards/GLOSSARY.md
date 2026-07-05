@@ -1,6 +1,6 @@
 # Glossary
 
-This glossary defines the terms used across the skill fundamentals documents. Use consistent terminology when writing or reviewing skills. The model reads meaning from how words are used, so precision matters.
+This glossary defines the terms used across the skill standards. Use consistent terminology when writing or reviewing skills. The model reads meaning from how words are used, so precision matters.
 
 ---
 
@@ -66,21 +66,21 @@ A distinct way a skill can be invoked — a case or path that changes what the s
 
 ## Skill types
 
-### Standalone / Atomic skill
+### Building block
 
-A skill that does one narrow job, complete in itself, with little or no dependency on other skills.
+A narrow, reusable skill that provides one capability other skills can invoke and build on. Often model-invoked.
 
-### Building-block / Vocabulary skill
+### Conductor
 
-A skill that provides shared language, rules, or reference material consumed by other skills.
+A skill that coordinates other skills, subagents, or tools through a multi-phase process to reach a larger goal.
 
-### Conductor / Orchestrator skill
+### Wrapper
 
-A skill that coordinates other skills, subagents, or tools through a multi-phase process.
+A thin skill that adapts a building block or conductor for human interaction, adding prompts, confirmation, and presentation.
 
-### Hybrid skill
+### Multi-layer skill
 
-A skill with its own core workflow that also embeds or consumes building-block skills.
+A skill that participates in more than one layer of the architecture, with one clear primary role.
 
 ### Framework-aware skill
 
@@ -97,6 +97,10 @@ A skill that fetches or ships version-specific guidance so its advice does not g
 ### Sprawl
 
 A skill that is too long, even if every line is live and unique. Hurts readability and attention. Cured by progressive disclosure and splitting.
+
+### Skill hell
+
+A degraded ecosystem where too many bloated, overlapping, or poorly triggered skills compete for attention and make the agent less reliable rather than more reliable.
 
 ### Sediment
 
@@ -189,3 +193,164 @@ A writing pattern that pairs every "do not X" with a positive directive. Used be
 ### One-way pattern consistency
 
 The practice of encoding exactly one canonical way to solve each recurring problem in a skill, reducing optionality and making agent output more deterministic.
+
+---
+
+## Architecture and patterns
+
+### Tool building block
+
+A narrow, functional skill that performs one task and returns structured output. Distinguished from a vocabulary building block.
+
+### Vocabulary building block
+
+A skill that provides shared reference, language, or conventions that other skills consume. Distinguished from a tool building block.
+
+### Discipline skill
+
+A prescriptive skill that enforces a specific way of working and resists rationalization. Examples: test-driven development, verification-before-completion.
+
+### Context-file
+
+Always-on guidance that lives in the project context, not a skill. Examples: `AGENTS.md`, `CONVENTIONS.md`, `.cursorrules`.
+
+### Mode
+
+A transient behavior switch that changes how the agent behaves for a session or task. Not a skill.
+
+### Conductor/implementer split
+
+The pattern of separating reasoning and orchestration (conductor) from execution (implementer).
+
+---
+
+## Governance and provenance
+
+### Provenance
+
+Metadata about where a skill came from and who is responsible for it: `authored_by`, `generated_by`, `origin`, `reviewed_by`, `reviewed_at`, `parent_session`.
+
+### Agent-authored skill
+
+A skill written or materially modified by an agent. Requires stricter governance than human-authored skills.
+
+### Staging
+
+The practice of writing agent-authored skills to a pending area for review before they are loaded or invoked.
+
+### Verification level
+
+A signal of evaluation rigor: `unverified`, `declared`, `tested`, or `formal`.
+
+### Audit event
+
+A recorded action taken on a skill, such as create, modify, approve, reject, invoke, distribute, or retire.
+
+### Immutability in-session
+
+The rule that a loaded skill cannot be modified during the session. Any modification attempt is intercepted and audited.
+
+---
+
+## Package and portability
+
+### Package envelope
+
+The metadata around a skill or set of skills: `skills.json`, `skills.lock`, versioning, namespacing, dependencies.
+
+### Namespacing
+
+The practice of prefixing a skill name with its package name to avoid collisions: `package-name:skill-name`.
+
+### Canonical install path
+
+The preferred location for installed skills: `{project-root}/.agents/skills/` and `~/.agents/skills/`.
+
+### Convention-file fallback
+
+Using always-on context files such as `AGENTS.md` or `CONVENTIONS.md` for harnesses that do not support native skills.
+
+### Plain-markdown export
+
+A degraded form of a skill where YAML frontmatter is stripped or summarized so the body can be used by minimal harnesses.
+
+### Degradation
+
+The rules by which a skill preserves core behavior when the harness does not support its full feature set.
+
+---
+
+## Evaluation
+
+### `evals.json`
+
+The harness-neutral evaluation artifact that defines test cases for a skill.
+
+### Runner
+
+The harness-specific adapter that runs a test and produces a normalized trace envelope.
+
+### Composition test
+
+A test that checks whether a skill selects, follows, and composes correctly with other skills.
+
+### Pressure test
+
+A test that tries to make a discipline skill rationalize its way around the rule.
+
+### Guardrail baseline
+
+The baseline for a discipline skill: the documented failure pattern, not a successful no-skill run.
+
+### Multi-agent evaluation
+
+Testing dimensions for skills that involve coordination: communication correctness, task-assignment accuracy, conflict avoidance, ledger fidelity, distractor resistance.
+
+---
+
+## Implementation and runtime terms
+
+### Harness
+
+An agent runtime that loads, invokes, and executes skills. Examples include Claude Code, Cursor, Codex, Aider, and Hermes. The portable core should work across any harness; harness-specific envelope details may vary.
+
+### Harness-specific envelope
+
+The parts of a skill implementation that are not part of the portable core: native harness discovery, exact tool scoping, MCP server wiring, sandbox configuration, and subagent spawning. The standard defines the boundary between the portable core and the envelope, not the envelope itself.
+
+### YAML frontmatter
+
+The metadata block at the top of `SKILL.md`, delimited by `---`, that declares identity, routing, metadata, and harness hints. Also called simply **frontmatter**.
+
+### Tool scoping
+
+The runtime restriction of which tools a skill may use. Tool scoping is a harness-specific envelope concern; the portable standard declares dependencies in `skills.json` and lets harnesses map them to native scoping mechanisms such as `allowed-tools`.
+
+### Capability
+
+A feature or permission a skill requires from its runtime environment, such as a sandbox feature, a network endpoint, or a file-system access level. Distinct from a tool: a capability is what the runtime must allow, not what the skill directly calls.
+
+### Sandbox
+
+The isolated execution environment in which a skill or tool runs. A sandbox may limit file access, network access, or command execution. A skill should declare required sandbox features in `skills.json` and fail closed when they are missing.
+
+### Loader index
+
+A file that maps skill names or package identifiers to their locations on disk. Used when a harness cannot discover skills from canonical directories directly, or when native paths must point to a shared `.agents/skills/` tree.
+
+### Subagent / worker
+
+An isolated agent instance invoked by a conductor to perform a focused task. A **worker** is the prompt or contract that defines the subagent's role, scope, allowed tools, and return format for a specific invocation.
+
+### Context compaction
+
+The process by which a long-running agent session is summarized or truncated to fit within the context window. Skills that must survive compaction persist state to a file or report rather than relying on in-context memory.
+
+### Trust layer
+
+The concerns that make a skill trustworthy for distribution: provenance, verification, evaluation, audit, and cryptographic signing. The trust layer sits around the portable core and package envelope.
+
+### Bootstrap routine
+
+The load-detect-validate-resolve-persist-execute-curate sequence a configurable or global skill uses to initialize and adapt to a project. See `patterns/initialization.md` and `patterns/configurable.md`.
+

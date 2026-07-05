@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentskills.io/schemas/skills.lock.json",
+  "title": "Skill Package Lock File",
+  "description": "Resolved dependency graph and content hashes for a skill package. Generated at install or publish time, not hand-written.",
+  "type": "object",
+  "required": ["version"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "enum": ["1"],
+      "description": "Schema version of the lock file."
+    },
+    "skills": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["version"],
+        "properties": {
+          "version": {
+            "type": "string",
+            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*))?(?:\\+([a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*))?$"
+          },
+          "hash": {
+            "type": "string",
+            "pattern": "^sha256:[a-fA-F0-9]{64}$",
+            "description": "SHA-256 content hash of the skill artifact, prefixed with 'sha256:'."
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Resolved skills in the package, keyed by namespaced identifier."
+    },
+    "dependencies": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "skills": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "mcp_servers": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

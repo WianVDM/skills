@@ -1,4 +1,4 @@
-# 03 — Form and style
+# Form and style
 
 A skill can be written as step-by-step instructions, as a set of guidelines and principles, or as a hybrid of both. The right form depends on what makes the agent more reliable for that specific domain.
 
@@ -52,7 +52,7 @@ The skill states principles, rules, and boundaries. The agent decides how to app
 
 **Example**
 
-> Design deep modules: a lot of behaviour behind a small interface. Place the seam at a clean location. Test through the public interface.
+> Design deep modules: a lot of behavior behind a small interface. Place the seam at a clean location. Test through the public interface.
 
 **Strengths**
 
@@ -82,9 +82,9 @@ The skill uses steps for the process and guidelines for the decisions within eac
 > Before writing code:
 > - Confirm the public interface with the user.
 > - Identify deep-module opportunities.
-> - List the behaviours to test, not implementation steps.
+> - List the behaviors to test, not implementation steps.
 >
-> Tests should verify behaviour through public interfaces, not implementation details.
+> Tests should verify behavior through public interfaces, not implementation details.
 
 Most real skills are hybrids.
 
@@ -121,7 +121,7 @@ A strong criterion is:
 | Weak | Strong |
 |------|--------|
 | Understand the ticket. | The ticket key, summary, acceptance criteria, and current status are recorded in the ticket report. |
-| Write tests. | A failing test exists for the first behaviour, and it fails for the expected reason. |
+| Write tests. | A failing test exists for the first behavior, and it fails for the expected reason. |
 | Capture current state. | The report contains the branch, commit, scope, method, and at least one artifact. |
 
 A vague criterion invites **premature completion** — ending a step before it is genuinely done because the agent's attention slips toward being finished. The cure is to sharpen the criterion first. Only if the criterion is irreducibly fuzzy and you actually observe the rush should you hide the later steps by splitting the skill.
@@ -178,7 +178,7 @@ A skill that says many true things but gives the agent no purchase point. Often 
 
 > Bad: “Be thorough. Consider edge cases. Write good tests.”
 >
-> Better: “For each public behaviour, write one test through the public interface. Stop when the user confirms the listed behaviours are covered.”
+> Better: “For each public behavior, write one test through the public interface. Stop when the user confirms the listed behaviors are covered.”
 
 ### Over-constrained workflow
 
@@ -228,6 +228,18 @@ This is model-relative: if you disagree whether a line is a no-op, settle it by 
 
 ---
 
+## Research basis
+
+- The three forms (instruction-heavy, guideline-heavy, hybrid) and the recommendation to match form to problem shape are our own framework, supported by the research observation that agent behavior varies by whether the task has a clear sequence or many valid paths.
+- **Completion criteria**, **premature completion**, and **legwork** are our own analytical tools, synthesized from the research on predictability and the common failure mode of agents rushing steps.
+- **Leading words** are our own technique, based on the observation that models have strong priors for compact concepts and that shorter, denser guidance is more reliable.
+- The **explain-the-why** pattern is supported by the research on model theory of mind and generalization; rigid commands often fail when context changes.
+- **Negation handling** is supported by the well-documented finding that LLMs handle negation weakly; the "pair prohibition with positive directive" rule is our own practice.
+- The **no-op test**, **single source of truth**, and **relevance** pruning disciplines are our own, aligned with the research emphasis on minimalism and context cost.
+
+
+---
+
 ## Explain the why
 
 A skill should explain the reasoning behind its guidance, not just issue commands. Today's models have strong theory of mind and generalize better when they understand intent. This applies to steps and phases too: a one-line rationale for why a phase exists ("why this step before the next") reduces premature completion and helps the agent judge how much legwork is required.
@@ -235,7 +247,7 @@ A skill should explain the reasoning behind its guidance, not just issue command
 | Rigid command | Explain-the-why |
 |---------------|-----------------|
 | NEVER mock internal functions. | Mocking internal functions couples tests to implementation. Prefer mocking at seams where the implementation can change without breaking the test. |
-| ALWAYS write one test per behaviour. | One test per behaviour keeps failures diagnostic: a failing test points to one capability, not many. |
+| ALWAYS write one test per behavior. | One test per behavior keeps failures diagnostic: a failing test points to one capability, not many. |
 
 If you find yourself writing `ALWAYS`, `NEVER`, or `MUST` in all caps, treat it as a yellow flag. Reframe the instruction by explaining why the rule exists. The agent will apply it more reliably and adapt it better to edge cases.
 

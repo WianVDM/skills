@@ -1,4 +1,4 @@
-# 13 — Evaluation
+# Evaluation
 
 Use these checklists and questions when designing or reviewing a skill. A skill does not have to pass every item perfectly, but it should fail knowingly, not accidentally.
 
@@ -39,7 +39,7 @@ Test the description separately from the body:
 - Run them and measure trigger accuracy.
 - Rewrite the description if the wrong skills fire or the right skill does not fire.
 
-See [04-structure.md](./04-structure.md) for description optimization guidance.
+See [structure.md](./structure.md) for description optimization guidance.
 
 For user-invoked skills, the description is primarily human-facing, but a clarity eval still helps: collect realistic prompts that should and should not lead a human to reach for the skill. The 10/10 numeric target is most critical for model-invoked skills.
 
@@ -72,34 +72,38 @@ Applies to every skill.
 
 ## Per-type checklists
 
-### Standalone / Atomic
+### Building block
 
 - [ ] The task is narrow and well-bounded.
-- [ ] The skill needs no state or minimal state.
-- [ ] The model's priors are strong enough that the skill does not over-specify.
-- [ ] The skill is not secretly a workflow or conductor.
+- [ ] The skill has a clear, stable interface.
+- [ ] The output is structured enough for other skills to act on.
+- [ ] The skill does not contain presentation, coordination, or workflow logic that belongs in a wrapper or conductor.
+- [ ] Dependencies are declared explicitly.
 
-### Building-block / Vocabulary
-
-- [ ] The concept is reused or will be reused by multiple skills.
-- [ ] The skill is mostly reference, not a workflow.
-- [ ] Definitions are precise and consistent.
-- [ ] The skill does not drift into project-specific detail.
-
-### Conductor / Orchestrator
+### Conductor
 
 - [ ] The skill delegates deep work rather than doing it inline.
 - [ ] State is tracked across phases and survives context compaction.
 - [ ] Subagent prompts are focused and include scope, tools, and return format.
 - [ ] The skill integrates findings before deciding what to do next.
-- [ ] User interaction is owned by the conductor, not leaked to workers.
+- [ ] User interaction is owned by the conductor or its wrapper, not leaked to workers.
 
-### Hybrid
+### Wrapper
 
+- [ ] The skill is user-invoked.
+- [ ] Its job is prompts, presentation, or confirmation.
+- [ ] Core logic lives in a building block or conductor.
+- [ ] Destructive actions are confirmed.
+- [ ] The user receives a clear summary of results.
+
+### Multi-layer / hybrid
+
+- [ ] The primary layer is clear.
 - [ ] The workflow and reference are clearly separated.
 - [ ] Steps have checkable completion criteria.
 - [ ] Embedded principles do not overwhelm the process.
 - [ ] Building-block skills are referenced rather than duplicated.
+- [ ] The skill is not using "hybrid" to avoid a clear boundary.
 
 ---
 
@@ -111,16 +115,16 @@ Applies to every skill.
 - Does the agent vary without guidance?
 - Could a script, MCP server, or prompt template solve it instead?
 
-See [06-when-to-create-a-skill.md](./06-when-to-create-a-skill.md).
+See [when-to-create-a-skill.md](./when-to-create-a-skill.md).
 
 ### Is it the right type?
 
-- Does it solve one narrow job? → Standalone.
-- Does it provide shared language? → Building-block.
-- Does it coordinate phases? → Conductor.
-- Does it need both workflow and principles? → Hybrid.
+- Does it solve one narrow, well-bounded problem? → Building block.
+- Does it coordinate multiple skills or tools through phases? → Conductor.
+- Does it adapt another skill for human interaction? → Wrapper.
+- Does it combine layers with a clear primary role? → Multi-layer / hybrid.
 
-See [02-skill-types.md](./02-skill-types.md).
+See [types.md](./types.md).
 
 ### Is every line load-bearing?
 
@@ -128,7 +132,7 @@ See [02-skill-types.md](./02-skill-types.md).
 - Does this instruction merely restate the default?
 - Is this detail needed on every invocation, or can it be disclosed?
 
-See [05-common-mistakes.md](./05-common-mistakes.md).
+See [common-mistakes.md](./common-mistakes.md).
 
 ### Is the form right?
 
@@ -136,7 +140,7 @@ See [05-common-mistakes.md](./05-common-mistakes.md).
 - Are completion criteria checkable?
 - Are leading words used where they add precision?
 
-See [03-form-and-style.md](./03-form-and-style.md).
+See [form-and-style.md](./form-and-style.md).
 
 ### Is it reusable?
 
@@ -144,7 +148,7 @@ See [03-form-and-style.md](./03-form-and-style.md).
 - Are dependencies declared?
 - Would this skill work in a project the author has never seen?
 
-See [12-reusability.md](./12-reusability.md).
+See [building-block.md](../patterns/building-block.md).
 
 ### Does it fail well?
 
@@ -169,3 +173,17 @@ Complete this sentence:
 > This skill makes the agent more predictable at ______ by enforcing ______.
 
 If both blanks are hard to fill, the skill is not yet well-defined.
+
+---
+
+## Research basis
+
+- **Eval-driven development** and the basic loop (draft, test prompts, with-skill vs. baseline, iterate) are our own practice, strongly supported by the research finding that skills only become reliable through empirical testing.
+- **Trigger evals** are our own practice, but they are motivated by the research observation that description quality is the primary determinant of skill routing and that LLM-driven routing has measurable false-positive rates.
+- The **10 should-trigger / 10 should-not-trigger** target is our own heuristic, chosen to force boundary testing rather than obvious negatives.
+- **Baseline types** (`no_skill`, `previous_version`, `failure_documentation`) and the **guardrail baseline** idea are drawn from the research evaluation framework. The guardrail baseline is especially important for discipline skills where the no-skill case is trivially non-compliant.
+- **Composition testing** (`available_skills`, distractor resistance, reflection) is drawn from the research and is our own recommendation for composable skills.
+- **Subjective-output hierarchy** (deterministic checks → visual QA → structured-rubric LLM judge → human review) is drawn from the research evaluation framework.
+- The per-type checklists are our own synthesis of the quality attributes identified across the research.
+- The **predictability test**, **minimalism test**, and **litmus test** are our own heuristics.
+

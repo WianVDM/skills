@@ -1,4 +1,4 @@
-# 16 — Security
+# Security
 
 A skill should be safe to use in an untrusted project by default. Security is not a separate concern; it shapes how a skill handles secrets, destructive actions, external access, and required capabilities.
 
@@ -74,6 +74,17 @@ Examples:
 - A token is required but not set → stop and explain.
 - A destructive action is requested but not confirmed → stop and ask.
 - A required tool is not installed → stop and list the missing tool.
+
+---
+
+## Research basis
+
+- The fundamental rule of **no secrets in skill files** is a common denominator across the research sources. Every harness and governance source treats credential storage as a critical risk.
+- **Destructive action confirmation** and the preference for read-only investigation are supported by the research on governance, audit, and the safe operation of skills in untrusted projects.
+- **Fail closed** is our own framing, aligned with the research emphasis on explicit dependency handling and safety.
+- The **external access** and **project trust** sections are our own synthesis, supported by the research on MCP server governance, third-party tool risk, and audit requirements.
+- The distinction between dependency declaration (what is needed) and runtime capability checking (whether it is present) is drawn from the research on governance and capability gates.
+
 
 ---
 

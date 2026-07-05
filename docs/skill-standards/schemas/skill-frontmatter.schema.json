@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentskills.io/schemas/skill-frontmatter.json",
+  "title": "Skill Frontmatter",
+  "description": "YAML frontmatter schema for SKILL.md. The portable core of a skill is defined by this frontmatter and the markdown body.",
+  "type": "object",
+  "required": ["name", "description"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Stable identifier. Must match the skill directory name and use lowercase letters, digits, and hyphens only."
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "description": "One-sentence routing surface. Tells the agent when to load the skill."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*))?(?:\\+([a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*))?$",
+      "description": "Semantic version of the skill. Required once the skill is shared, consumed, or versioned."
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "author": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Human or team responsible for the skill."
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$",
+            "maxLength": 64
+          },
+          "uniqueItems": true
+        },
+        "verification_level": {
+          "type": "string",
+          "enum": ["unverified", "declared", "tested", "formal"],
+          "description": "Verification level for the skill. See GOVERNANCE.md."
+        },
+        "provenance": {
+          "type": "object",
+          "properties": {
+            "authored_by": {
+              "type": "string",
+              "enum": ["human", "agent", "mixed"]
+            },
+            "generated_by": { "type": "string" },
+            "origin": {
+              "type": "string",
+              "enum": ["foreground", "background_review", "import"]
+            },
+            "reviewed_by": { "type": "string" },
+            "reviewed_at": { "type": "string", "format": "date-time" },
+            "parent_session": { "type": "string" }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "invocation": {
+      "type": "string",
+      "enum": ["model-invoked", "user-invoked"],
+      "description": "How the skill is reached. model-invoked skills are held in context for autonomous routing; user-invoked skills are only reachable by name."
+    },
+    "allowed-tools": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Harness hint: tools the skill is allowed to use."
+    },
+    "disallowed-tools": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Harness hint: tools the skill must not use."
+    },
+    "disable-model-invocation": {
+      "type": "boolean",
+      "description": "Harness hint: true is equivalent to invocation: user-invoked."
+    },
+    "globs": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Harness hint: file globs that scope the skill."
+    },
+    "paths": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Harness hint: explicit paths that scope the skill."
+    }
+  },
+  "additionalProperties": true,
+  "allOf": [
+    {
+      "description": "If disable-model-invocation is true, invocation must not disagree.",
+      "if": {
+        "properties": { "disable-model-invocation": { "const": true } },
+        "required": ["disable-model-invocation"]
+      },
+      "then": {
+        "not": {
+          "properties": { "invocation": { "const": "model-invoked" } },
+          "required": ["invocation"]
+        }
+      }
+    }
+  ]
+}
