@@ -55,7 +55,7 @@ Skill Standards Wiki
 │   │       └── versioning.md
 │   │
 │   ├── Cross-cutting concerns
-│   │   ├── GOVERNANCE.md            — provenance, approval, audit
+│   │   ├── GOVERNANCE.md            — approval, audit, verification
 │   │   ├── EVALUATION.md            — evals.json framework, tests, baselines
 │   │   └── EXTENSIBILITY.md         — non-coding skills, multi-agent coordination
 │   │
@@ -68,7 +68,6 @@ Skill Standards Wiki
 │       └── PATTERN_CATALOG.md       — pattern composition matrix
 │
 └── Trust layer (applies to distributed / agent-authored skills)
-    ├── Provenance
     ├── Verification levels
     ├── Evaluation
     ├── Audit events

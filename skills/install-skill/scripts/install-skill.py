@@ -3,13 +3,12 @@
 install-skill.py
 
 Install a skill from a local path or URL into the project or user scope,
-record provenance, and confirm before overwriting.
+and confirm before overwriting.
 """
 
 from __future__ import annotations
 
 import argparse
-import datetime
 import io
 import json
 import shutil
@@ -20,6 +19,7 @@ import tempfile
 import urllib.request
 import zipfile
 from pathlib import Path
+
 
 def detect_target_dir(project_root: Path, scope: str) -> Path:
     if scope == "user":
@@ -39,22 +39,6 @@ def detect_target_dir(project_root: Path, scope: str) -> Path:
     )
     data = json.loads(result.stdout)
     return Path(data["recommended_skills_dir"])
-
-
-def load_skills_json(target_dir: Path) -> dict:
-    path = target_dir.parent / "skills.json"
-    if path.is_file():
-        try:
-            return json.loads(path.read_text(encoding="utf-8"))
-        except Exception:
-            return {}
-    return {}
-
-
-def save_skills_json(target_dir: Path, data: dict):
-    path = target_dir.parent / "skills.json"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, indent=2), encoding="utf-8")
 
 
 def copy_local(source: Path, dest: Path):
@@ -109,47 +93,29 @@ def install(skill_name: str, source: str, scope: str, project_root: Path, yes: b
             "skill_name": skill_name,
             "target_scope": scope,
             "installed_path": str(dest),
-            "provenance": {},
             "reason": "Skill already exists. Pass --yes to overwrite, or confirm the overwrite with the user.",
         }
 
     source_path = Path(source).expanduser().resolve()
     if source_path.is_dir():
         copy_local(source_path, dest)
-        provenance_source = "local"
-        provenance_url = str(source_path)
     elif source.startswith("http://") or source.startswith("https://"):
         data = download_archive(source)
         extract_archive(data, dest)
-        provenance_source = "url"
-        provenance_url = source
     else:
         return {
             "installed": False,
             "skill_name": skill_name,
             "target_scope": scope,
             "installed_path": str(dest),
-            "provenance": {},
             "reason": "Source must be a local directory or an archive URL.",
         }
-
-    # Record provenance
-    skills_json = load_skills_json(target_dir)
-    installed = skills_json.setdefault("installed", {})
-    installed[skill_name] = {
-        "source": provenance_source,
-        "url": provenance_url,
-        "scope": scope,
-        "installed_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-    }
-    save_skills_json(target_dir, skills_json)
 
     return {
         "installed": True,
         "skill_name": skill_name,
         "target_scope": scope,
         "installed_path": str(dest),
-        "provenance": installed[skill_name],
     }
 
 

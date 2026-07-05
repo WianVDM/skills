@@ -190,8 +190,7 @@ def check_identities(skill_dir: Path, skill_md: Path, fm: dict) -> list[dict]:
     else:
         findings.append(fail_finding("F07", "Identity", "warning", check, "Add `metadata.author` and `metadata.tags` to the frontmatter."))
 
-    findings.append(manual_finding("F08", "Identity", "warning", "Provenance metadata is present if distributed or agent-authored", "Add provenance metadata if the skill is distributed or agent-authored."))
-    findings.append(manual_finding("F09", "Identity", "blocker", "Frontmatter validates against JSON schema", "Run `validate-skill-frontmatter` for a full schema check."))
+    findings.append(manual_finding("F08", "Identity", "blocker", "Frontmatter validates against JSON schema", "Run `validate-skill-frontmatter` for a full schema check."))
 
     return findings
 
@@ -419,11 +418,6 @@ def check_governance(fm: dict) -> list[dict]:
     else:
         findings.append(manual_finding("G02", "Governance", "warning", check, "Add `metadata.verification_level` if the skill is distributed."))
 
-    check = "Agent-authored skills have provenance"
-    if isinstance(metadata, dict) and metadata.get("provenance"):
-        findings.append(pass_finding("G03", "Governance", "warning", check))
-    else:
-        findings.append(manual_finding("G03", "Governance", "warning", check, "Add provenance metadata for agent-authored skills."))
     return findings
 
 

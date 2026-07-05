@@ -39,7 +39,6 @@ A one-page guide for authors, reviewers, and consumers. For full details, follow
 
 - [ ] Add `skills.json` once the skill has consumers or external dependencies.
 - [ ] Declare dependencies in `requirements` (skills, tools, MCP servers, binaries, environment variables).
-- [ ] Add `provenance` for agent-authored or distributed skills.
 - [ ] Set a `verification` level (`unverified`, `declared`, `tested`, `formal`).
 - [ ] Never store secrets in `SKILL.md`, references, or config files.
 
@@ -67,7 +66,7 @@ A one-page guide for authors, reviewers, and consumers. For full details, follow
 
 - [ ] Destructive actions require confirmation.
 - [ ] The skill fails closed when a required capability is missing.
-- [ ] Agent-authored skills have provenance and pass staging.
+- [ ] Agent-authored skills pass staging.
 - [ ] No secrets or tokens in files.
 - [ ] Scripts do not ask for user input; the skill collects input and passes it.
 

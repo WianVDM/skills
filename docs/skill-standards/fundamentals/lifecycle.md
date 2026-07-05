@@ -93,7 +93,7 @@ Once the skill is stable, publish or install it.
 - Bump the version if the schema, config, or behavior changed.
 - Document breaking changes.
 - Add or update `README.md` for human maintainers.
-- Declare compatibility, dependencies, provenance, and verification metadata clearly. See [`../PACKAGE.md`](../PACKAGE.md) for the package envelope.
+- Declare compatibility, dependencies, and verification metadata clearly. See [`../PACKAGE.md`](../PACKAGE.md) for the package envelope.
 
 ---
 
@@ -137,9 +137,9 @@ When deprecating, document the replacement path and update any skills that depen
 
 ## Research basis
 
-- The lifecycle stages are our own synthesis of standard software lifecycle stages, adapted to the research emphasis on evaluation, governance, and provenance.
+- The lifecycle stages are our own synthesis of standard software lifecycle stages, adapted to the research emphasis on evaluation and governance.
 - The **Decide** stage and the skill-vs-script-vs-MCP decision tree are our own, but they align with the research finding that not every problem deserves a skill.
 - The **Design** stage and the one-sentence intent statement are our own practice.
 - The **Test** stage emphasis on trigger evals, behavioral evals, and edge cases is our own practice, supported by the research evaluation framework.
-- The **Publish** stage's inclusion of provenance, verification, and dependency declarations is drawn from the research on governance and agent-authored skills.
+- The **Publish** stage's inclusion of verification and dependency declarations is drawn from the research on governance and agent-authored skills.
 - The **Maintain** and **Retire** stages are our own synthesis, aligned with the research observation that skills rot without attention.

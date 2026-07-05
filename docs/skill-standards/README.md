@@ -41,7 +41,7 @@ A few ideas unlock the rest of the wiki:
 - **Leading word** and **completion criterion**: anchor behavior in the model's priors and make every stopping condition checkable.
 - **Model-invoked vs. user-invoked**: trade context load (the model can fire the skill) against cognitive load (the user must remember it).
 - **Three layers**: building block (narrow capability), conductor (coordination), wrapper (human-facing adaptation).
-- **Package envelope and trust layer**: `skills.json`, versioning, dependencies, provenance, evaluation, audit.
+- **Package envelope and trust layer**: `skills.json`, versioning, dependencies, verification, evaluation, audit.
 - **Portable core + degradation**: the same `SKILL.md` should degrade gracefully across harnesses.
 
 ### Doc-tier labels
@@ -135,7 +135,7 @@ See [`PATTERN_CATALOG.md`](./PATTERN_CATALOG.md) for a composition matrix and co
 
 ### Cross-cutting concerns
 
-- [`GOVERNANCE.md`](./GOVERNANCE.md) — provenance, agent-authored skills, staging, approval, verification levels, audit.
+- [`GOVERNANCE.md`](./GOVERNANCE.md) — agent-authored skills, staging, approval, verification levels, audit.
 - [`EVALUATION.md`](./EVALUATION.md) — the `evals/evals.json` framework, runner interface, baselines, composition tests.
 - [`EXTENSIBILITY.md`](./EXTENSIBILITY.md) — non-coding skills and multi-agent coordination.
 - [`MIGRATION.md`](./MIGRATION.md) — moving a skill between shapes (project-specific → global, rule → skill, v1 → v2).
@@ -238,7 +238,7 @@ For fast lookup and cross-cutting guides, keep these at hand:
 ### I want to migrate or evolve a skill
 
 1. See [`MIGRATION.md`](./MIGRATION.md) for the common shape changes.
-2. Update the `version` and `provenance` metadata if the contract or schema changed. See [`GOVERNANCE.md`](./GOVERNANCE.md) for provenance rules.
+2. Update the `version` metadata if the contract or schema changed and the skill is shared or consumed. See [`GOVERNANCE.md`](./GOVERNANCE.md) for governance rules.
 3. Re-run trigger and behavioral evals after the migration. See [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) and [`EVALUATION.md`](./EVALUATION.md).
 
 ---

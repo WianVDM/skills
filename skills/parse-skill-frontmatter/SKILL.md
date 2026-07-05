@@ -7,13 +7,6 @@ metadata:
   author: Wian van der Merwe
   tags: [frontmatter, parsing, building-block]
   verification_level: declared
-  provenance:
-    authored_by: mixed
-    generated_by: agent
-    origin: foreground
-    reviewed_by: audit-skill
-    reviewed_at: "2026-07-05T00:00:00Z"
-    parent_session: write-a-skill-refactor
 ---
 
 # parse-skill-frontmatter

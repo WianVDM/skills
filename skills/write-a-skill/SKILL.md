@@ -7,13 +7,6 @@ metadata:
   author: Wian van der Merwe
   tags: [skill-authoring, conductor, standards]
   verification_level: declared
-  provenance:
-    authored_by: mixed
-    generated_by: agent
-    origin: foreground
-    reviewed_by: audit-skill
-    reviewed_at: "2026-07-05T00:00:00Z"
-    parent_session: write-a-skill-refactor
 ---
 
 # write-a-skill
@@ -67,7 +60,7 @@ The conductor runs this 10-phase pipeline. Each phase has a completion criterion
 | 1. **Clarify intent and choose gate** | Classify the top-level branch; resolve the internal gate; ask one question at a time if unclear. | Branch is one of {create, change}, gate is resolved, and user confirmed. |
 | 2. **Explore alternatives** | Use `list-available-skills` and `search-skills-registry` to see what exists. | Alternatives report exists; user knows whether to create, reuse, or install. |
 | 3. **Decide shape** | Decide whether the answer is a new skill, an existing skill, a script, an MCP server, or a context file. | User confirms the chosen shape. |
-| 4. **Define identity** | Name, description, invocation, author, provenance. Version only if the user requires it or the skill will be shared/consumed. | Frontmatter skeleton exists and user confirmed. |
+| 4. **Define identity** | Name, description, invocation, author, tags. Version only if the user requires it or the skill will be shared/consumed. | Frontmatter skeleton exists and user confirmed. |
 | 5. **Define scope** | In-scope, out-of-scope, branches, assumptions. | Scope boundaries are explicit and defensible. |
 | 6. **Select patterns** | Apply fundamentals; suggest Layer 2 patterns. | Pattern list exists and user confirmed. |
 | 7. **Draft artifacts** | Generate `SKILL.md`, optional `README.md`, `references/`, `subagents/`, `scripts/`, `assets/`. | Draft files exist and are linked correctly. |

@@ -72,7 +72,7 @@ Review UI code for design-system compliance, accessibility, and responsive behav
 | Field | Type | Constraints | Purpose |
 |-------|------|-------------|---------|
 | `version` | string | Semantic version (`MAJOR.MINOR.PATCH[-prerelease][+build]`). | Version of the skill. Consider adding one once the skill is shared, consumed, or versioned. |
-| `metadata` | object | See `metadata` object below. | Author, tags, provenance, verification level, and other non-behavior metadata. |
+| `metadata` | object | See `metadata` object below. | Author, tags, verification level, and other non-behavior metadata. |
 | `invocation` | string | Enum: `model-invoked`, `user-invoked`. | Determines how the skill is reached. |
 
 `version` is optional for personal, experimental, or local skills. Add it once a skill is shared, consumed, versioned, or otherwise needs a compatibility signal.
@@ -84,7 +84,7 @@ Review UI code for design-system compliance, accessibility, and responsive behav
 | `author` | string | Max 256 chars. | Human or team responsible for the skill. |
 | `tags` | string[] | Unique. Each tag: lowercase, digits, hyphens; max 64 chars. | Keywords for cataloging and discovery. |
 | `verification_level` | string | Enum: `unverified`, `declared`, `tested`, `formal`. | See `GOVERNANCE.md`. |
-| `provenance` | object | See `GOVERNANCE.md`. | `authored_by`, `generated_by`, `origin`, `reviewed_by`, `reviewed_at`, `parent_session`. |
+| `verification_level` | string | Enum: `unverified`, `declared`, `tested`, `formal`. | See `GOVERNANCE.md`. |
 
 ### Harness hints
 
@@ -140,17 +140,6 @@ A JSON Schema for the portable frontmatter surface is maintained at `schemas/ski
         "verification_level": {
           "type": "string",
           "enum": ["unverified", "declared", "tested", "formal"]
-        },
-        "provenance": {
-          "type": "object",
-          "properties": {
-            "authored_by": { "type": "string", "enum": ["human", "agent", "mixed"] },
-            "generated_by": { "type": "string" },
-            "origin": { "type": "string", "enum": ["foreground", "background_review", "import"] },
-            "reviewed_by": { "type": "string" },
-            "reviewed_at": { "type": "string", "format": "date-time" },
-            "parent_session": { "type": "string" }
-          }
         }
       }
     },

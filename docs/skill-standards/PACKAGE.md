@@ -20,7 +20,7 @@ A single skill with no consumers and no dependencies can live as a lone `SKILL.m
 - The skill is consumed by other skills or conductors.
 - The skill is distributed beyond its origin project.
 - Multiple related skills are shipped together.
-- The skill needs provenance, verification, or governance metadata.
+- The skill needs verification or governance metadata.
 
 ---
 
@@ -90,9 +90,7 @@ A single skill with no consumers and no dependencies can live as a lone `SKILL.m
 | `license` | string | Max 256 chars. Prefer SPDX identifier. | License identifier. |
 | `compatibility` | object | See `compatibility` object below. | Harness compatibility, minimum versions. |
 | `namespaces` | object | Keys: skill names. Values: namespaced identifiers (`package:skill`). | Mapping from skill name to namespaced identifier. |
-| `requirements` | object | See `requirements` object below. | Skills, tools, MCP servers, binaries, environment variables. |
 | `verification` | object | See `verification` object below. | Verification level and evaluation artifact path. |
-| `provenance` | object | See `GOVERNANCE.md`. Required for distributed or agent-authored skills. | Where the skill came from and who reviewed it. |
 
 ### `requirements` object
 
@@ -112,20 +110,9 @@ A single skill with no consumers and no dependencies can live as a lone `SKILL.m
 | `level` | string | Enum: `unverified`, `declared`, `tested`, `formal`. | Verification level. |
 | `evals` | string | Non-empty path. Typically `evals/evals.json`. | Path to the evaluation artifact. |
 
-### `provenance` object
-
-| Key | Type | Constraints | Purpose |
-|-----|------|-------------|---------|
-| `authored_by` | string | Enum: `human`, `agent`, `mixed`. | Who authored the skill. |
-| `generated_by` | string | Max 256 chars. | Tool or agent that generated the skill, if applicable. |
-| `origin` | string | Enum: `foreground`, `background_review`, `import`. | Origin of the skill. |
-| `reviewed_by` | string | Max 256 chars. | Who reviewed the skill. |
-| `reviewed_at` | string | ISO 8601 date-time. | Review timestamp. |
-| `parent_session` | string | Max 256 chars. | Session that produced the skill, if agent-authored. |
-
 Runtime tool scoping stays in `SKILL.md` frontmatter (e.g., `allowed-tools`). The `requirements` object is for dependency declaration and policy gates, not for runtime behavior.
 
-See `GOVERNANCE.md` for verification levels and provenance rules.
+See `GOVERNANCE.md` for verification levels and governance rules.
 
 ## Formal package schemas
 
@@ -180,17 +167,6 @@ These schemas enable tooling, validation, and forward compatibility. The schemas
         "evals": { "type": "string", "minLength": 1 }
       }
     },
-    "provenance": {
-      "type": "object",
-      "properties": {
-        "authored_by": { "type": "string", "enum": ["human", "agent", "mixed"] },
-        "generated_by": { "type": "string" },
-        "origin": { "type": "string", "enum": ["foreground", "background_review", "import"] },
-        "reviewed_by": { "type": "string" },
-        "reviewed_at": { "type": "string", "format": "date-time" },
-        "parent_session": { "type": "string" }
-      },
-      "additionalProperties": true
     }
   },
   "additionalProperties": true
@@ -418,7 +394,7 @@ Once the skill is stable, publish or install it. At publish time:
 - Document breaking changes and migration paths.
 - Add or update `README.md` for human maintainers.
 - Declare compatibility and dependencies in `skills.json`.
-- Record provenance and verification metadata.
+- Record verification metadata.
 
 ### 8. Maintain
 
@@ -460,9 +436,8 @@ See [docs/PORTABILITY.md](../PORTABILITY.md) for the full degradation model.
 
 ## Governance in the package layer
 
-The package layer is where governance metadata lives. For distributed skills, `skills.json` must include:
+The package layer is where governance metadata lives. For distributed skills, `skills.json` should include:
 
-- Provenance metadata (`authored_by`, `generated_by`, `origin`, `reviewed_by`, `reviewed_at`).
 - Verification level.
 - Required dependencies for policy gates.
 - License.
@@ -479,13 +454,13 @@ For personal or local skills, these fields are recommended but not required. See
 - **Namespacing** (`package-name:skill-name`) prevents collisions when skills are shared.
 - Declare all **dependencies** (skills, tools, MCP servers, binaries, environment variables) so policy gates can validate them.
 - The **lifecycle** stages have clear entry and exit criteria: decide → design → draft → validate → test → iterate → publish → maintain → deprecate.
-- For distributed skills, add governance metadata: provenance, verification level, and license.
+- For distributed skills, add governance metadata: verification level and license.
 
 ## Research basis
 
 - The package envelope (`skills.json`, versioning, dependencies, lifecycle) is a synthesis of package models from Codex, Claude Code, Hermes, and the agentskills.io ecosystem.
 - Codex uses a `config_folder` for project-level skills and supports both `.codex/skills/` and `.agents/skills/`. https://github.com/openai/codex/blob/98d28aab54ed86714901b6619400598598876dd0/codex-rs/core-skills/src/loader.rs#L303-L315
-- Hermes has a skill provenance and write-approval system (`tools/skill_provenance.py`, `tools/write_approval.py`) that informs the staging and provenance model. https://github.com/NousResearch/hermes-agent
+- Hermes has a write-approval system (`tools/write_approval.py`) that informs the staging/approval model. https://github.com/NousResearch/hermes-agent
 - The agentskills.io specification defines package-level metadata, compatibility, and harness compatibility declarations. https://agentskills.io/specification
 - The lifecycle model is our own synthesis of standard software lifecycle stages with the evaluation and governance requirements drawn from the research.
 - Canonical install paths (`./agents/skills/`, `~/.agents/skills/`) are a design decision based on the broadest cross-harness path observed in the research, with native-path symlinks allowed for compatibility.

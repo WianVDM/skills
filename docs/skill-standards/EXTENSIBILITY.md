@@ -223,7 +223,7 @@ The following extensibility concerns are **limited** and are documented as such:
 - [`FORMAT.md`](./FORMAT.md) — the `SKILL.md` core and sibling directories.
 - [`PACKAGE.md`](./PACKAGE.md) — dependency declaration.
 - [`EVALUATION.md`](./EVALUATION.md) — evaluation framework, including subjective-output hierarchy and multi-agent evaluation.
-- [`GOVERNANCE.md`](./GOVERNANCE.md) — provenance and audit.
+- [`GOVERNANCE.md`](./GOVERNANCE.md) — governance and audit.
 - [`patterns/conductor.md`](./patterns/conductor.md) — coordination and delegation.
 - [`patterns/conductor-implementer-split.md`](./patterns/conductor-implementer-split.md) — reasoning/execution split.
 - [`patterns/context-reports.md`](./patterns/context-reports.md) — structured shared artifacts.

@@ -8,7 +8,6 @@ Use this skill when you need to:
 
 - Install a skill from a local directory.
 - Install a skill from a published archive URL.
-- Record provenance for an installed skill.
 - Confirm before overwriting an existing skill.
 
 ## How to use
@@ -33,7 +32,6 @@ The script returns a structured report:
 - `skill_name`: installed skill name.
 - `target_scope`: `project` or `user`.
 - `installed_path`: path where the skill was installed.
-- `provenance`: source, URL, and install timestamp.
 
 ## Directory layout
 
@@ -48,7 +46,7 @@ install-skill/
 ## Key conventions
 
 - **Confirm before overwrite:** fails closed unless `--yes` is provided or the caller confirms.
-- **Record provenance:** writes or updates `skills.json` in the target scope.
+- **Record install:** writes or updates `skills.json` in the target scope.
 - **No arbitrary command execution:** only copies local directories or downloads archives from URLs.
 - **Source-first:** registry names are not directly installable; resolve them to a URL or local path first.
 
@@ -56,5 +54,5 @@ install-skill/
 
 - Target directory detection is delegated to `detect-project-context` for project scope.
 - Add archive formats by extending the extraction logic.
-- Update the provenance schema if `skills.json` evolves.
+- Update the install schema if `skills.json` evolves.
 - Keep the confirmation behavior strict to avoid accidental overwrites.

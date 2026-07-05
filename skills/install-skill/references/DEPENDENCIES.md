@@ -7,7 +7,7 @@
 ## Required tools and capabilities
 
 - **Read filesystem** — reads the source path or downloads an archive URL.
-- **Write filesystem** — copies skills into the target directory and records provenance.
+- **Write filesystem** — copies skills into the target directory and records the install.
 - **Network access** — only when installing from an archive URL.
 - **Run subprocesses** — used to invoke `detect-project-context`.
 - **Python 3.x** — the script is written in Python.

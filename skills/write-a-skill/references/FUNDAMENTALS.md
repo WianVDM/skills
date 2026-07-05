@@ -34,7 +34,7 @@ Every `SKILL.md` must declare:
 - `description`: one sentence, ≤ 1024 chars, front-loads the leading word or domain, lists distinct triggers.
 - `version`: optional semantic version. Add one once the skill is shared, consumed, or versioned.
 - `invocation`: `model-invoked` or `user-invoked`.
-- `metadata`: author, tags, and provenance if distributed or agent-authored.
+- `metadata`: author, tags, and verification level if applicable.
 
 ## Scope
 

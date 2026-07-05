@@ -194,7 +194,6 @@ See `patterns/conductor-implementer-split.md` for the conductor/implementer patt
 
 Agent-authored skills need the same functional tests as human-authored skills, plus:
 
-- **Provenance test** — metadata is present and correct.
 - **Anti-rationalization test** — the skill does not undermine its own rules.
 - **Scope test** — the skill stays within its declared scope.
 - **Mutation test** — the skill does not try to modify itself or other skills without approval.
@@ -212,7 +211,6 @@ Security scanning is a separate audit dimension from functional evaluation. It c
 - Undeclared network access or external dependencies.
 - Unsafe code execution or script injection.
 - Inappropriate permissions or sandbox escapes.
-- Provenance gaps or spoofing.
 
 Security scanning is required for distributed skills and recommended for local skills. Results are reported in `audit/security-report.json`.
 
@@ -245,7 +243,7 @@ The following evaluation concerns are **limited** and are documented as such:
 - **Composition tests** are required for building blocks and conductors; they check selection, following, composition, and distractor resistance.
 - **Pressure tests** try to make discipline skills rationalize their way around the rule.
 - **Discipline skills** use the documented failure pattern as a baseline, not a successful no-skill run.
-- **Agent-authored skills** need extra tests: provenance, anti-rationalization, scope, mutation, and consolidation.
+- **Agent-authored skills** need extra tests: anti-rationalization, scope, mutation, and consolidation.
 - **Security scanning** is a separate audit dimension from functional evaluation.
 - Run a **minimal-harness test** for portable skills to confirm degraded behavior is still useful.
 
@@ -267,7 +265,7 @@ The following evaluation concerns are **limited** and are documented as such:
 
 - [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) — the fundamental evaluation checklists and review questions.
 - [`PACKAGE.md`](./PACKAGE.md) — formal `evals.json`, `skills.json`, and lock-file schemas.
-- [`GOVERNANCE.md`](./GOVERNANCE.md) — provenance, verification levels, and agent-authored skills.
+- [`GOVERNANCE.md`](./GOVERNANCE.md) — verification levels and agent-authored skills.
 - [`PORTABILITY.md`](../PORTABILITY.md) — minimal-harness degradation and portable core.
 - [`patterns/discipline-skill.md`](./patterns/discipline-skill.md) — pressure testing and guardrail baselines.
 - [`patterns/conductor-implementer-split.md`](./patterns/conductor-implementer-split.md) — multi-agent handoff patterns.

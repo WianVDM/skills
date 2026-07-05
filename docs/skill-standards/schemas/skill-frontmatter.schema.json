@@ -45,24 +45,6 @@
           "type": "string",
           "enum": ["unverified", "declared", "tested", "formal"],
           "description": "Verification level for the skill. See GOVERNANCE.md."
-        },
-        "provenance": {
-          "type": "object",
-          "properties": {
-            "authored_by": {
-              "type": "string",
-              "enum": ["human", "agent", "mixed"]
-            },
-            "generated_by": { "type": "string" },
-            "origin": {
-              "type": "string",
-              "enum": ["foreground", "background_review", "import"]
-            },
-            "reviewed_by": { "type": "string" },
-            "reviewed_at": { "type": "string", "format": "date-time" },
-            "parent_session": { "type": "string" }
-          },
-          "additionalProperties": true
         }
       },
       "additionalProperties": true

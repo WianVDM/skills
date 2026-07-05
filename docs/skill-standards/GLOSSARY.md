@@ -224,11 +224,7 @@ The pattern of separating reasoning and orchestration (conductor) from execution
 
 ---
 
-## Governance and provenance
-
-### Provenance
-
-Metadata about where a skill came from and who is responsible for it: `authored_by`, `generated_by`, `origin`, `reviewed_by`, `reviewed_at`, `parent_session`.
+## Governance and verification
 
 ### Agent-authored skill
 
@@ -348,7 +344,7 @@ The process by which a long-running agent session is summarized or truncated to 
 
 ### Trust layer
 
-The concerns that make a skill trustworthy for distribution: provenance, verification, evaluation, audit, and cryptographic signing. The trust layer sits around the portable core and package envelope.
+The concerns that make a skill trustworthy for distribution: verification, evaluation, audit, and cryptographic signing. The trust layer sits around the portable core and package envelope.
 
 ### Bootstrap routine
 

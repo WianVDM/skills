@@ -19,8 +19,7 @@ This is the contract that `audit-skill` uses to evaluate any skill. Each check h
 | F05 | `version` is valid SemVer if present, especially once shared or consumed. | Warning | Absent is acceptable for personal/local skills. If present, matches `MAJOR.MINOR.PATCH`. |
 | F06 | `invocation` is `model-invoked` or `user-invoked`. | Blocker | Declared and consistent with `disable-model-invocation`. |
 | F07 | `metadata` includes author and tags. | Warning | `author` and `tags` present. |
-| F08 | Provenance metadata is present if distributed or agent-authored. | Warning | `authored_by`, `origin`, `reviewed_by`, `reviewed_at` present when applicable. |
-| F09 | Frontmatter validates against JSON schema. | Blocker | No schema errors. |
+| F08 | Frontmatter validates against JSON schema. | Blocker | No schema errors. |
 
 ## Category: Type and shape
 
@@ -104,7 +103,6 @@ This is the contract that `audit-skill` uses to evaluate any skill. Each check h
 |---|---|---|---|
 | G01 | License is declared if distributed. | Warning | `license` present in `skills.json` or frontmatter. |
 | G02 | Verification level is declared if distributed. | Warning | `verification.level` present. |
-| G03 | Agent-authored skills have provenance. | Warning | Provenance metadata present and consistent. |
 
 ## Output format
 

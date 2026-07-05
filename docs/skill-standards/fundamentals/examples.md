@@ -598,49 +598,7 @@ This skill must resist:
 - **Clear escalation:** when the user tries to override, the skill asks for explicit confirmation.
 - **Pressure-tested:** the skill lists prompts that would normally break discipline.
 
----
-
-## Example 11 — Governance: provenance metadata for an agent-authored skill
-
-A skill created by an agent carries provenance and verification metadata so consumers can trust it.
-
-### `skills.json`
-
-```json
-{
-  "name": "refactor-legacy-api",
-  "version": "1.0.0",
-  "description": "Refactor legacy API endpoints to a new resource model.",
-  "license": "MIT",
-  "compatibility": {
-    "harnesses": ["claude-code", "cursor", "codex"]
-  },
-  "skills": ["refactor-legacy-api"],
-  "verification": {
-    "level": "tested",
-    "evals": "evals/evals.json"
-  },
-  "provenance": {
-    "authored_by": "agent",
-    "generated_by": "claude-code-agent",
-    "origin": "background_review",
-    "reviewed_by": "senior-reviewer",
-    "reviewed_at": "2026-07-04T12:00:00Z",
-    "parent_session": "abc123-def456"
-  }
-}
-```
-
-### Why it works
-
-- **Origin is clear:** consumers know the skill was agent-authored and reviewed.
-- **Verification is recorded:** the skill was tested and reviewed before distribution.
-- **Parent session is tracked:** if a problem is found, the source session can be inspected.
-- **No secrets or tokens:** only references to environment variables, not values.
-
----
-
-## Example 12 — Context-file: `AGENTS.md`
+## Example 11 — Context-file: `AGENTS.md`
 
 A context file sets the baseline for how the agent should work in this project. It is not a skill.
 
@@ -672,7 +630,7 @@ This project uses TypeScript, React, and Vitest.
 
 ---
 
-## Example 13 — Global/configurable skill with initialization: `ticket-research`
+## Example 12 — Global/configurable skill with initialization: `ticket-research`
 
 A global skill detects the project environment, asks for required preferences, and writes initial config on first run.
 
@@ -720,7 +678,7 @@ notes:
 - The example structures are drawn from the common patterns observed across the research and our own design practice.
 - The `find-skills` tool building block example reflects our sharpened definition of building blocks as functional, narrow capabilities with structured output.
 - The `test-driven-development` discipline skill example illustrates the anti-rationalization and pressure-testing patterns from `patterns/discipline-skill.md`.
-- The governance example illustrates the provenance and verification metadata from `GOVERNANCE.md`.
+- The governance example illustrates the verification metadata from `GOVERNANCE.md`.
 - The `AGENTS.md` context-file example illustrates the boundary between context files and skills from `patterns/context-file.md`.
 - The initialization example illustrates the configurable and initialization patterns from `patterns/configurable.md` and `patterns/initialization.md`.
 - The worker prompt example is our own template, aligned with the research on delegation and subagent contracts.
