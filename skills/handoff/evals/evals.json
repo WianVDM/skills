@@ -1,0 +1,52 @@
+{
+  "version": "1",
+  "skill": "handoff",
+  "tests": [
+    {
+      "id": "behavior-default-handoff",
+      "type": "behavior",
+      "prompt": "Write a handoff for this session.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "file_write",
+          "path": ".*/handoffs/unticketed/\\d{8}-\\d{6}-handoff\\.md"
+        },
+        {
+          "type": "output_contains",
+          "value": "handoff"
+        }
+      ]
+    },
+    {
+      "id": "behavior-keyed-handoff",
+      "type": "behavior",
+      "prompt": "Create a handoff for ticket ABC-123.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "file_write",
+          "path": ".*/handoffs/abc-123/handoff-001\\.md"
+        },
+        {
+          "type": "output_contains",
+          "value": "abc-123"
+        }
+      ]
+    },
+    {
+      "id": "composition-conductor-checkpoints",
+      "type": "composition",
+      "prompt": "Checkpoint the current session for ticket ABC-123.",
+      "available_skills": ["handoff", "debrief", "context-reports"],
+      "expected_selection": ["handoff"]
+    },
+    {
+      "id": "composition-no-resumption",
+      "type": "composition",
+      "prompt": "Continue from the latest handoff for ticket ABC-123.",
+      "available_skills": ["handoff", "debrief", "context-reports"],
+      "expected_selection": ["context-reports"]
+    }
+  ]
+}

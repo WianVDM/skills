@@ -7,9 +7,11 @@ Deterministic helper for the handoff skill.
 Subcommands:
     discover    List candidate artifacts from the context directory.
     resolve     Determine the next handoff path, sequence, and previous handoff.
-    prune       Remove older unticketed handoffs beyond a limit.
 
 All output is JSON. Errors are written to stderr and the exit code is non-zero.
+
+This helper does not delete, overwrite, or modify existing handoff files. It only
+resolves new paths and discovers candidate artifacts.
 """
 
 import argparse
@@ -21,7 +23,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 DEFAULT_HANDOFFS_DIR = "handoffs"
-DEFAULT_UNTICKETED_LIMIT = 10
 
 
 def normalize_key(key: str) -> str:
@@ -32,6 +33,15 @@ def normalize_key(key: str) -> str:
     return key or "untitled"
 
 
+def _is_writable(path: Path) -> bool:
+    """Check whether the directory is writable."""
+    if not path.exists():
+        return False
+    if not path.is_dir():
+        return False
+    return os.access(path, os.W_OK)
+
+
 def detect_context_dir(start: Path | None = None) -> Path:
     """Detect the project context directory.
 
@@ -39,20 +49,29 @@ def detect_context_dir(start: Path | None = None) -> Path:
       1. Explicitly supplied start directory.
       2. .agents/context in the current working directory or any ancestor.
       3. The current working directory.
+
+    Raises an error if the selected directory is not writable.
     """
     if start is not None:
         start = Path(start).resolve()
         if start.exists() and not start.is_dir():
             start = start.parent
+        if not _is_writable(start):
+            print(f"Context directory is not writable: {start}", file=sys.stderr)
+            sys.exit(1)
         return start
 
     cwd = Path.cwd().resolve()
     for path in [cwd] + list(cwd.parents):
         candidate = path / ".agents" / "context"
-        if candidate.is_dir():
+        if candidate.is_dir() and _is_writable(candidate):
             return candidate
 
-    return cwd
+    if _is_writable(cwd):
+        return cwd
+
+    print(f"No writable context directory found. Tried: {cwd}", file=sys.stderr)
+    sys.exit(1)
 
 
 def handoffs_root(context_dir: Path) -> Path:
@@ -159,6 +178,10 @@ def cmd_resolve(args: argparse.Namespace) -> None:
 
     output_path = directory / output_name
 
+    if output_path.exists():
+        print(f"Resolved handoff path already exists: {output_path}", file=sys.stderr)
+        sys.exit(1)
+
     result = {
         "context_dir": str(context_dir.resolve()),
         "handoffs_dir": str(handoffs_root(context_dir)),
@@ -170,49 +193,6 @@ def cmd_resolve(args: argparse.Namespace) -> None:
         "existing_handoffs": [str(h.name) for h in handoffs],
     }
     json.dump(result, sys.stdout, indent=2)
-
-
-def cmd_prune(args: argparse.Namespace) -> None:
-    """Remove older unticketed handoffs beyond the configured limit."""
-    context_dir = detect_context_dir(args.context_dir)
-    directory = key_dir(context_dir, None)
-
-    if not directory.exists():
-        json.dump({"removed": [], "kept": [], "limit": args.limit}, sys.stdout, indent=2)
-        return
-
-    handoffs = existing_handoffs(directory)
-    if len(handoffs) <= args.limit:
-        json.dump(
-            {
-                "removed": [],
-                "kept": [str(h.name) for h in handoffs],
-                "limit": args.limit,
-            },
-            sys.stdout,
-            indent=2,
-        )
-        return
-
-    kept = handoffs[-args.limit:]
-    removed = handoffs[:-args.limit]
-    removed_names = []
-    for path in removed:
-        try:
-            path.unlink()
-            removed_names.append(str(path.name))
-        except OSError as e:
-            print(f"Failed to remove {path}: {e}", file=sys.stderr)
-
-    json.dump(
-        {
-            "removed": removed_names,
-            "kept": [str(h.name) for h in kept],
-            "limit": args.limit,
-        },
-        sys.stdout,
-        indent=2,
-    )
 
 
 def main() -> None:
@@ -238,15 +218,6 @@ def main() -> None:
         help="Ticket key or session alias. Omit for unticketed handoffs.",
     )
     resolve_parser.set_defaults(func=cmd_resolve)
-
-    prune_parser = subparsers.add_parser("prune", help="Remove older unticketed handoffs.")
-    prune_parser.add_argument(
-        "--limit",
-        type=int,
-        default=DEFAULT_UNTICKETED_LIMIT,
-        help=f"Maximum number of unticketed handoffs to keep (default: {DEFAULT_UNTICKETED_LIMIT}).",
-    )
-    prune_parser.set_defaults(func=cmd_prune)
 
     args = parser.parse_args()
     args.func(args)
