@@ -1,6 +1,7 @@
 # Pi-generated transient context
 .agents/
 .pi/
+AGENT.md
 
 # Local working directories (uncomment if used)
 # workspace/
