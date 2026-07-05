@@ -48,7 +48,7 @@ Building block.
 2. **Resolve the argument.** Use the key or alias if provided; otherwise default to `unticketed`.
 3. **Discover relevant artifacts.** Scan the context directory for recent `.md` files.
 4. **Resolve the next handoff path.** Run `scripts/handoff-helper.py resolve` to pick a unique filename.
-5. **Tighten the snapshot.** Include: goal, current state, one next action, tried approaches, blockers, user preferences, links, chain. Remove duplicates. Stay within the configured token budget (default 8,000 tokens).
+5. **Draft and verify the snapshot.** Use `references/HANDOFF_TEMPLATE.md`. Include: goal, current state, one next action, tried approaches, blockers, user preferences, annotated links, and chain. Remove duplicates. Ensure the next session can act without reading the linked artifacts. Stay within the configured token budget (default 8,000 tokens).
 6. **Report the path.** Return the absolute path to the new handoff file.
 
 ## Output
