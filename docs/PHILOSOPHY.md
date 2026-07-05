@@ -1,5 +1,11 @@
 # Skill Architecture Library — Philosophy
 
+## At a glance
+
+This manifesto defines the smallest set of fundamentals that make agent skills great, and the modular architecture pattern that lets them compose. It is about why skills exist, what they are and are not, and how the standard evolves.
+
+**Read this if:** you want the grounding beliefs before writing, reviewing, or adopting the standard.
+
 ## Mission
 
 To define the smallest set of fundamentals that make any agent skill great, and to document a modular architecture pattern that lets skills be composed from reusable building blocks, conductors, and wrappers. This standard is both a specification and a living library of skills built on those principles.
@@ -50,6 +56,16 @@ A skill is a reusable unit of process guidance that is injected into an agent's 
 ## How this standard evolves
 
 We start with the smallest possible fundamentals and the smallest possible architecture. We add patterns only when a recurring need proves they are necessary. We change existing skills when the standards change. We document our limitations honestly rather than pretending to certainty.
+
+## Key takeaways
+
+- A skill is a **delegation boundary**, not a prompt, script, plugin, or rule.
+- The root virtue is **predictability**: the agent should follow the same *process* every time.
+- **Fundamentals are universal; architecture is opt-in**.
+- **Minimalism beats completeness**; every line must earn its place.
+- **Composition over monoliths**: complex behavior emerges from simple skills working together.
+- **Trust is built through provenance, evaluation, and audit**.
+- **Refinement is continuous**; do not keep a rule just because it was written down.
 
 ## Research basis
 

@@ -1,5 +1,11 @@
 # Evaluation Framework
 
+## At a glance
+
+This document defines the **harness-neutral evaluation framework** built around `evals/evals.json` and a pluggable runner interface. It covers eval-driven development, trigger/behavior/composition/pressure/security tests, deterministic assertions, and minimal-harness runs.
+
+**Read this if:** you are testing a skill, choosing baselines, or setting up a CI evaluation pipeline.
+
 A skill is not finished when it is written. It is finished when it reliably improves the agent's behavior. This document specifies the evaluation framework for skills in this library.
 
 The framework is built around a harness-neutral `evals/evals.json` schema and a pluggable runner interface. Each harness adapts its native traces into the common envelope, so tests can be reused across environments.
@@ -230,6 +236,18 @@ The following evaluation concerns are **limited** and are documented as such:
 - LLM judges require confidence scoring and should not be treated as ground truth.
 
 ---
+
+## Key takeaways
+
+- A skill is finished when it **reliably improves the agent's behavior**, not when it is written.
+- Prefer **deterministic assertions** (file read/write, commands, output contains/excludes, format) over LLM-as-judge.
+- **Trigger evals** are essential for model-invoked skills: aim for 10 should-trigger and 10 should-not-trigger queries.
+- **Composition tests** are required for building blocks and conductors; they check selection, following, composition, and distractor resistance.
+- **Pressure tests** try to make discipline skills rationalize their way around the rule.
+- **Discipline skills** use the documented failure pattern as a baseline, not a successful no-skill run.
+- **Agent-authored skills** need extra tests: provenance, anti-rationalization, scope, mutation, and consolidation.
+- **Security scanning** is a separate audit dimension from functional evaluation.
+- Run a **minimal-harness test** for portable skills to confirm degraded behavior is still useful.
 
 ## Research basis
 

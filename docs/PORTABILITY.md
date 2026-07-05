@@ -1,5 +1,11 @@
 # Portability
 
+## At a glance
+
+This manifesto defines portability as **contract plus degradation rules**: a portable core, canonical install paths, and fallback behavior for harnesses that only support a subset of the standard. It covers plain-markdown export, convention-file fallback, dependency mapping, and minimal-harness injection.
+
+**Read this if:** you want a skill to work across Claude Code, Cursor, Codex, Aider, and future harnesses.
+
 A portable skill standard is not "write once, run everywhere" in the naive sense. It is a **contract plus degradation rules**: define the portable core, define canonical install paths, define fallback behavior for harnesses that do not support the full feature set, and let richer harnesses use the full feature set.
 
 This document specifies the portability model for skills in this library.
@@ -161,6 +167,15 @@ The following portability concerns are **limited** and are documented as such ra
 The standard is **transport-agnostic** so that OCI artifacts, npm packages, and other distribution mechanisms can be added later without changing the core model.
 
 ---
+
+## Key takeaways
+
+- The **portable core** is `SKILL.md` + optional sibling directories + `skills.json`/`skills.lock`.
+- **Canonical install paths** are `.agents/skills/` at the project and user level; native paths are for compatibility.
+- **Degrade gracefully** by stripping frontmatter, inlining subagents, running scripts manually, or writing reports locally.
+- **Fail closed** when a required capability (MCP server, binary, environment variable) is missing.
+- **Dependency declaration** is portable; **runtime tool scoping** is harness-specific.
+- Some details (exact trigger thresholds, rule-vs-skill precedence, inconsistent Cursor behavior) are **accepted limitations**.
 
 ## Research basis
 

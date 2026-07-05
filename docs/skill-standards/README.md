@@ -17,6 +17,55 @@ Use this document as the starting point whenever you need to:
 
 ---
 
+## How to read this wiki
+
+The standards are intentionally detailed. This section helps you pick the right layer to read first. For a full navigation map, see [`INDEX.md`](./INDEX.md).
+
+### Reading paths by role
+
+| Role | Start here | Then read | Skip for now |
+|---|---|---|---|
+| **New skill author** | [`fundamentals/what-is-a-skill.md`](./fundamentals/what-is-a-skill.md), [`fundamentals/types.md`](./fundamentals/types.md) | [`FORMAT.md`](./FORMAT.md), [`fundamentals/structure.md`](./fundamentals/structure.md), [`fundamentals/form-and-style.md`](./fundamentals/form-and-style.md), [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) | [`EXTENSIBILITY.md`](./EXTENSIBILITY.md), [`GOVERNANCE.md`](./GOVERNANCE.md) (until you ship or share) |
+| **Reviewer** | [`QUICKREF.md`](./QUICKREF.md), [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) | [`fundamentals/types.md`](./fundamentals/types.md), [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md), [`GOVERNANCE.md`](./GOVERNANCE.md) | Pattern docs not used by the skill under review |
+| **Architect / consumer** | [`docs/PHILOSOPHY.md`](../PHILOSOPHY.md), [`docs/ARCHITECTURE.md`](../ARCHITECTURE.md), [`docs/PORTABILITY.md`](../PORTABILITY.md) | [`PATTERN_CATALOG.md`](./PATTERN_CATALOG.md), [`PACKAGE.md`](./PACKAGE.md), [`FORMAT.md`](./FORMAT.md) | Discipline-specific pattern docs until needed |
+| **Evaluator / QA** | [`EVALUATION.md`](./EVALUATION.md), [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) | [`CONTEXT_BUDGET.md`](./CONTEXT_BUDGET.md), [`fundamentals/evaluation.md`](./fundamentals/evaluation.md), [`patterns/discipline-skill.md`](./patterns/discipline-skill.md) | [`EXTENSIBILITY.md`](./EXTENSIBILITY.md) |
+
+### Core concepts in 5 minutes
+
+A few ideas unlock the rest of the wiki:
+
+- **Predictability** is the root virtue. A skill exists to make the agent follow the same *process* every time.
+- **Load-bearing minimalism**: every line must earn its place. If removing it does not change behavior, remove it.
+- **Context pointer**: the `description` of a model-invoked skill is a pointer that tells the agent when to load the skill.
+- **Progressive disclosure**: keep the top of `SKILL.md` clean; push deep detail into `references/` and pull it in only when needed.
+- **Leading word** and **completion criterion**: anchor behavior in the model's priors and make every stopping condition checkable.
+- **Model-invoked vs. user-invoked**: trade context load (the model can fire the skill) against cognitive load (the user must remember it).
+- **Three layers**: building block (narrow capability), conductor (coordination), wrapper (human-facing adaptation).
+- **Package envelope and trust layer**: `skills.json`, versioning, dependencies, provenance, evaluation, audit.
+- **Portable core + degradation**: the same `SKILL.md` should degrade gracefully across harnesses.
+
+### Doc-tier labels
+
+| Tier | Docs | Purpose |
+|---|---|---|
+| **Core** | `PHILOSOPHY.md`, `ARCHITECTURE.md`, `PORTABILITY.md`, `README.md`, `fundamentals/what-is-a-skill.md`, `FORMAT.md` | Understand the model, the shape, and the format. |
+| **Intermediate** | `fundamentals/types.md`, `fundamentals/structure.md`, `fundamentals/form-and-style.md`, `fundamentals/evaluation.md`, `fundamentals/common-mistakes.md`, `PACKAGE.md`, `EVALUATION.md`, `GOVERNANCE.md` | Write, package, evaluate, and review skills. |
+| **Advanced** | `EXTENSIBILITY.md`, `MIGRATION.md`, `CONTEXT_BUDGET.md`, `TRIGGER_EVALS.md`, `PATTERN_CATALOG.md`, individual pattern docs | Compose, optimize, migrate, and extend skills. |
+
+### Progressive reading paths
+
+| Path | Goal | Read in this order |
+|---|---|---|
+| **First 10 minutes** | Get the mindset | [`PHILOSOPHY.md`](../PHILOSOPHY.md) → [`ARCHITECTURE.md`](../ARCHITECTURE.md) → [`fundamentals/what-is-a-skill.md`](./fundamentals/what-is-a-skill.md) |
+| **Write a skill** | Draft a working skill | [`fundamentals/what-is-a-skill.md`](./fundamentals/what-is-a-skill.md) → [`fundamentals/types.md`](./fundamentals/types.md) → [`FORMAT.md`](./FORMAT.md) → [`fundamentals/structure.md`](./fundamentals/structure.md) → [`fundamentals/form-and-style.md`](./fundamentals/form-and-style.md) → [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md) → [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) |
+| **Review a skill** | Check an existing skill | [`QUICKREF.md`](./QUICKREF.md) → [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) → [`fundamentals/types.md`](./fundamentals/types.md) → [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md) → [`GOVERNANCE.md`](./GOVERNANCE.md) |
+| **Compose skills** | Build multi-skill workflows | [`ARCHITECTURE.md`](../ARCHITECTURE.md) → [`PATTERN_CATALOG.md`](./PATTERN_CATALOG.md) → [`patterns/conductor.md`](./patterns/conductor.md) → [`patterns/building-block.md`](./patterns/building-block.md) → [`patterns/context-reports.md`](./patterns/context-reports.md) |
+| **Make a skill portable/global** | Run across projects | [`PORTABILITY.md`](../PORTABILITY.md) → [`PACKAGE.md`](./PACKAGE.md) → [`patterns/global-pluggable.md`](./patterns/global-pluggable.md) → [`patterns/configurable.md`](./patterns/configurable.md) → [`patterns/initialization.md`](./patterns/initialization.md) → [`MIGRATION.md`](./MIGRATION.md) |
+| **Evaluate skills** | Test routing and behavior | [`EVALUATION.md`](./EVALUATION.md) → [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) → [`CONTEXT_BUDGET.md`](./CONTEXT_BUDGET.md) → [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) |
+| **Deep dive** | Read the whole wiki | Follow the order in the [standards package](#the-standards-package) section below. |
+
+---
+
 ## What a skill is
 
 A skill is the **smallest load-bearing shape** that makes an agent reliably do the right thing for a specific domain. It is a **contract** between the skill author and the agent, not a script, manual, or prompt.
@@ -50,6 +99,7 @@ Every skill must satisfy these.
 | **Lifecycle** | [`fundamentals/lifecycle.md`](./fundamentals/lifecycle.md) | Draft, test, publish, maintain, retire. |
 | **Security** | [`fundamentals/security.md`](./fundamentals/security.md) | Secrets, destructive actions, required capabilities, fail closed. |
 | **When to create a skill** | [`fundamentals/when-to-create-a-skill.md`](./fundamentals/when-to-create-a-skill.md) | Skill vs. script, MCP server, prompt template. |
+| **Failure recovery** | [`fundamentals/failure-recovery.md`](./fundamentals/failure-recovery.md) | Detecting failures, iterating without over-correcting, split/prune/retire. |
 
 ### Patterns (opt-in)
 
@@ -71,11 +121,34 @@ A skill adopts these only when its role requires them.
 | **Context reports** | [`patterns/context-reports.md`](./patterns/context-reports.md) | Produce or consume structured reports. |
 | **Versioning** | [`patterns/versioning.md`](./patterns/versioning.md) | Consumers depend on the skill's behavior or schema. |
 
+### Patterns by category
+
+Patterns are opt-in, but they are grouped by the kind of problem they solve. Use this to narrow your reading.
+
+| Category | Patterns | Purpose |
+|---|---|---|
+| **Core types** | building block, conductor, wrapper | The three primary shapes a skill can take. |
+| **Cross-cutting patterns** | discipline skill, context-file, mode, conductor/implementer split | Patterns that apply inside or alongside any skill type. |
+| **Operational patterns** | global/pluggable, configurable, initialization, stateful, context reports, versioning | Patterns that make a skill durable, portable, and composable in real projects. |
+
+See [`PATTERN_CATALOG.md`](./PATTERN_CATALOG.md) for a composition matrix and common pattern combinations.
+
 ### Cross-cutting concerns
 
 - [`GOVERNANCE.md`](./GOVERNANCE.md) — provenance, agent-authored skills, staging, approval, verification levels, audit.
 - [`EVALUATION.md`](./EVALUATION.md) — the `evals/evals.json` framework, runner interface, baselines, composition tests.
 - [`EXTENSIBILITY.md`](./EXTENSIBILITY.md) — non-coding skills and multi-agent coordination.
+- [`MIGRATION.md`](./MIGRATION.md) — moving a skill between shapes (project-specific → global, rule → skill, v1 → v2).
+- [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) — practical guide and template for testing skill routing.
+- [`CONTEXT_BUDGET.md`](./CONTEXT_BUDGET.md) — description length, splitting, and context-load management.
+
+### Utility docs and quick references
+
+For fast lookup and cross-cutting guides, keep these at hand:
+
+- [`INDEX.md`](./INDEX.md) — navigation map, role indexes, topic index, and pattern chooser.
+- [`QUICKREF.md`](./QUICKREF.md) — one-page summaries for authors, reviewers, and consumers.
+- [`PATTERN_CATALOG.md`](./PATTERN_CATALOG.md) — which patterns compose with which.
 - [`MIGRATION.md`](./MIGRATION.md) — moving a skill between shapes (project-specific → global, rule → skill, v1 → v2).
 - [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) — practical guide and template for testing skill routing.
 - [`CONTEXT_BUDGET.md`](./CONTEXT_BUDGET.md) — description length, splitting, and context-load management.
@@ -122,15 +195,22 @@ A skill adopts these only when its role requires them.
 2. Choose the right type: building block, conductor, or wrapper.
 3. Draft the smallest viable `SKILL.md` using [`FORMAT.md`](./FORMAT.md) and [`fundamentals/structure.md`](./fundamentals/structure.md).
 4. Check [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md) before expanding.
-5. If the skill is global, configurable, stateful, report-producing, reusable, or versioned, read the relevant pattern docs.
-6. Review against [`fundamentals/evaluation.md`](./fundamentals/evaluation.md).
+5. If the skill is global, configurable, stateful, report-producing, reusable, or versioned, read the relevant pattern docs. See [`PATTERN_CATALOG.md`](./PATTERN_CATALOG.md) to choose which patterns compose.
+6. Review against [`fundamentals/evaluation.md`](./fundamentals/evaluation.md). For practical testing, see [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) and [`CONTEXT_BUDGET.md`](./CONTEXT_BUDGET.md).
 
 ### I am reviewing an existing skill
 
-1. Does it satisfy the fundamentals? Start with [`fundamentals/evaluation.md`](./fundamentals/evaluation.md).
+1. Does it satisfy the fundamentals? Start with [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) and the [`QUICKREF.md`](./QUICKREF.md) checklist.
 2. Is it the right type? See [`fundamentals/types.md`](./fundamentals/types.md).
 3. Is it bloated? See [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md).
-4. Does it adopt architecture patterns correctly? See the relevant pattern docs.
+4. Does it adopt architecture patterns correctly? See [`PATTERN_CATALOG.md`](./PATTERN_CATALOG.md) and the relevant pattern docs.
+
+### A skill is failing or being ignored
+
+1. See [`fundamentals/failure-recovery.md`](./fundamentals/failure-recovery.md) to diagnose silent vs. loud failures.
+2. Check whether the skill is loading: see [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md).
+3. If it loads but is ignored, sharpen completion criteria and reduce body noise. See [`fundamentals/form-and-style.md`](./fundamentals/form-and-style.md) and [`CONTEXT_BUDGET.md`](./CONTEXT_BUDGET.md).
+4. If it is bloated or obsolete, consider pruning, splitting, or retiring it. See [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md) and [`MIGRATION.md`](./MIGRATION.md).
 
 ### I am deciding whether to create a skill
 
@@ -141,7 +221,7 @@ A skill adopts these only when its role requires them.
 
 1. Read [`patterns/global-pluggable.md`](./patterns/global-pluggable.md) and [`docs/PORTABILITY.md`](../PORTABILITY.md).
 2. Add detection and config using [`patterns/configurable.md`](./patterns/configurable.md) and [`patterns/initialization.md`](./patterns/initialization.md).
-3. Declare dependencies and fail closed.
+3. Declare dependencies and fail closed. See [`MIGRATION.md`](./MIGRATION.md) for common shape changes during this transition.
 
 ### I want a skill to compose other skills
 
@@ -157,8 +237,8 @@ A skill adopts these only when its role requires them.
 ### I want to migrate or evolve a skill
 
 1. See [`MIGRATION.md`](./MIGRATION.md) for the common shape changes.
-2. Update the `version` and `provenance` metadata if the contract or schema changed.
-3. Re-run trigger and behavioral evals after the migration.
+2. Update the `version` and `provenance` metadata if the contract or schema changed. See [`GOVERNANCE.md`](./GOVERNANCE.md) for provenance rules.
+3. Re-run trigger and behavioral evals after the migration. See [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) and [`EVALUATION.md`](./EVALUATION.md).
 
 ---
 

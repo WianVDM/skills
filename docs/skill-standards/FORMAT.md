@@ -1,5 +1,11 @@
 # Skill Format
 
+## At a glance
+
+This document specifies the **portable core** of a skill: the `SKILL.md` file with YAML frontmatter and a markdown body, plus optional sibling directories. It defines required and recommended frontmatter fields, the `description` as routing surface, invocation modes, and the conventional layout.
+
+**Read this if:** you are writing a `SKILL.md` or building a harness loader.
+
 The **portable core** of any skill is a `SKILL.md` file plus a small set of optional sibling directories. This document specifies that core so that a skill can be read, understood, and loaded across different agent harnesses.
 
 Everything beyond this core — native harness discovery, tool scoping, MCP server wiring, sandbox configuration, and subagent envelope — is **harness-specific envelope**. The standard defines the boundary between the portable core and the envelope, not the envelope itself.
@@ -307,6 +313,16 @@ For harnesses that do not parse YAML frontmatter, a skill can be exported in pla
 This is the recommended degradation path for minimal harnesses like Aider. See [docs/PORTABILITY.md](../PORTABILITY.md) for the full degradation model.
 
 ---
+
+## Key takeaways
+
+- `SKILL.md` is the **only required file**; everything else is optional and must earn its place.
+- The **`description`** is the most important field; it is the context pointer that decides when the skill loads.
+- Choose **model-invoked** only when the agent or another skill must reach the skill on its own; otherwise prefer **user-invoked**.
+- Keep the **body** focused on contract, scope, steps, and guidelines; push deep detail into `references/`.
+- Use **harness-agnostic and project-agnostic language** in the portable core.
+- Optional directories (`references/`, `subagents/`, `scripts/`, `assets/`) should be non-empty and reachable.
+- **Plain-markdown export** lets minimal harnesses use the body even when they cannot parse YAML frontmatter.
 
 ## Research basis
 

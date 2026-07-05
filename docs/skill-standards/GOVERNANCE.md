@@ -1,5 +1,11 @@
 # Governance and Provenance
 
+## At a glance
+
+This document specifies **provenance, approval, audit, and verification** for skills, with special attention to agent-authored skills. It covers staging, immutability in-session, dependency parity, cryptographic signatures, and security scanning.
+
+**Read this if:** you distribute skills, let agents write or modify skills, or need to meet trust and compliance requirements.
+
 If agents can write skills, then **governance** is not optional. A skill that can be created, modified, or distributed by an agent must carry provenance metadata, pass through approval gates, and leave an audit trail. Without governance, agent-authored skills become untrusted artifacts that undermine the library.
 
 This document specifies the governance model for skills in this library. It applies to all skills that are distributed beyond their origin project, and it is recommended for any skill that is created or modified by an agent.
@@ -196,6 +202,16 @@ The following governance concerns are **limited** and are documented as such:
 - Formal verification tooling is not practical for most skills today.
 
 ---
+
+## Key takeaways
+
+- Every skill must carry **provenance metadata** (`authored_by`, `generated_by`, `origin`, `reviewed_by`, `reviewed_at`, `parent_session`).
+- **Agent-authored skills** start in personal scope and require review before promotion to project, org, or public scope.
+- **Verification levels** (`unverified`, `declared`, `tested`, `formal`) are set at bootstrap and immutable for the session.
+- A skill loaded in a session is **immutable in-session**; modification attempts are intercepted, approved, and audited.
+- **Provenance laundering** is prevented by flipping to `mixed` when an agent edits a human-authored skill.
+- **Signatures** are recommended but not sufficient; combine them with provenance, evaluation, and review.
+- **Security scanning** is a separate audit dimension from functional evaluation.
 
 ## Research basis
 

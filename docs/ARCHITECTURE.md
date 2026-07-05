@@ -1,5 +1,11 @@
 # Skill Architecture Library — Architecture
 
+## At a glance
+
+This manifesto maps skills into a layered architecture: a portable core of `SKILL.md` plus sibling directories, a package envelope, and a trust layer. It defines the three skill layers (building block, conductor, wrapper) and the cross-cutting patterns that apply to any layer.
+
+**Read this if:** you need to choose a skill shape, design a composition, or understand how skills sit in the agent context stack.
+
 ## Overview
 
 The library organizes skills into layers. Each layer has a single consumer and a single responsibility. A skill may participate in one or more layers, but its primary role should be clear.
@@ -155,6 +161,16 @@ Ask these questions in order:
 4. Does it combine layers with a clear primary role? → **Multi-layer / hybrid.**
 
 If the answer is unclear, the skill is not well-defined yet.
+
+## Key takeaways
+
+- Skills are the **on-demand, reusable layer** in the agent context stack, between always-on context and tools.
+- The **portable core** is harness-agnostic; the **envelope** is harness-specific.
+- Choose a primary shape based on responsibility: **building block** (narrow capability), **conductor** (coordination), or **wrapper** (human-facing adaptation).
+- **Cross-cutting patterns** (discipline, context-file, mode, conductor/implementer split) can appear in any layer.
+- **Composition** uses skills, scripts, MCP servers, extensions, third-party tools, and subagents.
+- **State, config, reports, and notes** live in well-known `.agents/` locations.
+- If the shape is unclear, the skill is not well-defined yet.
 
 ## Research basis
 

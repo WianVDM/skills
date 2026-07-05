@@ -1,5 +1,11 @@
 # Extensibility
 
+## At a glance
+
+This document extends the core standard to **non-coding skills** and **multi-agent coordination**. It covers asset-heavy skills, output-format triggers, verification artifacts, subjective-output evaluation, and file-based handoffs.
+
+**Read this if:** you are writing a design, writing, data, or visual skill, or coordinating multiple agents.
+
 The core standard is intentionally focused on coding and general-purpose skills, but the same model extends to non-coding domains and multi-agent coordination. This document describes how the core standard applies to those domains and what additional considerations they introduce.
 
 ---
@@ -188,6 +194,17 @@ The following extensibility concerns are **limited** and are documented as such:
 - Empirical multi-agent and non-coding benchmarks are limited.
 
 ---
+
+## Key takeaways
+
+- Non-coding skills use the **same `SKILL.md` core** as coding skills; differences are in assets, outputs, and evaluation.
+- Ship large static resources in **`assets/`** and reference them with relative paths.
+- Include **output-format triggers** in the `description` when the skill produces a specific file type.
+- Produce **verification artifacts** (previews, recalc logs, validation reports) for complex outputs.
+- Use the **subjective-output hierarchy** from `EVALUATION.md` for non-coding outputs.
+- Coordinate agents through **file-based handoffs** and shared ledgers, not shared mutable memory.
+- Declare **MCP dependencies** by name and capability, not by host config path.
+- Agent envelopes and peer-to-peer semantics remain **harness-specific** and are intentionally not standardized in v1.
 
 ## Research basis
 

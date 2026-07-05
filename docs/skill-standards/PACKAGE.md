@@ -1,5 +1,11 @@
 # Skill Package and Lifecycle
 
+## At a glance
+
+This document specifies the **package envelope** around the portable core: `skills.json`, `skills.lock`, versioning, namespacing, dependencies, and lifecycle stages. It defines when a skill needs a package and how to move from idea to retirement.
+
+**Read this if:** you are distributing a skill, adding dependencies, or managing a skill lifecycle.
+
 A skill is a reusable unit of process guidance. A **skill package** wraps one or more skills with metadata, dependencies, versioning, and verification so they can be discovered, installed, distributed, and trusted.
 
 This document specifies the package envelope and the lifecycle stages a skill moves through. The package layer sits around the portable core defined in `FORMAT.md`; it does not change the core format.
@@ -464,6 +470,16 @@ The package layer is where governance metadata lives. For distributed skills, `s
 For personal or local skills, these fields are recommended but not required. See `GOVERNANCE.md` for the full governance model.
 
 ---
+
+## Key takeaways
+
+- A **package** is needed when a skill has dependencies, consumers, distribution, or multiple related skills.
+- **`skills.json`** is the manifest; **`skills.lock`** records the resolved dependency graph and content hashes.
+- Use **semantic versioning** consistently; bump major for breaking changes, minor for additions, patch for fixes or clarifications.
+- **Namespacing** (`package-name:skill-name`) prevents collisions when skills are shared.
+- Declare all **dependencies** (skills, tools, MCP servers, binaries, environment variables) so policy gates can validate them.
+- The **lifecycle** stages have clear entry and exit criteria: decide → design → draft → validate → test → iterate → publish → maintain → deprecate.
+- For distributed skills, add governance metadata: provenance, verification level, and license.
 
 ## Research basis
 
