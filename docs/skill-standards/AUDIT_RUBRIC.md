@@ -16,7 +16,7 @@ This is the contract that `audit-skill` uses to evaluate any skill. Each check h
 | F02 | `description` is present and ≤ 1024 chars. | Blocker | Present, 1–1024 chars. |
 | F03 | `description` front-loads the leading word or domain. | Warning | The first 10–15 words name the skill’s core action or domain. |
 | F04 | `description` lists distinct triggers, not synonyms. | Warning | Each trigger maps to a distinct branch or intent. |
-| F05 | `version` is top-level SemVer once shared or consumed. | Blocker | `MAJOR.MINOR.PATCH` when distributed. |
+| F05 | `version` is valid SemVer if present, especially once shared or consumed. | Warning | Absent is acceptable for personal/local skills. If present, matches `MAJOR.MINOR.PATCH`. |
 | F06 | `invocation` is `model-invoked` or `user-invoked`. | Blocker | Declared and consistent with `disable-model-invocation`. |
 | F07 | `metadata` includes author and tags. | Warning | `author` and `tags` present. |
 | F08 | Provenance metadata is present if distributed or agent-authored. | Warning | `authored_by`, `origin`, `reviewed_by`, `reviewed_at` present when applicable. |

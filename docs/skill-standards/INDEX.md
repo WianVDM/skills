@@ -64,6 +64,7 @@ Skill Standards Wiki
 │       ├── QUICKREF.md              — one-page checklists
 │       ├── TRIGGER_EVALS.md         — routing test guide
 │       ├── CONTEXT_BUDGET.md        — context-load guidance
+│       ├── REVIEW_PRINCIPLES.md     — review workflow and verdict framework
 │       └── PATTERN_CATALOG.md       — pattern composition matrix
 │
 └── Trust layer (applies to distributed / agent-authored skills)
@@ -81,7 +82,7 @@ Skill Standards Wiki
 | Role | Start here | Deepen with |
 |---|---|---|
 | **New skill author** | [`README.md`](./README.md), [`fundamentals/what-is-a-skill.md`](./fundamentals/what-is-a-skill.md), [`fundamentals/types.md`](./fundamentals/types.md) | [`FORMAT.md`](./FORMAT.md), [`fundamentals/structure.md`](./fundamentals/structure.md), [`fundamentals/form-and-style.md`](./fundamentals/form-and-style.md), [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md), [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md), [`fundamentals/failure-recovery.md`](./fundamentals/failure-recovery.md) |
-| **Reviewer** | [`QUICKREF.md`](./QUICKREF.md), [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) | [`fundamentals/types.md`](./fundamentals/types.md), [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md), [`GOVERNANCE.md`](./GOVERNANCE.md), [`fundamentals/failure-recovery.md`](./fundamentals/failure-recovery.md) |
+| **Reviewer** | [`REVIEW_PRINCIPLES.md`](./REVIEW_PRINCIPLES.md), [`QUICKREF.md`](./QUICKREF.md), [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) | [`fundamentals/types.md`](./fundamentals/types.md), [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md), [`GOVERNANCE.md`](./GOVERNANCE.md), [`fundamentals/failure-recovery.md`](./fundamentals/failure-recovery.md) |
 | **Architect / consumer** | [`docs/PHILOSOPHY.md`](../PHILOSOPHY.md), [`docs/ARCHITECTURE.md`](../ARCHITECTURE.md), [`docs/PORTABILITY.md`](../PORTABILITY.md) | [`PATTERN_CATALOG.md`](./PATTERN_CATALOG.md), [`PACKAGE.md`](./PACKAGE.md), [`FORMAT.md`](./FORMAT.md) |
 | **Evaluator / QA** | [`EVALUATION.md`](./EVALUATION.md), [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) | [`CONTEXT_BUDGET.md`](./CONTEXT_BUDGET.md), [`fundamentals/evaluation.md`](./fundamentals/evaluation.md), [`patterns/discipline-skill.md`](./patterns/discipline-skill.md) |
 | **End user / consumer** | [`QUICKREF.md`](./QUICKREF.md) | [`GLOSSARY.md`](./GLOSSARY.md), [`fundamentals/what-is-a-skill.md`](./fundamentals/what-is-a-skill.md) |
@@ -138,7 +139,7 @@ For how these patterns compose, see [`PATTERN_CATALOG.md`](./PATTERN_CATALOG.md)
 |---|---|
 | **First 10 minutes** | [`PHILOSOPHY.md`](../PHILOSOPHY.md) → [`ARCHITECTURE.md`](../ARCHITECTURE.md) → [`fundamentals/what-is-a-skill.md`](./fundamentals/what-is-a-skill.md) |
 | **Write a skill** | [`what-is-a-skill.md`](./fundamentals/what-is-a-skill.md) → [`types.md`](./fundamentals/types.md) → [`FORMAT.md`](./FORMAT.md) → [`structure.md`](./fundamentals/structure.md) → [`form-and-style.md`](./fundamentals/form-and-style.md) → [`common-mistakes.md`](./fundamentals/common-mistakes.md) → [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) |
-| **Review a skill** | [`QUICKREF.md`](./QUICKREF.md) → [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) → [`types.md`](./fundamentals/types.md) → [`common-mistakes.md`](./fundamentals/common-mistakes.md) → [`GOVERNANCE.md`](./GOVERNANCE.md) |
+| **Review a skill** | [`REVIEW_PRINCIPLES.md`](./REVIEW_PRINCIPLES.md) → [`QUICKREF.md`](./QUICKREF.md) → [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) → [`types.md`](./fundamentals/types.md) → [`common-mistakes.md`](./fundamentals/common-mistakes.md) → [`GOVERNANCE.md`](./GOVERNANCE.md) |
 | **Compose skills** | [`ARCHITECTURE.md`](../ARCHITECTURE.md) → [`PATTERN_CATALOG.md`](./PATTERN_CATALOG.md) → [`conductor.md`](./patterns/conductor.md) → [`building-block.md`](./patterns/building-block.md) → [`context-reports.md`](./patterns/context-reports.md) |
 | **Make portable/global** | [`PORTABILITY.md`](../PORTABILITY.md) → [`PACKAGE.md`](./PACKAGE.md) → [`global-pluggable.md`](./patterns/global-pluggable.md) → [`configurable.md`](./patterns/configurable.md) → [`initialization.md`](./patterns/initialization.md) → [`MIGRATION.md`](./MIGRATION.md) |
 | **Evaluate skills** | [`EVALUATION.md`](./EVALUATION.md) → [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) → [`CONTEXT_BUDGET.md`](./CONTEXT_BUDGET.md) → [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) |

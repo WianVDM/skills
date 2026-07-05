@@ -55,13 +55,14 @@ A skill declares its identity in the frontmatter of `SKILL.md`. See [`../FORMAT.
 ```yaml
 ---
 name: skill-name
-version: "1.0.0"
 description: What this skill does and when to trigger it.
 metadata:
   author: your-name
 invocation: model-invoked
 ---
 ```
+
+`version` is optional; add it once the skill is shared, consumed, or versioned.
 
 ### Naming conventions
 
@@ -76,7 +77,7 @@ invocation: model-invoked
 - `name` matches the directory name.
 - `description` is under 1024 characters.
 - The description states what the skill does and when to use it, with trigger keywords.
-- `version` follows semantic meaning for schema or behavior changes.
+- `version` is optional; if used, it should follow semantic meaning for schema or behavior changes once the skill is shared or consumed.
 
 ### Invocation mode
 

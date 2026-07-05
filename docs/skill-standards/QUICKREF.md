@@ -19,7 +19,7 @@ A one-page guide for authors, reviewers, and consumers. For full details, follow
 | Element | Rule of thumb |
 |---------|---------------|
 | `name` | Lowercase, hyphen-separated, matches directory name. |
-| `version` | Top-level semantic version once shared or consumed. |
+| `version` | Optional. Add a semantic version once the skill is shared, consumed, or versioned. |
 | `description` | One sentence, front-load the leading word, keep under 1024 chars. |
 | `invocation` | Declare `model-invoked` or `user-invoked`. |
 | In scope / out of scope | Be explicit about what is and is not the skill's job. |

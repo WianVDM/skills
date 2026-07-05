@@ -68,7 +68,7 @@ Agent-authored skills start in **personal scope**: they are local to the user or
 - Evaluation pass (see [docs/skill-standards/EVALUATION.md](./EVALUATION.md)).
 - Security scan (separate from functional evaluation).
 - Provenance update.
-- Version bump if the schema or behavior changed.
+- Version bump if the schema or behavior changed and the skill is shared or consumed.
 
 ### Provenance laundering
 

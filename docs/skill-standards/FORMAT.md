@@ -66,16 +66,16 @@ Review UI code for design-system compliance, accessibility, and responsive behav
 |-------|------|-------------|---------|
 | `name` | string | Required. Lowercase letters, digits, and hyphens only. Must match the directory name. Max 128 chars. | The stable identifier for the skill. |
 | `description` | string | Required. Min 1, max 1024 characters. | One-sentence routing surface. Tells the agent when to load the skill. |
-| `version` | string | Semantic version (`MAJOR.MINOR.PATCH[-prerelease][+build]`). Required once the skill is shared, consumed, or versioned. | Version of the skill. |
 
-`version` is optional for a personal, experimental skill that no one else depends on. Once a skill is shared, consumed, or versioned, it must have a version.
-
-### Recommended fields
+### Optional fields
 
 | Field | Type | Constraints | Purpose |
 |-------|------|-------------|---------|
+| `version` | string | Semantic version (`MAJOR.MINOR.PATCH[-prerelease][+build]`). | Version of the skill. Consider adding one once the skill is shared, consumed, or versioned. |
 | `metadata` | object | See `metadata` object below. | Author, tags, provenance, verification level, and other non-behavior metadata. |
 | `invocation` | string | Enum: `model-invoked`, `user-invoked`. | Determines how the skill is reached. |
+
+`version` is optional for personal, experimental, or local skills. Add it once a skill is shared, consumed, versioned, or otherwise needs a compatibility signal.
 
 #### `metadata` object
 

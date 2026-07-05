@@ -22,7 +22,7 @@
     "version": {
       "type": "string",
       "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*))?(?:\\+([a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*))?$",
-      "description": "Semantic version of the skill. Required once the skill is shared, consumed, or versioned."
+      "description": "Optional semantic version. Consider adding one once the skill is shared, consumed, or versioned."
     },
     "metadata": {
       "type": "object",

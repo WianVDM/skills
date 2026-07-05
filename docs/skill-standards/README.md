@@ -26,7 +26,7 @@ The standards are intentionally detailed. This section helps you pick the right 
 | Role | Start here | Then read | Skip for now |
 |---|---|---|---|
 | **New skill author** | [`fundamentals/what-is-a-skill.md`](./fundamentals/what-is-a-skill.md), [`fundamentals/types.md`](./fundamentals/types.md) | [`FORMAT.md`](./FORMAT.md), [`fundamentals/structure.md`](./fundamentals/structure.md), [`fundamentals/form-and-style.md`](./fundamentals/form-and-style.md), [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) | [`EXTENSIBILITY.md`](./EXTENSIBILITY.md), [`GOVERNANCE.md`](./GOVERNANCE.md) (until you ship or share) |
-| **Reviewer** | [`QUICKREF.md`](./QUICKREF.md), [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) | [`fundamentals/types.md`](./fundamentals/types.md), [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md), [`GOVERNANCE.md`](./GOVERNANCE.md) | Pattern docs not used by the skill under review |
+| **Reviewer** | [`REVIEW_PRINCIPLES.md`](./REVIEW_PRINCIPLES.md), [`QUICKREF.md`](./QUICKREF.md), [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) | [`fundamentals/types.md`](./fundamentals/types.md), [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md), [`GOVERNANCE.md`](./GOVERNANCE.md) | Pattern docs not used by the skill under review |
 | **Architect / consumer** | [`docs/PHILOSOPHY.md`](../PHILOSOPHY.md), [`docs/ARCHITECTURE.md`](../ARCHITECTURE.md), [`docs/PORTABILITY.md`](../PORTABILITY.md) | [`PATTERN_CATALOG.md`](./PATTERN_CATALOG.md), [`PACKAGE.md`](./PACKAGE.md), [`FORMAT.md`](./FORMAT.md) | Discipline-specific pattern docs until needed |
 | **Evaluator / QA** | [`EVALUATION.md`](./EVALUATION.md), [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) | [`CONTEXT_BUDGET.md`](./CONTEXT_BUDGET.md), [`fundamentals/evaluation.md`](./fundamentals/evaluation.md), [`patterns/discipline-skill.md`](./patterns/discipline-skill.md) | [`EXTENSIBILITY.md`](./EXTENSIBILITY.md) |
 
@@ -49,7 +49,7 @@ A few ideas unlock the rest of the wiki:
 | Tier | Docs | Purpose |
 |---|---|---|
 | **Core** | `PHILOSOPHY.md`, `ARCHITECTURE.md`, `PORTABILITY.md`, `README.md`, `fundamentals/what-is-a-skill.md`, `FORMAT.md` | Understand the model, the shape, and the format. |
-| **Intermediate** | `fundamentals/types.md`, `fundamentals/structure.md`, `fundamentals/form-and-style.md`, `fundamentals/evaluation.md`, `fundamentals/common-mistakes.md`, `PACKAGE.md`, `EVALUATION.md`, `GOVERNANCE.md` | Write, package, evaluate, and review skills. |
+| **Intermediate** | `fundamentals/types.md`, `fundamentals/structure.md`, `fundamentals/form-and-style.md`, `fundamentals/evaluation.md`, `fundamentals/common-mistakes.md`, `PACKAGE.md`, `EVALUATION.md`, `GOVERNANCE.md`, `REVIEW_PRINCIPLES.md` | Write, package, evaluate, and review skills. |
 | **Advanced** | `EXTENSIBILITY.md`, `MIGRATION.md`, `CONTEXT_BUDGET.md`, `TRIGGER_EVALS.md`, `PATTERN_CATALOG.md`, individual pattern docs | Compose, optimize, migrate, and extend skills. |
 
 ### Progressive reading paths
@@ -58,7 +58,7 @@ A few ideas unlock the rest of the wiki:
 |---|---|---|
 | **First 10 minutes** | Get the mindset | [`PHILOSOPHY.md`](../PHILOSOPHY.md) → [`ARCHITECTURE.md`](../ARCHITECTURE.md) → [`fundamentals/what-is-a-skill.md`](./fundamentals/what-is-a-skill.md) |
 | **Write a skill** | Draft a working skill | [`fundamentals/what-is-a-skill.md`](./fundamentals/what-is-a-skill.md) → [`fundamentals/types.md`](./fundamentals/types.md) → [`FORMAT.md`](./FORMAT.md) → [`fundamentals/structure.md`](./fundamentals/structure.md) → [`fundamentals/form-and-style.md`](./fundamentals/form-and-style.md) → [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md) → [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) |
-| **Review a skill** | Check an existing skill | [`QUICKREF.md`](./QUICKREF.md) → [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) → [`fundamentals/types.md`](./fundamentals/types.md) → [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md) → [`GOVERNANCE.md`](./GOVERNANCE.md) |
+| **Review a skill** | Check an existing skill | [`REVIEW_PRINCIPLES.md`](./REVIEW_PRINCIPLES.md) → [`QUICKREF.md`](./QUICKREF.md) → [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) → [`fundamentals/types.md`](./fundamentals/types.md) → [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md) → [`GOVERNANCE.md`](./GOVERNANCE.md) |
 | **Compose skills** | Build multi-skill workflows | [`ARCHITECTURE.md`](../ARCHITECTURE.md) → [`PATTERN_CATALOG.md`](./PATTERN_CATALOG.md) → [`patterns/conductor.md`](./patterns/conductor.md) → [`patterns/building-block.md`](./patterns/building-block.md) → [`patterns/context-reports.md`](./patterns/context-reports.md) |
 | **Make a skill portable/global** | Run across projects | [`PORTABILITY.md`](../PORTABILITY.md) → [`PACKAGE.md`](./PACKAGE.md) → [`patterns/global-pluggable.md`](./patterns/global-pluggable.md) → [`patterns/configurable.md`](./patterns/configurable.md) → [`patterns/initialization.md`](./patterns/initialization.md) → [`MIGRATION.md`](./MIGRATION.md) |
 | **Evaluate skills** | Test routing and behavior | [`EVALUATION.md`](./EVALUATION.md) → [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) → [`CONTEXT_BUDGET.md`](./CONTEXT_BUDGET.md) → [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) |
@@ -200,10 +200,11 @@ For fast lookup and cross-cutting guides, keep these at hand:
 
 ### I am reviewing an existing skill
 
-1. Does it satisfy the fundamentals? Start with [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) and the [`QUICKREF.md`](./QUICKREF.md) checklist.
-2. Is it the right type? See [`fundamentals/types.md`](./fundamentals/types.md).
-3. Is it bloated? See [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md).
-4. Does it adopt architecture patterns correctly? See [`PATTERN_CATALOG.md`](./PATTERN_CATALOG.md) and the relevant pattern docs.
+1. Start with the [`REVIEW_PRINCIPLES.md`](./REVIEW_PRINCIPLES.md) workflow: justify the skill, check its shape and scope, prune bloat, and verify the phrasing before scoring.
+2. Does it satisfy the fundamentals? Use [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) and the [`QUICKREF.md`](./QUICKREF.md) checklist.
+3. Is it the right type? See [`fundamentals/types.md`](./fundamentals/types.md).
+4. Is it bloated? See [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md).
+5. Does it adopt architecture patterns correctly? See [`PATTERN_CATALOG.md`](./PATTERN_CATALOG.md) and the relevant pattern docs.
 
 ### A skill is failing or being ignored
 
