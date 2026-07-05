@@ -32,7 +32,7 @@ Every `SKILL.md` must declare:
 
 - `name`: lowercase, hyphen-separated, matches directory name.
 - `description`: one sentence, ≤ 1024 chars, front-loads the leading word or domain, lists distinct triggers.
-- `version`: top-level SemVer once the skill is shared or consumed.
+- `version`: optional semantic version. Add one once the skill is shared, consumed, or versioned.
 - `invocation`: `model-invoked` or `user-invoked`.
 - `metadata`: author, tags, and provenance if distributed or agent-authored.
 
@@ -111,5 +111,7 @@ For the full, maintained version of these fundamentals, see `docs/skill-standard
 - `security.md`
 - `when-to-create-a-skill.md`
 - `failure-recovery.md`
+
+For how to review skills against these fundamentals, see `docs/skill-standards/REVIEW_PRINCIPLES.md`.
 
 Update this fallback only after the canonical docs change, and only to the minimum needed for self-contained operation.

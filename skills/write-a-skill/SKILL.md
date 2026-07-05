@@ -1,7 +1,7 @@
 ---
 name: write-a-skill
 description: Design partner for creating, reviewing, and updating skills that follow the skill standards.
-version: 4.6.0
+version: 4.7.0
 invocation: user-invoked
 metadata:
   author: Wian van der Merwe
@@ -26,7 +26,7 @@ Help the user produce a skill that satisfies the skill fundamentals and applies 
 
 - Creating new skills from scratch.
 - Drafting minimal skills quickly from a brief description.
-- Reviewing existing skills against the fundamentals.
+- Reviewing existing skills against the fundamentals, after first understanding their purpose, shape, scope, and token economy.
 - Updating existing skills to align with the standards.
 - Recommending the right shape (skill, script, MCP server, context file, or mode) when the user is unsure.
 - Delegating detection, audit, and validation to standalone building-block skills.
@@ -67,7 +67,7 @@ The conductor runs this 10-phase pipeline. Each phase has a completion criterion
 | 1. **Clarify intent and choose gate** | Classify the top-level branch; resolve the internal gate; ask one question at a time if unclear. | Branch is one of {create, change}, gate is resolved, and user confirmed. |
 | 2. **Explore alternatives** | Use `list-available-skills` and `search-skills-registry` to see what exists. | Alternatives report exists; user knows whether to create, reuse, or install. |
 | 3. **Decide shape** | Decide whether the answer is a new skill, an existing skill, a script, an MCP server, or a context file. | User confirms the chosen shape. |
-| 4. **Define identity** | Name, description, version, invocation, author, provenance. | Frontmatter skeleton exists and user confirmed. |
+| 4. **Define identity** | Name, description, invocation, author, provenance. Version only if the user requires it or the skill will be shared/consumed. | Frontmatter skeleton exists and user confirmed. |
 | 5. **Define scope** | In-scope, out-of-scope, branches, assumptions. | Scope boundaries are explicit and defensible. |
 | 6. **Select patterns** | Apply fundamentals; suggest Layer 2 patterns. | Pattern list exists and user confirmed. |
 | 7. **Draft artifacts** | Generate `SKILL.md`, optional `README.md`, `references/`, `subagents/`, `scripts/`, `assets/`. | Draft files exist and are linked correctly. |
@@ -95,14 +95,14 @@ For the full phase list per gate, including the `decide` gate delegation to `dec
 
 ## Change branch
 
-**Why this branch exists:** skills drift. The change branch audits an existing skill and, if requested, proposes a remediation plan and applies changes only after approval.
+**Why this branch exists:** Skills drift and accumulate bloat. The change branch audits an existing skill by applying the review principles from `docs/skill-standards/REVIEW_PRINCIPLES.md`, then produces a verdict-led report or incomplete report.
 
 **Internal gates**
 
 | Gate | Trigger | Outcome | Completion criterion |
 |---|---|---|---|
-| **review** | User wants to audit an existing skill without changing it. | Audit report only. | The audit report is complete, structured, and references the rubric criteria by id. |
-| **update** | User wants to refine or polish an existing skill to follow the standards. | Audit → remediation plan → draft changes → confirm. | A remediation plan exists and the user has approved or declined each proposed change. |
+| **review** | User wants to audit an existing skill without changing it. | Verdict-led audit report, or incomplete report. | The audit report is complete, includes a verdict supported by findings, and references the rubric criteria by id. |
+| **update** | User wants to refine or polish an existing skill to follow the standards. | Verdict-led audit report → remediation plan → draft changes → confirm. | A verdict-led audit report exists, a remediation plan exists, and the user has approved or declined each proposed change. |
 
 For the full phase list per gate, including the `change` branch delegation to `review-skill`, see [references/BRANCH_WORKFLOWS.md](references/BRANCH_WORKFLOWS.md).
 
@@ -113,7 +113,12 @@ On first run in a project, execute the bootstrap routine:
 1. Detect project context with `detect-project-context` to locate the project root and the recommended config directory.
 2. Load config from `{recommended_config_dir}/write-a-skill.yaml` or create defaults.
 3. Validate required capabilities (read, write, search, run scripts, network if standards init is offered).
-4. Check for `docs/skill-standards/` and offer to fetch it if missing. If the fetch fails or the user declines, fall back to embedded [references/FUNDAMENTALS.md](references/FUNDAMENTALS.md) and [references/PATTERN_HINTS.md](references/PATTERN_HINTS.md).
+4. Locate the canonical skill standards:
+   - Check `docs/skill-standards/` at the project root.
+   - Check `.agents/skill-standards/` if present.
+   - Check the `standards_path` configured in `write-a-skill.yaml`.
+   - If none are found, offer to fetch the official standards into the default `docs/skill-standards/` directory (or the configured `standards_path`).
+   - If the fetch fails or the user declines, fall back to embedded [references/FUNDAMENTALS.md](references/FUNDAMENTALS.md) and [references/PATTERN_HINTS.md](references/PATTERN_HINTS.md).
 5. Ask the user to confirm detected paths, default registry list, and standards source.
 6. Persist initial notes in the context directory.
 

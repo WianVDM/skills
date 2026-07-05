@@ -46,5 +46,5 @@ decide-skill-shape/
 ## Maintenance notes
 
 - Keep the decision rules in sync with `docs/skill-standards/patterns/` and `docs/skill-standards/fundamentals/`.
-- Update the version when the decision rules change.
+- Update the version only if this skill is versioned and the decision rules change in a way that affects consumers.
 - Add near-miss triggers to `evals/evals.json` if new shape domains could collide with this skill.

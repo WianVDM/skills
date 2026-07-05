@@ -21,7 +21,7 @@ Every report should include a header and a small set of required sections.
 ---
 report: report-name                    # e.g., self-audit, audit, global-readiness
 skill: skill-name                       # the skill being reviewed/designed
-version: "1.0"                          # version of the skill being reviewed/designed
+version: "1.0"                          # optional; version of the skill being reviewed/designed
 timestamp: ISO-8601                     # when the report was generated
 status: draft | final | stale | override
 ---
@@ -118,7 +118,7 @@ Why this recommendation was made.
 ## Identity
 - name: {skill-name}
 - description: {one sentence, front-loaded leading word, ≤ 1024 chars}
-- version: {4.0.0 or unset if personal}
+- version: {4.0.0 or unset if personal}  # optional; add only if the skill is shared, consumed, or versioned
 - invocation: {model-invoked | user-invoked}
 - metadata:
   - author: {name}
@@ -264,7 +264,7 @@ Why this recommendation was made.
 See the `context-reports` skill for the shared freshness and staleness conventions. In addition, `write-a-skill` observes these rules:
 
 - A report is **fresh** if it exists and no underlying source files have changed since its timestamp.
-- A report is **stale** if the source files changed or the skill version changed after the report was generated.
+- A report is **stale** if the source files changed or the skill version (if any) changed after the report was generated.
 - A **stale** report should be regenerated unless the user explicitly accepts it.
 - Append decisions rather than overwriting.
 - Overwrite design drafts and audit reports only after the user approves the next version.

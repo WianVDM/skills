@@ -29,7 +29,8 @@ Building block.
 ## In scope
 
 - Parse a single `SKILL.md` file.
-- Extract `name`, `description`, `version`, `invocation`, and `metadata.tags`.
+- Extract `name`, `description`, `invocation`, and `metadata.tags`.
+- Extract `version` if present; return it as `null` or omit it when absent.
 - Prefer PyYAML when available; fall back to a minimal regex parser.
 - Return JSON or human-readable output.
 
@@ -67,6 +68,8 @@ With `--json`:
   "tags": ["example"]
 }
 ```
+
+`version` is omitted or returned as `null` when it is not present in the frontmatter.
 
 ## Security
 

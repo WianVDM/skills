@@ -12,7 +12,7 @@ Use this skill when you want to:
 
 - **Create a new skill** from scratch.
 - **Draft a minimal skill** quickly from a brief description.
-- **Review an existing skill** against the fundamentals.
+- **Review an existing skill** with a verdict-led audit against the fundamentals.
 - **Update a skill** to align it with the standards.
 - **Decide whether a problem deserves a skill** or a simpler solution (script, MCP server, context file, etc.).
 
@@ -90,7 +90,9 @@ See `references/DEPENDENCIES.md` for the full declaration.
 - **Fundamentals over guidelines:** the audit rubric in `audit-skill` is the canonical standard; remaining guide files add domain-specific advice only.
 - **Self-contained:** ships with condensed fundamentals so it works in any workspace, even without `docs/skill-standards/`.
 
-## Maintenance and versioning
+## Maintenance and lifecycle
+
+`write-a-skill` tracks its own changes because it is a shared conductor consumed by other skills and workflows. For skills produced by this conductor, `version` is optional unless the user requires it or the skill will be shared or consumed.
 
 `write-a-skill` uses semantic versioning for its own lifecycle:
 
@@ -98,12 +100,13 @@ See `references/DEPENDENCIES.md` for the full declaration.
 - **Minor bump**: new branches, references, or significant backward-compatible workflow improvements.
 - **Patch bump**: typo fixes, clarifications, or minor reference updates that do not change behavior.
 
-Current version: **4.6.0**.
+Current version: **4.7.0**.
 
-Bump the version when state/report schemas change, a new branch or major workflow step is added, subagent behavior changes significantly, or the audit rubric changes in a way that affects ratings. Do not bump for trivial wording fixes.
+Bump the version when state/report schemas change, a new branch or major workflow step is added, subagent behavior changes significantly, or the audit rubric changes in a way that affects ratings. Do not bump for trivial wording fixes. For skills produced by this conductor, only suggest versioning if the user asks for it or if the skill will be distributed/consumed.
 
 ### Migration history
 
+- **4.6.0 → 4.7.0**: added a pre-audit comprehension step to the `change` branch using the review principles in `docs/skill-standards/REVIEW_PRINCIPLES.md`; `review-skill` now produces a verdict-led audit report or an incomplete report. Updated the initialization routine to detect canonical standards in `docs/skill-standards/`, `.agents/skill-standards/`, or a configured `standards_path`. No state migration required.
 - **4.5.0 → 4.6.0**: extracted the `review` and `update` gates into a new `review-skill` conductor; declared it as a dependency and delegated the `change` branch in `BRANCH_WORKFLOWS.md` to it. No state migration required.
 - **4.4.0 → 4.5.0**: extracted the `decide` gate into a new `decide-skill-shape` conductor; declared it as a dependency and delegated the `decide` gate in `BRANCH_WORKFLOWS.md` to it. No state migration required.
 - **4.3.0 → 4.4.0**: extracted the shared `evals/evals.json` schema and evaluation conventions into a new `eval-format` vocabulary building block; declared it as a dependency and pointed `EVAL.md` to it. No state migration required.
@@ -123,7 +126,7 @@ Bump the version when state/report schemas change, a new branch or major workflo
 
 Before releasing a new version:
 
-- [ ] `SKILL.md` frontmatter version matches the version in this section.
+- [ ] `SKILL.md` frontmatter version matches the version in this section (only if the skill is versioned).
 - [ ] `README.md` reflects the current structure and conventions.
 - [ ] All reference links in `SKILL.md` and `README.md` resolve.
 - [ ] The audit rubric is still aligned with the target spec.

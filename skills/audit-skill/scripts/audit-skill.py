@@ -164,15 +164,15 @@ def check_identities(skill_dir: Path, skill_md: Path, fm: dict) -> list[dict]:
     findings.append(manual_finding("F04", "Identity", "warning", "`description` lists distinct triggers, not synonyms", "Review the description: each trigger should map to a distinct branch or intent."))
 
     version = fm.get("version", "")
-    check = "`version` is top-level SemVer once shared or consumed"
+    check = "`version` is valid SemVer if present, especially once shared or consumed"
     semver_re = r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*)?(?:\+[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*)?$"
     if version:
         if not re.match(semver_re, version):
-            findings.append(fail_finding("F05", "Identity", "blocker", check, f"Use a valid SemVer version (current: `{version}`)."))
+            findings.append(manual_finding("F05", "Identity", "warning", check, f"Use a valid SemVer version if you keep `version` (current: `{version}`)."))
         else:
-            findings.append(pass_finding("F05", "Identity", "blocker", check))
+            findings.append(pass_finding("F05", "Identity", "warning", check))
     else:
-        findings.append(manual_finding("F05", "Identity", "blocker", check, "Add a SemVer version if the skill is shared or consumed."))
+        findings.append(pass_finding("F05", "Identity", "warning", check))
 
     check = "`invocation` is `model-invoked` or `user-invoked`"
     invocation = fm.get("invocation", "")

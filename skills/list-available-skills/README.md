@@ -28,7 +28,7 @@ The skill returns a structured report with:
 - `skills`: parsed records for each discovered skill.
 - `errors`: list of skills whose frontmatter could not be parsed.
 
-Each skill record includes `name`, `path`, `invocation`, `version`, and `tags`.
+Each skill record includes `name`, `path`, `invocation`, `version`, and `tags`. `version` may be absent.
 
 ## Directory layout
 

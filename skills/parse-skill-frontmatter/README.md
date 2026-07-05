@@ -4,7 +4,7 @@ A model-invoked building block that extracts canonical frontmatter fields from a
 
 ## When to use
 
-Use this skill when you need to read skill metadata such as name, description, version, invocation, and tags from a `SKILL.md` file.
+Use this skill when you need to read skill metadata such as `name`, `description`, `invocation`, and `tags` from a `SKILL.md` file. `version` is returned if present, but it is not required.
 
 ## How to use
 
@@ -20,7 +20,7 @@ The skill returns a JSON object with:
 
 - `name`: skill name.
 - `description`: skill description.
-- `version`: skill version.
+- `version`: skill version, or `null` if absent.
 - `invocation`: invocation mode.
 - `tags`: list of tags from metadata.
 

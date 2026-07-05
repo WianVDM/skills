@@ -53,7 +53,7 @@ A conductor needs to know what skills already exist before recommending a new sk
    - **Completion criterion:** candidate directories are collected.
 3. **Scan for `SKILL.md` files.** Search one level deep inside each candidate directory.
    - **Completion criterion:** all discovered `SKILL.md` paths are recorded.
-4. **Parse frontmatter.** Extract `name`, `description`, `version`, `invocation`, and `metadata.tags`.
+4. **Parse frontmatter.** Extract `name`, `description`, `invocation`, and `metadata.tags`. Extract `version` if present.
    - **Completion criterion:** each discovered skill has a parsed record or an error entry.
 5. **Return structured report.** Emit JSON or human-readable output.
    - **Completion criterion:** the report is emitted in the requested format.
@@ -78,6 +78,8 @@ With `--json`:
   "errors": []
 }
 ```
+
+`version` is omitted when it is not present in the skill's frontmatter.
 
 ## Security
 
