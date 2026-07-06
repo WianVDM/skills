@@ -5,6 +5,7 @@ AGENT.md
 
 # Local secrets
 .env
+.mcp.json
 
 # Local working directories (uncomment if used)
 # workspace/
