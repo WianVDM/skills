@@ -96,7 +96,80 @@ A `DEPENDENCIES.md` file should distinguish required, recommended, and optional 
 
 For packages, the `requirements.skills` array in `skills.json` is the machine-readable declaration. It is used for transitive closure, policy gates, and lock-file generation. See [`PACKAGE.md`](../PACKAGE.md) for the full `requirements` schema.
 
+The Vercel `skills` CLI also uses a root `skills.json` for one-shot bundle installs: when `npx skills add owner/repo` sees `skills.json`, it installs every skill path listed in the `skills` array. Those paths must be relative, starting with `./` (e.g., `"./skills/write-a-skill"`).
+
 The `requirements.skills` array is currently **flat**. To encode the taxonomy, use a naming convention in `references/DEPENDENCIES.md` and separate `recommended_skills` / `optional_skills` fields only if the harness supports them. If the harness only supports `requirements.skills`, treat the listed entries as required by default and note exceptions in `references/DEPENDENCIES.md`. See [`PACKAGE.md`](../PACKAGE.md) for the full schema.
+
+### `SKILL.md` frontmatter `depends`
+
+The Vercel `skills` CLI supports an optional `depends` field in `SKILL.md` frontmatter. When a user selects a skill for install, the CLI resolves and installs every dependency listed in `depends` first.
+
+Use `depends` for **required and recommended** skill dependencies that must be present for the skill to work well. Do not include optional dependencies in `depends`; surface them in `references/DEPENDENCIES.md` instead.
+
+Example:
+
+```yaml
+---
+name: write-a-skill
+description: Design partner for creating, reviewing, and updating skills.
+depends:
+  - detect-project-context
+  - decide-skill-shape
+  - audit-skill
+  - validate-skill-frontmatter
+  - review-skill
+  - eval-format
+  - worker-contract
+  - context-reports
+  - parse-skill-frontmatter
+  - list-available-skills
+  - search-skills-registry
+  - install-skill
+  - run-trigger-evals
+metadata:
+  author: Wian van der Merwe
+  tags: [skill-authoring, conductor, standards]
+---
+```
+
+`depends` is a harness hint for the Vercel CLI. A skill must still declare its dependencies in `references/DEPENDENCIES.md` and should still run its own self-diagnostics in case `depends` is ignored or only partially satisfied.
+
+### Claude Code / Vercel plugin manifests
+
+For grouping in the Vercel `skills` CLI interactive prompts, declare a plugin manifest:
+
+- `.claude-plugin/plugin.json` — a single plugin at the repository root.
+- `.claude-plugin/marketplace.json` — a catalog of multiple plugins in one repository.
+
+Each plugin entry has a `name` used for grouping and a `skills` array of relative paths starting with `./`. The CLI groups skills under their plugin name in the `skills add` and `skills list` prompts.
+
+Example `.claude-plugin/marketplace.json`:
+
+```json
+{
+  "metadata": { "pluginRoot": "./" },
+  "plugins": [
+    {
+      "name": "Skill authoring",
+      "skills": [
+        "./skills/write-a-skill",
+        "./skills/audit-skill",
+        "./skills/validate-skill-frontmatter"
+      ]
+    },
+    {
+      "name": "Core tooling",
+      "skills": [
+        "./skills/detect-project-context",
+        "./skills/list-available-skills",
+        "./skills/install-skill"
+      ]
+    }
+  ]
+}
+```
+
+Plugin manifests are a presentation layer, not a replacement for dependency declarations. They help users navigate a large catalog; `depends` and `references/DEPENDENCIES.md` ensure the right skills are installed.
 
 ### Frontmatter and `config.yaml` hints
 

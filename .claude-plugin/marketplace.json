@@ -1,0 +1,72 @@
+{
+  "metadata": {
+    "pluginRoot": "./"
+  },
+  "plugins": [
+    {
+      "name": "Core tooling",
+      "skills": [
+        "./skills/detect-project-context",
+        "./skills/list-available-skills",
+        "./skills/find-skills",
+        "./skills/search-skills-registry",
+        "./skills/install-skill",
+        "./skills/worker-contract",
+        "./skills/context-reports"
+      ]
+    },
+    {
+      "name": "Skill authoring",
+      "skills": [
+        "./skills/write-a-skill",
+        "./skills/audit-skill",
+        "./skills/validate-skill-frontmatter",
+        "./skills/parse-skill-frontmatter",
+        "./skills/review-skill",
+        "./skills/run-trigger-evals",
+        "./skills/eval-format",
+        "./skills/decide-skill-shape"
+      ]
+    },
+    {
+      "name": "Project workflow",
+      "skills": [
+        "./skills/orchestrate",
+        "./skills/plan-next",
+        "./skills/debrief",
+        "./skills/to-issues",
+        "./skills/triage",
+        "./skills/to-prd"
+      ]
+    },
+    {
+      "name": "Code lifecycle",
+      "skills": [
+        "./skills/verify-branch",
+        "./skills/merge-latest",
+        "./skills/pr-report",
+        "./skills/improve-codebase-architecture"
+      ]
+    },
+    {
+      "name": "Setup",
+      "skills": [
+        "./skills/setup-wian-skills",
+        "./skills/setup-matt-pocock-skills",
+        "./skills/baseline"
+      ]
+    },
+    {
+      "name": "Utilities",
+      "skills": [
+        "./skills/diagnose",
+        "./skills/grill-me",
+        "./skills/grill-with-docs",
+        "./skills/handoff",
+        "./skills/prototype",
+        "./skills/zoom-out",
+        "./skills/tdd"
+      ]
+    }
+  ]
+}

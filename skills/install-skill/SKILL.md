@@ -7,6 +7,8 @@ metadata:
   author: Wian van der Merwe
   tags: [install, building-block]
   verification_level: declared
+depends:
+  - detect-project-context
 ---
 
 # install-skill

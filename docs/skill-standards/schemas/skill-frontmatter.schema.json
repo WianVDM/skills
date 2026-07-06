@@ -77,6 +77,11 @@
       "type": "array",
       "items": { "type": "string", "minLength": 1 },
       "description": "Harness hint: explicit paths that scope the skill."
+    },
+    "depends": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Harness hint: skill names that this skill depends on. The Vercel skills CLI installs these dependencies automatically."
     }
   },
   "additionalProperties": true,

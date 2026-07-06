@@ -7,6 +7,20 @@ metadata:
   author: Wian van der Merwe
   tags: [skill-authoring, conductor, standards]
   verification_level: declared
+depends:
+  - detect-project-context
+  - decide-skill-shape
+  - audit-skill
+  - validate-skill-frontmatter
+  - review-skill
+  - eval-format
+  - worker-contract
+  - context-reports
+  - parse-skill-frontmatter
+  - list-available-skills
+  - search-skills-registry
+  - install-skill
+  - run-trigger-evals
 ---
 
 # write-a-skill
@@ -157,6 +171,8 @@ Summarize completed work, pending work, current focus, and the recommended next 
 ## Dependencies
 
 See [references/DEPENDENCIES.md](references/DEPENDENCIES.md) for the classified dependency list and the taxonomy from `docs/skill-standards/fundamentals/dependencies-and-bundling.md`.
+
+The frontmatter of this skill also declares a `depends` field for Vercel CLI auto-installation.
 
 Required tools and binaries: `read`, `write`, `edit`, `bash`, `find` (or equivalent); Python 3.x for bundled scripts.
 

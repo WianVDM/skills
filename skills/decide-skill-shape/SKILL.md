@@ -7,6 +7,8 @@ metadata:
   author: Wian van der Merwe
   tags: [skill-design, shape, decision, conductor]
   verification_level: declared
+depends:
+  - list-available-skills
 ---
 
 # decide-skill-shape

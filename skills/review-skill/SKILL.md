@@ -7,6 +7,9 @@ metadata:
   author: Wian van der Merwe
   tags: [skill-review, audit, remediation, conductor, standards]
   verification_level: declared
+depends:
+  - audit-skill
+  - validate-skill-frontmatter
 ---
 
 # review-skill

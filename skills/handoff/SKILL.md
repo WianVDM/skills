@@ -8,6 +8,8 @@ metadata:
   author: Wian van der Merwe
   tags: [session-management, checkpoint, handoff]
   verification_level: declared
+depends:
+  - detect-project-context
 ---
 
 # handoff

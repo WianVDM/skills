@@ -8,6 +8,9 @@ metadata:
   author: Wian van der Merwe
   tags: [setup, bootstrap, skills, configuration]
   verification_level: declared
+depends:
+  - list-available-skills
+  - install-skill
 ---
 
 # Setup Wian's Skills

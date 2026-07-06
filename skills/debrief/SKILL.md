@@ -6,6 +6,8 @@ metadata:
   author: Wian van der Merwe
   version: "4.0"
   scope: global
+depends:
+  - baseline
 invocation: user-invoked
 disable-model-invocation: true
 ---
