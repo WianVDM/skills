@@ -1,0 +1,17 @@
+shared:
+  - key: agents.context_dir
+    required: true
+    default: .agents/context
+  - key: agents.config_dir
+    required: true
+    default: .agents/config
+  - key: issue_tracker
+    required: false
+    default: github
+
+skill:
+  - key: debrief.max_parallel_subagents
+    required: false
+    default: 3
+
+requires_setup: false

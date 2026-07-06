@@ -1,0 +1,8 @@
+shared:
+  - key: agents.context_dir
+    required: true
+    default: .agents/context
+
+skill: []
+
+requires_setup: false

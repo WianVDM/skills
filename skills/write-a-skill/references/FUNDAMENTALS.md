@@ -63,6 +63,7 @@ A skill must have:
 - `subagents/` holds worker prompts.
 - `scripts/` holds deterministic helpers.
 - `assets/` holds static resources.
+- `config.yaml` declares shared and skill-specific configuration requirements for configurable skills.
 - Optional directories should be non-empty if present.
 
 ## Security

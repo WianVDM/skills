@@ -122,3 +122,57 @@ This applies to preferences and notes.
 - Provide sensible defaults.
 - Document required vs optional keys.
 - Keep secrets out of config files; reference environment variables instead.
+
+## Skill-level config declaration
+
+A skill can declare its configuration requirements in a `config.yaml` file next to `SKILL.md`:
+
+```text
+my-skill/
+├── SKILL.md
+├── config.yaml
+└── references/
+    └── CONFIG_PATTERN.md
+```
+
+```yaml
+# config.yaml
+shared:
+  - key: agents.context_dir
+    required: true
+    default: .agents/context
+
+skill:
+  - key: my-skill.output_format
+    required: false
+    default: md
+
+requires_setup: true
+```
+
+- `shared` lists keys that should live in `.agents/config/shared.yaml` and be shared across skills.
+- `skill` lists keys that should live in `.agents/config/{skill-name}.yaml`.
+- `requires_setup: true` signals that the skill needs skill-specific initialization after installation.
+
+Shared keys must be registered in `docs/skill-standards/CONFIG_KEYS.md`. Unregistered keys are treated as skill-specific. This prevents duplicate prompts for the same value across different skills.
+
+A setup conductor (such as `setup-wian-skills`) can read these declarations, collect shared keys once, and present a checklist of skills that need individual initialization.
+
+## When to use skill-level config declaration
+
+Use `config.yaml` when:
+
+- The skill reads shared config that other skills may also need.
+- The skill needs initialization beyond what shared config can provide.
+- A setup conductor should collect config for multiple skills without asking the same question repeatedly.
+
+Do not use `config.yaml` when:
+
+- The skill has no configuration or shared dependencies.
+- All config is trivial and can be detected inline.
+- The skill is not intended to be managed by a setup conductor.
+
+## Central shared-key registry
+
+The registry at `docs/skill-standards/CONFIG_KEYS.md` defines the canonical meaning, type, and default for each shared key. Skill authors should register new shared keys before declaring them in `config.yaml`.
+

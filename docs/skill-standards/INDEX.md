@@ -65,7 +65,8 @@ Skill Standards Wiki
 │       ├── TRIGGER_EVALS.md         — routing test guide
 │       ├── CONTEXT_BUDGET.md        — context-load guidance
 │       ├── REVIEW_PRINCIPLES.md     — review workflow and verdict framework
-│       └── PATTERN_CATALOG.md       — pattern composition matrix
+│       ├── PATTERN_CATALOG.md       — pattern composition matrix
+│       └── CONFIG_KEYS.md           — shared configuration key registry
 │
 └── Trust layer (applies to distributed / agent-authored skills)
     ├── Verification levels

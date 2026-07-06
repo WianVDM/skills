@@ -102,6 +102,35 @@ See [`stateful.md`](./stateful.md) for state layout and checkpointing.
 
 ---
 
+## Centralized initialization
+
+When a workspace uses multiple skills from the same source package, a dedicated setup conductor can coordinate initialization so that shared config is collected once and each skill only asks for its own preferences.
+
+A setup conductor:
+
+1. Installs or updates the skills from the source package.
+2. Reads `config.yaml` from each skill to find shared and skill-specific keys.
+3. Resolves shared keys once and writes `.agents/config/shared.yaml`.
+4. Presents a checklist of skills that declare `requires_setup: true` or have an `## Initialization` section.
+5. Does not auto-run skill-specific initialization; the user invokes each skill when needed.
+
+Individual skills still own their own initialization logic. The conductor only removes duplicate prompting for shared config.
+
+## When to use centralized initialization
+
+Use a setup conductor when:
+
+- A package contains many related skills.
+- Several skills share the same config keys (e.g., `agents.context_dir`, `issue_tracker`).
+- You want a single command to bootstrap a workspace.
+
+Do not use centralized initialization when:
+
+- The skill is standalone and has no shared config.
+- The skill's initialization requires deep, project-specific judgment that a conductor cannot safely automate.
+
+---
+
 ## Implementation
 
 Initialization can be implemented:

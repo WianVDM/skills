@@ -62,8 +62,8 @@ The conductor runs this 10-phase pipeline. Each phase has a completion criterion
 | 3. **Decide shape** | Decide whether the answer is a new skill, an existing skill, a script, an MCP server, or a context file. | User confirms the chosen shape. |
 | 4. **Define identity** | Name, description, invocation, author, tags. Version only if the user requires it or the skill will be shared/consumed. | Frontmatter skeleton exists and user confirmed. |
 | 5. **Define scope** | In-scope, out-of-scope, branches, assumptions. | Scope boundaries are explicit and defensible. |
-| 6. **Select patterns** | Apply fundamentals; suggest Layer 2 patterns. | Pattern list exists and user confirmed. |
-| 7. **Draft artifacts** | Generate `SKILL.md`, optional `README.md`, `references/`, `subagents/`, `scripts/`, `assets/`. | Draft files exist and are linked correctly. |
+| 6. **Select patterns** | Apply fundamentals; suggest Layer 2 patterns. Decide if the skill is configurable and, if so, which shared and skill-specific keys it needs. | Pattern list and config declaration (if any) exist and user confirmed. |
+| 7. **Draft artifacts** | Generate `SKILL.md`, optional `README.md`, `references/`, `subagents/`, `scripts/`, `assets/`, and `config.yaml` if the skill is configurable. | Draft files exist and are linked correctly. |
 | 8. **Audit and validate** | Run `audit-skill` and `validate-skill-frontmatter`. | Audit report exists with no blocking failures. |
 | 9. **Generate evals** | Run `run-trigger-evals` for model-invoked skills. | `evals/evals.json` exists or user declined. |
 | 10. **Confirm and write** | Present the full plan; write files only after explicit approval. | User approved; files written; decision log updated. |
