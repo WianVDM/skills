@@ -106,14 +106,15 @@ On first run in a project, execute the bootstrap routine:
 1. Detect project context with `detect-project-context` to locate the project root and the recommended config directory.
 2. Load config from `{recommended_config_dir}/write-a-skill.yaml` or create defaults.
 3. Validate required capabilities (read, write, search, run scripts, network if standards init is offered).
-4. Locate the canonical skill standards:
+4. **Run dependency self-diagnostics.** Check whether each required and recommended skill from [references/DEPENDENCIES.md](references/DEPENDENCIES.md) is installed and loadable. Report `full`, `degraded`, or `blocked` per `docs/skill-standards/fundamentals/dependencies-and-bundling.md`. If `blocked`, stop and explain how to install the missing required skills. If `degraded`, explain the reduced capability and ask whether to proceed.
+5. Locate the canonical skill standards:
    - Check `docs/skill-standards/` at the project root.
    - Check `.agents/skill-standards/` if present.
    - Check the `standards_path` configured in `write-a-skill.yaml`.
    - If none are found, offer to fetch the official standards into the default `docs/skill-standards/` directory (or the configured `standards_path`).
    - If the fetch fails or the user declines, fall back to embedded [references/FUNDAMENTALS.md](references/FUNDAMENTALS.md) and [references/PATTERN_HINTS.md](references/PATTERN_HINTS.md).
-5. Ask the user to confirm detected paths, default registry list, and standards source.
-6. Persist initial notes in the context directory.
+6. Ask the user to confirm detected paths, default registry list, and standards source.
+7. Persist initial notes in the context directory.
 
 If the project context cannot be detected, fail closed and explain what is missing.
 
@@ -155,26 +156,9 @@ Summarize completed work, pending work, current focus, and the recommended next 
 
 ## Dependencies
 
-Declared skills:
+See [references/DEPENDENCIES.md](references/DEPENDENCIES.md) for the classified dependency list and the taxonomy from `docs/skill-standards/fundamentals/dependencies-and-bundling.md`.
 
-- `detect-project-context`
-- `list-available-skills`
-- `search-skills-registry`
-- `install-skill`
-- `decide-skill-shape`
-- `audit-skill`
-- `validate-skill-frontmatter`
-- `review-skill`
-- `run-trigger-evals`
-- `eval-format`
-- `worker-contract`
-- `context-reports`
-- `parse-skill-frontmatter`
-
-Required tools and binaries:
-
-- `read`, `write`, `edit`, `bash`, `find` (or equivalent)
-- Python 3.x for bundled scripts
+Required tools and binaries: `read`, `write`, `edit`, `bash`, `find` (or equivalent); Python 3.x for bundled scripts.
 
 ## References
 

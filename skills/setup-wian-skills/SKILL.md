@@ -50,7 +50,9 @@ See [references/DEPENDENCIES.md](references/DEPENDENCIES.md).
 
 Detect the project root and ask whether to target project scope or user scope. Determine the source package from the configured default or from a user-supplied argument.
 
-**Completion criterion:** scope and source are resolved.
+When targeting user scope, resolve the path to its canonical storage location before comparing or installing skills. See [Default source configuration](references/DEFAULTS.md) for symlink-farm guidance.
+
+**Completion criterion:** scope, source, and canonical target path are resolved.
 
 ### 2. Discover installed skills
 
@@ -66,6 +68,8 @@ Fetch the source package, compare it to the installed inventory, and build a pla
 - update changed skills
 - skip identical skills
 - flag locally modified skills for confirmation
+- surface `target-only` skills without changing them
+- ignore generated files listed in `sync.excludes` when comparing content
 
 Present the plan and confirm before applying.
 
@@ -79,11 +83,11 @@ Use `install-skill` to copy each approved skill into the target scope.
 
 ### 5. Resolve shared configuration
 
-Read `config.yaml` from each installed skill. Collect unique `shared` keys. Prompt once per missing key using the central registry for defaults. Write the shared config file.
+Read `config.yaml` from each installed skill. Collect unique `shared` keys. For each missing shared key, prompt once using its default; do not batch all missing keys into a single prompt. Write the shared config file.
 
 If a required key cannot be resolved and has no default, stop and explain what is missing.
 
-**Completion criterion:** shared config is written and complete.
+**Completion criterion:** shared config is written and every missing key has been individually prompted and resolved.
 
 ### 6. Present initialization checklist
 

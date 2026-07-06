@@ -1,0 +1,225 @@
+{
+  "name": "wian-skills",
+  "version": "1.0.0",
+  "description": "A collection of reusable agent skills for project setup, skill authoring, and workflow orchestration.",
+  "license": "Proprietary",
+  "skills": [
+    "audit-skill",
+    "baseline",
+    "context-reports",
+    "debrief",
+    "decide-skill-shape",
+    "detect-project-context",
+    "diagnose",
+    "eval-format",
+    "find-skills",
+    "grill-me",
+    "grill-with-docs",
+    "handoff",
+    "improve-codebase-architecture",
+    "install-skill",
+    "list-available-skills",
+    "merge-latest",
+    "orchestrate",
+    "parse-skill-frontmatter",
+    "plan-next",
+    "pr-report",
+    "prototype",
+    "review-skill",
+    "run-trigger-evals",
+    "search-skills-registry",
+    "setup-matt-pocock-skills",
+    "setup-wian-skills",
+    "tdd",
+    "to-issues",
+    "to-prd",
+    "triage",
+    "validate-skill-frontmatter",
+    "verify-branch",
+    "worker-contract",
+    "write-a-skill",
+    "zoom-out"
+  ],
+  "namespaces": {
+    "audit-skill": "wian-skills:audit-skill",
+    "baseline": "wian-skills:baseline",
+    "context-reports": "wian-skills:context-reports",
+    "debrief": "wian-skills:debrief",
+    "decide-skill-shape": "wian-skills:decide-skill-shape",
+    "detect-project-context": "wian-skills:detect-project-context",
+    "diagnose": "wian-skills:diagnose",
+    "eval-format": "wian-skills:eval-format",
+    "find-skills": "wian-skills:find-skills",
+    "grill-me": "wian-skills:grill-me",
+    "grill-with-docs": "wian-skills:grill-with-docs",
+    "handoff": "wian-skills:handoff",
+    "improve-codebase-architecture": "wian-skills:improve-codebase-architecture",
+    "install-skill": "wian-skills:install-skill",
+    "list-available-skills": "wian-skills:list-available-skills",
+    "merge-latest": "wian-skills:merge-latest",
+    "orchestrate": "wian-skills:orchestrate",
+    "parse-skill-frontmatter": "wian-skills:parse-skill-frontmatter",
+    "plan-next": "wian-skills:plan-next",
+    "pr-report": "wian-skills:pr-report",
+    "prototype": "wian-skills:prototype",
+    "review-skill": "wian-skills:review-skill",
+    "run-trigger-evals": "wian-skills:run-trigger-evals",
+    "search-skills-registry": "wian-skills:search-skills-registry",
+    "setup-matt-pocock-skills": "wian-skills:setup-matt-pocock-skills",
+    "setup-wian-skills": "wian-skills:setup-wian-skills",
+    "tdd": "wian-skills:tdd",
+    "to-issues": "wian-skills:to-issues",
+    "to-prd": "wian-skills:to-prd",
+    "triage": "wian-skills:triage",
+    "validate-skill-frontmatter": "wian-skills:validate-skill-frontmatter",
+    "verify-branch": "wian-skills:verify-branch",
+    "worker-contract": "wian-skills:worker-contract",
+    "write-a-skill": "wian-skills:write-a-skill",
+    "zoom-out": "wian-skills:zoom-out"
+  },
+  "requirements": {
+    "tools": [
+      "read",
+      "write",
+      "edit",
+      "bash",
+      "find"
+    ],
+    "binaries": [
+      "git",
+      "python3"
+    ]
+  },
+  "bundles": [
+    {
+      "name": "skill-authoring",
+      "description": "Design, draft, audit, and validate new skills.",
+      "skills": [
+        "write-a-skill",
+        "detect-project-context",
+        "decide-skill-shape",
+        "audit-skill",
+        "validate-skill-frontmatter",
+        "review-skill",
+        "eval-format",
+        "worker-contract",
+        "context-reports",
+        "parse-skill-frontmatter",
+        "list-available-skills",
+        "search-skills-registry",
+        "install-skill",
+        "run-trigger-evals"
+      ]
+    },
+    {
+      "name": "project-workflow",
+      "description": "Run a project task from context through implementation.",
+      "skills": [
+        "orchestrate",
+        "plan-next",
+        "debrief",
+        "detect-project-context",
+        "to-issues",
+        "triage",
+        "worker-contract",
+        "context-reports",
+        "verify-branch",
+        "merge-latest",
+        "pr-report",
+        "improve-codebase-architecture"
+      ]
+    },
+    {
+      "name": "core-tooling",
+      "description": "Essential building blocks most conductors and wrappers rely on.",
+      "skills": [
+        "detect-project-context",
+        "worker-contract",
+        "context-reports",
+        "list-available-skills",
+        "find-skills",
+        "install-skill"
+      ]
+    }
+  ],
+  "skill_dependencies": {
+    "debrief": {
+      "recommended": [
+        "baseline"
+      ]
+    },
+    "decide-skill-shape": {
+      "recommended": [
+        "list-available-skills"
+      ],
+      "optional": [
+        "search-skills-registry"
+      ]
+    },
+    "handoff": {
+      "recommended": [
+        "detect-project-context"
+      ]
+    },
+    "install-skill": {
+      "recommended": [
+        "detect-project-context"
+      ]
+    },
+    "review-skill": {
+      "required": [
+        "audit-skill",
+        "validate-skill-frontmatter"
+      ]
+    },
+    "setup-wian-skills": {
+      "required": [
+        "list-available-skills",
+        "install-skill"
+      ]
+    },
+    "to-issues": {
+      "recommended": [
+        "setup-matt-pocock-skills"
+      ]
+    },
+    "to-prd": {
+      "recommended": [
+        "setup-matt-pocock-skills"
+      ]
+    },
+    "triage": {
+      "recommended": [
+        "setup-matt-pocock-skills"
+      ],
+      "optional": [
+        "grill-with-docs"
+      ]
+    },
+    "write-a-skill": {
+      "required": [
+        "detect-project-context",
+        "decide-skill-shape",
+        "audit-skill",
+        "validate-skill-frontmatter",
+        "review-skill",
+        "eval-format",
+        "worker-contract",
+        "context-reports",
+        "parse-skill-frontmatter"
+      ],
+      "recommended": [
+        "list-available-skills",
+        "search-skills-registry",
+        "install-skill",
+        "run-trigger-evals"
+      ],
+      "optional": [
+        "prototype"
+      ]
+    }
+  },
+  "verification": {
+    "level": "declared"
+  }
+}

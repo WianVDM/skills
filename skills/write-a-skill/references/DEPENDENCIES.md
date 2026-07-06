@@ -2,21 +2,34 @@
 
 `write-a-skill` is a global, meta-level conductor skill. It delegates deterministic work to standalone building-block skills and uses focused subagents only for tightly coupled design judgment.
 
-## Required building-block skills
+This document follows the dependency taxonomy defined in `docs/skill-standards/fundamentals/dependencies-and-bundling.md`:
+
+- **Required** — the skill cannot function without this dependency.
+- **Recommended** — improves output or experience; the skill runs degraded if it is missing.
+- **Optional** — only needed for a side branch or advanced feature.
+
+## Required skills
 
 - **detect-project-context** — project root, skills dir, context dir, and config dir detection.
-- **list-available-skills** — discover skills already available in the project and user scope.
-- **search-skills-registry** — find third-party skills in configured registries.
-- **install-skill** — install a skill from a local path or archive URL after confirmation.
 - **decide-skill-shape** — recommend whether a problem should be a new skill, script, MCP, context file, or mode.
 - **audit-skill** — evaluate a skill against the fundamentals rubric.
 - **validate-skill-frontmatter** — validate `SKILL.md` frontmatter against the JSON schema.
 - **review-skill** — audit an existing skill and optionally apply remediation changes.
-- **run-trigger-evals** — generate `evals/evals.json` for model-invoked skills.
 - **eval-format** — shared `evals/evals.json` schema and evaluation conventions.
 - **worker-contract** — shared subagent return contract, forbidden actions, and scope boundaries used when composing worker prompts.
 - **context-reports** — shared context-report conventions, schema, freshness rules, and missing-report handling.
 - **parse-skill-frontmatter** — extract canonical frontmatter fields from a `SKILL.md` file (used by several building blocks above).
+
+## Recommended skills
+
+- **list-available-skills** — discover skills already available in the project and user scope. Without it, the alternatives report is limited to what the conductor can find directly.
+- **search-skills-registry** — find third-party skills in configured registries. Without it, the skill cannot check whether a similar third-party skill already exists.
+- **install-skill** — install a skill from a local path or archive URL after confirmation. Without it, the conductor can draft files but cannot install skills on the user's behalf.
+- **run-trigger-evals** — generate `evals/evals.json` for model-invoked skills. Without it, the conductor can ask the user to write evals manually or skip them.
+
+## Optional skills
+
+- **prototype** — only used when the user explicitly asks to prototype a UI variation before drafting a skill. Not on the main path.
 
 ## Required harness capabilities
 

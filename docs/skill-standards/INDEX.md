@@ -28,6 +28,7 @@ Skill Standards Wiki
 │   │   ├── what-is-a-skill.md
 │   │   ├── types.md
 │   │   ├── structure.md
+│   │   ├── dependencies-and-bundling.md
 │   │   ├── form-and-style.md
 │   │   ├── common-mistakes.md
 │   │   ├── evaluation.md
@@ -83,7 +84,7 @@ Skill Standards Wiki
 |---|---|---|
 | **New skill author** | [`README.md`](./README.md), [`fundamentals/what-is-a-skill.md`](./fundamentals/what-is-a-skill.md), [`fundamentals/types.md`](./fundamentals/types.md) | [`FORMAT.md`](./FORMAT.md), [`fundamentals/structure.md`](./fundamentals/structure.md), [`fundamentals/form-and-style.md`](./fundamentals/form-and-style.md), [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md), [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md), [`fundamentals/failure-recovery.md`](./fundamentals/failure-recovery.md) |
 | **Reviewer** | [`REVIEW_PRINCIPLES.md`](./REVIEW_PRINCIPLES.md), [`QUICKREF.md`](./QUICKREF.md), [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) | [`fundamentals/types.md`](./fundamentals/types.md), [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md), [`GOVERNANCE.md`](./GOVERNANCE.md), [`fundamentals/failure-recovery.md`](./fundamentals/failure-recovery.md) |
-| **Architect / consumer** | [`docs/PHILOSOPHY.md`](../PHILOSOPHY.md), [`docs/ARCHITECTURE.md`](../ARCHITECTURE.md), [`docs/PORTABILITY.md`](../PORTABILITY.md) | [`PATTERN_CATALOG.md`](./PATTERN_CATALOG.md), [`PACKAGE.md`](./PACKAGE.md), [`FORMAT.md`](./FORMAT.md) |
+| **Architect / consumer** | [`docs/PHILOSOPHY.md`](../PHILOSOPHY.md), [`docs/ARCHITECTURE.md`](../ARCHITECTURE.md), [`docs/PORTABILITY.md`](../PORTABILITY.md) | [`PATTERN_CATALOG.md`](./PATTERN_CATALOG.md), [`PACKAGE.md`](./PACKAGE.md), [`FORMAT.md`](./FORMAT.md), [`fundamentals/dependencies-and-bundling.md`](./fundamentals/dependencies-and-bundling.md) |
 | **Evaluator / QA** | [`EVALUATION.md`](./EVALUATION.md), [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) | [`CONTEXT_BUDGET.md`](./CONTEXT_BUDGET.md), [`fundamentals/evaluation.md`](./fundamentals/evaluation.md), [`patterns/discipline-skill.md`](./patterns/discipline-skill.md) |
 | **End user / consumer** | [`QUICKREF.md`](./QUICKREF.md) | [`GLOSSARY.md`](./GLOSSARY.md), [`fundamentals/what-is-a-skill.md`](./fundamentals/what-is-a-skill.md) |
 
@@ -94,7 +95,7 @@ Skill Standards Wiki
 | Topic | Key documents |
 |---|---|
 | **Routing and description craft** | [`FORMAT.md`](./FORMAT.md), [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md), [`CONTEXT_BUDGET.md`](./CONTEXT_BUDGET.md) |
-| **Skill structure and layout** | [`ARCHITECTURE.md`](../ARCHITECTURE.md), [`FORMAT.md`](./FORMAT.md), [`fundamentals/structure.md`](./fundamentals/structure.md) |
+| **Skill structure and dependencies** | [`ARCHITECTURE.md`](../ARCHITECTURE.md), [`FORMAT.md`](./FORMAT.md), [`fundamentals/structure.md`](./fundamentals/structure.md), [`fundamentals/dependencies-and-bundling.md`](./fundamentals/dependencies-and-bundling.md) |
 | **Writing style and form** | [`fundamentals/form-and-style.md`](./fundamentals/form-and-style.md), [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md), [`PHILOSOPHY.md`](../PHILOSOPHY.md) |
 | **Evaluation and testing** | [`EVALUATION.md`](./EVALUATION.md), [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md), [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) |
 | **Failure recovery and iteration** | [`fundamentals/failure-recovery.md`](./fundamentals/failure-recovery.md), [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md), [`EVALUATION.md`](./EVALUATION.md) |

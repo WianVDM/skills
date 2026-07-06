@@ -105,6 +105,7 @@ For the full, maintained version of these fundamentals, see `docs/skill-standard
 - `what-is-a-skill.md`
 - `types.md`
 - `structure.md`
+- `dependencies-and-bundling.md`
 - `form-and-style.md`
 - `common-mistakes.md`
 - `evaluation.md`
