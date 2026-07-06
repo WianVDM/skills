@@ -3,6 +3,9 @@
 .pi/
 AGENT.md
 
+# Local secrets
+.env
+
 # Local working directories (uncomment if used)
 # workspace/
 # local/
