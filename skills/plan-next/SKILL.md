@@ -4,7 +4,7 @@ description: Analyze context, discover available skills, build deep skill capabi
 license: Proprietary
 metadata:
   author: Wian van der Merwe
-  version: "3.0"
+  version: "1.0.0"
 ---
 
 # Plan Next

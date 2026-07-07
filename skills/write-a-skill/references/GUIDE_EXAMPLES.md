@@ -98,7 +98,7 @@ notes:
 ```markdown
 ---
 skill: ticket-brief
-version: 1
+version: 1.0.0
 ticket: PROJ-1234
 generated_at: 2026-06-26T08:42:00Z
 summary: "Auth guard race condition when token refresh overlaps with route navigation"
@@ -158,7 +158,7 @@ ship-feature/
 ```markdown
 ---
 skill: ship-feature
-version: 1
+version: 1.0.0
 ticket: PROJ-1234
 updated_at: 2026-06-26T09:00:00Z
 ---

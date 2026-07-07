@@ -30,7 +30,7 @@ test("parses valid state file frontmatter", () => {
     statePath,
     `---
 skill: verify-branch
-version: 4
+version: 1.0.0
 branch: feature-x
 base: origin/main
 updated_at: 2026-07-01T12:00:00Z
@@ -77,7 +77,7 @@ test("loadStateForBranch constructs the correct path", () => {
     statePath,
     `---
 skill: verify-branch
-version: 4
+version: 1.0.0
 branch: feature/OC-1234
 base: origin/main
 updated_at: 2026-07-01T12:00:00Z

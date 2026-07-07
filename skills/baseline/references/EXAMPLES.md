@@ -22,7 +22,7 @@ Replace placeholders with values detected or confirmed for the project.
 ```markdown
 ---
 skill: baseline
-version: 4
+version: 1.0.0
 scope: OC-4644
 branch: main
 commit: abc1234
@@ -94,7 +94,7 @@ None.
 ```yaml
 ---
 skill: baseline
-version: 4
+version: 1.0.0
 scope: OC-3075
 branch: main
 commit: def5678
@@ -124,7 +124,7 @@ summary: "Rewards dashboard current layout, empty and loading states captured be
 ```yaml
 ---
 skill: baseline
-version: 4
+version: 1.0.0
 scope: user-profile-endpoint
 branch: main
 commit: def5678
@@ -146,7 +146,7 @@ summary: "User profile endpoint returns 200 with the expected profile payload."
 ```yaml
 ---
 skill: baseline
-version: 4
+version: 1.0.0
 scope: auth-guard-module
 branch: main
 commit: def5678
@@ -166,7 +166,7 @@ summary: "Snapshot of the auth guard module before refactoring."
 ```markdown
 ---
 skill: baseline
-version: 4
+version: 1.0.0
 scope: OC-5000
 branch: main
 commit: 789abcd

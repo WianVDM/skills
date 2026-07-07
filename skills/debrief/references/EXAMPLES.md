@@ -13,7 +13,7 @@
 ```yaml
 ---
 skill: debrief
-version: 4.0
+version: 1.0.0
 ticket: OC-4644
 branch: SHB-362
 commit: abc1234
@@ -129,7 +129,7 @@ Saved when confidence is below `confidence_threshold`.
 ---
 skill: debrief
 type: blocker-report
-version: 4.0
+version: 1.0.0
 ticket: OC-4644
 branch: SHB-362
 commit: abc1234

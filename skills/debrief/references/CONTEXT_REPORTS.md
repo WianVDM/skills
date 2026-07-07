@@ -36,7 +36,7 @@ Every debrief report must include this frontmatter:
 ```yaml
 ---
 skill: debrief
-version: 4.0
+version: 1.0.0
 ticket: OC-4644
 branch: SHB-362
 commit: abc1234
@@ -114,7 +114,7 @@ Saved when `debrief_confidence` is below `confidence_threshold`:
 ---
 skill: debrief
 type: blocker-report
-version: 4.0
+version: 1.0.0
 ticket: OC-4644
 branch: SHB-362
 commit: abc1234
@@ -138,7 +138,7 @@ The state file at `{context_dir}/debrief/{key}/state.md` uses this frontmatter:
 ```yaml
 ---
 skill: debrief
-version: 4.0
+version: 1.0.0
 ticket: OC-4644
 updated_at: 2026-07-03T08:42:00Z
 ---

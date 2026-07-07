@@ -1,6 +1,6 @@
 ---
 skill: verify-branch
-version: 4
+version: 1.0.0
 branch: {{branch}}
 base: {{base}}
 commit: {{commit}}

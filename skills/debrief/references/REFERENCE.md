@@ -1,6 +1,6 @@
 # Debrief Reference
 
-Research checklist, state management, context graph, ambiguity resolution, and output generation for `debrief` v4.0.
+Research checklist, state management, context graph, ambiguity resolution, and output generation for `debrief` v1.0.0.
 
 ---
 
@@ -71,7 +71,7 @@ This is the investigator's working memory and the anchor for resuming after cont
 ```markdown
 ---
 skill: debrief
-version: 4.0
+version: 1.0.0
 ticket: OC-4644
 updated_at: 2026-07-03T08:42:00Z
 ---
@@ -307,7 +307,7 @@ Save to `{context_dir}/debrief/{key}-{short-slug}.md`.
 ```markdown
 ---
 skill: debrief
-version: 4.0
+version: 1.0.0
 ticket: OC-4644
 branch: SHB-362
 commit: abc1234
@@ -428,7 +428,7 @@ Save to `{context_dir}/debrief/{key}-blockers.md` when confidence is below `conf
 ---
 skill: debrief
 type: blocker-report
-version: 4.0
+version: 1.0.0
 ticket: OC-4644
 branch: SHB-362
 commit: abc1234

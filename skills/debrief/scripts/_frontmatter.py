@@ -205,7 +205,7 @@ def dump_frontmatter(data: dict, text: str = "") -> str:
 if __name__ == "__main__":  # pragma: no cover - manual test
     sample = '''---
 skill: debrief
-version: 4.0
+version: 1.0.0
 ticket: OC-4644
 confidence: 85
 baseline_complete: true

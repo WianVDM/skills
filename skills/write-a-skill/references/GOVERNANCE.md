@@ -6,18 +6,13 @@ This file holds governance notes for human maintainers of `write-a-skill`. It do
 
 `write-a-skill` tracks its own changes because it is a shared conductor consumed by other skills and workflows. For skills produced by this conductor, `version` is optional unless the user requires it or the skill will be shared or consumed.
 
-`write-a-skill` uses semantic versioning for its own lifecycle:
+`write-a-skill` uses the versioning scheme defined in the project [`AGENT.md`](../../AGENT.md): all skills and artifacts start at **v1.0.0**, and increments are strictly right-to-left (v1.0.0 → v1.0.1 → ... → v1.0.9 → v1.1.0) with no semantic meaning assigned to major, minor, or patch. Bumps are based on the latest version published to GitHub, and each release bumps the version exactly once.
 
-- **Major bump**: breaking changes to the skill interface, schema, or required capabilities.
-- **Minor bump**: new branches, references, or significant backward-compatible workflow improvements.
-- **Patch bump**: typo fixes, clarifications, or minor reference updates that do not change behavior.
-
-Current version: **4.7.0**.
-
-Bump the version when state/report schemas change, a new branch or major workflow step is added, subagent behavior changes significantly, or the audit rubric changes in a way that affects ratings. Do not bump for trivial wording fixes. For skills produced by this conductor, only suggest versioning if the user asks for it or if the skill will be distributed/consumed.
+Current version: **v1.0.0**.
 
 ## Migration history
 
+- **v4.7.0 → v1.0.0**: reset all skill versions to v1.0.0 under the new project-specific versioning scheme documented in `AGENT.md`. No functional changes; no state migration required.
 - **4.6.0 → 4.7.0**: added a pre-audit comprehension step to the `change` branch using the review principles in `docs/skill-standards/REVIEW_PRINCIPLES.md`; `review-skill` now produces a verdict-led audit report or an incomplete report. Updated the initialization routine to detect canonical standards via the configured `standards_path` and fall back to embedded references. No state migration required.
 - **4.5.0 → 4.6.0**: extracted the `review` and `update` gates into a new `review-skill` conductor; declared it as a dependency and delegated the `change` branch in `BRANCH_WORKFLOWS.md` to it. No state migration required.
 - **4.4.0 → 4.5.0**: extracted the `decide` gate into a new `decide-skill-shape` conductor; declared it as a dependency and delegated the `decide` gate in `BRANCH_WORKFLOWS.md` to it. No state migration required.

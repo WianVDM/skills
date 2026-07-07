@@ -4,7 +4,7 @@ description: "Investigate and explain a ticket. Gathers context from issue track
 license: Proprietary
 metadata:
   author: Wian van der Merwe
-  version: "4.0"
+  version: "1.0.0"
   scope: global
 depends:
   - baseline

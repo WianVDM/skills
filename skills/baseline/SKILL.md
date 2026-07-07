@@ -5,7 +5,7 @@ argument-hint: "Scope, ticket key, or feature/bug to baseline"
 license: Proprietary
 metadata:
   author: Wian van der Merwe
-  version: "4.0"
+  version: "1.0.0"
   scope: global
 invocation: user-invoked
 disable-model-invocation: true

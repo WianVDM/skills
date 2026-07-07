@@ -48,7 +48,7 @@ Every baseline report must include this frontmatter:
 ```yaml
 ---
 skill: baseline
-version: 4
+version: 1.0.0
 scope: auth-guard-race-condition
 branch: main
 commit: abc1234

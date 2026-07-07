@@ -122,7 +122,7 @@ Save the full report to `.agents/context/verify-branch/{branch-name}.md`:
 ```markdown
 ---
 skill: verify-branch
-version: 4
+version: 1.0.0
 branch: {branch-name}
 base: {base-ref}
 commit: {commit-sha}

@@ -4,7 +4,7 @@ description: Compare the current branch to the repository's default branch and v
 license: Proprietary
 metadata:
   author: Wian van der Merwe
-  version: "4.0.1"
+  version: "1.0.0"
 consumes:
   - any report in `.agents/context/` whose filename or frontmatter matches the current branch or ticket key
 requires:

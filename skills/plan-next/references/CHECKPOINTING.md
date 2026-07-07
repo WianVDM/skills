@@ -23,7 +23,7 @@
 ```markdown
 ---
 skill: plan-next
-version: 1
+version: 1.0.0
 key: OC-1234
 status: draft
 updated_at: 2026-06-26T08:00:00Z
@@ -44,7 +44,7 @@ updated_at: 2026-06-26T08:00:00Z
 ```markdown
 ---
 skill: plan-next
-version: 1
+version: 1.0.0
 key: OC-1234
 status: awaiting-confirmation
 revision: 2

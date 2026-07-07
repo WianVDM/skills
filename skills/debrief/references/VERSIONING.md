@@ -1,8 +1,10 @@
 # Versioning
 
+> **Version reset.** This skill has been reset to v1.0.0 under the project-wide versioning scheme in `AGENT.md`. Historical migration notes below are preserved for reference but no longer reflect the current version number.
+
 ## Current version
 
-`debrief` is at version `4.0`.
+`debrief` is at version `v1.0.0`.
 
 This bump from `3.0` to `4.0` makes `debrief` a global, pluggable conductor / skill base. It adds project-layout detection, a parallel 7-phase pipeline, task-type classification, duplicate detection, generic artifact discovery, structured assumption/confidence-gap schemas, and a blocker report.
 

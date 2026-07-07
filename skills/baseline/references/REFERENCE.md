@@ -94,7 +94,7 @@ Stop immediately and flag if:
 ```markdown
 ---
 skill: baseline
-version: 4
+version: 1.0.0
 scope: <scope>
 branch: <branch>
 commit: <commit>

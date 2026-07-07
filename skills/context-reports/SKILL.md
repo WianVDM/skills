@@ -67,7 +67,7 @@ Reports use frontmatter and markdown body:
 ```yaml
 ---
 skill: skill-name
-version: 1
+version: 1.0.0
 key: OC-1234
 generated_at: 2026-06-26T08:42:00Z
 summary: "One-sentence synthesis."

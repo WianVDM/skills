@@ -21,7 +21,7 @@ Every report should include a header and a small set of required sections.
 ---
 report: report-name                    # e.g., self-audit, audit, global-readiness
 skill: skill-name                       # the skill being reviewed/designed
-version: "1.0"                          # optional; version of the skill being reviewed/designed
+version: "1.0.0"                          # optional; version of the skill being reviewed/designed
 timestamp: ISO-8601                     # when the report was generated
 status: draft | final | stale | override
 ---

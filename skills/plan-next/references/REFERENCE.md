@@ -233,7 +233,7 @@ When the user confirms:
 ```markdown
 ---
 skill: plan-next
-version: 1
+version: 1.0.0
 key: OC-1234
 status: finalized
 updated_at: 2026-06-26T08:00:00Z

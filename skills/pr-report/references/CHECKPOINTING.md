@@ -28,7 +28,7 @@ At the start of Phase 2, create the report document with all sections marked pen
 ```markdown
 ---
 skill: pr-report
-version: 1
+version: 1.0.0
 key: OC-1234
 pr_number: 1234
 repo: owner/repo

@@ -5,7 +5,7 @@ argument-hint: "optional target branch, optional upstream branch, optional --sta
 license: Proprietary
 metadata:
   author: Wian van der Merwe
-  version: "4.0"
+  version: "1.0.0"
 ---
 
 # Merge Latest

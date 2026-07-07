@@ -22,7 +22,7 @@ Consumed reports are advisory only. They are never used to compute the verdict.
 ```yaml
 ---
 skill: verify-branch
-version: 4
+version: 1.0.0
 branch: feature/OC-1234
 base: origin/main
 commit: abc1234

@@ -45,7 +45,7 @@ At the start of Phase 2, create the debrief document with all sections marked pe
 ```markdown
 ---
 skill: debrief
-version: 4.0
+version: 1.0.0
 ticket: OC-4644
 branch: SHB-362
 commit: abc1234

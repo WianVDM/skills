@@ -1,7 +1,7 @@
 ---
 name: write-a-skill
 description: Skill-design conductor for creating, reviewing, and updating skills that follow the skill standards.
-version: 4.7.0
+version: 1.0.0
 invocation: user-invoked
 metadata:
   author: Wian van der Merwe

@@ -128,7 +128,7 @@ Path: `.agents/context/pr-report/{key}/state.md`
 ```markdown
 ---
 skill: pr-report
-version: 1
+version: 1.0.0
 key: OC-1234
 pr_number: 1234
 repo: owner/repo
@@ -235,7 +235,7 @@ Save the full report to `.agents/context/pr-report/{key}-report.md`.
 ```markdown
 ---
 skill: pr-report
-version: 1
+version: 1.0.0
 key: OC-1234
 pr_number: 1234
 repo: owner/repo

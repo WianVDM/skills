@@ -4,7 +4,7 @@ description: Run a PR report workflow to build an actionable understanding of a 
 license: Proprietary
 metadata:
   author: Wian van der Merwe
-  version: "3.1"
+  version: "1.0.0"
 ---
 
 # PR Report

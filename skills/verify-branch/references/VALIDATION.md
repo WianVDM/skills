@@ -112,8 +112,8 @@ Checklist for reviewing the `verify-branch` skill before releasing a new version
 
 ## Release readiness
 
-- [ ] `metadata.version` is updated to `4.0` if the schema changed.
-- [ ] `references/VERSIONING.md` is updated with v4.0 changes and migration notes.
+- [ ] `metadata.version` is updated to `1.0.0` if the schema changed.
+- [ ] `references/VERSIONING.md` is updated with v1.0.0 changes and migration notes.
 - [ ] A final review report is written to `.agents/context/skill-review/verify-branch-review.md`.
 - [ ] The skill is tested against a real branch when possible.
 

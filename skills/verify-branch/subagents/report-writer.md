@@ -75,7 +75,7 @@ The report file must begin with this frontmatter:
 ```yaml
 ---
 skill: verify-branch
-version: 4
+version: 1.0.0
 branch: feature/OC-1234
 base: origin/main
 commit: abc1234

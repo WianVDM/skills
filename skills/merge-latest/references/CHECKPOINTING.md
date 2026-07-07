@@ -31,7 +31,7 @@ Checkpointing is always used, but it is especially important when:
 ```markdown
 ---
 skill: merge-latest
-version: 1
+version: 1.0.0
 target: OC-4964
 upstream: OC-3626
 status: in-progress

@@ -134,7 +134,7 @@ The report is written to `.agents/context/merge-latest/{target}-merge-report.md`
 ```markdown
 ---
 skill: merge-latest
-version: 1
+version: 1.0.0
 key: SHB-317
 status: complete
 updated_at: 2026-06-26T08:00:00Z
