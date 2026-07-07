@@ -31,8 +31,10 @@ A good initialization phase is:
 - **Explicit** — the user knows when it is running and why.
 - **Idempotent** — running it twice does not corrupt state or create duplicates.
 - **Fail-closed** — if a required capability is missing, it stops and explains.
-- **Minimal** — it asks only for what it cannot detect or infer.
+- **Minimal** — it asks only for what it cannot detect or infer, and it does not ask about recommended or optional capabilities that are not needed for the current path.
 - **Observant** — it records what it detected and decided in notes.
+
+Skills that have multiple independent methods or branches may use **lazy dependency evaluation**: required capabilities are checked at initialization, but recommended or optional capabilities are checked only when the specific method or branch that needs them is selected. This keeps initialization lightweight and avoids upfront setup overload.
 
 ---
 
@@ -59,7 +61,8 @@ A typical initialization flow:
    - Check that required tools are installed.
    - Check that required environment variables are set.
    - Check that required skills are available.
-   - Stop and report any missing capability.
+   - Stop and report any missing required capability.
+   - For skills with multiple methods or branches, defer recommended and optional capability checks until the relevant method or branch is selected.
 
 5. **Write initial notes**
    - Record what was detected.
@@ -189,8 +192,8 @@ See [`../fundamentals/security.md`](../fundamentals/security.md) for the full se
 
 - [ ] Detection is explicit and well-scoped.
 - [ ] Config creation is idempotent.
-- [ ] The user is asked only for values that cannot be detected or defaulted.
-- [ ] Required capabilities are validated.
+- [ ] The user is asked only for values that cannot be detected or defaulted, and not for unrelated recommended capabilities.
+- [ ] Required capabilities are validated eagerly; recommended/optional capabilities are validated lazily when relevant.
 - [ ] Missing capabilities are reported clearly with fail-closed behavior.
 - [ ] Initial notes record what was detected and decided.
 - [ ] The user receives a clear readiness report.

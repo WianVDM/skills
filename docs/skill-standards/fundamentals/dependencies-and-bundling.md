@@ -55,6 +55,55 @@ Optional dependencies are surfaced in the install output and in documentation. T
 
 ---
 
+## Lazy dependency evaluation
+
+A skill does not have to check every declared dependency at initialization. It can check **required** dependencies eagerly and **recommended** or **optional** dependencies **lazily**, only when the specific feature or method that needs them is selected.
+
+This avoids overwhelming the user with setup decisions for tools they may never use. It also keeps the skill lightweight in projects that only exercise a subset of its capabilities.
+
+### When to use lazy evaluation
+
+- The skill has multiple independent methods or branches.
+- Each method has its own tooling catalog (e.g., UI capture, API capture, code snapshot).
+- The user should only be asked about tooling for the method actually being used.
+
+### When to use eager evaluation
+
+- The dependency is **required** for the skill to function at all.
+- The dependency is used on the main happy path and has no acceptable fallback.
+- Checking it early prevents a later hard stop after the user has already invested effort.
+
+### Lazy evaluation rules
+
+1. **Check required dependencies at initialization.** If a required dependency is missing, report `blocked` and stop.
+2. **Evaluate recommended/optional dependencies only when the relevant branch or method is chosen.** If a recommended dependency is missing for that path, report `degraded` for that path and explain the impact.
+3. **Offer remediation for the specific path.** Do not ask the user to configure unrelated tooling. For example, a UI baseline should only ask about browser automation; it should not ask about API clients or test runners.
+4. **Persist the user's choice.** If the user declines a recommended tool for a path, record that preference so the same question is not repeated on every run.
+5. **Never silently degrade.** The skill must tell the user what is missing and what fallback is being used.
+
+### Example
+
+A `baseline` skill checks at initialization that `git` and `python3` are present. If they are, initialization reports `full`.
+
+Later, when the user baselines a UI route, the skill selects `ui-browser` and checks for browser automation tooling. If none is found, it reports:
+
+```text
+Status: degraded (for method ui-browser)
+Missing: browser automation tool or MCP (recommended)
+Impact: UI capture will fall back to manual screenshots.
+Remediation: Configure a Playwright MCP, use a project-local test runner, or proceed with manual fallback.
+```
+
+The skill then asks the user which path to take. It does not bring up API or test tooling because those are irrelevant to this baseline.
+
+### Designing for lazy evaluation
+
+When declaring dependencies, document which path triggers each recommended or optional dependency. In `references/DEPENDENCIES.md`, group recommended tools by the method or branch that uses them. In `config.yaml`, reserve a `tooling` or `preferences` section for per-path choices so the skill can remember them.
+
+A skill that uses lazy evaluation should still declare its full dependency surface in `skills.json` and `references/DEPENDENCIES.md`. Laziness is a runtime behavior, not a way to hide dependencies.
+
+---
+
 ## Declaration surfaces
 
 Dependencies should be declared in the places both humans and harnesses can read. A human-readable declaration and a machine-readable declaration serve different purposes; a skill should provide both.
@@ -250,25 +299,35 @@ A skill must check its own dependency availability at initialization and report 
 
 ### `full`
 
-All required dependencies and all recommended dependencies are present. The skill can run its full workflow without reduced capability.
+All required dependencies are present. The skill can run its core workflow without reduced capability.
 
-Report `full` when:
+Report `full` at initialization when:
 
-- Every skill listed as required or recommended is installed and loadable.
+- Every required skill is installed and loadable.
 - Every required tool, binary, MCP server, and environment variable is available.
-- The skill's optional dependencies are either present or irrelevant to the current task.
+
+If the skill uses lazy evaluation, `full` at initialization does **not** imply that every recommended or optional dependency is present. It only means the required surface is satisfied and the skill can proceed to method/path selection.
+
+Report `full` at runtime for a specific path when:
+
+- All required dependencies are present.
+- All recommended dependencies needed for that path are present.
+- Optional dependencies are either present or irrelevant to the current path.
 
 ### `degraded`
 
-All required dependencies are present, but one or more recommended dependencies are missing. The skill can run, but output or experience is reduced.
+All required dependencies are present, but a recommended or optional dependency needed for the current path is missing. The skill can still run, but output or experience is reduced for that path.
 
 Report `degraded` when:
 
 - A recommended lookup source is missing, so the skill falls back to a narrower search.
 - A recommended building block is missing, so the skill performs a step inline instead of delegating.
 - A recommended convenience tool is missing, so the user must supply information manually.
+- A recommended tool for a lazily evaluated method is missing, so the skill must switch to a fallback method or manual mode.
 
-The skill must tell the user what is missing and how the behavior changes. It must not fail silently into degraded mode.
+The skill must tell the user what is missing, how behavior changes, and which path triggered the check. It must not fail silently into degraded mode.
+
+When the skill uses lazy evaluation, report `degraded` for the specific method or branch, not for the entire skill. For example, `degraded (ui-browser)` is clearer than `degraded` alone.
 
 ### `blocked`
 
@@ -287,22 +346,36 @@ The skill must explain what is missing, why it matters, and how to fix it. It ma
 When a skill reports its state, it should include:
 
 - `status`: `full`, `degraded`, or `blocked`.
+- `scope`: `initialization` or the specific method/branch the check applies to (e.g., `ui-browser`).
 - `missing`: a list of missing dependencies and their kind.
 - `impact`: a brief explanation of how behavior changes.
 - `remediation`: the recommended next step for the user or harness.
 
-Example:
+Example — eager check at initialization:
+
+```markdown
+Status: full
+Scope: initialization
+Missing: none
+Impact: Core workflow can proceed.
+Remediation: none.
+```
+
+Example — lazy check for a specific method:
 
 ```markdown
 Status: degraded
-Missing: `search-skills-registry` (recommended), `find-skills` (recommended)
-Impact: Local-only skill discovery; third-party skills may be missed.
-Remediation: Install the missing skills, or continue with reduced discovery.
+Scope: ui-browser
+Missing: `playwright-mcp` (recommended)
+Impact: UI capture will fall back to manual screenshots.
+Remediation: Configure a browser automation MCP, switch to a test-runner baseline, or proceed with manual fallback.
 ```
 
 ### Initialization check
 
-A skill should run this check once per session, usually in its initialization phase. The check should be lightweight: it reads the dependency declaration, checks for the presence of each listed skill or capability, and reports the worst applicable state. It should not perform expensive validation or network calls during the check itself.
+A skill should run this check once per session, usually in its initialization phase. The check should be lightweight: it reads the dependency declaration, checks for the presence of each required skill or capability, and reports the worst applicable state. It should not perform expensive validation or network calls during the check itself.
+
+For skills that use lazy evaluation, the initialization check covers only required dependencies. Recommended and optional dependencies are checked later, when the relevant method or branch is selected. The skill should still document the full dependency surface in `references/DEPENDENCIES.md` so that the lazy checks are predictable.
 
 ---
 
@@ -335,7 +408,9 @@ write-a-skill
 └── run-trigger-evals
 ```
 
-If the user opts out of recommended dependencies, `write-a-skill` runs in `degraded` mode. For example, without `search-skills-registry`, it cannot check whether a similar third-party skill already exists.
+If the user opts out of recommended dependencies, `write-a-skill` runs in `degraded` mode. For example, without `search-skills-registry`, it cannot check whether a similar third-party skill already exists. Because these are general-purpose recommended dependencies, this degradation is reported eagerly at initialization.
+
+A skill with lazy evaluation (such as `baseline`) would report `full` at initialization if only its required dependencies are present, then report `degraded` later when a specific method lacks tooling.
 
 A blocked initialization would look like:
 

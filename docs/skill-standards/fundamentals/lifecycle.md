@@ -24,7 +24,7 @@ Choose the skill type and form before writing files.
 - **Form**: instruction-heavy, guideline-heavy, or hybrid. See [form-and-style.md](./form-and-style.md).
 - **Invocation**: model-invoked or user-invoked. See [structure.md](./structure.md).
 - **Scope**: what is in and what is out.
-- **Dependencies**: other skills, tools, APIs, environment variables.
+- **Dependencies**: other skills, tools, APIs, environment variables. Decide which are required, recommended, or optional, and whether recommended/optional dependencies should be evaluated lazily when the relevant method or branch is selected.
 
 Write a one-sentence intent statement:
 

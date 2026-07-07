@@ -100,6 +100,23 @@ Assuming the agent already knows what you mean. This works for well-known tasks 
 Use leading words where priors are strong. Define terms where they are domain-specific. Add steps where the agent would vary.
 
 ---
+---
+
+## Upfront setup overload
+
+A skill that forces the user to configure every recommended or optional tool before it can do anything useful.
+
+**Causes**
+
+- Checking all recommended dependencies eagerly at initialization.
+- Asking the user to decide on tooling for branches or methods they may never use.
+- Treating recommended tooling as if it were required.
+
+**Cure**
+
+Use **lazy dependency evaluation**: check required dependencies at initialization, and check recommended or optional dependencies only when the specific method or branch that needs them is selected. Offer remediation only for the active path.
+
+---
 
 ## Hidden dependencies
 

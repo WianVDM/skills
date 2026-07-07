@@ -137,8 +137,10 @@ When a skill runs in a harness that does not support its full feature set, the f
 4. **If the harness does not support context reports**, the skill should write reports to a local file and inform the user.
 5. **If a required MCP server is not available**, fail closed or ask the user to configure it.
 6. **If a required binary is not available**, fail closed and explain what is missing.
+7. **If a recommended capability for the current path is not available**, report `degraded` for that path and offer remediation or a fallback. Do not ask the user to configure unrelated capabilities.
+8. **If a recommended capability is missing but the path can still proceed**, continue only after explaining the reduced capability and, if needed, confirming the fallback with the user.
 
-A skill should document its degradation behavior in `references/PORTABILITY.md` or in `README.md`.
+A skill should document its degradation behavior in `references/PORTABILITY.md` or in `README.md`, including whether it uses lazy dependency evaluation for recommended or optional capabilities.
 
 ---
 
