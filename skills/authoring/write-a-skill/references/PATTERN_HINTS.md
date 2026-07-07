@@ -9,7 +9,7 @@ Use these decision rules to decide which Layer 2 architecture patterns apply to 
 |---|---|---|
 | **Global / pluggable** | The skill must work in any project or harness. | The skill is project-specific and always will be. |
 | **Configurable** | The skill needs per-project or per-user preferences. | The skill needs no preferences beyond detection. |
-| **Initialization** | The skill is global/configurable and needs first-run setup. | The skill is stateless and needs no setup. |
+| **Initialization** | The skill is global/configurable and needs first-run setup. Check required capabilities eagerly; evaluate recommended/optional capabilities lazily per method or branch to avoid upfront setup overload. | The skill is stateless and needs no setup. |
 | **Stateful** | The skill must survive context compaction or multi-session work. | The skill is fully stateless. |
 | **Context reports** | The skill produces structured artifacts consumed by other skills. | The skill has no shared outputs. |
 | **Versioning** | Other skills or consumers depend on the skill's behavior or schema. | The skill has no consumers and no schema contract. |

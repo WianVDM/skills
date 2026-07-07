@@ -120,14 +120,15 @@ On first run in a project, execute the bootstrap routine:
 1. Detect project context with `detect-project-context` to locate the project root and the recommended config directory.
 2. Load config from `{recommended_config_dir}/write-a-skill.yaml` or create defaults.
 3. Validate required capabilities (file read, file write, search, script execution, network fetch if standards init is offered).
-4. **Run dependency self-diagnostics.** Check whether each required and recommended skill from [references/DEPENDENCIES.md](references/DEPENDENCIES.md) is installed and loadable. Report `full`, `degraded`, or `blocked` per the dependency taxonomy in the skill standards. If `blocked`, stop and explain how to install the missing required skills. If `degraded`, explain the reduced capability and ask whether to proceed.
-5. Locate the canonical skill standards:
+4. **Run dependency self-diagnostics for required dependencies.** Check whether each **required** skill from [references/DEPENDENCIES.md](references/DEPENDENCIES.md) is installed and loadable. Report `full` or `blocked` for the required surface. If `blocked`, stop and explain how to install the missing required skills.
+5. Recommended and optional skills are **not** checked eagerly. They are evaluated lazily when the phase that needs them runs (e.g., `list-available-skills` and `search-skills-registry` during the alternatives phase). If a recommended skill is missing at that point, explain the reduced capability for that phase and ask whether to proceed.
+6. Locate the canonical skill standards:
    - Read the `standards_path` value from the loaded config.
    - If `standards_path` is set and the directory exists, use it.
    - If `standards_path` is not set or the directory is missing, offer to fetch the official standards into the configured path.
    - If the fetch fails or the user declines, fall back to embedded [references/FUNDAMENTALS.md](references/FUNDAMENTALS.md) and [references/PATTERN_HINTS.md](references/PATTERN_HINTS.md).
-6. Ask the user to confirm detected paths, default registry list, and standards source.
-7. Persist initial notes in the context directory.
+7. Ask the user to confirm detected paths, default registry list, and standards source.
+8. Persist initial notes in the context directory.
 
 If the project context cannot be detected, fail closed and explain what is missing.
 

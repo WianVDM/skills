@@ -151,6 +151,12 @@ Why this recommendation was made.
 - mcp_servers: [...]
 - environment_variables: [...]
 
+## Lazy dependency evaluation
+- Methods/branches that evaluate dependencies lazily: [...]
+- Required dependencies checked at initialization: [...]
+- Recommended/optional dependencies checked per method/branch: [...]
+- How the skill handles missing tooling for a specific path: [...]
+
 ## Artifacts to create
 - SKILL.md
 - README.md (if non-trivial)

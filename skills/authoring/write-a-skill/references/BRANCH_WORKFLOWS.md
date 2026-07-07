@@ -63,9 +63,14 @@ Write one core objective, explicit in-scope items, and explicit out-of-scope ite
 
 **Why:** applying the right patterns makes the skill portable, maintainable, and composable.
 
-Apply the fundamentals from [references/FUNDAMENTALS.md](FUNDAMENTALS.md) and select Layer 2 patterns using [references/PATTERN_HINTS.md](PATTERN_HINTS.md).
+Apply the fundamentals from [references/FUNDAMENTALS.md](FUNDAMENTALS.md) and select Layer 2 patterns using [references/PATTERN_HINTS.md](PATTERN_HINTS.md). For dependencies, decide:
 
-**Completion criterion:** the pattern list exists and the user has confirmed it.
+- Which are **required** and must be checked at initialization.
+- Which are **recommended** or **optional** and can be evaluated **lazily** when the relevant method or branch is selected.
+
+Document the lazy evaluation strategy in the design draft so the drafted skill does not ask the user to configure unrelated tooling upfront.
+
+**Completion criterion:** the pattern list exists, the dependency evaluation strategy is documented, and the user has confirmed it.
 
 #### 7. Draft artifacts
 
@@ -130,6 +135,8 @@ For the full decide workflow, invoke the `decide-skill-shape` skill. It will:
 The `change` branch audits or updates an existing skill. **Understanding must come before scoring, but the verdict follows the full audit.**
 
 For both the `review` and `update` gates, invoke the `review-skill` conductor. It applies the review principles from `docs/skill-standards/REVIEW_PRINCIPLES.md` (or the fallback copy in `review-skill/references/REVIEW_PRINCIPLES.md`). After a full audit, it produces a verdict-led report. If the core questions cannot be answered, it produces an incomplete report.
+
+When reviewing a skill with multiple methods or branches, pay special attention to lazy dependency evaluation: required dependencies should be checked eagerly, and recommended/optional dependencies should be evaluated lazily per path. The full dependency surface must still be declared in `references/DEPENDENCIES.md` and `skills.json`.
 
 After the comprehension step is complete, the `review-skill` conductor runs the remaining workflow:
 

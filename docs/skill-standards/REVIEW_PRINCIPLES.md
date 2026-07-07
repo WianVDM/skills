@@ -11,6 +11,7 @@ Before scoring, answer:
 3. **Scope** — Is the objective one sentence? Are the boundaries explicit and non-overlapping?
 4. **Prune** — Is every line load-bearing? Can a section, example, or reference be removed without changing behavior?
 5. **Focus** — Does the phrasing produce the right result? Can leading words, negation pairs, or checkable completion criteria make it leaner?
+6. **Dependencies** — Are required dependencies checked eagerly and recommended/optional dependencies evaluated lazily when the skill has multiple methods or branches? Is the full dependency surface still declared?
 
 ## Verdict
 

@@ -84,7 +84,9 @@ Declare all dependencies:
 - External binaries.
 - Environment variables.
 
-Declare all dependencies; do not hide them.
+Classify each dependency as **required**, **recommended**, or **optional**. Check required dependencies eagerly at initialization. Evaluate recommended and optional dependencies **lazily**, only when the specific method or branch that needs them is selected. This avoids upfront setup overload and keeps the skill usable in projects that do not need every capability.
+
+A skill must still declare its full dependency surface in `references/DEPENDENCIES.md` and `skills.json` even when using lazy evaluation. Laziness is a runtime behavior, not a way to hide dependencies.
 
 ## Evaluation
 

@@ -22,3 +22,11 @@ Given the skill type and intent, suggest which Layer 2 architecture patterns app
 ## Allowed tools
 
 - `read` to examine the design draft and pattern hints.
+
+## Pattern considerations
+
+When suggesting patterns, also evaluate whether the skill should use **lazy dependency evaluation**:
+
+- If the skill has multiple independent methods or branches, recommend evaluating recommended/optional dependencies lazily, per path.
+- If the skill has only one happy path or no optional tooling, eager evaluation is fine.
+- Note where the design draft should document the dependency evaluation strategy.
