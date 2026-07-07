@@ -4,7 +4,7 @@ For the canonical trigger-eval methodology and the `evals/evals.json` schema, se
 
 - `docs/skill-standards/TRIGGER_EVALS.md`
 - `docs/skill-standards/EVALUATION.md`
-- `eval-format` skill (`skills/eval-format/SKILL.md`)
+- `eval-format` skill (located via the detected skills directory)
 
 This file keeps only the `write-a-skill`-specific test cases.
 
@@ -59,6 +59,16 @@ These verify that the conductor classifies intent into the correct branch and ga
 8. **Update confirms changes.** Run the Change branch update gate and confirm that every proposed change is approved before application.
 9. **Branch workflow disclosure.** Verify that `SKILL.md` points to `references/BRANCH_WORKFLOWS.md` for detailed phase lists and stays under 300 lines.
 10. **Invocation declaration.** Verify that `SKILL.md` frontmatter contains `invocation: user-invoked`.
+
+## Composition tests
+
+These verify that the conductor composes building-block skills correctly and handles their outputs.
+
+1. **Create branch invokes the expected sequence.** Given a request to create a skill, verify the conductor calls `detect-project-context` → `list-available-skills` → `decide-skill-shape` (or resolves shape internally) → `audit-skill` → `validate-skill-frontmatter` before writing any file.
+2. **Change branch delegates to `review-skill`.** Given a request to review an existing skill, verify the conductor loads `review-skill` and does not attempt to run the audit inline.
+3. **Failure in a building block stops the workflow.** Verify that if `audit-skill` returns blockers, the conductor does not proceed to file writing without an explicit user override.
+4. **Dependency self-diagnostic gates startup.** Verify that if a required building-block skill is missing and the diagnostic reports `blocked`, the conductor stops and explains how to install the missing skill.
+5. **Config-driven standards path is honored.** Verify that when `write-a-skill.standards_path` is configured, the conductor checks that directory before falling back to embedded fundamentals.
 
 ## Regression checklist
 

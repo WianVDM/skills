@@ -2,6 +2,8 @@
 
 `write-a-skill` is a global, meta-level conductor skill. It delegates deterministic work to standalone building-block skills and uses focused subagents only for tightly coupled design judgment.
 
+The canonical dependency manifest is [`../skills.json`](../skills.json). This document provides the human-readable explanation.
+
 This document follows the dependency taxonomy defined in `docs/skill-standards/fundamentals/dependencies-and-bundling.md`:
 
 - **Required** — the skill cannot function without this dependency.
@@ -33,17 +35,27 @@ This document follows the dependency taxonomy defined in `docs/skill-standards/f
 
 ## Required harness capabilities
 
-- **Read files** in the local skills directory and context directory.
-- **Write files** in the detected context directory and, after confirmation, in the detected skills directory.
-- **Spawn focused subagents** for delegated analysis, design, review, and drafting.
-- **Run scripts** in the building-block skill directories.
-- **List directories** using `bash` or equivalent to discover existing skills and project structure.
-- **Python 3.x** to execute the bundled scripts.
+- **File read** — to inspect skill files, context reports, and references.
+- **File write** — to write context reports and, after user confirmation, skill files.
+- **File edit** — to update existing reports and decision logs.
+- **Directory listing** — to discover existing skills and project structure.
+- **Script execution** — to run deterministic helpers in building-block skill directories.
+- **Subagent spawning** — for delegated analysis, design, review, and drafting.
+- **Search** — to locate files and symbols across the project.
+
+## Required binaries
+
+- **Python 3.x** — to execute the bundled scripts in building-block skills.
 
 ## External dependencies
 
 - Network access is required only for `search-skills-registry` and for the optional standards-initialization fetch.
-- Subagents may use `web_search` to research alternatives, but the core skill does not require it.
+- Subagents may use web search to research alternatives, but the core skill does not require it.
+
+## Environment variables
+
+- None. This skill does not read environment variables directly.
+- If the user configures a network proxy or token for the optional standards fetch, the harness or underlying HTTP client handles it; the skill itself does not read those variables.
 
 ## Consumed references
 
@@ -58,12 +70,13 @@ This skill consumes the following canonical standards and guidance documents:
 - [references/GUIDE_SCRIPT_CURATION.md](references/GUIDE_SCRIPT_CURATION.md) — when to use scripts.
 - [references/GUIDE_EXAMPLES.md](references/GUIDE_EXAMPLES.md) — example skill structures.
 - [references/EVAL.md](references/EVAL.md) — trigger and behavioral evals.
-- [README.md](../README.md) — versioning, review cadence, and maintenance notes.
+- [README.md](../README.md) — how to invoke the skill and a short directory layout.
+- [references/GOVERNANCE.md](references/GOVERNANCE.md) — versioning, migration history, review cadence, and maintenance notes.
 
 ## Assumed project conventions
 
-- The project may contain a `.agents/` directory that holds `skills/`, `context/`, and `config/`.
-- If the convention is not found, the skill falls back to detection and asks the user for confirmation.
+- The project may contain a marker directory such as `.agents`, `.pi`, or `agents` that holds `skills/`, `context/`, and `config/`.
+- If no marker directory is found, the skill falls back to detection and asks the user for confirmation.
 - This assumption is documented in [references/PLUGGABILITY.md](references/PLUGGABILITY.md).
 
 ## Existing skills as alternatives

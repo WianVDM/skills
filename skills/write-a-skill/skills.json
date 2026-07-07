@@ -1,0 +1,47 @@
+{
+  "name": "write-a-skill",
+  "version": "4.7.0",
+  "description": "Skill-design conductor for creating, reviewing, and updating skills that follow the skill standards.",
+  "license": "MIT",
+  "compatibility": {
+    "harnesses": ["pi"]
+  },
+  "skills": ["write-a-skill"],
+  "namespaces": {
+    "write-a-skill": "write-a-skill:write-a-skill"
+  },
+  "requirements": {
+    "skills": [
+      "detect-project-context",
+      "list-available-skills",
+      "search-skills-registry",
+      "install-skill",
+      "decide-skill-shape",
+      "audit-skill",
+      "validate-skill-frontmatter",
+      "review-skill",
+      "run-trigger-evals",
+      "eval-format",
+      "worker-contract",
+      "context-reports",
+      "parse-skill-frontmatter"
+    ],
+    "tools": [
+      "file-read",
+      "file-write",
+      "file-edit",
+      "directory-list",
+      "shell-exec",
+      "search"
+    ],
+    "mcp_servers": [],
+    "binaries": [
+      "python3"
+    ],
+    "environment_variables": []
+  },
+  "verification": {
+    "level": "declared",
+    "evals": "references/EVAL.md"
+  }
+}

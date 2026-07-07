@@ -7,6 +7,9 @@ AGENT.md
 .env
 .mcp.json
 
+# Fallow
+.fallow/
+
 # Local working directories (uncomment if used)
 # workspace/
 # local/

@@ -178,10 +178,10 @@ Yellow (65%) — root cause is clear, but fix approach is not yet validated.
 | # | Skill | Why | Finding | Confidence After |
 |---|-------|-----|---------|------------------|
 | 1 | ticket-brief | initial context | race condition in auth guard | Yellow |
-| 2 | diagnose | confirm root cause | guard does not wait for refresh | Yellow |
+| 2 | example-debugger | confirm root cause | guard does not wait for refresh | Yellow |
 
 ## Next action
-Run `prototype` to compare guard-wait vs interceptor approaches.
+Run `example-ideator` to compare guard-wait vs interceptor approaches.
 ```
 
 ### Why it works

@@ -1,6 +1,6 @@
 ---
 name: write-a-skill
-description: Design partner for creating, reviewing, and updating skills that follow the skill standards.
+description: Skill-design conductor for creating, reviewing, and updating skills that follow the skill standards.
 version: 4.7.0
 invocation: user-invoked
 metadata:
@@ -51,7 +51,7 @@ Help the user produce a skill that satisfies the skill fundamentals and applies 
 - **Invocation mode:** user-invoked. This is a meta-design conversation and should not stay loaded during normal work.
 - **Scope:** global. It must work in any project with any harness.
 - **Pluggability:** the skill detects the project layout and always confirms before writing files. See [references/PLUGGABILITY.md](references/PLUGGABILITY.md).
-- **No hardcoded project paths:** paths are resolved through detection or user confirmation. The only acceptable hardcoded strings are the detection rules themselves.
+- **No hardcoded project paths:** paths are resolved through detection, configuration, or user confirmation.
 - **Self-contained:** the skill ships with condensed fundamentals in [references/FUNDAMENTALS.md](references/FUNDAMENTALS.md) and [references/PATTERN_HINTS.md](references/PATTERN_HINTS.md). It can optionally bootstrap the full standards from a public repository on first run.
 
 ## Branch entry
@@ -119,13 +119,12 @@ On first run in a project, execute the bootstrap routine:
 
 1. Detect project context with `detect-project-context` to locate the project root and the recommended config directory.
 2. Load config from `{recommended_config_dir}/write-a-skill.yaml` or create defaults.
-3. Validate required capabilities (read, write, search, run scripts, network if standards init is offered).
-4. **Run dependency self-diagnostics.** Check whether each required and recommended skill from [references/DEPENDENCIES.md](references/DEPENDENCIES.md) is installed and loadable. Report `full`, `degraded`, or `blocked` per `docs/skill-standards/fundamentals/dependencies-and-bundling.md`. If `blocked`, stop and explain how to install the missing required skills. If `degraded`, explain the reduced capability and ask whether to proceed.
+3. Validate required capabilities (file read, file write, search, script execution, network fetch if standards init is offered).
+4. **Run dependency self-diagnostics.** Check whether each required and recommended skill from [references/DEPENDENCIES.md](references/DEPENDENCIES.md) is installed and loadable. Report `full`, `degraded`, or `blocked` per the dependency taxonomy in the skill standards. If `blocked`, stop and explain how to install the missing required skills. If `degraded`, explain the reduced capability and ask whether to proceed.
 5. Locate the canonical skill standards:
-   - Check `docs/skill-standards/` at the project root.
-   - Check `.agents/skill-standards/` if present.
-   - Check the `standards_path` configured in `write-a-skill.yaml`.
-   - If none are found, offer to fetch the official standards into the default `docs/skill-standards/` directory (or the configured `standards_path`).
+   - Read the `standards_path` value from the loaded config.
+   - If `standards_path` is set and the directory exists, use it.
+   - If `standards_path` is not set or the directory is missing, offer to fetch the official standards into the configured path.
    - If the fetch fails or the user declines, fall back to embedded [references/FUNDAMENTALS.md](references/FUNDAMENTALS.md) and [references/PATTERN_HINTS.md](references/PATTERN_HINTS.md).
 6. Ask the user to confirm detected paths, default registry list, and standards source.
 7. Persist initial notes in the context directory.
@@ -174,7 +173,7 @@ See [references/DEPENDENCIES.md](references/DEPENDENCIES.md) for the classified 
 
 The frontmatter of this skill also declares a `depends` field for Vercel CLI auto-installation.
 
-Required tools and binaries: `read`, `write`, `edit`, `bash`, `find` (or equivalent); Python 3.x for bundled scripts.
+Required capabilities: file read, file write, file edit, directory listing, script execution, and search. Required binary: Python 3.x for bundled scripts.
 
 ## References
 

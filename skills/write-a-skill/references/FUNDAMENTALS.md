@@ -1,6 +1,7 @@
 # Skill fundamentals (condensed)
 
 > **This is a condensed fallback.** The canonical skill fundamentals live in `docs/skill-standards/fundamentals/`. If that directory is available, prefer it and treat this file as a degraded copy for projects that ship without the full standards wiki.
+> Last synced: 2026-07-07.
 
 ## What a skill is
 
@@ -83,7 +84,7 @@ Declare all dependencies:
 - External binaries.
 - Environment variables.
 
-Do not hide dependencies.
+Declare all dependencies; do not hide them.
 
 ## Evaluation
 

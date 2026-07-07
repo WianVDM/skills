@@ -1,6 +1,6 @@
 # Worker return contract
 
-For the general worker return contract and the rationale behind it, see the `worker-contract` skill (`skills/worker-contract/SKILL.md`).
+For the general worker return contract and the rationale behind it, see the `worker-contract` skill (located via the detected skills directory).
 
 ## write-a-skill specific addendum
 

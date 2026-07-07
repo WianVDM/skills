@@ -1,6 +1,7 @@
 # Pattern hints (condensed)
 
 > **This is a condensed fallback.** The canonical pattern documents live in `docs/skill-standards/patterns/`. If that directory is available, prefer it and treat this file as a degraded copy for projects that ship without the full standards wiki.
+> Last synced: 2026-07-07.
 
 Use these decision rules to decide which Layer 2 architecture patterns apply to a skill.
 

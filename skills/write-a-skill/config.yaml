@@ -1,14 +1,11 @@
 shared:
   - key: agents.context_dir
     required: true
-    default: .agents/context
   - key: agents.config_dir
     required: true
-    default: .agents/config
 
 skill:
   - key: write-a-skill.standards_path
     required: false
-    default: docs/skill-standards
 
 requires_setup: true
