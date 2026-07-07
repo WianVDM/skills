@@ -63,7 +63,7 @@ Write one core objective, explicit in-scope items, and explicit out-of-scope ite
 
 **Why:** applying the right patterns makes the skill portable, maintainable, and composable.
 
-Apply the fundamentals from [references/FUNDAMENTALS.md](references/FUNDAMENTALS.md) and select Layer 2 patterns using [references/PATTERN_HINTS.md](references/PATTERN_HINTS.md).
+Apply the fundamentals from [references/FUNDAMENTALS.md](FUNDAMENTALS.md) and select Layer 2 patterns using [references/PATTERN_HINTS.md](PATTERN_HINTS.md).
 
 **Completion criterion:** the pattern list exists and the user has confirmed it.
 

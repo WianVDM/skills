@@ -40,7 +40,7 @@ Another skill or conductor needs to know where project-level skill, context, and
 
 1. **Accept optional starting directory.** Default to the current working directory.
    - **Completion criterion:** a resolved starting path is available.
-2. **Search upward for a marker directory.** Markers: `.agents`, `.pi`, `agents`.
+2. **Search upward for a marker directory.** Markers: `.agents`, `.pi`, `agents`, `.claude`, `.codex`, `.cursor`.
    - **Completion criterion:** a project root and marker (or none) are identified.
 3. **Build candidate directories.** Prefer `{root}/{marker}/{purpose}/`; fall back to common alternatives.
    - **Completion criterion:** candidate lists exist for skills, context, and config directories.
@@ -50,6 +50,20 @@ Another skill or conductor needs to know where project-level skill, context, and
    - **Completion criterion:** the report is emitted in the requested format.
 
 ## Output format
+
+Output fields:
+
+| Field | Meaning |
+|---|---|
+| `project_root` | Detected project root. |
+| `marker` | The marker directory that identified the root. |
+| `confidence` | `high` / `medium` / `low` based on how many expected directories exist. |
+| `recommended_skills_dir` | Preferred skills directory. |
+| `recommended_context_dir` | Preferred context directory. |
+| `recommended_config_dir` | Preferred config directory. |
+| `skills_dir_candidates` | All candidate skills directories. |
+| `context_dir_candidates` | All candidate context directories. |
+| `config_dir_candidates` | All candidate config directories. |
 
 When invoked as a script with `--json`, the report is:
 

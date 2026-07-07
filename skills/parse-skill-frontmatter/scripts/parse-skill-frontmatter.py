@@ -11,7 +11,15 @@ import argparse
 import json
 from pathlib import Path
 
-CANONICAL_FIELDS = ("name", "description", "version", "invocation")
+CANONICAL_FIELDS = ("name", "description", "version", "invocation", "depends")
+
+
+def _extract_metadata_value(data: dict, key: str):
+    """Return a single value from metadata, or None/empty default."""
+    metadata = data.get("metadata")
+    if not isinstance(metadata, dict):
+        return None
+    return metadata.get(key)
 
 
 def parse_frontmatter(skill_md: Path) -> dict:
@@ -33,15 +41,22 @@ def parse_frontmatter(skill_md: Path) -> dict:
         data = yaml.safe_load(block) or {}
         if isinstance(data, dict):
             result = {k: data.get(k) for k in CANONICAL_FIELDS}
-            metadata = data.get("metadata")
-            tags = metadata.get("tags", []) if isinstance(metadata, dict) else []
-            result["tags"] = tags
+            # Normalize missing collections to None for consistency.
+            if result.get("depends") is None:
+                result["depends"] = None
+            tags = _extract_metadata_value(data, "tags") or []
+            result["tags"] = tags if isinstance(tags, list) else []
+            result["author"] = _extract_metadata_value(data, "author")
+            result["verification_level"] = _extract_metadata_value(data, "verification_level")
             return result
     except Exception:
         pass
 
     # Minimal fallback parser for standard-library-only environments.
-    result = {}
+    result = {k: None for k in CANONICAL_FIELDS}
+    result["tags"] = []
+    result["author"] = None
+    result["verification_level"] = None
     for line in block.splitlines():
         stripped = line.strip()
         if not stripped or stripped.startswith("#") or ":" not in stripped:
@@ -54,6 +69,7 @@ def parse_frontmatter(skill_md: Path) -> dict:
         if key in CANONICAL_FIELDS:
             result[key] = value
 
+    # Parse tags from metadata block
     tags = []
     in_metadata = False
     for line in block.splitlines():
@@ -68,6 +84,11 @@ def parse_frontmatter(skill_md: Path) -> dict:
                     tags = [t.strip().strip('"').strip("'") for t in raw[1:-1].split(",")]
                     tags = [t for t in tags if t]
                 break
+            # author / verification_level are leaf scalars under metadata
+            if stripped.startswith("author:"):
+                result["author"] = stripped.split(":", 1)[1].strip().strip('"').strip("'")
+            if stripped.startswith("verification_level:"):
+                result["verification_level"] = stripped.split(":", 1)[1].strip().strip('"').strip("'")
             if stripped.endswith(":") and not line.startswith(" "):
                 in_metadata = False
 

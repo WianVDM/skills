@@ -25,6 +25,16 @@ python scripts/run-trigger-evals.py skills/my-skill --validate --json
 python scripts/run-trigger-evals.py skills/my-skill --input new-evals.json
 ```
 
+## Using this skill from a conductor
+
+A conductor should run `run-trigger-evals` during the audit phase for any model-invoked skill. If the generated evals are invalid or the counts are unexpectedly low, refine the `When to use` and `Branch entry` sections of the target skill and regenerate.
+
+```bash
+python skills/run-trigger-evals/scripts/run-trigger-evals.py skills/my-skill --json
+```
+
+The conductor should then review the generated `evals/evals.json` and refine the prompts before committing them.
+
 ## Output
 
 The script creates or updates `skills/my-skill/evals/evals.json` and returns a summary:

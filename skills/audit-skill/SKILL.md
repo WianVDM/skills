@@ -78,6 +78,30 @@ See `docs/skill-standards/AUDIT_RUBRIC.md` for the report schema.
 
 See [references/DEPENDENCIES.md](references/DEPENDENCIES.md).
 
+## Known limitations
+
+- The script performs deterministic checks (schema fields, files, links, secrets, hardcoded paths, dependency declarations, and confirmation wording). It cannot judge the quality of prose descriptions, scope clarity, or whether a completion criterion is truly observable. Those remain manual review items and appear as `MANUAL` in the findings table.
+- The audit is read-only and does not execute the skill, so runtime behavioral correctness is out of scope.
+
+## Manual review checklist
+
+When the script reports `MANUAL` findings, use this checklist to complete the review:
+
+1. **Description** — Does the first sentence front-load the skill's core action or domain?
+2. **Triggers** — Does the description list distinct triggers, not synonyms?
+3. **Type match** — Does the content match the declared skill type (building block, conductor, wrapper, multi-layer)?
+4. **Scope clarity** — Is the objective one sentence? Do in-scope and out-of-scope lists contradict each other?
+5. **Load-bearing prose** — Can any paragraph, example, or reference be removed without changing behavior?
+6. **Completion criteria** — Does every step end with an observable completion criterion?
+7. **Negation pairs** — Is every "do not X" paired with a "do Y"?
+8. **Harness agnosticism** — Are there any hardcoded harness commands or product references?
+9. **Confirmation gating** — Are destructive actions (writes, overwrites, deletes, installs) gated behind explicit approval?
+10. **Failure mode** — Does the skill fail closed when a required tool, binary, or capability is missing?
+
+## Validation
+
+Negative tests have been verified: the script reports blockers for a deliberately broken skill containing a missing internal link (`ST04`), an undeclared runtime reference to another skill (`D06`), and a hardcoded project path (`P01`).
+
 ## References
 
 - `docs/skill-standards/AUDIT_RUBRIC.md` — canonical audit rubric

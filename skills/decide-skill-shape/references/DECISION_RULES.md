@@ -15,14 +15,21 @@ Use these rules to recommend the right shape for a capability. These rules are a
 
 ## Classification questions
 
-Ask one question at a time when the answer shapes the recommendation:
+Ask one question at a time when the answer shapes the recommendation. These four questions replace the previous six-question interview to reduce token load while preserving signal.
 
-1. Is this a repeated, judgment-shaped task?
-2. Should it fire autonomously, or only when explicitly invoked?
-3. Does it coordinate multiple tools or skills?
-4. Is it always-on guidance, or on-demand?
-5. Is the output a deterministic transformation, or domain-shaped judgment?
-6. Is it tied to a specific framework or convention?
+1. **Repetition and judgment** — Is this a repeated, judgment-shaped task or a narrow, deterministic transformation?
+   - Repeated + judgment → lean toward a **new skill**.
+   - Narrow + deterministic → lean toward a **script**.
+2. **Trigger mode** — Should it fire autonomously, only when explicitly invoked, or always be active?
+   - Autonomous or by-name → lean toward a **skill**.
+   - Always-on guidance or persona → lean toward a **mode**.
+3. **Coordination scope** — Does it coordinate multiple tools or skills, or is it a single focused capability?
+   - Coordinates multiple tools/skills → lean toward a **conductor** or **MCP server** if external tools are needed.
+   - Single focused capability → lean toward a **building-block skill** or **script**.
+4. **Artifact nature** — Is the output behavior, reference/configuration, or external tooling?
+   - Behavior or process → lean toward a **skill** or **script**.
+   - Reference or configuration → lean toward a **context file**.
+   - External tooling or real-time data → lean toward an **MCP server**.
 
 ## Decision heuristics
 

@@ -3,6 +3,7 @@
 ## Required skills
 
 - **parse-skill-frontmatter** — extracts canonical frontmatter fields from local registry entries.
+- **install-skill** — consumed as the target of the `install_command` convenience field. The registry itself does not install skills, but it emits a valid command that `install-skill` must understand.
 
 ## Required tools and capabilities
 

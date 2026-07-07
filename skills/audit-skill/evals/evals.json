@@ -3,144 +3,97 @@
   "skill": "audit-skill",
   "tests": [
     {
-      "id": "trigger-should-01",
+      "id": "should-trigger-use-a-skill-author-wants-to-review-a-skill-before-publishing-or-sharing-it-1",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Audit this skill against the project standards.",
+      "prompt": "A skill author wants to review a skill before publishing or sharing it.",
       "expected": "audit-skill"
     },
     {
-      "id": "trigger-should-02",
+      "id": "should-trigger-use-a-skill-author-wants-to-review-a-skill-before-publishing-or-sharing-it-2",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Check my SKILL.md for fundamental issues.",
+      "prompt": "In this situation: A skill author wants to review a skill before publishing or sharing it.",
       "expected": "audit-skill"
     },
     {
-      "id": "trigger-should-03",
+      "id": "should-trigger-use-a-skill-author-wants-to-review-a-skill-before-publishing-or-sharing-it-3",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Review this skill for blockers and warnings.",
+      "prompt": "The user says: A skill author wants to review a skill before publishing or sharing it.",
       "expected": "audit-skill"
     },
     {
-      "id": "trigger-should-04",
+      "id": "should-trigger-use-a-conductor-needs-to-validate-a-draft-before-writing-files-1",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Run a standards audit on the new skill.",
+      "prompt": "A conductor needs to validate a draft before writing files.",
       "expected": "audit-skill"
     },
     {
-      "id": "trigger-should-05",
+      "id": "should-trigger-use-a-conductor-needs-to-validate-a-draft-before-writing-files-2",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Does this skill follow the skill fundamentals?",
+      "prompt": "In this situation: A conductor needs to validate a draft before writing files.",
       "expected": "audit-skill"
     },
     {
-      "id": "trigger-should-06",
+      "id": "should-trigger-use-a-conductor-needs-to-validate-a-draft-before-writing-files-3",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Identify blockers in this skill before publishing.",
+      "prompt": "The user says: A conductor needs to validate a draft before writing files.",
       "expected": "audit-skill"
     },
     {
-      "id": "trigger-should-07",
+      "id": "should-trigger-use-a-ci-pipeline-needs-to-enforce-standards-compliance-1",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Produce a remediation plan for this skill.",
+      "prompt": "A CI pipeline needs to enforce standards compliance.",
       "expected": "audit-skill"
     },
     {
-      "id": "trigger-should-08",
+      "id": "should-trigger-use-a-ci-pipeline-needs-to-enforce-standards-compliance-2",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Evaluate the quality of this skill directory.",
+      "prompt": "In this situation: A CI pipeline needs to enforce standards compliance.",
       "expected": "audit-skill"
     },
     {
-      "id": "trigger-should-09",
+      "id": "should-trigger-use-a-ci-pipeline-needs-to-enforce-standards-compliance-3",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Audit the skill for hardcoded paths and secrets.",
+      "prompt": "The user says: A CI pipeline needs to enforce standards compliance.",
       "expected": "audit-skill"
     },
     {
-      "id": "trigger-should-10",
-      "type": "trigger",
-      "category": "should-trigger",
-      "prompt": "Check whether this skill is ready to share.",
-      "expected": "audit-skill"
-    },
-    {
-      "id": "trigger-not-01",
+      "id": "should-not-trigger-01",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Validate the YAML frontmatter of this SKILL.md.",
-      "expected": ""
+      "prompt": "Can you help me with something related to check skill against but not audit-skill?"
     },
     {
-      "id": "trigger-not-02",
+      "id": "should-not-trigger-02",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Run trigger evals for this skill.",
-      "expected": ""
+      "prompt": "I need a different tool for check skill against, not audit-skill."
     },
     {
-      "id": "trigger-not-03",
+      "id": "should-not-trigger-03",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Fix the blockers in this skill automatically.",
-      "expected": ""
+      "prompt": "How do I do something else instead of using audit-skill?"
     },
     {
-      "id": "trigger-not-04",
+      "id": "should-not-trigger-04",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Write a new skill for me.",
-      "expected": ""
+      "prompt": "What is the best way to handle check skill against without using audit-skill?"
     },
     {
-      "id": "trigger-not-05",
+      "id": "should-not-trigger-05",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Install this skill into the project.",
-      "expected": ""
-    },
-    {
-      "id": "trigger-not-06",
-      "type": "trigger",
-      "category": "should-not-trigger",
-      "prompt": "Search the registry for similar skills.",
-      "expected": ""
-    },
-    {
-      "id": "trigger-not-07",
-      "type": "trigger",
-      "category": "should-not-trigger",
-      "prompt": "Detect the project context for this skill.",
-      "expected": ""
-    },
-    {
-      "id": "trigger-not-08",
-      "type": "trigger",
-      "category": "should-not-trigger",
-      "prompt": "List available skills.",
-      "expected": ""
-    },
-    {
-      "id": "trigger-not-09",
-      "type": "trigger",
-      "category": "should-not-trigger",
-      "prompt": "Audit the codebase for security issues.",
-      "expected": ""
-    },
-    {
-      "id": "trigger-not-10",
-      "type": "trigger",
-      "category": "should-not-trigger",
-      "prompt": "Check the skill's frontmatter schema.",
-      "expected": ""
+      "prompt": "Please do something related to check skill against but do not invoke audit-skill."
     }
   ]
 }

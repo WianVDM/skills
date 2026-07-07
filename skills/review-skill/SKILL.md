@@ -63,13 +63,16 @@ Classify the user's intent into one gate. If unclear, ask one clarifying questio
 
 ## Workflow
 
-### Review gate
+Both gates share the same comprehension and audit phase. The `update` gate adds a remediation phase after the verdict.
+
+### Shared comprehension and audit phase
 
 1. **Read the skill.**
    - Load `SKILL.md`, `README.md`, and all files in `references/`, `subagents/`, `scripts/`, and `assets/`.
    - **Completion criterion:** all skill files are loaded.
 2. **Comprehend the skill.**
    - Apply the review principles from `references/REVIEW_PRINCIPLES.md` (a fallback copy of `docs/skill-standards/REVIEW_PRINCIPLES.md`).
+   - Answer the five core questions and record the answers.
    - **Completion criterion:** the five core questions are answered, or the missing information is documented.
 3. **Produce an incomplete report if necessary.**
    - If the core questions cannot be answered, write `{context}/skill-review/{skill-name}-incomplete.md` with open questions and stop.
@@ -80,26 +83,16 @@ Classify the user's intent into one gate. If unclear, ask one clarifying questio
 5. **Run `validate-skill-frontmatter`.**
    - Check frontmatter schema compliance.
    - **Completion criterion:** validation result is captured.
+
+### Review gate outcome
+
 6. **Produce a verdict-led audit report.**
    - Write `{context}/skill-review/{skill-name}-audit.md`.
    - Lead with the verdict, then findings, then remediation plan.
    - **Completion criterion:** the report exists, references rubric criteria by ID, and includes a verdict supported by findings.
 
-### Update gate
+### Update gate outcome
 
-1. **Read the skill.**
-   - Load all skill files.
-   - **Completion criterion:** all skill files are loaded.
-2. **Comprehend the skill.**
-   - Apply the review principles from `references/REVIEW_PRINCIPLES.md` (a fallback copy of `docs/skill-standards/REVIEW_PRINCIPLES.md`).
-   - **Completion criterion:** the five core questions are answered, or the missing information is documented.
-3. **Produce an incomplete report if necessary.**
-   - If the core questions cannot be answered, write `{context}/skill-review/{skill-name}-incomplete.md` with open questions and stop.
-   - **Completion criterion:** incomplete report exists and no verdict is issued.
-4. **Run `audit-skill`.**
-   - **Completion criterion:** audit report exists.
-5. **Run `validate-skill-frontmatter`.**
-   - **Completion criterion:** validation result is captured.
 6. **Produce remediation plan.**
    - List concrete changes with effort estimates and rationale, informed by the comprehension step and verdict.
    - Write `{context}/skill-review/{skill-name}-remediation.md`.
@@ -114,7 +107,21 @@ Classify the user's intent into one gate. If unclear, ask one clarifying questio
    - Close the loop and capture the result.
    - **Completion criterion:** final audit report exists.
 
+## Core question checklist
+
+Before scoring, answer and record the five core questions from `references/REVIEW_PRINCIPLES.md`:
+
+1. **Justify** — What single judgment does this skill make predictable? Would the agent be wrong without it?
+2. **Shape** — Is this a skill, or should it be a script, MCP server, context file, or extension of an existing skill?
+3. **Scope** — Is the objective one sentence? Are the boundaries explicit and non-overlapping?
+4. **Prune** — Is every line load-bearing? Can a section, example, or reference be removed without changing behavior?
+5. **Focus** — Does the phrasing produce the right result? Can leading words, negation pairs, or checkable completion criteria make it leaner?
+
+If any question cannot be answered, produce an incomplete report instead of a verdict.
+
 ## Output formats
+
+The verdict is always one of: **Keep**, **Prune**, **Reshape**, or **Remove**. No other verdict is valid.
 
 ### Verdict-led audit report
 
@@ -135,11 +142,14 @@ Classify the user's intent into one gate. If unclear, ask one clarifying questio
 
 ### Incomplete report
 
+Use this format when the core questions cannot be answered. An incomplete report does not issue a verdict.
+
 ```markdown
 # Review (incomplete): {skill-name}
 
 ## Open questions
-- ...
+- {core question}: {what is missing}
+- {core question}: {what is missing}
 ```
 
 ### Audit report

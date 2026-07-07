@@ -7,6 +7,9 @@ metadata:
   author: Wian van der Merwe
   tags: [registry, discovery, search, building-block]
   verification_level: declared
+depends:
+  - parse-skill-frontmatter
+  - install-skill
 ---
 
 # search-skills-registry
@@ -67,7 +70,7 @@ With `--json`:
       "name": "lint-ts",
       "description": "Lint TypeScript files with tsc and eslint.",
       "trust_signals": { "verified": true },
-      "install_command": "install-skill lint-ts --registry skills-sh"
+      "install_command": "install-skill lint-ts --source https://skills.sh/skills/lint-ts"
     }
   ],
   "errors": []
@@ -86,4 +89,5 @@ See [references/DEPENDENCIES.md](references/DEPENDENCIES.md).
 
 ## References
 
-- None.
+- [`references/REGISTRY_CONFIGURATION.md`](references/REGISTRY_CONFIGURATION.md) — registry declaration format and supported `source_type` values.
+- [`references/INSTALL_COMMAND_FORMAT.md`](references/INSTALL_COMMAND_FORMAT.md) — expected install command format and invalid examples.

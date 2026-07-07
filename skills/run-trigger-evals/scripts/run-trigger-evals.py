@@ -30,6 +30,24 @@ STOP_WORDS = {
     "themselves", "what", "which", "who", "whom", "whose", "whomever", "whatever",
 }
 
+BRANCH_TEMPLATES = [
+    "{trigger}",
+    "In this situation: {trigger}",
+]
+
+USE_CASE_TEMPLATES = [
+    "{item}",
+    "In this situation: {item}",
+]
+
+NEAR_MISS_TEMPLATES = [
+    "Can you help me with something related to {topic} but not {skill}?",
+    "I need a different tool for {topic}, not {skill}.",
+    "How do I {related_action} instead of using {skill}?",
+    "What is the best way to handle {topic} without using {skill}?",
+    "Please do something related to {topic} but do not invoke {skill}.",
+]
+
 
 def parse_skill_frontmatter(skill_md: Path) -> dict:
     """Load the shared frontmatter parser and parse a SKILL.md file."""
@@ -47,59 +65,189 @@ def parse_skill_frontmatter(skill_md: Path) -> dict:
     return module.parse_frontmatter(skill_md)
 
 
+def extract_body(skill_md: Path) -> str:
+    """Return the body of SKILL.md after the frontmatter block."""
+    text = skill_md.read_text(encoding="utf-8", errors="replace")
+    if not text.startswith("---"):
+        return text
+    end = text.find("\n---", 3)
+    if end == -1:
+        return text
+    return text[end + 4:]
+
+
+def extract_section(body: str, heading: str) -> str:
+    """Extract the content of a markdown section by heading."""
+    pattern = re.compile(rf"(?i)^##\s*{re.escape(heading)}\s*\n(.*?)(?=\n##\s|\Z)", re.MULTILINE | re.DOTALL)
+    match = pattern.search(body)
+    return match.group(1) if match else ""
+
+
+def extract_when_to_use(body: str) -> list[str]:
+    """Return bullet items from the When to use section."""
+    section = extract_section(body, "When to use")
+    items = re.findall(r"^\s*-\s*(.+)$", section, re.MULTILINE)
+    return [item.strip() for item in items if item.strip()]
+
+
+def extract_branches(body: str) -> list[dict]:
+    """Return branch rows from the Branch entry table."""
+    section = extract_section(body, "Branch entry")
+    branches = []
+    rows = re.findall(r"^\s*\|\s*(.+?)\s*\|\s*$", section, re.MULTILINE)
+    for row in rows:
+        cells = [cell.strip() for cell in row.split("|")]
+        if len(cells) < 3:
+            continue
+        branch_name = cells[0]
+        # Skip header and separator rows.
+        if branch_name.lower() in ("gate", "branch") or branch_name.replace("-", "") == "":
+            continue
+        trigger = cells[1]
+        outcome = cells[2]
+        if trigger.replace("-", "") == "" or outcome.replace("-", "") == "":
+            continue
+        branches.append({
+            "branch": branch_name,
+            "trigger": trigger,
+            "outcome": outcome,
+        })
+    return branches
+
+
+def slugify(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
+
+
 def extract_keywords(description: str) -> list[str]:
     words = re.findall(r"[a-zA-Z][a-zA-Z0-9-]*", description.lower())
     return [w for w in words if w not in STOP_WORDS and len(w) > 2]
 
 
-def generate_cases(skill_name: str, description: str) -> list[dict]:
+def generate_branch_cases(skill_name: str, branches: list[dict]) -> list[dict]:
+    """Generate should-trigger cases from branch triggers and outcomes."""
+    tests = []
+    for branch in branches:
+        branch_slug = slugify(branch["branch"])
+        trigger = branch["trigger"].strip()
+        for i, tmpl in enumerate(BRANCH_TEMPLATES, start=1):
+            prompt = tmpl.format(trigger=trigger)
+            if not prompt.endswith((".", "?", "!")):
+                prompt += "."
+            tests.append({
+                "id": f"should-trigger-{branch_slug}-{i}",
+                "type": "trigger",
+                "category": "should-trigger",
+                "prompt": prompt,
+                "expected": skill_name,
+            })
+    return tests
+
+
+def generate_use_case_cases(skill_name: str, items: list[str]) -> list[dict]:
+    """Generate should-trigger cases from the When to use list."""
+    tests = []
+    for item in items:
+        item_slug = slugify(item)
+        for i, tmpl in enumerate(USE_CASE_TEMPLATES, start=1):
+            prompt = tmpl.format(item=item.strip())
+            if not prompt.endswith((".", "?", "!")):
+                prompt += "."
+            tests.append({
+                "id": f"should-trigger-use-{item_slug}-{i}",
+                "type": "trigger",
+                "category": "should-trigger",
+                "prompt": prompt,
+                "expected": skill_name,
+            })
+    return tests
+
+
+def generate_near_miss_cases(skill_name: str, description: str, branches: list[dict]) -> list[dict]:
+    """Generate plausible should-not-trigger near-misses."""
+    keywords = extract_keywords(description)
+    topic = " ".join(keywords[:3]) if keywords else "this"
+    related_actions = [b["trigger"] for b in branches[:2]] if branches else ["do something else"]
+
+    tests = []
+    for i, tmpl in enumerate(NEAR_MISS_TEMPLATES, start=1):
+        related_action = related_actions[(i - 1) % len(related_actions)].strip()
+        prompt = tmpl.format(
+            topic=topic,
+            skill=skill_name,
+            related_action=related_action.lower(),
+        )
+        if not prompt.endswith((".", "?", "!")):
+            prompt += "."
+        tests.append({
+            "id": f"should-not-trigger-{i:02d}",
+            "type": "trigger",
+            "category": "should-not-trigger",
+            "prompt": prompt,
+        })
+    return tests
+
+
+def generate_fallback_cases(skill_name: str, description: str) -> tuple[list[dict], list[dict]]:
+    """Fallback keyword-based cases when no branches or use cases are found."""
     keywords = extract_keywords(description)
     primary = keywords[:3] if keywords else ["task"]
     action_phrase = " ".join(primary)
 
-    should_templates = [
+    should = []
+    for i, tmpl in enumerate([
         "Can you {action} for me?",
         "I need help with {action}.",
         "Please {action}.",
         "How do I {action}?",
         "Run {action} on this.",
-        "Assist with {action}.",
-        "Handle {action}.",
-        "I want to {action}.",
-        "What is the right way to {action}?",
-        "Could you {action}?",
-    ]
-
-    should_not_templates = [
-        "Can you help me with something unrelated to {action}?",
-        "I need a completely different tool, not {action}.",
-        "Please ignore {action} and do something else.",
-        "How do I do a task that is not {action}?",
-        "Run a different operation, not {action}.",
-        "Assist with a topic outside {action}.",
-        "Handle an unrelated request.",
-        "I want to do something else, not {action}.",
-        "What is the right way to solve a problem unrelated to {action}?",
-        "Could you do something different from {action}?",
-    ]
-
-    tests = []
-    for i, tmpl in enumerate(should_templates[:10], start=1):
-        tests.append({
-            "id": f"should-trigger-{i:02d}",
+    ], start=1):
+        prompt = tmpl.format(action=action_phrase).rstrip(".") + "."
+        should.append({
+            "id": f"should-trigger-fallback-{i:02d}",
             "type": "trigger",
             "category": "should-trigger",
-            "prompt": tmpl.format(action=action_phrase),
+            "prompt": prompt,
             "expected": skill_name,
         })
-    for i, tmpl in enumerate(should_not_templates[:10], start=1):
-        tests.append({
-            "id": f"should-not-trigger-{i:02d}",
+
+    should_not = []
+    for i, tmpl in enumerate([
+        "Can you help me with something unrelated to {action}?",
+        "I need a completely different tool, not {action}.",
+        "Please do something else, not {action}.",
+    ], start=1):
+        prompt = tmpl.format(action=action_phrase).rstrip(".") + "."
+        should_not.append({
+            "id": f"should-not-trigger-fallback-{i:02d}",
             "type": "trigger",
             "category": "should-not-trigger",
-            "prompt": tmpl.format(action=action_phrase),
+            "prompt": prompt,
         })
-    return tests
+    return should, should_not
+
+
+def merge_tests(existing_tests: list[dict], new_tests: list[dict]) -> list[dict]:
+    """Merge existing tests with newly generated ones, replacing by ID."""
+    by_id = {t["id"]: t for t in existing_tests if "id" in t}
+    merged = []
+    seen_ids = set()
+
+    # Add new tests, replacing any existing test with the same ID.
+    for test in new_tests:
+        if test["id"] in seen_ids:
+            continue
+        merged.append(test)
+        by_id[test["id"]] = test
+        seen_ids.add(test["id"])
+
+    # Keep existing tests that were not replaced.
+    for test in existing_tests:
+        if test["id"] not in seen_ids:
+            merged.append(test)
+            seen_ids.add(test["id"])
+
+    return merged
 
 
 def validate_evals(data: dict, schema_path: Path) -> tuple[bool, list[dict]]:
@@ -117,14 +265,36 @@ def build_evals(skill_dir: Path, existing: dict | None = None) -> dict:
     skill_md = skill_dir / "SKILL.md"
     if not skill_md.is_file():
         raise FileNotFoundError(f"SKILL.md not found in {skill_dir}")
+
     fm = parse_skill_frontmatter(skill_md)
     skill_name = fm.get("name", skill_dir.name)
     description = fm.get("description", "")
+    body = extract_body(skill_md)
 
-    tests = generate_cases(skill_name, description)
+    branches = extract_branches(body)
+    use_cases = extract_when_to_use(body)
+
+    should_trigger = []
+    should_not_trigger = []
+
+    if branches:
+        should_trigger.extend(generate_branch_cases(skill_name, branches))
+    if use_cases:
+        should_trigger.extend(generate_use_case_cases(skill_name, use_cases))
+    if not should_trigger:
+        fallback_should, fallback_should_not = generate_fallback_cases(skill_name, description)
+        should_trigger.extend(fallback_should)
+        should_not_trigger.extend(fallback_should_not)
+    else:
+        should_not_trigger.extend(generate_near_miss_cases(skill_name, description, branches))
+
+    # Stable ordering: branch cases first, then use cases, then near misses.
+    new_tests = should_trigger + should_not_trigger
 
     if existing:
-        tests = existing.get("tests", []) or tests
+        tests = merge_tests(existing.get("tests", []), new_tests)
+    else:
+        tests = new_tests
 
     return {
         "version": "1",

@@ -53,12 +53,10 @@ Conductor.
    - **Completion criterion:** an alternatives report exists listing existing skills and registry results.
 3. **Classify the problem.**
    - Ask one question at a time when the answer shapes the recommendation:
-     - Is this a repeated, judgment-shaped task?
-     - Should it fire autonomously, or only when explicitly invoked?
-     - Does it coordinate multiple tools or skills?
-     - Is it always-on guidance, or on-demand?
-     - Is the output a deterministic transformation, or domain-shaped judgment?
-     - Is it tied to a specific framework or convention?
+     - Is this a repeated, judgment-shaped task or a narrow, deterministic transformation?
+     - Should it fire autonomously, only when explicitly invoked, or always be active?
+     - Does it coordinate multiple tools or skills, or is it a single focused capability?
+     - Is the output behavior, reference/configuration, or external tooling?
    - **Completion criterion:** classification answers are recorded.
 4. **Apply decision rules.**
    - Use the decision table in [references/DECISION_RULES.md](references/DECISION_RULES.md).
@@ -96,14 +94,16 @@ A decision report with the following structure:
 
 ## Decision rules
 
-For the full decision table, see [references/DECISION_RULES.md](references/DECISION_RULES.md). At a high level:
+For the full decision table and worked examples, see [references/DECISION_RULES.md](references/DECISION_RULES.md). At a high level:
 
-- Choose a **new skill** when the task is repeated, judgment-shaped, and reusable across projects.
-- Choose an **existing skill** when the problem is already covered.
-- Choose a **script** when the output is deterministic and the task is narrow.
-- Choose an **MCP server** when the task needs external tooling or real-time data.
-- Choose a **context file** when the task is reference or configuration, not behavior.
-- Choose a **mode** when the task is always-on guidance or a persistent persona.
+| Shape | When to choose |
+|---|---|
+| **New skill** | Repeated, judgment-shaped task that can fire autonomously or by name. |
+| **Existing skill** | The problem is already covered by a local or third-party skill. |
+| **Script** | Narrow, deterministic task with a clear input/output transformation. |
+| **MCP server** | The task needs external tools, real-time data, or sandboxed execution. |
+| **Context file** | Reference, configuration, or shared conventions that skills consume. |
+| **Mode** | Always-on guidance or a persistent persona that shapes behavior. |
 
 ## User interaction rules
 
@@ -120,10 +120,13 @@ For the full decision table, see [references/DECISION_RULES.md](references/DECIS
 
 ## Dependencies
 
-See [references/DEPENDENCIES.md](references/DEPENDENCIES.md).
+`list-available-skills` is used for discovery during the alternatives step. It does not change the shape of the recommendation; it only surfaces existing options that might already cover the problem.
+
+See [references/DEPENDENCIES.md](references/DEPENDENCIES.md) for required tools and binaries.
 
 ## References
 
 - [Decision rules](references/DECISION_RULES.md)
+- [Worked examples](references/EXAMPLES.md)
 - `context-reports` skill — shared context-report conventions.
 - `write-a-skill` — conductor for creating, reviewing, and updating skills.

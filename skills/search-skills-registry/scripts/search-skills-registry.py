@@ -200,7 +200,7 @@ def normalize_result(r: dict, registry_name: str) -> dict:
         "description": r.get("description", ""),
         "url": r.get("url", ""),
         "trust_signals": r.get("trust_signals", {}),
-        "install_command": f"install-skill {r.get('name', 'unknown')} --registry {registry_name}",
+        "install_command": f"install-skill {r.get('name', 'unknown')} --source {r.get('url', '')}",
     }
 
 

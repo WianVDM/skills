@@ -22,6 +22,16 @@ python scripts/detect-project-context.py --start . --json
 
 By default, the script prints human-readable output. Use `--json` for structured output.
 
+## Using this skill from a conductor
+
+A conductor should call `detect-project-context` before reading or writing any skill, context, or config files. Use the `recommended_*_dir` values as the destination for generated files, and confirm the detected `project_root` with the user if confidence is `low`.
+
+```bash
+python skills/detect-project-context/scripts/detect-project-context.py --start . --json
+```
+
+Do not hardcode paths such as `.agents/skills` or `C:\\Users\\...\\skills`; always derive them from the detection report or explicit user confirmation.
+
 ## Output
 
 The skill returns a report with:

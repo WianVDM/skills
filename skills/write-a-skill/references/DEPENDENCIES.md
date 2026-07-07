@@ -61,23 +61,23 @@ This document follows the dependency taxonomy defined in `docs/skill-standards/f
 
 This skill consumes the following canonical standards and guidance documents:
 
-- [references/FUNDAMENTALS.md](references/FUNDAMENTALS.md) — condensed skill fundamentals.
-- [references/PATTERN_HINTS.md](references/PATTERN_HINTS.md) — condensed Layer 2 pattern decision rules.
-- [references/PLUGGABILITY.md](references/PLUGGABILITY.md) — detection rules and global portability constraints.
-- [references/STATE_SCHEMA.md](references/STATE_SCHEMA.md) — artifact schemas.
-- [references/BRANCH_WORKFLOWS.md](references/BRANCH_WORKFLOWS.md) — detailed per-branch workflows.
-- [references/WORKER_CONTRACT.md](references/WORKER_CONTRACT.md) — standard subagent return contract.
-- [references/GUIDE_SCRIPT_CURATION.md](references/GUIDE_SCRIPT_CURATION.md) — when to use scripts.
-- [references/GUIDE_EXAMPLES.md](references/GUIDE_EXAMPLES.md) — example skill structures.
-- [references/EVAL.md](references/EVAL.md) — trigger and behavioral evals.
+- [references/FUNDAMENTALS.md](FUNDAMENTALS.md) — condensed skill fundamentals.
+- [references/PATTERN_HINTS.md](PATTERN_HINTS.md) — condensed Layer 2 pattern decision rules.
+- [references/PLUGGABILITY.md](PLUGGABILITY.md) — detection rules and global portability constraints.
+- [references/STATE_SCHEMA.md](STATE_SCHEMA.md) — artifact schemas.
+- [references/BRANCH_WORKFLOWS.md](BRANCH_WORKFLOWS.md) — detailed per-branch workflows.
+- [references/WORKER_CONTRACT.md](WORKER_CONTRACT.md) — standard subagent return contract.
+- [references/GUIDE_SCRIPT_CURATION.md](GUIDE_SCRIPT_CURATION.md) — when to use scripts.
+- [references/GUIDE_EXAMPLES.md](GUIDE_EXAMPLES.md) — example skill structures.
+- [references/EVAL.md](EVAL.md) — trigger and behavioral evals.
 - [README.md](../README.md) — how to invoke the skill and a short directory layout.
-- [references/GOVERNANCE.md](references/GOVERNANCE.md) — versioning, migration history, review cadence, and maintenance notes.
+- [references/GOVERNANCE.md](GOVERNANCE.md) — versioning, migration history, review cadence, and maintenance notes.
 
 ## Assumed project conventions
 
 - The project may contain a marker directory such as `.agents`, `.pi`, or `agents` that holds `skills/`, `context/`, and `config/`.
 - If no marker directory is found, the skill falls back to detection and asks the user for confirmation.
-- This assumption is documented in [references/PLUGGABILITY.md](references/PLUGGABILITY.md).
+- This assumption is documented in [references/PLUGGABILITY.md](PLUGGABILITY.md).
 
 ## Existing skills as alternatives
 

@@ -22,7 +22,7 @@ Building block.
 ## In scope
 
 - Parse a single `SKILL.md` file.
-- Extract `name`, `description`, `invocation`, and `metadata.tags`.
+- Extract `name`, `description`, `invocation`, `depends`, `metadata.author`, `metadata.tags`, and `metadata.verification_level`.
 - Extract `version` if present; return it as `null` or omit it when absent.
 - Prefer PyYAML when available; fall back to a minimal regex parser.
 - Return JSON or human-readable output.
@@ -58,11 +58,14 @@ With `--json`:
   "description": "An example skill.",
   "version": "1.0.0",
   "invocation": "model-invoked",
-  "tags": ["example"]
+  "depends": ["audit-skill", "validate-skill-frontmatter"],
+  "tags": ["example"],
+  "author": "Wian van der Merwe",
+  "verification_level": "declared"
 }
 ```
 
-`version` is omitted or returned as `null` when it is not present in the frontmatter.
+`version` is omitted or returned as `null` when it is not present in the frontmatter. `depends`, `author`, and `verification_level` follow the same rule.
 
 ## Security
 

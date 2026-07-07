@@ -19,6 +19,22 @@ python scripts/search-skills-registry.py "lint typescript" --json
 python scripts/search-skills-registry.py "lint typescript" --registry npm --json
 ```
 
+## Using this skill from a conductor
+
+A conductor should call the script, inspect the `results` array, and present alternatives to the user. If the user chooses to install a result, use the `install_command` field directly:
+
+```bash
+# From search-skills-registry output
+{
+  "install_command": "install-skill lint-ts --source https://example.com/lint-ts.zip"
+}
+
+# Conductor invokes:
+python skills/install-skill/scripts/install-skill.py lint-ts --source https://example.com/lint-ts.zip --scope project --yes
+```
+
+Do not fabricate `--registry` or other flags not present in `install_command`. If the skill already exists, omit `--yes` until the user explicitly approves the overwrite.
+
 ## Configuration
 
 Registries are configured in `.agents/config/write-a-skill.yaml`. See [`references/REGISTRY_CONFIGURATION.md`](references/REGISTRY_CONFIGURATION.md) for the full format, supported `source_type` values, and built-in defaults.

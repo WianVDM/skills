@@ -6,7 +6,7 @@ This file holds governance notes for human maintainers of `write-a-skill`. It do
 
 `write-a-skill` tracks its own changes because it is a shared conductor consumed by other skills and workflows. For skills produced by this conductor, `version` is optional unless the user requires it or the skill will be shared or consumed.
 
-`write-a-skill` uses the versioning scheme defined in the project [`AGENT.md`](../../AGENT.md): all skills and artifacts start at **v1.0.0**, and increments are strictly right-to-left (v1.0.0 → v1.0.1 → ... → v1.0.9 → v1.1.0) with no semantic meaning assigned to major, minor, or patch. Bumps are based on the latest version published to GitHub, and each release bumps the version exactly once.
+`write-a-skill` uses the versioning scheme defined in the project [`AGENT.md`](../../../AGENT.md): all skills and artifacts start at **v1.0.0**, and increments are strictly right-to-left (v1.0.0 → v1.0.1 → ... → v1.0.9 → v1.1.0) with no semantic meaning assigned to major, minor, or patch. Bumps are based on the latest version published to GitHub, and each release bumps the version exactly once.
 
 Current version: **v1.0.0**.
 

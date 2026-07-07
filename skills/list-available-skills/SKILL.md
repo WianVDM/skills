@@ -7,6 +7,8 @@ metadata:
   author: Wian van der Merwe
   tags: [discovery, building-block, skills]
   verification_level: declared
+depends:
+  - parse-skill-frontmatter
 ---
 
 # list-available-skills

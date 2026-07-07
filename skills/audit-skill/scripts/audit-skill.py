@@ -131,10 +131,10 @@ def find_markdown_links(text: str) -> list[str]:
     return re.findall(r"\[([^\]]+)\]\(([^)]+)\)", text)
 
 
-def resolve_link(skill_dir: Path, link: str) -> bool:
+def resolve_link(md_file: Path, link: str) -> bool:
     if link.startswith("http://") or link.startswith("https://") or link.startswith("#"):
         return True
-    target = (skill_dir / link).resolve()
+    target = (md_file.parent / link).resolve()
     return target.exists()
 
 
@@ -230,7 +230,7 @@ def check_scope(body: str) -> list[dict]:
     return findings
 
 
-def check_structure(skill_dir: Path, skill_md: Path, body: str) -> list[dict]:
+def check_structure(skill_dir: Path, skill_md: Path, body: str, files: list[Path]) -> list[dict]:
     findings = []
     check = "`SKILL.md` exists"
     if skill_md and skill_md.is_file():
@@ -264,8 +264,18 @@ def check_structure(skill_dir: Path, skill_md: Path, body: str) -> list[dict]:
     else:
         findings.append(manual_finding("ST03", "Structure", "warning", check, "Add a `README.md` if the skill has multiple files or patterns."))
 
-    links = find_markdown_links(body)
-    broken = [label for label, target in links if not resolve_link(skill_dir if skill_dir.is_dir() else skill_dir.parent, target)]
+    # Check links in SKILL.md and all reference markdown files.
+    md_files = [f for f in files if f.suffix == ".md"]
+    broken = []
+    for md_file in md_files:
+        try:
+            text = md_file.read_text(encoding="utf-8", errors="replace")
+        except Exception:
+            continue
+        links = find_markdown_links(text)
+        for label, target in links:
+            if not resolve_link(md_file, target):
+                broken.append(f"{md_file.name}:{label} -> {target}")
     check = "Reference links resolve"
     if broken:
         findings.append(fail_finding("ST04", "Structure", "blocker", check, f"Fix broken internal links: {', '.join(broken[:5])}."))
@@ -366,6 +376,61 @@ def check_dependencies(skill_dir: Path, body: str) -> list[dict]:
     return findings
 
 
+def _discover_skill_names(skill_dir: Path) -> set[str]:
+    """Return the set of skill directory names in the surrounding skills/ directory."""
+    skills_root = None
+    if skill_dir.is_dir():
+        candidate = skill_dir.parent
+        if candidate.name == "skills":
+            skills_root = candidate
+    if not skills_root:
+        return set()
+    return {d.name for d in skills_root.iterdir() if d.is_dir() and (d / "SKILL.md").is_file()}
+
+
+def _referenced_skill_names(skill_dir: Path, files: list[Path]) -> set[str]:
+    """Scan Python files for runtime references to other skill scripts or directories."""
+    references = set()
+    skill_names = _discover_skill_names(skill_dir)
+    for f in files:
+        if f.suffix != ".py":
+            continue
+        try:
+            text = f.read_text(encoding="utf-8", errors="replace")
+        except Exception:
+            continue
+        for skill_name in skill_names:
+            if skill_name == skill_dir.name:
+                continue
+            # Look for the skill name inside a filesystem path or command string.
+            # This catches imports via importlib and subprocess calls to other skill scripts.
+            pattern = re.compile(
+                r'["\'][^"\']*' + re.escape(skill_name) + r'[/\\][^"\']*["\']'
+            )
+            if pattern.search(text):
+                references.add(skill_name)
+    return references
+
+
+def check_dependency_references(skill_dir: Path, fm: dict, files: list[Path]) -> list[dict]:
+    """Check that runtime references to other skills are declared in `depends`."""
+    findings = []
+    depends = fm.get("depends", []) or []
+    if not isinstance(depends, list):
+        depends = []
+    declared = set(depends)
+
+    referenced = _referenced_skill_names(skill_dir, files)
+    missing = referenced - declared
+
+    check = "Runtime references to other skills are declared in `depends`"
+    if missing:
+        findings.append(fail_finding("D06", "Dependencies", "blocker", check, f"Add {sorted(missing)} to `depends` in `SKILL.md` frontmatter."))
+    else:
+        findings.append(pass_finding("D06", "Dependencies", "blocker", check))
+    return findings
+
+
 def check_portability(skill_dir: Path, body: str) -> list[dict]:
     findings = []
     check = "No hardcoded project-specific paths"
@@ -448,10 +513,11 @@ def audit(skill_path: str) -> dict:
     findings.extend(check_identities(skill_dir if skill_dir.is_dir() else skill_dir.parent, skill_md, fm))
     findings.extend(check_type_and_shape(skill_dir if skill_dir.is_dir() else skill_dir.parent, body))
     findings.extend(check_scope(body))
-    findings.extend(check_structure(skill_dir if skill_dir.is_dir() else skill_dir.parent, skill_md, body))
+    findings.extend(check_structure(skill_dir if skill_dir.is_dir() else skill_dir.parent, skill_md, body, files))
     findings.extend(check_form_and_style(files, body))
     findings.extend(check_security(skill_dir if skill_dir.is_dir() else skill_dir.parent, files))
     findings.extend(check_dependencies(skill_dir if skill_dir.is_dir() else skill_dir.parent, body))
+    findings.extend(check_dependency_references(skill_dir if skill_dir.is_dir() else skill_dir.parent, fm, files))
     findings.extend(check_portability(skill_dir if skill_dir.is_dir() else skill_dir.parent, body))
     findings.extend(check_evaluation(skill_dir if skill_dir.is_dir() else skill_dir.parent, fm))
     findings.extend(check_governance(fm))

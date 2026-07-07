@@ -42,29 +42,21 @@ Vocabulary building block.
 
 ## Artifact schema
 
+The canonical source of truth for the `evals/evals.json` schema is `docs/skill-standards/schemas/evals.json.schema.json`. This document provides a quick reference only; the JSON schema defines the authoritative field names, types, and constraints.
+
+## Artifact schema (quick reference)
+
 The evaluation artifact lives at `evals/evals.json` in the skill package.
 
-```json
-{
-  "version": "1",
-  "skill": "skill-name",
-  "tests": [
-    {
-      "id": "trigger-01",
-      "type": "trigger",
-      "category": "should-trigger",
-      "prompt": "Realistic user prompt.",
-      "expected": "skill-name"
-    }
-  ]
-}
-```
+Required top-level fields:
 
-### Required top-level fields
+| Field | Type | Purpose |
+|---|---|---|
+| `version` | string | Schema version. Currently `"1"`. |
+| `skill` | string | The skill under test. |
+| `tests` | array | Test cases. |
 
-- `version`: schema version. Currently `"1"`.
-- `skill`: the skill under test.
-- `tests`: an array of test cases.
+For the full field specification, see the JSON schema.
 
 ## Test types
 

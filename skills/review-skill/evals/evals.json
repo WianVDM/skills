@@ -3,144 +3,104 @@
   "skill": "review-skill",
   "tests": [
     {
-      "id": "trigger-should-01",
+      "id": "should-trigger-review-1",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Review my existing skill against the standards.",
+      "prompt": "User wants to audit an existing skill without changing it.",
       "expected": "review-skill"
     },
     {
-      "id": "trigger-should-02",
+      "id": "should-trigger-review-2",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Audit this skill for standards issues.",
+      "prompt": "In this situation: User wants to audit an existing skill without changing it.",
       "expected": "review-skill"
     },
     {
-      "id": "trigger-should-03",
+      "id": "should-trigger-update-1",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Update my skill to follow the standards.",
+      "prompt": "User wants to refine or polish an existing skill.",
       "expected": "review-skill"
     },
     {
-      "id": "trigger-should-04",
+      "id": "should-trigger-update-2",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Help me remediate this skill to align with the fundamentals.",
+      "prompt": "In this situation: User wants to refine or polish an existing skill.",
       "expected": "review-skill"
     },
     {
-      "id": "trigger-should-05",
+      "id": "should-trigger-use-the-user-wants-to-audit-an-existing-skill-without-changing-it-review-gate-1",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Run an audit on the skill in skills/my-skill.",
+      "prompt": "The user wants to audit an existing skill without changing it (`review` gate).",
       "expected": "review-skill"
     },
     {
-      "id": "trigger-should-06",
+      "id": "should-trigger-use-the-user-wants-to-audit-an-existing-skill-without-changing-it-review-gate-2",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Check this SKILL.md for blocker findings.",
+      "prompt": "In this situation: The user wants to audit an existing skill without changing it (`review` gate).",
       "expected": "review-skill"
     },
     {
-      "id": "trigger-should-07",
+      "id": "should-trigger-use-the-user-wants-to-refine-or-polish-an-existing-skill-to-follow-the-standards-update-gate-1",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Produce a remediation plan for this skill.",
+      "prompt": "The user wants to refine or polish an existing skill to follow the standards (`update` gate).",
       "expected": "review-skill"
     },
     {
-      "id": "trigger-should-08",
+      "id": "should-trigger-use-the-user-wants-to-refine-or-polish-an-existing-skill-to-follow-the-standards-update-gate-2",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Review and update my skill to make it global-ready.",
+      "prompt": "In this situation: The user wants to refine or polish an existing skill to follow the standards (`update` gate).",
       "expected": "review-skill"
     },
     {
-      "id": "trigger-should-09",
+      "id": "should-trigger-use-a-conductor-such-as-write-a-skill-reaches-the-change-branch-and-needs-to-review-or-update-a-skill-1",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "What needs to change in this skill to pass the audit?",
+      "prompt": "A conductor (such as `write-a-skill`) reaches the `change` branch and needs to review or update a skill.",
       "expected": "review-skill"
     },
     {
-      "id": "trigger-should-10",
+      "id": "should-trigger-use-a-conductor-such-as-write-a-skill-reaches-the-change-branch-and-needs-to-review-or-update-a-skill-2",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Validate and audit this skill's frontmatter.",
+      "prompt": "In this situation: A conductor (such as `write-a-skill`) reaches the `change` branch and needs to review or update a skill.",
       "expected": "review-skill"
     },
     {
-      "id": "trigger-not-01",
+      "id": "should-not-trigger-01",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Create a new skill from scratch.",
-      "expected": ""
+      "prompt": "Can you help me with something related to audit existing skill but not review-skill?"
     },
     {
-      "id": "trigger-not-02",
+      "id": "should-not-trigger-02",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Should I build a skill or a script for this task?",
-      "expected": ""
+      "prompt": "I need a different tool for audit existing skill, not review-skill."
     },
     {
-      "id": "trigger-not-03",
+      "id": "should-not-trigger-03",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "What should a subagent return to a conductor?",
-      "expected": ""
+      "prompt": "How do I user wants to audit an existing skill without changing it. instead of using review-skill?"
     },
     {
-      "id": "trigger-not-04",
+      "id": "should-not-trigger-04",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Where should context reports be stored?",
-      "expected": ""
+      "prompt": "What is the best way to handle audit existing skill without using review-skill?"
     },
     {
-      "id": "trigger-not-05",
+      "id": "should-not-trigger-05",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "What is the schema for evals.json?",
-      "expected": ""
-    },
-    {
-      "id": "trigger-not-06",
-      "type": "trigger",
-      "category": "should-not-trigger",
-      "prompt": "Install a skill from the registry.",
-      "expected": ""
-    },
-    {
-      "id": "trigger-not-07",
-      "type": "trigger",
-      "category": "should-not-trigger",
-      "prompt": "Detect the project context before starting.",
-      "expected": ""
-    },
-    {
-      "id": "trigger-not-08",
-      "type": "trigger",
-      "category": "should-not-trigger",
-      "prompt": "Write a Python script that checks my PRs.",
-      "expected": ""
-    },
-    {
-      "id": "trigger-not-09",
-      "type": "trigger",
-      "category": "should-not-trigger",
-      "prompt": "Generate trigger evals for this skill.",
-      "expected": ""
-    },
-    {
-      "id": "trigger-not-10",
-      "type": "trigger",
-      "category": "should-not-trigger",
-      "prompt": "What is the canonical worker return contract?",
-      "expected": ""
+      "prompt": "Please do something related to audit existing skill but do not invoke review-skill."
     }
   ]
 }

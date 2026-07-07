@@ -22,7 +22,16 @@ python scripts/install-skill.py example-skill --source /path/to/example-skill --
 python scripts/install-skill.py example-skill --source https://example.com/example-skill.zip --scope project --yes
 ```
 
-Use `--yes` to skip the interactive confirmation. Without `--yes`, the script prints the planned action and exits with code 1, letting the caller confirm.
+Use `--yes` only after the calling conductor has already obtained explicit user approval. Without `--yes`, the script returns a `confirm before overwrite` result and exits with code 1; the conductor owns the confirmation, not the script.
+
+## Example conductor interaction
+
+1. The conductor asks the user: "`example-skill` already exists. Overwrite it with the version from `https://example.com/example-skill.zip`?"
+2. The user replies "yes".
+3. The conductor invokes: `python scripts/install-skill.py example-skill --source https://example.com/example-skill.zip --scope project --yes`.
+4. The script returns the install report.
+
+Do not pass `--yes` without first obtaining explicit approval from the user.
 
 ## Output
 
@@ -45,8 +54,7 @@ install-skill/
 
 ## Key conventions
 
-- **Confirm before overwrite:** fails closed unless `--yes` is provided or the caller confirms.
-- **Record install:** writes or updates `skills.json` in the target scope.
+- **Confirm before overwrite:** fails closed unless `--yes` is provided. The conductor is responsible for obtaining explicit user approval before passing `--yes`.
 - **No arbitrary command execution:** only copies local directories or downloads archives from URLs.
 - **Source-first:** registry names are not directly installable; resolve them to a URL or local path first.
 
@@ -54,5 +62,4 @@ install-skill/
 
 - Target directory detection is delegated to `detect-project-context` for project scope.
 - Add archive formats by extending the extraction logic.
-- Update the install schema if `skills.json` evolves.
 - Keep the confirmation behavior strict to avoid accidental overwrites.

@@ -7,6 +7,8 @@ metadata:
   author: Wian van der Merwe
   tags: [evals, testing, model-invoked, building-block]
   verification_level: declared
+depends:
+  - parse-skill-frontmatter
 ---
 
 # run-trigger-evals
@@ -21,9 +23,10 @@ Building block.
 
 ## In scope
 
-- Read the target skill's `SKILL.md` to extract description, triggers, and scope.
-- Generate 10 should-trigger cases that clearly match the skill's routing surface.
-- Generate 10 should-not-trigger cases that are close but outside the skill's scope.
+- Read the target skill's `SKILL.md` to extract the description, `When to use` list, and branch entry table.
+- Generate branch-aware `should-trigger` cases from distinct triggers and use cases.
+- Generate plausible near-miss `should-not-trigger` cases from the skill description and branches.
+- Merge newly generated cases with existing `evals/evals.json` when `--input` is provided, replacing cases by ID while preserving unmatched existing cases.
 - Write or update `evals/evals.json` in the target skill directory.
 - Validate the output against the evals schema.
 
@@ -41,15 +44,18 @@ A model-invoked skill has been drafted and needs trigger evals before validation
 
 1. **Accept the target skill path.**
    - **Completion criterion:** the target skill directory is identified.
-2. **Read the skill description and triggers.**
-   - **Completion criterion:** routing surface and scope boundaries are understood.
-3. **Generate should-trigger cases.** Create 10 prompts that should cause the model to invoke the skill.
-   - **Completion criterion:** cases cover the skill's distinct triggers and branches.
-4. **Generate should-not-trigger cases.** Create 10 prompts that are adjacent but outside scope.
-   - **Completion criterion:** cases test the boundaries without being adversarial.
-5. **Write `evals/evals.json`.**
+2. **Read the skill description, `When to use` list, and branch table.**
+   - **Completion criterion:** routing surface, branches, and scope boundaries are understood.
+3. **Generate `should-trigger` cases.** Create distinct prompts from each branch trigger and each `When to use` item.
+   - **Completion criterion:** each case maps to a distinct branch or intent, not a synonym.
+4. **Generate `should-not-trigger` cases.** Create plausible near-miss prompts that are adjacent to the skill but outside its scope.
+   - **Completion criterion:** cases are near-misses, not just negations of the action phrase.
+5. **Merge with existing evals when `--input` is provided.**
+   - Replace cases that share an ID with the newly generated ones; keep the rest.
+   - **Completion criterion:** the merged set includes both preserved and updated cases without duplicates.
+6. **Write `evals/evals.json`.**
    - **Completion criterion:** the file exists and is schema-compliant.
-6. **Return a summary report.**
+7. **Return a summary report.**
    - **Completion criterion:** counts and file path are reported.
 
 ## Eval format
@@ -76,3 +82,4 @@ See [references/DEPENDENCIES.md](references/DEPENDENCIES.md).
 
 - `docs/skill-standards/schemas/evals.json.schema.json`
 - `docs/skill-standards/TRIGGER_EVALS.md`
+- [`references/VALIDATION_TEST.md`](references/VALIDATION_TEST.md) — how to verify generated evals pass schema validation.

@@ -19,6 +19,16 @@ Invoke the skill by name, or run the script directly:
 python scripts/audit-skill.py skills/my-skill --json
 ```
 
+## Using this skill from a conductor
+
+A conductor should run `audit-skill` after drafting a skill and before asking the user to approve the files. If the report shows any blockers, present the findings and remediation plan before proceeding.
+
+```bash
+python skills/audit-skill/scripts/audit-skill.py skills/my-skill --json
+```
+
+Treat `MANUAL` findings as a checklist for the conductor or user to review; they do not block publication automatically but may indicate quality issues.
+
 ## Output
 
 The skill produces a structured audit report with:

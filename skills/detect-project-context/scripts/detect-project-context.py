@@ -16,7 +16,7 @@ import json
 import sys
 from pathlib import Path
 
-MARKER_DIRS = [".agents", ".pi", "agents"]
+MARKER_DIRS = [".agents", ".pi", "agents", ".claude", ".codex", ".cursor"]
 
 
 def find_project_root(start: Path) -> tuple[Path, str | None]:
