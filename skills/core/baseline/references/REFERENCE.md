@@ -51,6 +51,14 @@ Checklists, templates, and artifact conventions for the `baseline` skill.
 - [ ] Document any TODOs, FIXMEs, or known issues in scope.
 - [ ] Record the reason for the snapshot.
 
+### Manual fallback
+
+- [ ] Resolve scope and confirm the user-provided steps or evidence.
+- [ ] Confirm branch and record commit.
+- [ ] Record the user-provided screenshots, URLs, descriptions, or commands.
+- [ ] Document any missing details that prevent automated capture.
+- [ ] Note whether the manual evidence is sufficient to establish a baseline.
+
 ### Hard stops
 
 Stop immediately and flag if:
@@ -87,6 +95,8 @@ Stop immediately and flag if:
 - Reuse existing artifacts when fresh; overwrite when re-capturing.
 - Keep the artifact directory name consistent with the report filename.
 
+The `{scope}-{branch}` directory may also contain a `.state/` subdirectory used during the capture workflow. State files are not part of the final report and should be archived or removed on completion.
+
 ---
 
 ## Markdown report template
@@ -98,7 +108,7 @@ version: 1.0.0
 scope: <scope>
 branch: <branch>
 commit: <commit>
-method: <detected-method>
+method: ui-browser|api-http|test-runner|code-snapshot|manual
 consumed_context:
   - .agents/context/<skill>/<scope>.md
 baselined_at: <timestamp>
@@ -151,7 +161,7 @@ No errors.
 
 - `scope` and `branch` are required in the filename and frontmatter.
 - `commit` identifies the exact code state.
-- `method` records the captured method, not a vendor tool name.
+- Method: `<method>` — one of `ui-browser`, `api-http`, `test-runner`, `code-snapshot`, `manual`.
 - `consumed_context` lists reports that informed the baseline; omit if none.
 - `summary` is **required** and must be one sentence.
 - `reproducible` only for `type: bug`.
@@ -206,15 +216,6 @@ Generated alongside the Markdown report when `output.default_format` is `html-bo
 
 ---
 
-## Versioning and migration
+## Versioning
 
-Reports include `version: 4` to match the skill's major version. Older reports may:
-
-- Use `ticket` instead of `scope`.
-- Omit `branch` or `commit`.
-- Use `{ticket-key}-{slug}.md` filenames.
-- Omit `summary`.
-- Include `reproducible` on non-bug types.
-- Use `dev_server` in config instead of `runtime`.
-
-Treat older reports as potentially stale and prefer re-capturing. If re-capture is not possible, record the migration path in the report body and update the frontmatter where feasible.
+Reports include `version: 1.0.0` to match the skill's version. When the skill version changes, report consumers should check the version field and handle older schemas if needed. Treat older reports as potentially stale and prefer re-capturing.

@@ -1,3 +1,61 @@
+preferences:
+  verification_method: auto              # auto | ui-browser | api-http | test-runner | code-snapshot | manual | none
+
+  scope:
+    default: ask                           # ask | feature | module | route | bug
+    feature: null
+
+  branch:
+    use_current: true                      # true | false | ask
+    target: null
+
+  runtime:
+    url: null
+    auto_start: ask                        # true | false | ask
+    start_command: null
+
+  viewport: null                           # only for UI methods
+
+  auth:
+    method: none                           # none | existing-session | session-file | env-vars | manual
+    session_file: null
+    username_env: AUTH_USERNAME
+    password_env: AUTH_PASSWORD
+
+  output:
+    default_format: md                     # md | html-both
+    naming: scope-branch                   # scope | scope-branch | ticket
+
+  tooling:
+    ui-browser:
+      preferred: null
+      configured: false
+      configured_at: null
+      notes: null
+    api-http:
+      preferred: null
+      configured: false
+      configured_at: null
+      notes: null
+    test-runner:
+      preferred: null
+      configured: false
+      configured_at: null
+      notes: null
+    code-snapshot:
+      preferred: null
+      configured: false
+      configured_at: null
+      notes: null
+
+notes:
+  - text: "Default verification method is auto-detection."
+    category: decision
+  - text: "Runtime URL and start command are detected per project."
+    category: gotcha
+  - text: "Tooling preferences are recorded only after explicit confirmation."
+    category: decision
+
 shared:
   - key: agents.context_dir
     required: true

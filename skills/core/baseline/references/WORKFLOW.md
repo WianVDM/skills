@@ -16,9 +16,9 @@ Check `.agents/context/baseline/.state/{scope}-{branch}.json`.
 
 Read `.agents/config/baseline.yaml` and `.agents/config/shared.yaml` if they exist.
 
-## 2. Detect capabilities
+## 2. Detect required capabilities
 
-Identify available capture methods (UI, API, test, code snapshot, manual). See [CAPABILITIES.md](CAPABILITIES.md).
+Check that `git` and `python3` are available. If either is missing, stop and report `blocked`. Do not scan the full tooling catalog at this stage.
 
 ## 3. Resolve scope
 
@@ -44,14 +44,16 @@ Handle missing reports gracefully.
 
 ## 6. Resolve method
 
-- Use `preferences.verification_method` if set and available.
-- Otherwise, present detected options and ask the user.
-- Persist the choice in `.agents/config/baseline.yaml`.
+- Evaluate methods broadly based on project type and scope.
+- Select the best method.
+- Check tooling for the selected method only, using `references/TOOLING.md`.
+- If tooling is missing, explain the gap and offer: configure a recommended tool, switch to an alternative method, or use manual fallback.
+- Persist the choice in `.agents/config/baseline.yaml` only after explicit confirmation.
 
 ## 7. Resolve target and authentication
 
-- For UI/API methods, resolve the target URL or endpoint.
-- For code snapshots, resolve the files or directories.
+- For `ui-browser` and `api-http` methods, resolve the target URL or endpoint.
+- For `code-snapshot` methods, resolve the files or directories.
 - Configure authentication if needed. See [AUTH.md](AUTH.md).
 
 ## 8. Capture state
@@ -72,7 +74,7 @@ Optionally generate an HTML gallery.
 
 ## 10. Curate notes and finalize
 
-Update `.agents/config/baseline.yaml` with workarounds, preferences, gotchas, or decisions discovered. Archive or remove the state file.
+Update `.agents/config/baseline.yaml` with workarounds, preferences, tooling choices, or decisions discovered. Archive or remove the state file.
 
 ## Hard-stop conditions
 
@@ -81,5 +83,7 @@ Stop and consult the user if:
 - Scope cannot be resolved.
 - The target branch is missing or unreachable.
 - The target URL, endpoint, or files are unreachable.
-- No capture method is available and the user declines manual fallback.
+- A required capability (`git` or `python3`) is missing.
+- The selected method has no available tooling and the user declines all alternatives (including manual fallback).
 - Authentication is required but cannot be resolved.
+- A required capability (git, Python 3, or the chosen capture method) is missing.

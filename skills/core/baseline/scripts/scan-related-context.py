@@ -36,7 +36,12 @@ RELEVANCE_ORDER = {"high": 0, "medium": 1, "low": 2}
 
 
 def _parse_frontmatter(text: str) -> dict:
-    """Parse a simple YAML-like frontmatter block into a dict."""
+    """Parse a YAML-like frontmatter block into a dict.
+
+    Tries PyYAML if available; otherwise falls back to a simple line-based parser
+    that handles single-line key: value pairs. Multiline values and complex
+    structures may be skipped by the fallback. Install PyYAML for full accuracy.
+    """
     if not text.startswith("---"):
         return {}
 
@@ -45,8 +50,20 @@ def _parse_frontmatter(text: str) -> dict:
         return {}
 
     fm = text[3:end].strip()
+    if not fm:
+        return {}
+
+    try:
+        import yaml  # type: ignore
+        return yaml.safe_load(fm) or {}
+    except Exception:
+        pass
+
     data = {}
     for line in fm.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
         if ":" not in line:
             continue
         key, value = line.split(":", 1)

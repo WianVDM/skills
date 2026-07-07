@@ -1,0 +1,174 @@
+{
+  "version": "1",
+  "skill": "baseline",
+  "tests": [
+    {
+      "id": "trigger-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "baseline the auth guard race condition",
+      "expected": "baseline"
+    },
+    {
+      "id": "trigger-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "reproduce this bug on the checkout page",
+      "expected": "baseline"
+    },
+    {
+      "id": "trigger-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "check the app state before I change the dashboard",
+      "expected": "baseline"
+    },
+    {
+      "id": "trigger-04",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "verify UI on the rewards branch",
+      "expected": "baseline"
+    },
+    {
+      "id": "trigger-05",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "capture state of the user profile endpoint",
+      "expected": "baseline"
+    },
+    {
+      "id": "trigger-06",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "take a snapshot of the login flow before refactoring",
+      "expected": "baseline"
+    },
+    {
+      "id": "trigger-07",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "can you baseline the current behavior of SHB-283",
+      "expected": "baseline"
+    },
+    {
+      "id": "trigger-08",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "I need to reproduce the token refresh issue",
+      "expected": "baseline"
+    },
+    {
+      "id": "trigger-09",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "verify the app looks right on this branch",
+      "expected": "baseline"
+    },
+    {
+      "id": "trigger-10",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "capture a pre-change baseline of the module",
+      "expected": "baseline"
+    },
+    {
+      "id": "trigger-11",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "snapshot the API response for the orders endpoint",
+      "expected": "baseline"
+    },
+    {
+      "id": "trigger-12",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "get a baseline of the rewards dashboard",
+      "expected": "baseline"
+    },
+    {
+      "id": "not-trigger-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "what is the baseline in a git diff",
+      "expected": ""
+    },
+    {
+      "id": "not-trigger-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "snapshot my desktop wallpaper",
+      "expected": ""
+    },
+    {
+      "id": "not-trigger-03",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "reproduce this document for the printer",
+      "expected": ""
+    },
+    {
+      "id": "not-trigger-04",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "check the app store for updates",
+      "expected": ""
+    },
+    {
+      "id": "not-trigger-05",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "verify the UI design mockups in Figma",
+      "expected": ""
+    },
+    {
+      "id": "not-trigger-06",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "capture the flag in this game",
+      "expected": ""
+    },
+    {
+      "id": "not-trigger-07",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "baseline survey results for the team",
+      "expected": ""
+    },
+    {
+      "id": "not-trigger-08",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "snapshot the current stock price",
+      "expected": ""
+    },
+    {
+      "id": "not-trigger-09",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "reproduce the melody from this song",
+      "expected": ""
+    },
+    {
+      "id": "not-trigger-10",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "verify the app is installed on my phone",
+      "expected": ""
+    },
+    {
+      "id": "not-trigger-11",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "baseline performance metrics for the quarter",
+      "expected": ""
+    },
+    {
+      "id": "not-trigger-12",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "capture the state of the conversation so far",
+      "expected": ""
+    }
+  ]
+}

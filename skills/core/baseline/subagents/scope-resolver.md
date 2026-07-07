@@ -23,7 +23,7 @@ Out of scope:
 
 ## Tools
 
-Use standard agent tools (read, bash, find) as needed to resolve git state and context.
+Use the tools available in your environment as needed to resolve git state and context.
 
 ## Inputs
 
@@ -36,35 +36,9 @@ The parent skill provides:
 
 ## Outputs
 
-Use the standard worker return contract:
+Use the standard worker return contract defined by the `worker-contract` skill. Include the `status` and `artifacts` frontmatter block, then `Summary`, `Findings`, `Decisions made`, `Open questions`, and `Blockers` sections.
 
-```yaml
----
-status: complete | partial | needs_input | blocked
-artifacts: []
----
-
-## Summary
-What is being baselined, on which branch, and at which commit.
-
-## Findings
-- Resolved scope: ...
-- Resolved branch: ...
-- Resolved commit: ...
-- Source of resolution: user input / current branch / context report
-
-## Decisions made
-- Scope chosen because ...
-- Branch chosen because ...
-- Commit recorded from ...
-
-## Open questions
-- ...
-
-## Blockers
-- Scope is ambiguous and cannot be resolved.
-- Target branch is missing or cannot be determined.
-```
+In `Findings`, include: resolved scope, resolved branch, resolved commit, and source of resolution.
 
 ## Resolution rules
 

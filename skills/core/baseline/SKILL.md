@@ -1,15 +1,14 @@
 ---
 name: baseline
-description: "Capture a reproducible baseline snapshot of the current state of a feature, module, route, API, or bug on a specified branch. Triggers: test or verify app state; reproduce a bug; capture pre-change evidence; or mention `baseline`, `reproduce`, `check the app`, `verify UI`, `capture state`, or `snapshot`."
+description: "Capture a reproducible snapshot of a feature, module, route, API, or bug. Invoked by baseline, reproduce, verify UI, check the app, capture state, or snapshot."
 argument-hint: "Scope, ticket key, or feature/bug to baseline"
-license: Proprietary
 metadata:
   tags: [core, building-block, initialization, shared-config]
   author: Wian van der Merwe
   version: "1.0.0"
   scope: global
-invocation: user-invoked
-disable-model-invocation: true
+  verification_level: declared
+invocation: model-invoked
 ---
 
 # baseline
@@ -22,39 +21,30 @@ Conductor. Delegates scope, context, method selection, and capture to focused wo
 
 ## When to use
 
-- Test or verify current app state.
-- Reproduce a bug.
-- Capture pre-change evidence.
-- The user mentions `baseline`, `reproduce`, `check the app`, `verify UI`, `capture state`, or `snapshot`.
+- The user says `baseline`, `reproduce`, `check the app`, `verify UI`, `capture state`, or `snapshot`.
+- The user wants to test or verify current app state.
+- The user wants to reproduce a bug.
+- The user wants to capture pre-change evidence.
 
 ## Process overview
 
-1. **Load config and detect capabilities.**
-   - Done when: config is read and available capture methods are known.
+1. **Load config and detect required capabilities.** Read `.agents/config/baseline.yaml` and shared config. Check that `git` and `python3` are available. Stop if a required capability is missing and explain what is required.
 
-2. **Resolve scope.**
-   - Done when: an unambiguous scope is recorded from the user or matching context reports.
+2. **Resolve scope and branch.** Delegate to `scope-resolver`. If scope is ambiguous, stop and ask. Confirm before switching branches. Record the commit hash.
 
-3. **Resolve branch and commit.**
-   - Done when: branch is confirmed, commit is recorded, and any mismatch is resolved with the user.
+3. **Consume related context.** Delegate to `context-scout`. Read matching reports from `.agents/context/`, excluding baseline outputs. Handle missing reports gracefully.
 
-4. **Consume related context.**
-   - Done when: `.agents/context/` is scanned for matching reports, baseline outputs are excluded, and missing reports are handled gracefully.
+4. **Select capture method.** Delegate to `method-selector`. Respect user preferences from config. Ask when multiple methods are viable. Identify a fallback.
 
-5. **Select capture method.**
-   - Done when: a method is chosen from config, detection, or user confirmation, with a fallback identified.
+5. **Resolve tooling for the selected method.** Check whether the project has tooling that supports the selected method. If not, explain the gap and offer: configure a recommended tool, switch to an alternative method, or use manual fallback. Persist the chosen tooling path only after explicit confirmation.
 
-6. **Resolve target and authentication.**
-   - Done when: the target is reachable and auth is configured without hardcoded secrets.
+6. **Resolve target and authentication.** Confirm the target URL, endpoint, or files are reachable. Resolve auth without storing secrets in config.
 
-7. **Capture evidence.**
-   - Done when: artifacts are saved and findings are sufficient for a one-sentence summary.
+7. **Capture evidence.** Delegate to `capture-worker`. Gather screenshots, logs, responses, or file contents. Record enough findings for a one-sentence summary.
 
-8. **Generate reports.**
-   - Done when: the report is written with correct frontmatter, including `summary` and type-appropriate `reproducible`, and HTML is generated if requested.
+8. **Generate reports.** Write the canonical Markdown report and optional HTML gallery to `.agents/context/baseline/`. Include all required frontmatter.
 
-9. **Curate notes.**
-   - Done when: config is updated with new notes and the state file is archived or removed.
+9. **Curate notes.** Update `.agents/config/baseline.yaml` with new notes and tooling preferences, but never silently overwrite existing values. Archive or remove the state file.
 
 ## Resumption
 
@@ -72,22 +62,25 @@ Stop and ask for direction if:
 - Scope is ambiguous.
 - The target branch is missing or unreachable.
 - The target is unreachable.
-- No capture method is available and the user declines manual fallback.
+- A required capability (`git` or `python3`) is missing.
+- The selected capture method has no available tooling and the user declines all alternatives (manual fallback included).
 - Authentication is required but cannot be resolved.
 
 ## Out of scope
 
-- Diagnosing root cause or proposing fixes.
-- Implementing changes.
-- Comparing before/after states.
-- Running project tests purely for verification.
+- Diagnosing root cause or proposing fixes; instead, record observed behavior and stop.
+- Implementing changes; instead, capture state and hand off to the appropriate skill.
+- Comparing before/after states; instead, produce the snapshot that other skills compare.
+- Running project tests purely for verification; instead, use tests only as a capture method when relevant.
 - Deploying or modifying production systems.
+- Installing packages or binaries without explicit user approval; the skill may suggest or generate config, but it must not run installers silently.
 
 ## References
 
 - [Dependencies](references/DEPENDENCIES.md)
 - [Workflow](references/WORKFLOW.md)
 - [Capability detection](references/CAPABILITIES.md)
+- [Tooling catalog](references/TOOLING.md)
 - [Configuration and notes](references/CONFIG_PATTERN.md)
 - [Context reports](references/CONTEXT_REPORTS.md)
 - [Authentication handling](references/AUTH.md)

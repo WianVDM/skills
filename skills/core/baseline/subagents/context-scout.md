@@ -25,7 +25,7 @@ Out of scope:
 
 ## Tools
 
-Use standard agent tools (read, bash, find) as needed to scan and read frontmatter.
+Use the tools available in your environment as needed to scan and read frontmatter.
 
 ## Inputs
 
@@ -37,46 +37,9 @@ The parent skill provides:
 
 ## Outputs
 
-Use the standard worker return contract:
+Use the standard worker return contract defined by the `worker-contract` skill. Include the `status` and `artifacts` frontmatter block, then `Summary`, `Findings`, `Decisions made`, `Open questions`, and `Blockers` sections.
 
-```yaml
----
-status: complete | partial | needs_input | blocked
-artifacts: []
----
-
-## Summary
-Whether relevant context was found and how useful it is likely to be.
-
-## Findings
-
-### High Relevance
-| File | Report Type | Summary | Why High |
-|------|-------------|---------|----------|
-
-### Medium Relevance
-| File | Report Type | Summary | Why Medium |
-|------|-------------|---------|------------|
-
-### Low Relevance
-| File | Report Type | Summary | Why Low |
-|------|-------------|---------|---------|
-
-### Ignored
-- Reports whose `skill` frontmatter field is `baseline`, to avoid circular self-reference.
-- Files inside `.agents/context/baseline/` that are previously generated baseline reports, unless explicitly provided by the parent skill as a non-baseline context source.
-
-## Decisions made
-- File matched by name containing `scope`/`ticket`/`branch`.
-- File matched by frontmatter `ticket`, `key`, `scope`, or `branch` field.
-- Relevance classified based on report type and summary proximity to the baseline scope.
-
-## Open questions
-- ...
-
-## Blockers
-- `.agents/context/` directory missing or unreadable.
-```
+In `Findings`, group matched files by relevance (`High`, `Medium`, `Low`) and list ignored files separately. For each match include file path, producing skill, summary, and relevance rationale.
 
 ## Matching rules
 

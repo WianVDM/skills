@@ -99,7 +99,7 @@ scope: OC-3075
 branch: main
 commit: def5678
 type: feature
-method: project-test
+method: test-runner
 consumed_context:
   - .agents/context/<skill>/OC-3075.md
 baselined_at: 2026-06-26T09:00:00Z

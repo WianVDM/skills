@@ -6,8 +6,8 @@ Checklist for validating the `baseline` skill after changes or before release.
 
 ## Structure checks
 
-- [x] `SKILL.md` frontmatter is complete: `name`, `description`, `version`, `scope`, `invocation`, `disable-model-invocation`.
-- [x] The skill version matches the report `version` declared in `CONTEXT_REPORTS.md` and `REFERENCE.md` (skill 4.0, report 4).
+- [x] `SKILL.md` frontmatter is complete: `name`, `description`, `version`, `scope`, `invocation`, `metadata`.
+- [x] The skill version matches the report `version` declared in `CONTEXT_REPORTS.md` and `REFERENCE.md` (skill 1.0.0, report 1.0.0).
 - [x] All reference links resolve: `CONFIG_PATTERN.md`, `CAPABILITIES.md`, `CONTEXT_REPORTS.md`, `REFERENCE.md`, `AUTH.md`, `WORKFLOW.md`, `DEPENDENCIES.md`, `EXAMPLES.md`.
 - [x] `SKILL.md` is concise and does not duplicate deep detail from `references/`.
 - [x] Progressive disclosure is followed: overview in `SKILL.md`, detail in `references/`.
@@ -49,7 +49,6 @@ Checklist for validating the `baseline` skill after changes or before release.
 ## Report schema
 
 - [x] Every report includes all required frontmatter fields: `skill`, `version`, `scope`, `branch`, `commit`, `method`, `baselined_at`, `type`, and `summary`.
-- [x] The report `summary` is a one-sentence synthesis of what was captured and the most important finding.
 - [x] `reproducible` is only present when `type` is `bug`; it is omitted for all other baseline types.
 - [x] `artifacts_dir` matches the directory name used for the report's artifacts.
 
@@ -74,7 +73,7 @@ Checklist for validating the `baseline` skill after changes or before release.
 - [x] Capability detection is project-type driven, not UI-only.
 - [x] UI, API, test, code snapshot, and manual methods are documented generically.
 - [x] The report template generalizes beyond UI screenshots.
-- [x] Checklists cover bug reproduction, feature baseline, API baseline, and code snapshot.
+- [x] Checklists cover bug reproduction, feature baseline, API baseline, code snapshot, and manual fallback.
 
 ## Global and pluggable
 
@@ -101,7 +100,7 @@ Checklist for validating the `baseline` skill after changes or before release.
 - [x] Behavior evals cover happy path, missing config, ambiguous scope, no capture method, stale report, user rejects branch, and manual fallback.
 - [x] Report evals cover required frontmatter, summary generation, and type-appropriate `reproducible` handling.
 - [x] A review cadence is documented (e.g., on every minor/major version bump and at least quarterly).
-- [x] `EXAMPLES.md` uses the current report schema (`version: 4`, `scope:`, `branch:`, `commit:`, `summary:`).
+- [x] `EXAMPLES.md` uses the current report schema (`version: 1.0.0`, `scope:`, `branch:`, `commit:`, `summary:`).
 
 ## Security
 
@@ -122,5 +121,5 @@ After running through this checklist, record the result:
 
 **Result: PASS**
 
-Validated by: baseline global/pluggable refactor (2026-07-03)
-Notes: All structure, dependency, context, worker, branch/commit, report schema, state, config, method, global/pluggable, scenario, evaluation, and security checks pass. The skill is fully standalone, global, and pluggable.
+Validated by: baseline review (2026-07-07)
+Notes: Verdict Keep (conditional). Remediation applied to resolve version consistency, invocation mode, config implementation, and method-name alignment.

@@ -8,7 +8,7 @@ Config and notes are stored in `.agents/config/baseline.yaml`. Shared settings a
 
 ```yaml
 preferences:
-  verification_method: auto              # auto | ui | api | test | code-snapshot | manual | none
+  verification_method: auto              # auto | ui-browser | api-http | test-runner | code-snapshot | manual | none
 
   scope:
     default: ask                           # ask | feature | module | route | bug
@@ -35,6 +35,28 @@ preferences:
     default_format: md                     # md | html-both
     naming: scope-branch                   # scope | scope-branch | ticket
 
+  tooling:
+    ui-browser:
+      preferred: null
+      configured: false
+      configured_at: null
+      notes: null
+    api-http:
+      preferred: null
+      configured: false
+      configured_at: null
+      notes: null
+    test-runner:
+      preferred: null
+      configured: false
+      configured_at: null
+      notes: null
+    code-snapshot:
+      preferred: null
+      configured: false
+      configured_at: null
+      notes: null
+
 notes:
   - text: "Default verification method is auto-detection."
     category: decision
@@ -60,6 +82,10 @@ notes:
 | `auth.username_env` / `password_env` | Env var names for credentials. |
 | `output.default_format` | `md` or `html-both`. |
 | `output.naming` | Report filename convention. |
+| `tooling.{method}.preferred` | Preferred tool or MCP identifier for the method. |
+| `tooling.{method}.configured` | Whether the preferred tool has been confirmed configured. |
+| `tooling.{method}.configured_at` | ISO 8601 timestamp of the last tooling configuration. |
+| `tooling.{method}.notes` | Freeform notes about the chosen tooling setup. |
 
 ## Bootstrap routine
 

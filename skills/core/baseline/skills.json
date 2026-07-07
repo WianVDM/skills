@@ -1,0 +1,62 @@
+{
+  "name": "baseline",
+  "version": "1.0.0",
+  "description": "Capture a reproducible snapshot of the current state of a feature, module, route, API, or bug on a specified branch.",
+  "compatibility": {
+    "harnesses": ["pi"]
+  },
+  "skills": ["baseline"],
+  "namespaces": {
+    "baseline": "baseline:baseline"
+  },
+  "requirements": {
+    "skills": [],
+    "tools": [
+      "file-read",
+      "file-write",
+      "file-edit",
+      "directory-list",
+      "shell-exec",
+      "search"
+    ],
+    "mcp_servers": [
+      {
+        "name": "playwright",
+        "capabilities": ["browser-automation", "screenshot", "navigation"]
+      },
+      {
+        "name": "stagehand",
+        "capabilities": ["browser-automation", "ai-navigation", "screenshot"]
+      },
+      {
+        "name": "puppeteer",
+        "capabilities": ["browser-automation", "screenshot", "navigation"]
+      }
+    ],
+    "binaries": [
+      "python3",
+      "git"
+    ],
+    "environment_variables": [
+      "AUTH_USERNAME",
+      "AUTH_PASSWORD"
+    ]
+  },
+  "recommended": {
+    "description": "Recommended tooling is evaluated lazily per method. See references/TOOLING.md and references/DEPENDENCIES.md.",
+    "mcp_servers": [
+      "playwright",
+      "stagehand",
+      "puppeteer"
+    ],
+    "binaries": [
+      "curl",
+      "http",
+      "httpx"
+    ]
+  },
+  "verification": {
+    "level": "declared",
+    "evals": "evals/evals.json"
+  }
+}

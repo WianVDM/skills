@@ -27,7 +27,7 @@ Out of scope:
 
 ## Tools
 
-Use standard agent tools (read, bash, write, edit, find) as needed for the selected capture method.
+Use the tools available in your environment as needed for the selected capture method.
 
 ## Inputs
 
@@ -36,7 +36,7 @@ The parent skill provides:
 - `scope`: what is being baselined (ticket key, feature, module, or bug description).
 - `branch`: the branch being baselined.
 - `commit`: the commit hash at capture time, if known.
-- `method`: the capture method to use (`ui`, `api`, `test`, `code-snapshot`, `manual`).
+- `method`: the capture method to use (`ui-browser`, `api-http`, `test-runner`, `code-snapshot`, `manual`).
 - `target`: the URL, route, module, endpoint, or file set to capture.
 - `auth_instructions`: how to authenticate, if needed.
 - `steps`: reproduction steps, test commands, or capture instructions.
@@ -44,7 +44,7 @@ The parent skill provides:
 
 ## Outputs
 
-Use the standard worker return contract:
+Use the standard worker return contract defined by the `worker-contract` skill. The return block must include:
 
 ```yaml
 ---
@@ -52,22 +52,9 @@ status: complete | partial | needs_input | blocked
 artifacts:
   - path/to/artifact.md
 ---
-
-## Summary
-A one-sentence synthesis of what was captured and the most important finding.
-
-## Findings
-- ...
-
-## Decisions made
-- ...
-
-## Open questions
-- ...
-
-## Blockers
-- ...
 ```
+
+Then include `Summary`, `Findings`, `Decisions made`, `Open questions`, and `Blockers` sections as required by that contract.
 
 The `Summary` section must contain enough information for the parent skill to construct the report's frontmatter `summary` field.
 
@@ -93,7 +80,7 @@ Return `status: needs_input` when:
 
 - The target is unreachable and an alternative is not provided.
 - Authentication fails and the credentials are not available or incomplete.
-- The method requires a tool or capability that is not present in the environment.
+- The method requires a capability that is not present in the environment.
 - The provided steps are ambiguous or incomplete.
 
 Return `status: blocked` when:

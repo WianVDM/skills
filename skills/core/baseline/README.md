@@ -20,10 +20,10 @@ verify UI
 | Attribute | Value |
 |---|---|
 | Type | Conductor |
-| Invocation | User-invoked |
+| Invocation | Model-invoked |
 | Scope | Global |
 | Leading word | Capture |
-| Version | 4.0 |
+| Version | 1.0.0 |
 
 ## Output paths
 
@@ -56,13 +56,16 @@ State file: `.agents/context/baseline/.state/{scope}-{branch}.json`.
 
 ## Evaluation plan
 
-- **Trigger evals:** `baseline`, `reproduce`, `check the app`, `verify UI`, `capture state` invoke the skill; unrelated phrases do not.
-- **Behavior evals:** missing config, ambiguous scope, no capture method, stale state, user rejects branch switch, manual fallback.
-- **Report evals:** required frontmatter present; `reproducible` only for `type: bug`; consumed context excludes baseline outputs.
-- **Review cadence:** validate on every minor/major version bump and at least quarterly.
+Trigger evals live in `evals/evals.json` and cover realistic invoke phrases such as `baseline`, `reproduce`, `check the app`, `verify UI`, `capture state`, and `snapshot`.
+
+Behavior evals cover: missing required capabilities, ambiguous scope, missing tooling for selected method, stale state, user rejects branch switch, and manual fallback.
+
+Report evals cover: required frontmatter present; `reproducible` only for `type: bug`; consumed context excludes baseline outputs.
+
+Review cadence: validate on every minor/major version bump and at least quarterly.
 
 ## Maintenance
 
-- Keep `SKILL.md` focused on intent and workflow; detail lives in `references/`.
+- Keep `SKILL.md` focused on intent and delegation; detail lives in `references/`.
 - Preserve existing user preferences when updating config.
-- Keep report `version` in sync with the skill's major version.
+- Keep report `version` in sync with the skill's version.

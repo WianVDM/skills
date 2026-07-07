@@ -52,7 +52,7 @@ version: 1.0.0
 scope: auth-guard-race-condition
 branch: main
 commit: abc1234
-method: <detected-method>
+method: ui-browser
 consumed_context:
   - .agents/context/<skill>/<scope>.md
 baselined_at: 2026-06-26T08:42:00Z
@@ -72,7 +72,7 @@ summary: "Auth guard redirects to login during token refresh."  # required one-s
 | `scope` | yes | The feature, module, route, bug, or endpoint being baselined. |
 | `branch` | yes | The branch being baselined. |
 | `commit` | yes | The current commit hash at capture time. |
-| `method` | yes | The capture method used. |
+| `method` | yes | The capture method used. One of `ui-browser`, `api-http`, `test-runner`, `code-snapshot`, `manual`. |
 | `consumed_context` | no | List of context reports read before capture. |
 | `baselined_at` | yes | ISO 8601 timestamp of capture. |
 | `type` | yes | Category of baseline: `bug`, `feature`, `module`, `route`, `api`, `manual`. |
@@ -93,17 +93,7 @@ summary: "Auth guard redirects to login during token refresh."  # required one-s
 
 ### Versioning
 
-The report `version` follows the producing skill's major version. When the skill version changes, report consumers should check the version field and handle older schemas if needed. The skill should document breaking changes in the changelog or migration notes.
-
-### Migrating from version 3
-
-Reports produced by skill versions before 4.0 may:
-
-- Lack the `summary` field.
-- Include `reproducible` on non-bug baseline types.
-- Use `dev_server` in config instead of `runtime`.
-
-Consumers should treat older reports as potentially stale and prefer re-capturing with the current skill version.
+The report `version` follows the producing skill's version. When the skill version changes, report consumers should check the version field and handle older schemas if needed. The skill should document breaking changes in the changelog or migration notes.
 
 ---
 
