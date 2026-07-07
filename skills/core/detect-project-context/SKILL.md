@@ -5,7 +5,7 @@ version: 1.0.0
 invocation: model-invoked
 metadata:
   author: Wian van der Merwe
-  tags: [project-detection, building-block, global, pluggable]
+  tags: [core, building-block, project-detection, environment, pluggable]
   verification_level: declared
 ---
 

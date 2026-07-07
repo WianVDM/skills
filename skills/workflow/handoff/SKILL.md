@@ -6,7 +6,7 @@ invocation: user-invoked
 disable-model-invocation: true
 metadata:
   author: Wian van der Merwe
-  tags: [session-management, checkpoint, handoff]
+  tags: [workflow, building-block, handoff, context]
   verification_level: declared
 depends:
   - detect-project-context

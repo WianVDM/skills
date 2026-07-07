@@ -5,7 +5,7 @@ version: 1.0.0
 invocation: model-invoked
 metadata:
   author: Wian van der Merwe
-  tags: [skill-review, audit, remediation, conductor, standards]
+  tags: [authoring, conductor, audit, remediation]
   verification_level: declared
 depends:
   - audit-skill

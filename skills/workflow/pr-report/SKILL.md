@@ -3,6 +3,7 @@ name: pr-report
 description: Run a PR report workflow to build an actionable understanding of a pull request. Gather PR metadata, review feedback, inline comments, CI/build status, and static-analysis findings. Normalize all feedback into a concise issue board where every comment is challenged against ticket scope and actual changes. Use when the user says '/pr-report', 'pr report', 'check PR status', 'review feedback', or wants to see what changed since the last look on a PR. Accepts a PR number, ticket key, or no input for auto-detection.
 license: Proprietary
 metadata:
+  tags: [workflow, conductor, pull-request, review]
   author: Wian van der Merwe
   version: "1.0.0"
 ---

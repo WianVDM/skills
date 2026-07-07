@@ -5,7 +5,7 @@ version: 1.0.0
 invocation: model-invoked
 metadata:
   author: Wian van der Merwe
-  tags: [context-reports, reports, schema, freshness, vocabulary, building-block]
+  tags: [core, building-block, context-reports, shared]
   verification_level: declared
 ---
 

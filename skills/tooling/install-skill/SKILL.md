@@ -5,7 +5,7 @@ version: 1.0.0
 invocation: model-invoked
 metadata:
   author: Wian van der Merwe
-  tags: [install, building-block]
+  tags: [tooling, building-block, installation, skills]
   verification_level: declared
 depends:
   - detect-project-context

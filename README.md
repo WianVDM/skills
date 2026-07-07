@@ -32,7 +32,7 @@ Run `/setup-wian-skills` again at any time to check for updates.
 
 ## What's in this repo
 
-- `skills/` — the skills themselves. Each directory contains a `SKILL.md` and optional supporting files.
+- `skills/` — the skills themselves, grouped by functional domain. Each leaf directory contains a `SKILL.md` and optional supporting files.
 - `docs/skill-standards/` — the standards these skills follow: format, fundamentals, patterns, evaluation, and governance.
 
 ## How to navigate
@@ -46,13 +46,19 @@ Run `/setup-wian-skills` again at any time to check for updates.
 
 ## Available skill categories
 
-- **Workflow**: `debrief`, `orchestrate`, `plan-next`, `pr-report`, `handoff`, ...
-- **Code quality**: `diagnose`, `tdd`, `verify-branch`, `audit-skill`, `review-skill`, ...
-- **Architecture**: `improve-codebase-architecture`, `prototype`, `detect-project-context`, ...
-- **Authoring**: `write-a-skill`, `audit-skill`, `validate-skill-frontmatter`, ...
-- **Utilities**: `find-skills`, `list-available-skills`, `install-skill`, `baseline`, ...
+The skills in this repo are grouped into primary functional domains. Because many skills are cross-cutting, a skill's directory is its primary home; its `SKILL.md` metadata and the bundles in `skills.json` describe the rest.
 
-See the [`skills/`](./skills) directory for the complete list. Each skill's `SKILL.md` describes what it does and how to invoke it.
+| Domain | Path | Skills |
+|---|---|---|
+| **Core** | `skills/core/` | `baseline`, `context-reports`, `detect-project-context`, `eval-format`, `worker-contract` |
+| **Tooling** | `skills/tooling/` | `find-skills`, `install-skill`, `list-available-skills`, `parse-skill-frontmatter`, `search-skills-registry`, `validate-skill-frontmatter` |
+| **Authoring** | `skills/authoring/` | `audit-skill`, `decide-skill-shape`, `review-skill`, `run-trigger-evals`, `write-a-skill` |
+| **Workflow** | `skills/workflow/` | `debrief`, `handoff`, `merge-latest`, `orchestrate`, `plan-next`, `pr-report`, `to-issues`, `to-prd`, `triage`, `verify-branch` |
+| **Engineering** | `skills/engineering/` | `diagnose`, `improve-codebase-architecture`, `prototype`, `tdd` |
+| **Modes** | `skills/modes/` | `grill-me`, `grill-with-docs`, `zoom-out` |
+| **Setup** | `skills/setup/` | `setup-matt-pocock-skills`, `setup-wian-skills` |
+
+Many skills span multiple domains. For example, `detect-project-context` lives in `core/` but is also used by authoring, workflow, and setup skills. See `skills.json` for the full bundle and dependency breakdown.
 
 ## Using a skill
 

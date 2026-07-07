@@ -5,7 +5,7 @@ version: 1.0.0
 invocation: model-invoked
 metadata:
   author: Wian van der Merwe
-  tags: [audit, review, standards, building-block]
+  tags: [authoring, building-block, audit, fundamentals]
   verification_level: declared
 ---
 

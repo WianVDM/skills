@@ -5,7 +5,7 @@ version: 1.0.0
 invocation: model-invoked
 metadata:
   author: Wian van der Merwe
-  tags: [registry, discovery, search, building-block]
+  tags: [tooling, building-block, discovery, registry]
   verification_level: declared
 depends:
   - parse-skill-frontmatter

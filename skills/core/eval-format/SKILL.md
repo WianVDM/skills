@@ -5,7 +5,7 @@ version: 1.0.0
 invocation: model-invoked
 metadata:
   author: Wian van der Merwe
-  tags: [evals, evaluation, schema, testing, vocabulary, building-block]
+  tags: [core, building-block, evals, schema]
   verification_level: declared
 ---
 

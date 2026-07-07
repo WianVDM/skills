@@ -5,7 +5,7 @@ version: 1.0.0
 invocation: model-invoked
 metadata:
   author: Wian van der Merwe
-  tags: [frontmatter, parsing, building-block]
+  tags: [tooling, building-block, parsing, validation, frontmatter]
   verification_level: declared
 ---
 

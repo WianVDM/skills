@@ -3,6 +3,7 @@ name: orchestrate
 description: Move a ticket from context to completed implementation by running other skills as a conductor. Use when the user says 'orchestrate', 'run the workflow', 'execute the plan', or after debrief and baseline are complete and it is time to plan and implement.
 license: Proprietary
 metadata:
+  tags: [workflow, conductor, orchestration, project-lifecycle]
   author: Wian van der Merwe
   version: "1.0.0"
 ---

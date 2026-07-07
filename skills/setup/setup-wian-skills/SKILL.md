@@ -6,7 +6,7 @@ invocation: user-invoked
 license: Proprietary
 metadata:
   author: Wian van der Merwe
-  tags: [setup, bootstrap, skills, configuration]
+  tags: [setup, conductor, bootstrap, sync, configuration]
   verification_level: declared
 depends:
   - list-available-skills

@@ -4,6 +4,7 @@ description: "Capture a reproducible baseline snapshot of the current state of a
 argument-hint: "Scope, ticket key, or feature/bug to baseline"
 license: Proprietary
 metadata:
+  tags: [core, building-block, initialization, shared-config]
   author: Wian van der Merwe
   version: "1.0.0"
   scope: global

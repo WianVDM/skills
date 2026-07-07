@@ -5,7 +5,7 @@ version: 1.0.0
 invocation: user-invoked
 metadata:
   author: Wian van der Merwe
-  tags: [skill-authoring, conductor, standards]
+  tags: [authoring, conductor, skill-design, standards]
   verification_level: declared
 depends:
   - detect-project-context

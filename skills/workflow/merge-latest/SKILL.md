@@ -4,6 +4,7 @@ description: Merge the latest upstream branch into the correct target branch saf
 argument-hint: "optional target branch, optional upstream branch, optional --stash"
 license: Proprietary
 metadata:
+  tags: [workflow, conductor, git, branching]
   author: Wian van der Merwe
   version: "1.0.0"
 ---

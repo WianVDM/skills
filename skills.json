@@ -4,41 +4,41 @@
   "description": "A collection of reusable agent skills for project setup, skill authoring, and workflow orchestration.",
   "license": "Proprietary",
   "skills": [
-    "./skills/audit-skill",
-    "./skills/baseline",
-    "./skills/context-reports",
-    "./skills/debrief",
-    "./skills/decide-skill-shape",
-    "./skills/detect-project-context",
-    "./skills/diagnose",
-    "./skills/eval-format",
-    "./skills/find-skills",
-    "./skills/grill-me",
-    "./skills/grill-with-docs",
-    "./skills/handoff",
-    "./skills/improve-codebase-architecture",
-    "./skills/install-skill",
-    "./skills/list-available-skills",
-    "./skills/merge-latest",
-    "./skills/orchestrate",
-    "./skills/parse-skill-frontmatter",
-    "./skills/plan-next",
-    "./skills/pr-report",
-    "./skills/prototype",
-    "./skills/review-skill",
-    "./skills/run-trigger-evals",
-    "./skills/search-skills-registry",
-    "./skills/setup-matt-pocock-skills",
-    "./skills/setup-wian-skills",
-    "./skills/tdd",
-    "./skills/to-issues",
-    "./skills/to-prd",
-    "./skills/triage",
-    "./skills/validate-skill-frontmatter",
-    "./skills/verify-branch",
-    "./skills/worker-contract",
-    "./skills/write-a-skill",
-    "./skills/zoom-out"
+    "./skills/authoring/audit-skill",
+    "./skills/authoring/decide-skill-shape",
+    "./skills/authoring/review-skill",
+    "./skills/authoring/run-trigger-evals",
+    "./skills/authoring/write-a-skill",
+    "./skills/core/baseline",
+    "./skills/core/context-reports",
+    "./skills/core/detect-project-context",
+    "./skills/core/eval-format",
+    "./skills/core/worker-contract",
+    "./skills/engineering/diagnose",
+    "./skills/engineering/improve-codebase-architecture",
+    "./skills/engineering/prototype",
+    "./skills/engineering/tdd",
+    "./skills/modes/grill-me",
+    "./skills/modes/grill-with-docs",
+    "./skills/modes/zoom-out",
+    "./skills/setup/setup-matt-pocock-skills",
+    "./skills/setup/setup-wian-skills",
+    "./skills/tooling/find-skills",
+    "./skills/tooling/install-skill",
+    "./skills/tooling/list-available-skills",
+    "./skills/tooling/parse-skill-frontmatter",
+    "./skills/tooling/search-skills-registry",
+    "./skills/tooling/validate-skill-frontmatter",
+    "./skills/workflow/debrief",
+    "./skills/workflow/handoff",
+    "./skills/workflow/merge-latest",
+    "./skills/workflow/orchestrate",
+    "./skills/workflow/plan-next",
+    "./skills/workflow/pr-report",
+    "./skills/workflow/to-issues",
+    "./skills/workflow/to-prd",
+    "./skills/workflow/triage",
+    "./skills/workflow/verify-branch"
   ],
   "namespaces": {
     "audit-skill": "wian-skills:audit-skill",
@@ -92,53 +92,80 @@
   },
   "bundles": [
     {
-      "name": "skill-authoring",
+      "name": "core",
+      "description": "Shared building blocks that many other skills depend on.",
+      "skills": [
+        "baseline",
+        "context-reports",
+        "detect-project-context",
+        "eval-format",
+        "worker-contract"
+      ]
+    },
+    {
+      "name": "tooling",
+      "description": "Skill discovery, installation, parsing, and validation tools.",
+      "skills": [
+        "find-skills",
+        "install-skill",
+        "list-available-skills",
+        "parse-skill-frontmatter",
+        "search-skills-registry",
+        "validate-skill-frontmatter"
+      ]
+    },
+    {
+      "name": "authoring",
       "description": "Design, draft, audit, and validate new skills.",
       "skills": [
-        "write-a-skill",
-        "detect-project-context",
-        "decide-skill-shape",
         "audit-skill",
-        "validate-skill-frontmatter",
+        "decide-skill-shape",
         "review-skill",
-        "eval-format",
-        "worker-contract",
-        "context-reports",
-        "parse-skill-frontmatter",
-        "list-available-skills",
-        "search-skills-registry",
-        "install-skill",
-        "run-trigger-evals"
+        "run-trigger-evals",
+        "write-a-skill"
       ]
     },
     {
-      "name": "project-workflow",
-      "description": "Run a project task from context through implementation.",
+      "name": "workflow",
+      "description": "Project lifecycle, coordination, and delivery workflows.",
       "skills": [
+        "debrief",
+        "handoff",
+        "merge-latest",
         "orchestrate",
         "plan-next",
-        "debrief",
-        "detect-project-context",
-        "to-issues",
-        "triage",
-        "worker-contract",
-        "context-reports",
-        "verify-branch",
-        "merge-latest",
         "pr-report",
-        "improve-codebase-architecture"
+        "to-issues",
+        "to-prd",
+        "triage",
+        "verify-branch"
       ]
     },
     {
-      "name": "core-tooling",
-      "description": "Essential building blocks most conductors and wrappers rely on.",
+      "name": "engineering",
+      "description": "Code quality, architecture, debugging, and development discipline.",
       "skills": [
-        "detect-project-context",
-        "worker-contract",
-        "context-reports",
-        "list-available-skills",
-        "find-skills",
-        "install-skill"
+        "diagnose",
+        "improve-codebase-architecture",
+        "prototype",
+        "tdd"
+      ]
+    },
+    {
+      "name": "modes",
+      "description": "Communication styles and interaction modes.",
+      "skills": [
+        "grill-me",
+        "grill-with-docs",
+        "zoom-out"
+      ]
+    },
+    {
+      "name": "setup",
+      "description": "Bootstrap and sync skills into a workspace.",
+      "skills": [
+        "setup-matt-pocock-skills",
+        "setup-wian-skills"
       ]
     }
   ],
@@ -164,6 +191,22 @@
     "install-skill": {
       "recommended": [
         "detect-project-context"
+      ]
+    },
+    "list-available-skills": {
+      "recommended": [
+        "parse-skill-frontmatter"
+      ]
+    },
+    "run-trigger-evals": {
+      "recommended": [
+        "parse-skill-frontmatter"
+      ]
+    },
+    "search-skills-registry": {
+      "recommended": [
+        "parse-skill-frontmatter",
+        "install-skill"
       ]
     },
     "review-skill": {

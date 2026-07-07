@@ -3,6 +3,7 @@ name: debrief
 description: "Investigate and explain a ticket. Gathers context from issue trackers, related work, the codebase, user input, and baseline evidence. Produces a structured debrief report that explains what the ticket requires, what assumptions were made, and what remains unclear. Use when the user mentions 'debrief', 'understand this ticket', 'get context on ticket', or provides a ticket key without clear next steps."
 license: Proprietary
 metadata:
+  tags: [workflow, conductor, project-lifecycle, context]
   author: Wian van der Merwe
   version: "1.0.0"
   scope: global

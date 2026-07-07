@@ -5,7 +5,7 @@ version: 1.0.0
 invocation: model-invoked
 metadata:
   author: Wian van der Merwe
-  tags: [worker, subagent, contract, conductor, vocabulary, building-block]
+  tags: [core, building-block, subagents, contract]
   verification_level: declared
 ---
 

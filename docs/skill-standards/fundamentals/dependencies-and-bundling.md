@@ -96,7 +96,7 @@ A `DEPENDENCIES.md` file should distinguish required, recommended, and optional 
 
 For packages, the `requirements.skills` array in `skills.json` is the machine-readable declaration. It is used for transitive closure, policy gates, and lock-file generation. See [`PACKAGE.md`](../PACKAGE.md) for the full `requirements` schema.
 
-The Vercel `skills` CLI also uses a root `skills.json` for one-shot bundle installs: when `npx skills add owner/repo` sees `skills.json`, it installs every skill path listed in the `skills` array. Those paths must be relative, starting with `./` (e.g., `"./skills/write-a-skill"`).
+The Vercel `skills` CLI also uses a root `skills.json` for one-shot bundle installs: when `npx skills add owner/repo` sees `skills.json`, it installs every skill path listed in the `skills` array. Those paths must be relative, starting with `./` (e.g., `"./skills/authoring/write-a-skill"`).
 
 The `requirements.skills` array is currently **flat**. To encode the taxonomy, use a naming convention in `references/DEPENDENCIES.md` and separate `recommended_skills` / `optional_skills` fields only if the harness supports them. If the harness only supports `requirements.skills`, treat the listed entries as required by default and note exceptions in `references/DEPENDENCIES.md`. See [`PACKAGE.md`](../PACKAGE.md) for the full schema.
 
@@ -128,7 +128,7 @@ depends:
   - run-trigger-evals
 metadata:
   author: Wian van der Merwe
-  tags: [skill-authoring, conductor, standards]
+  tags: [authoring, conductor, skill-design, standards]
 ---
 ```
 
@@ -152,17 +152,17 @@ Example `.claude-plugin/marketplace.json`:
     {
       "name": "Skill authoring",
       "skills": [
-        "./skills/write-a-skill",
-        "./skills/audit-skill",
-        "./skills/validate-skill-frontmatter"
+        "./skills/authoring/write-a-skill",
+        "./skills/authoring/audit-skill",
+        "./skills/tooling/validate-skill-frontmatter"
       ]
     },
     {
       "name": "Core tooling",
       "skills": [
-        "./skills/detect-project-context",
-        "./skills/list-available-skills",
-        "./skills/install-skill"
+        "./skills/core/detect-project-context",
+        "./skills/tooling/list-available-skills",
+        "./skills/tooling/install-skill"
       ]
     }
   ]
@@ -213,7 +213,7 @@ A bundle should have:
 
 ### Examples
 
-A **skill-authoring** bundle might include:
+A **authoring** bundle might include:
 
 ```text
 Core skills:
@@ -233,7 +233,7 @@ Optional:
 - prototype (for UI or workflow prototyping before drafting)
 ```
 
-Other bundles in this repo include **project-workflow** (orchestrate, plan, issue tracking) and **core-tooling** (detection, discovery, install). Bundle members are repo-specific; the important property is that each bundle respects the dependency taxonomy and does not duplicate skills.
+Other bundles in this repo include **workflow** (orchestrate, plan, issue tracking), **core** (detection, shared contracts, reports), and **tooling** (discovery, install, validation). Bundle members are repo-specific; the important property is that each bundle respects the dependency taxonomy and does not duplicate skills.
 
 ### Bundle design principles
 
@@ -367,4 +367,4 @@ Remediation: Install `worker-contract` before using `write-a-skill`.
 - The `references/DEPENDENCIES.md` surface and `skills.json` `requirements` object are documented in the project's own [`PACKAGE.md`](../PACKAGE.md) and [`patterns/building-block.md`](../patterns/building-block.md) as canonical declaration surfaces.
 - The capability-bundle concept is our own framing for grouping agent skills into workflow-ready sets, informed by observed bundles in Claude Code, Cursor, and Codex ecosystems.
 - The `full` / `degraded` / `blocked` self-diagnostics contract is our own practice, designed to let conductor skills make informed decisions about whether to proceed, fall back, or stop.
-- The `write-a-skill` example is drawn directly from `skills/write-a-skill/SKILL.md` in this repository.
+- The `write-a-skill` example is drawn directly from `skills/authoring/write-a-skill/SKILL.md` in this repository.

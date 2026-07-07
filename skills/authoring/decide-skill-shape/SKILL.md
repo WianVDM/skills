@@ -5,7 +5,7 @@ version: 1.0.0
 invocation: model-invoked
 metadata:
   author: Wian van der Merwe
-  tags: [skill-design, shape, decision, conductor]
+  tags: [authoring, building-block, design, decision]
   verification_level: declared
 depends:
   - list-available-skills

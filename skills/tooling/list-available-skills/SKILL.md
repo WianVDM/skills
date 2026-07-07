@@ -5,7 +5,7 @@ version: 1.0.0
 invocation: model-invoked
 metadata:
   author: Wian van der Merwe
-  tags: [discovery, building-block, skills]
+  tags: [tooling, building-block, discovery, skills]
   verification_level: declared
 depends:
   - parse-skill-frontmatter

@@ -5,7 +5,7 @@ version: 1.0.0
 invocation: model-invoked
 metadata:
   author: Wian van der Merwe
-  tags: [evals, testing, model-invoked, building-block]
+  tags: [authoring, building-block, evals, testing]
   verification_level: declared
 depends:
   - parse-skill-frontmatter

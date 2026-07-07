@@ -4,68 +4,73 @@
   },
   "plugins": [
     {
-      "name": "Core tooling",
+      "name": "Core",
       "skills": [
-        "./skills/detect-project-context",
-        "./skills/list-available-skills",
-        "./skills/find-skills",
-        "./skills/search-skills-registry",
-        "./skills/install-skill",
-        "./skills/worker-contract",
-        "./skills/context-reports"
+        "./skills/core/baseline",
+        "./skills/core/context-reports",
+        "./skills/core/detect-project-context",
+        "./skills/core/eval-format",
+        "./skills/core/worker-contract"
       ]
     },
     {
-      "name": "Skill authoring",
+      "name": "Tooling",
       "skills": [
-        "./skills/write-a-skill",
-        "./skills/audit-skill",
-        "./skills/validate-skill-frontmatter",
-        "./skills/parse-skill-frontmatter",
-        "./skills/review-skill",
-        "./skills/run-trigger-evals",
-        "./skills/eval-format",
-        "./skills/decide-skill-shape"
+        "./skills/tooling/find-skills",
+        "./skills/tooling/install-skill",
+        "./skills/tooling/list-available-skills",
+        "./skills/tooling/parse-skill-frontmatter",
+        "./skills/tooling/search-skills-registry",
+        "./skills/tooling/validate-skill-frontmatter"
       ]
     },
     {
-      "name": "Project workflow",
+      "name": "Authoring",
       "skills": [
-        "./skills/orchestrate",
-        "./skills/plan-next",
-        "./skills/debrief",
-        "./skills/to-issues",
-        "./skills/triage",
-        "./skills/to-prd"
+        "./skills/authoring/audit-skill",
+        "./skills/authoring/decide-skill-shape",
+        "./skills/authoring/review-skill",
+        "./skills/authoring/run-trigger-evals",
+        "./skills/authoring/write-a-skill"
       ]
     },
     {
-      "name": "Code lifecycle",
+      "name": "Workflow",
       "skills": [
-        "./skills/verify-branch",
-        "./skills/merge-latest",
-        "./skills/pr-report",
-        "./skills/improve-codebase-architecture"
+        "./skills/workflow/debrief",
+        "./skills/workflow/handoff",
+        "./skills/workflow/merge-latest",
+        "./skills/workflow/orchestrate",
+        "./skills/workflow/plan-next",
+        "./skills/workflow/pr-report",
+        "./skills/workflow/to-issues",
+        "./skills/workflow/to-prd",
+        "./skills/workflow/triage",
+        "./skills/workflow/verify-branch"
+      ]
+    },
+    {
+      "name": "Engineering",
+      "skills": [
+        "./skills/engineering/diagnose",
+        "./skills/engineering/improve-codebase-architecture",
+        "./skills/engineering/prototype",
+        "./skills/engineering/tdd"
+      ]
+    },
+    {
+      "name": "Modes",
+      "skills": [
+        "./skills/modes/grill-me",
+        "./skills/modes/grill-with-docs",
+        "./skills/modes/zoom-out"
       ]
     },
     {
       "name": "Setup",
       "skills": [
-        "./skills/setup-wian-skills",
-        "./skills/setup-matt-pocock-skills",
-        "./skills/baseline"
-      ]
-    },
-    {
-      "name": "Utilities",
-      "skills": [
-        "./skills/diagnose",
-        "./skills/grill-me",
-        "./skills/grill-with-docs",
-        "./skills/handoff",
-        "./skills/prototype",
-        "./skills/zoom-out",
-        "./skills/tdd"
+        "./skills/setup/setup-matt-pocock-skills",
+        "./skills/setup/setup-wian-skills"
       ]
     }
   ]
