@@ -4,14 +4,8 @@ handoff-helper.py
 
 Deterministic helper for the handoff skill.
 
-Subcommands:
-    discover    List candidate artifacts from the context directory.
-    resolve     Determine the next handoff path, sequence, and previous handoff.
-
-All output is JSON. Errors are written to stderr and the exit code is non-zero.
-
 This helper does not delete, overwrite, or modify existing handoff files. It only
-resolves new paths and discovers candidate artifacts.
+resolves new handoff paths.
 """
 
 import argparse
@@ -107,46 +101,6 @@ def parse_sequence(name: str) -> int | None:
     return None
 
 
-def cmd_discover(args: argparse.Namespace) -> None:
-    """Discover candidate artifacts in the context directory."""
-    context_dir = detect_context_dir(args.context_dir)
-    if not context_dir.exists():
-        print(f"Context directory does not exist: {context_dir}", file=sys.stderr)
-        sys.exit(1)
-
-    artifacts = []
-    # Scan the context directory and one level of subdirectories for .md files.
-    search_roots = [context_dir] + [d for d in context_dir.iterdir() if d.is_dir()]
-    seen = set()
-
-    for root in search_roots:
-        for path in root.rglob("*.md"):
-            if not path.is_file():
-                continue
-            resolved = path.resolve()
-            if resolved in seen:
-                continue
-            seen.add(resolved)
-
-            rel = resolved.relative_to(context_dir.resolve())
-            stat = path.stat()
-            modified_at = datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc).isoformat()
-
-            artifacts.append(
-                {
-                    "path": str(rel),
-                    "absolute_path": str(resolved),
-                    "type": "markdown",
-                    "summary": "",  # Filled by the agent; the script is not inferential.
-                    "modified_at": modified_at,
-                }
-            )
-
-    # Sort by recency, most recent first.
-    artifacts.sort(key=lambda x: x["modified_at"], reverse=True)
-    json.dump(artifacts, sys.stdout, indent=2)
-
-
 def cmd_resolve(args: argparse.Namespace) -> None:
     """Resolve the next handoff path, sequence, and previous handoff."""
     context_dir = detect_context_dir(args.context_dir)
@@ -206,9 +160,6 @@ def main() -> None:
         help="Project context directory. If omitted, .agents/context is detected.",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
-
-    discover_parser = subparsers.add_parser("discover", help="List candidate artifacts.")
-    discover_parser.set_defaults(func=cmd_discover)
 
     resolve_parser = subparsers.add_parser("resolve", help="Resolve next handoff path.")
     resolve_parser.add_argument(

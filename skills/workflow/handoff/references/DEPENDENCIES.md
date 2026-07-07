@@ -2,7 +2,7 @@
 
 ## Required binaries
 
-- Python 3.x
+- Python 3.10 or later
 
 ## Required tools
 
@@ -10,7 +10,11 @@
 
 ## Required skills
 
-- None. If `detect-project-context` is available, the skill prefers it; otherwise the helper uses its own detection.
+- None.
+
+## Optional skills
+
+- `detect-project-context` — if available, the agent may use it to locate the project context directory. The helper falls back to its own detection of `.agents/context` if the skill is not available.
 
 ## Required MCP servers
 
