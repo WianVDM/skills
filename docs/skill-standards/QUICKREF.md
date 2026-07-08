@@ -35,11 +35,17 @@ A one-page guide for authors, reviewers, and consumers. For full details, follow
 - [ ] Scripts are deterministic, documented, safe, isolated, and failure-explicit.
 - [ ] Language is harness-agnostic and project-agnostic where required.
 
+### Tooling awareness checklist
+
+- [ ] Each capability step names the outcome before choosing a tool.
+- [ ] The skill detects available tools (adapters, MCP servers, native binaries, APIs, harness tools) for each capability.
+- [ ] The skill selects the best available tool and discloses the choice in output.
+- [ ] If a degraded source is used, the skill tells the user what better option was available and gets consent or records the preference.
+
 ### Packaging and trust
 
 - [ ] Add `skills.json` once the skill has consumers or external dependencies.
 - [ ] Declare dependencies in `requirements` (skills, tools, MCP servers, binaries, environment variables).
-- [ ] Set a `verification` level (`unverified`, `declared`, `tested`, `formal`).
 - [ ] Never store secrets in `SKILL.md`, references, or config files.
 
 ---
@@ -69,6 +75,13 @@ A one-page guide for authors, reviewers, and consumers. For full details, follow
 - [ ] Agent-authored skills pass staging.
 - [ ] No secrets or tokens in files.
 - [ ] Scripts do not ask for user input; the skill collects input and passes it.
+
+### Tooling awareness review
+
+- [ ] The skill is capability-first: it names outcomes before choosing tools.
+- [ ] It checks for better tools outside its own adapter set before invoking adapters.
+- [ ] It discloses which tool fulfilled each capability and which alternatives were available.
+- [ ] Degraded sources are accepted only with user consent or a recorded preference.
 
 ### Evaluation
 

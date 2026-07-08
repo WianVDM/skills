@@ -210,9 +210,4 @@ Templates and static resources. Useful when a skill produces files from a fixed 
 
 ## Research basis
 
-- The conventional layout (`SKILL.md`, `README.md`, `references/`, `subagents/`, `scripts/`, `assets/`) is supported by the common layout observed across Claude Code, Cursor, Codex, and the agentskills.io ecosystem. The exact directory names vary, but the separation of identity, reference, workers, helpers, and assets is consistent.
-- The **description-as-context-pointer** and **progressive disclosure** concepts are our own analytical framework, informed by the research emphasis on context cost and routing reliability.
-- **Trigger evals** are our own practice, supported by the research finding that description quality is the primary determinant of whether a skill fires at the right time.
-- The **information hierarchy** and **co-location** principles are our own framework for deciding where a piece of content belongs.
-- Harness-agnostic and project-agnostic language is a direct consequence of the portability goal shared across the research sources.
-
+See [SOURCES.md](../SOURCES.md).

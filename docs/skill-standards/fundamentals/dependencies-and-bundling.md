@@ -55,6 +55,23 @@ Optional dependencies are surfaced in the install output and in documentation. T
 
 ---
 
+## Tool categories
+
+Dependencies are not limited to other skills. A skill may depend on any of the following tool categories:
+
+| Category | Examples |
+|---|---|
+| **Skill adapters** | `github-pr-adapter`, `sonarcloud-adapter`, `jira-adapter` |
+| **MCP tools / servers** | `github_get_pull_request_reviews`, SonarQube MCP, Jira MCP |
+| **Native binaries** | `gh`, `git`, `curl`, `jq` |
+| **Direct APIs** | Provider REST or GraphQL endpoints |
+| **Harness tools** | Built-in browser, file system, search, shell |
+| **Manual fallback** | User input, CSV, markdown files |
+
+Each category should be declared in `references/DEPENDENCIES.md` and, where applicable, in `skills.json`. A skill must not report a source as "unavailable" if a configured tool in any of these categories could fulfill the same capability. See [tooling-awareness.md](./tooling-awareness.md) for the capability-first approach to tool selection.
+
+---
+
 ## Lazy dependency evaluation
 
 A skill does not have to check every declared dependency at initialization. It can check **required** dependencies eagerly and **recommended** or **optional** dependencies **lazily**, only when the specific feature or method that needs them is selected.
@@ -262,21 +279,22 @@ A bundle should have:
 
 ### Examples
 
-A **authoring** bundle might include:
+An **authoring** bundle might include:
 
 ```text
-Core skills:
-- skill-designer
+Core conductor:
+- write-a-skill
 
 Required building blocks:
-- skill-audit
-- frontmatter-validator
+- audit-skill
+- validate-skill-frontmatter
 - worker-contract
 - context-reports
 
 Recommended building blocks:
-- skill-search
-- eval-generator
+- list-available-skills
+- search-skills-registry
+- run-trigger-evals
 
 Optional:
 - prototype (for UI or workflow prototyping before drafting)
@@ -348,8 +366,11 @@ When a skill reports its state, it should include:
 - `status`: `full`, `degraded`, or `blocked`.
 - `scope`: `initialization` or the specific method/branch the check applies to (e.g., `ui-browser`).
 - `missing`: a list of missing dependencies and their kind.
+- `better_tool_available`: a list of configured-but-unused tools that could improve a specific capability (optional but recommended for tool-aware skills).
 - `impact`: a brief explanation of how behavior changes.
 - `remediation`: the recommended next step for the user or harness.
+
+For tool-aware skills, include `better_tool_available` when the skill is using a weaker source for a capability while a better tool is configured. For example, a PR-report skill using a `github-pr-adapter` while `github_get_pull_request_reviews` via MCP is available should report the better tool and offer to switch.
 
 Example — eager check at initialization:
 
@@ -357,6 +378,7 @@ Example — eager check at initialization:
 Status: full
 Scope: initialization
 Missing: none
+Better tool available: none
 Impact: Core workflow can proceed.
 Remediation: none.
 ```
@@ -367,8 +389,20 @@ Example — lazy check for a specific method:
 Status: degraded
 Scope: ui-browser
 Missing: `playwright-mcp` (recommended)
+Better tool available: none
 Impact: UI capture will fall back to manual screenshots.
 Remediation: Configure a browser automation MCP, switch to a test-runner baseline, or proceed with manual fallback.
+```
+
+Example — a better tool is available for a capability:
+
+```markdown
+Status: degraded
+Scope: pr-report
+Missing: none
+Better tool available: `github_get_pull_request_reviews` (MCP) for top-level review bodies
+Impact: Current adapter returns partial review data; full review bodies are available via MCP.
+Remediation: Confirm and I will fetch top-level reviews from the MCP tool instead.
 ```
 
 ### Initialization check
@@ -432,14 +466,10 @@ Remediation: Install `worker-contract` before using `write-a-skill`.
 - [`fundamentals/structure.md`](./structure.md) — skill layout and reference conventions.
 - [`fundamentals/types.md`](./types.md) — choosing skill types and their dependency patterns.
 - [`fundamentals/evaluation.md`](./evaluation.md) — testing skills, including dependency failure cases.
-- [`PORTABILITY.md`](../PORTABILITY.md) — cross-harness degradation model.
+- [`PORTABILITY.md`](../../PORTABILITY.md) — cross-harness degradation model.
 
 ---
 
 ## Research basis
 
-- The dependency taxonomy (required, recommended, optional) and transitive closure rules are a synthesis of common package models from npm, Python packaging, and agent-harness skill ecosystems. The explicit degradation contract is our own adaptation to agent workflows, where missing a tool is often recoverable by asking the user.
-- The `references/DEPENDENCIES.md` surface and `skills.json` `requirements` object are documented in the project's own [`PACKAGE.md`](../PACKAGE.md) and [`patterns/building-block.md`](../patterns/building-block.md) as canonical declaration surfaces.
-- The capability-bundle concept is our own framing for grouping agent skills into workflow-ready sets, informed by observed bundles in Claude Code, Cursor, and Codex ecosystems.
-- The `full` / `degraded` / `blocked` self-diagnostics contract is our own practice, designed to let conductor skills make informed decisions about whether to proceed, fall back, or stop.
-- The `write-a-skill` example is drawn directly from `skills/authoring/write-a-skill/SKILL.md` in this repository.
+See [SOURCES.md](../SOURCES.md).

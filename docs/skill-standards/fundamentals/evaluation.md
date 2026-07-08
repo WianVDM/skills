@@ -50,6 +50,18 @@ For user-invoked skills, the description is primarily human-facing, but a clarit
 - The skill triggers on the wrong tasks.
 - The skill fails to trigger on the right tasks.
 - Outputs vary significantly across similar prompts.
+- The skill uses a weaker tool when a better one was available without disclosing it.
+- The skill reports a source as “unavailable” while a configured tool could fulfill the same capability.
+
+### Tooling-awareness behavioral evals
+
+Test the skill's behavior with realistic scenarios, not just the presence of guidance. Add cases that exercise tooling awareness and degradation disclosure:
+
+- A better tool is available alongside the skill's adapter. The with-skill output should use the better tool or disclose it.
+- A configured tool can fill a gap left by a failing adapter. The skill should offer to use it before accepting degraded data.
+- A degraded source is used. The skill should name the better tool and explain the impact.
+
+See [tooling-awareness.md](./tooling-awareness.md) for the capability-first approach to tool selection.
 
 ---
 
@@ -67,6 +79,8 @@ Applies to every skill.
 - [ ] The skill is explicit about failure, ambiguity, and assumptions.
 - [ ] Reference links resolve.
 - [ ] The skill uses harness-agnostic and project-agnostic language where required.
+- [ ] The skill detects and prefers the best available tool for each capability (see [tooling-awareness.md](./tooling-awareness.md)).
+- [ ] If the skill uses a degraded source, it discloses the better tool that was available and obtains user consent.
 
 ---
 
@@ -86,6 +100,7 @@ Applies to every skill.
 - [ ] State is tracked across phases and survives context compaction.
 - [ ] Subagent prompts are focused and include scope, tools, and return format.
 - [ ] The skill integrates findings before deciding what to do next.
+- [ ] The skill checks for tools outside its own adapter set before invoking adapters.
 - [ ] User interaction is owned by the conductor or its wrapper, not leaked to workers.
 
 ### Wrapper
@@ -178,12 +193,4 @@ If both blanks are hard to fill, the skill is not yet well-defined.
 
 ## Research basis
 
-- **Eval-driven development** and the basic loop (draft, test prompts, with-skill vs. baseline, iterate) are our own practice, strongly supported by the research finding that skills only become reliable through empirical testing.
-- **Trigger evals** are our own practice, but they are motivated by the research observation that description quality is the primary determinant of skill routing and that LLM-driven routing has measurable false-positive rates.
-- The **10 should-trigger / 10 should-not-trigger** target is our own heuristic, chosen to force boundary testing rather than obvious negatives.
-- **Baseline types** (`no_skill`, `previous_version`, `failure_documentation`) and the **guardrail baseline** idea are drawn from the research evaluation framework. The guardrail baseline is especially important for discipline skills where the no-skill case is trivially non-compliant.
-- **Composition testing** (`available_skills`, distractor resistance, reflection) is drawn from the research and is our own recommendation for composable skills.
-- **Subjective-output hierarchy** (deterministic checks → visual QA → structured-rubric LLM judge → human review) is drawn from the research evaluation framework.
-- The per-type checklists are our own synthesis of the quality attributes identified across the research.
-- The **predictability test**, **minimalism test**, and **litmus test** are our own heuristics.
-
+See [SOURCES.md](../SOURCES.md).

@@ -100,7 +100,6 @@ name: verify-before-claim
 version: 1.0.0
 metadata:
   author: reliability-team
-  verification_level: tested
 invocation: model-invoked
 description: Verify any claim about external state before treating it as true. Use when a skill, conductor, or worker is about to assume something about files, APIs, dependencies, or environment state.
 ---

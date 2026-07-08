@@ -72,7 +72,7 @@ Review UI code for design-system compliance, accessibility, and responsive behav
 | Field | Type | Constraints | Purpose |
 |-------|------|-------------|---------|
 | `version` | string | Semantic version (`MAJOR.MINOR.PATCH[-prerelease][+build]`). | Version of the skill. Consider adding one once the skill is shared, consumed, or versioned. |
-| `metadata` | object | See `metadata` object below. | Author, tags, verification level, and other non-behavior metadata. |
+| `metadata` | object | See `metadata` object below. | Author, tags, and other non-behavior metadata. |
 | `invocation` | string | Enum: `model-invoked`, `user-invoked`. | Determines how the skill is reached. |
 
 `version` is optional for personal, experimental, or local skills. Add it once a skill is shared, consumed, versioned, or otherwise needs a compatibility signal.
@@ -83,8 +83,6 @@ Review UI code for design-system compliance, accessibility, and responsive behav
 |-----|------|-------------|---------|
 | `author` | string | Max 256 chars. | Human or team responsible for the skill. |
 | `tags` | string[] | Unique. Each tag: lowercase, digits, hyphens; max 64 chars. | Keywords for cataloging and discovery. |
-| `verification_level` | string | Enum: `unverified`, `declared`, `tested`, `formal`. | See `GOVERNANCE.md`. |
-| `verification_level` | string | Enum: `unverified`, `declared`, `tested`, `formal`. | See `GOVERNANCE.md`. |
 
 ### Harness hints
 
@@ -137,10 +135,6 @@ A JSON Schema for the portable frontmatter surface is maintained at `schemas/ski
           "items": { "type": "string", "pattern": "^[a-z0-9-]+$", "maxLength": 64 },
           "uniqueItems": true
         },
-        "verification_level": {
-          "type": "string",
-          "enum": ["unverified", "declared", "tested", "formal"]
-        }
       }
     },
     "invocation": {

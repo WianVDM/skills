@@ -59,7 +59,7 @@ A skill carries a verification level that tells consumers how much trust they ca
 | `tested` | Evaluations pass. | Evaluation suite, security scan, adversarial pressure tests. |
 | `formal` | Machine-checkable proof. | Aspirational; not practical for most skills today. |
 
-The verification level is declared in `skills.json` or in `SKILL.md` frontmatter. It is a separate signal of evaluation rigor.
+The verification level is declared in `skills.json` or an audit ledger, not in `SKILL.md` frontmatter. It is a separate signal of evaluation rigor derived from evaluation, audit, and governance records.
 
 ---
 

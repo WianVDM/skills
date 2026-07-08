@@ -62,10 +62,10 @@ See [form-and-style.md](./form-and-style.md) for steering levers.
 
 How the skill is kept lean and relevant.
 
-- **Single source of truth** — one authoritative place for each meaning.
-- **No-op test** — does this line change behavior versus the default?
-- **Relevance** — does this line still bear on what the skill does?
-- **Sediment** and **duplication** are the failure modes pruning prevents.
+- **Single source of truth** — one authoritative place for each meaning. See [common-mistakes.md#duplication](./common-mistakes.md).
+- **No-op test** — does this line change behavior versus the default? See [form-and-style.md](./form-and-style.md).
+- **Relevance** — does this line still bear on what the skill does? See [form-and-style.md](./form-and-style.md).
+- **Sediment** and **duplication** are the failure modes pruning prevents. See [common-mistakes.md](./common-mistakes.md).
 
 See [common-mistakes.md](./common-mistakes.md) for failure modes and cures.
 
@@ -98,6 +98,8 @@ A skill should work alone and fit cleanly into a larger set. It should declare w
 ### 5. Explicitness
 
 A skill must be explicit about failure, ambiguity, assumptions, and dependencies. It should not silently skip problems or proceed on guesses.
+
+A skill must also be explicit about **tooling choices**: what tool fulfilled each capability, what alternatives were available, and why a degraded source was accepted. See [tooling-awareness.md](./tooling-awareness.md).
 
 ---
 
@@ -133,9 +135,4 @@ If any of these are true, the skill needs to be pruned, split, or removed.
 
 ## Research basis
 
-- The definition of a skill as reusable process guidance injected into the agent's context is a common denominator across Claude Code, Cursor, Codex, Aider, and Hermes. Each treats a skill as a markdown file with a routing description and a body of guidance.
-- The framing of a skill as a **delegation boundary** — a way for a team to encode "how this kind of work is done here" — is supported by the research synthesis across harness makers and practitioner sources.
-- **Predictability** as the root virtue is our own design decision, synthesized from the research on trust, continuity, team-aligned guidance, and resistance to rationalization.
-- The four axes (invocation, information hierarchy, steering, pruning) and the five root virtues are our own analytical framework.
-- The "opposing truths" framing is our own device for capturing the tensions inherent in skill design.
-
+See [SOURCES.md](../SOURCES.md).

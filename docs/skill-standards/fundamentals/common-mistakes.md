@@ -54,34 +54,13 @@ Maintain a single source of truth. Extract shared reference into a building-bloc
 
 ## No-op instructions
 
-A line that changes nothing because the model already does it by default. You pay load to state the obvious.
-
-**Test**
-
-Does this line change behavior versus the default?
-
-**Examples**
-
-- “Be thorough.” The agent is already thorough-ish.
-- “Think carefully.” The agent already reasons.
-- “Consider all options.” Too vague to change behavior.
-
-**Cure**
-
-Replace weak guidance with a stronger leading word or a checkable criterion. If a line does not change behavior, delete it.
+A line that changes nothing because the model already does it by default. See [form-and-style.md](./form-and-style.md) for the no-op test, examples, and how to replace weak guidance with stronger leading words or checkable criteria.
 
 ---
 
 ## Vague completion criteria
 
-A step ends with “understand the problem” or “produce a plan.” The agent declares completion and moves on without doing the work.
-
-**Cure**
-
-Make completion criteria checkable and, where it matters, exhaustive:
-
-- “The ticket key, summary, acceptance criteria, and status are recorded.”
-- "A failing test exists for the first behavior and fails for the expected reason."
+A step ends with fuzzy language like “understand the problem” or “produce a plan.” See [form-and-style.md](./form-and-style.md) for how to write strong, checkable completion criteria and avoid premature completion.
 
 ---
 
@@ -99,7 +78,6 @@ Assuming the agent already knows what you mean. This works for well-known tasks 
 
 Use leading words where priors are strong. Define terms where they are domain-specific. Add steps where the agent would vary.
 
----
 ---
 
 ## Upfront setup overload
@@ -134,33 +112,32 @@ Declare dependencies explicitly. Detect the environment or ask the user when unc
 
 ---
 
-## Manual in disguise
+## Adapter tunnel vision
 
-The skill lists every keystroke and command. The agent becomes a slow script executor.
+The skill treats its own built-in adapters, scripts, or preferred paths as the only way to fulfill a capability, ignoring better tools that are already configured or available. See [tooling-awareness.md](./tooling-awareness.md) for the capability-first alternative.
 
-**Examples**
+**Symptoms**
 
-- “Run `git status`, then `git diff`, then `git log --oneline -5`.”
-- “Open file X, scroll to line Y, change Z.”
+- Reconstructing data from partial outputs instead of using a better tool.
+- Declaring a source “unavailable” when an MCP server or native tool could reach it.
+- Recording limitations and moving on without suggesting alternatives.
+- Marking a section complete while a better tool sits unused.
 
 **Cure**
 
-State intent, not mechanics. Let the agent decide the commands.
+Design each capability step as "what outcome do I need?" first, then "which available tool gives the best result?" Route through the best tool and disclose the choice.
+
+---
+
+## Manual in disguise
+
+The skill lists every keystroke and command. See [form-and-style.md](./form-and-style.md) for the full anti-pattern and how to state intent instead of mechanics.
 
 ---
 
 ## Guideline soup
 
-A skill that says many true things but gives the agent no purchase point. It feels wise but produces no consistent behavior.
-
-**Examples**
-
-- “Be thorough. Consider edge cases. Write good tests.”
-- “Design good interfaces.”
-
-**Cure**
-
-Turn vague guidance into specific principles, leading words, or checkable criteria.
+A skill that says many true things but gives the agent no purchase point. See [form-and-style.md](./form-and-style.md) for how to turn vague guidance into specific principles, leading words, or checkable criteria.
 
 ---
 
@@ -217,24 +194,10 @@ Choose the invocation mode that matches the skill's consumer. If the skill is me
 
 ## Premature completion
 
-_Failure mode: violating the completion criterion lever._
-
-Ending a step before it is genuinely done, because the agent's attention slips toward being finished. Caused by vague completion criteria or visible post-completion steps that pull the agent forward.
-
-**Lever**
-
-Sharpen the completion criterion first. Only if the criterion is irreducibly fuzzy and you observe the rush, hide the later steps by splitting or delegating.
+Ending a step before it is genuinely done because the agent's attention slips toward being finished. See [form-and-style.md](./form-and-style.md) for how completion criteria and post-completion steps cause or prevent this.
 
 ---
 
 ## Research basis
 
-- Most of the failure modes here are our own synthesis of skill-review experience, but they are strongly supported by the research emphasis on context cost, routing reliability, and the risk of "skill hell" (too many bloated or overlapping skills).
-- **Sprawl**, **sediment**, and **duplication** are our own terms for the general problem of stale, inflated, or repeated guidance that the research identifies as a primary cause of skill ecosystem quality problems.
-- **No-op instructions** and **vague completion criteria** are our own analytical tools, derived from the predictability root virtue and the observation that agents often rush or skip steps without strong guardrails.
-- **Hidden dependencies** and **manual in disguise** are common denominators across the research sources; every harness and practitioner source warns against both.
-- **Guideline soup** and **over-reliance on priors** are our own framing of the broader problem that LLMs need concrete, checkable guidance rather than generic good advice.
-- **Over-configuring** and **under-declaring scope** are our own practices, aligned with the research on minimalism and explicit boundaries.
-- **Mixing invocation concerns** is our own framing, based on the observed trade-off between context load and cognitive load.
-- **Premature completion** is our own concept, derived from the interplay between completion criteria and attention dynamics in sequential tasks.
-
+See [SOURCES.md](../SOURCES.md).

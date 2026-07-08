@@ -224,6 +224,30 @@ The pattern of separating reasoning and orchestration (conductor) from execution
 
 ---
 
+## Tooling awareness
+
+### Capability (tooling)
+
+An outcome a skill needs, expressed independently of any specific tool. For example, "obtain full top-level review bodies" is a capability; "call the GitHub PR adapter" is one possible tool that fulfills it.
+
+### Capability-first design
+
+Designing a skill by naming the capabilities it needs before choosing the tools that fulfill them. The skill detects available tools, selects the best one for each capability, and discloses the choice.
+
+### Tooling awareness
+
+The practice of treating tool selection as part of a skill's contract. A tooling-aware skill declares capabilities, discovers available tools, selects the best one, discloses the choice, and obtains user consent before accepting degraded output.
+
+### Adapter tunnel vision
+
+A failure mode in which a skill treats its own built-in adapters, scripts, or preferred paths as the only way to fulfill a capability, ignoring better tools that are already configured or available.
+
+### User-consented degradation
+
+The rule that a skill must disclose a better available tool, explain the impact of using a weaker one, and obtain explicit user consent before accepting degraded output.
+
+---
+
 ## Governance and verification
 
 ### Agent-authored skill
@@ -236,7 +260,7 @@ The practice of writing agent-authored skills to a pending area for review befor
 
 ### Verification level
 
-A signal of evaluation rigor: `unverified`, `declared`, `tested`, or `formal`.
+A signal of evaluation rigor: `unverified`, `declared`, `tested`, or `formal`. Assigned through evaluation, audit, or governance records outside the skill (for example, `skills.json` or an audit ledger), not declared in `SKILL.md` frontmatter.
 
 ### Audit event
 

@@ -81,6 +81,13 @@ This is the contract that `audit-skill` uses to evaluate any skill. Each check h
 | D05 | Environment variables are declared. | Warning | Variables used are listed in `requirements.environment_variables`. |
 | D06 | Lazy dependency evaluation is used when appropriate. | Warning | If the skill has multiple methods or branches, recommended/optional dependencies are evaluated lazily per path and not all checked at initialization. |
 
+## Category: Tooling awareness
+
+| ID | Check | Severity | Pass condition |
+|---|---|---|---|
+| TA-01 | Capability-first tool selection. | Warning | The skill does not treat its own adapters as the only data source. It detects available tools and selects the best one for each capability. |
+| TA-02 | Degradation disclosure. | Warning | If a weaker tool is used, the skill tells the user what better option was available and obtains user consent or records the preference. |
+
 ## Category: Portability
 
 | ID | Check | Severity | Pass condition |
@@ -103,7 +110,6 @@ This is the contract that `audit-skill` uses to evaluate any skill. Each check h
 | ID | Check | Severity | Pass condition |
 |---|---|---|---|
 | G01 | License is declared if distributed. | Warning | `license` present in `skills.json` or frontmatter. |
-| G02 | Verification level is declared if distributed. | Warning | `verification.level` present. |
 
 ## Output format
 

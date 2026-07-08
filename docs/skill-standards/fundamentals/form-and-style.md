@@ -2,6 +2,8 @@
 
 A skill can be written as step-by-step instructions, as a set of guidelines and principles, or as a hybrid of both. The right form depends on what makes the agent more reliable for that specific domain.
 
+This document is the canonical home for completion criteria, premature completion, legwork, leading words, no-op tests, and pruning. Other fundamental files reference it for these concepts.
+
 There is no universal best form. The goal is predictability, not stylistic purity.
 
 When a skill has steps, each step should end on a **completion criterion**: a checkable condition that tells the agent the step is done. A vague criterion invites **premature completion** — the agent declares the step done and rushes toward the next one. A strong criterion forces the right amount of **legwork** — the digging the agent does within the step.
@@ -230,15 +232,7 @@ This is model-relative: if you disagree whether a line is a no-op, settle it by 
 
 ## Research basis
 
-- The three forms (instruction-heavy, guideline-heavy, hybrid) and the recommendation to match form to problem shape are our own framework, supported by the research observation that agent behavior varies by whether the task has a clear sequence or many valid paths.
-- **Completion criteria**, **premature completion**, and **legwork** are our own analytical tools, synthesized from the research on predictability and the common failure mode of agents rushing steps.
-- **Leading words** are our own technique, based on the observation that models have strong priors for compact concepts and that shorter, denser guidance is more reliable.
-- The **explain-the-why** pattern is supported by the research on model theory of mind and generalization; rigid commands often fail when context changes.
-- **Negation handling** is supported by the well-documented finding that LLMs handle negation weakly; the "pair prohibition with positive directive" rule is our own practice.
-- The **no-op test**, **single source of truth**, and **relevance** pruning disciplines are our own, aligned with the research emphasis on minimalism and context cost.
-
-
----
+See [SOURCES.md](../SOURCES.md).
 
 ## Explain the why
 

@@ -25,8 +25,8 @@ The standards are intentionally detailed. This section helps you pick the right 
 
 | Role | Start here | Then read | Skip for now |
 |---|---|---|---|
-| **New skill author** | [`fundamentals/what-is-a-skill.md`](./fundamentals/what-is-a-skill.md), [`fundamentals/types.md`](./fundamentals/types.md) | [`FORMAT.md`](./FORMAT.md), [`fundamentals/structure.md`](./fundamentals/structure.md), [`fundamentals/form-and-style.md`](./fundamentals/form-and-style.md), [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) | [`EXTENSIBILITY.md`](./EXTENSIBILITY.md), [`GOVERNANCE.md`](./GOVERNANCE.md) (until you ship or share) |
-| **Reviewer** | [`REVIEW_PRINCIPLES.md`](./REVIEW_PRINCIPLES.md), [`QUICKREF.md`](./QUICKREF.md), [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) | [`fundamentals/types.md`](./fundamentals/types.md), [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md), [`GOVERNANCE.md`](./GOVERNANCE.md) | Pattern docs not used by the skill under review |
+| **New skill author** | [`fundamentals/what-is-a-skill.md`](./fundamentals/what-is-a-skill.md), [`fundamentals/types.md`](./fundamentals/types.md) | [`FORMAT.md`](./FORMAT.md), [`fundamentals/structure.md`](./fundamentals/structure.md), [`fundamentals/dependencies-and-bundling.md`](./fundamentals/dependencies-and-bundling.md), [`fundamentals/tooling-awareness.md`](./fundamentals/tooling-awareness.md), [`fundamentals/form-and-style.md`](./fundamentals/form-and-style.md), [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) | [`EXTENSIBILITY.md`](./EXTENSIBILITY.md), [`GOVERNANCE.md`](./GOVERNANCE.md) (until you ship or share) |
+| **Reviewer** | [`REVIEW_PRINCIPLES.md`](./REVIEW_PRINCIPLES.md), [`QUICKREF.md`](./QUICKREF.md), [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) | [`fundamentals/types.md`](./fundamentals/types.md), [`fundamentals/tooling-awareness.md`](./fundamentals/tooling-awareness.md), [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md), [`GOVERNANCE.md`](./GOVERNANCE.md) | Pattern docs not used by the skill under review |
 | **Architect / consumer** | [`docs/PHILOSOPHY.md`](../PHILOSOPHY.md), [`docs/ARCHITECTURE.md`](../ARCHITECTURE.md), [`docs/PORTABILITY.md`](../PORTABILITY.md) | [`PATTERN_CATALOG.md`](./PATTERN_CATALOG.md), [`PACKAGE.md`](./PACKAGE.md), [`FORMAT.md`](./FORMAT.md) | Discipline-specific pattern docs until needed |
 | **Evaluator / QA** | [`EVALUATION.md`](./EVALUATION.md), [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) | [`CONTEXT_BUDGET.md`](./CONTEXT_BUDGET.md), [`fundamentals/evaluation.md`](./fundamentals/evaluation.md), [`patterns/discipline-skill.md`](./patterns/discipline-skill.md) | [`EXTENSIBILITY.md`](./EXTENSIBILITY.md) |
 
@@ -49,7 +49,7 @@ A few ideas unlock the rest of the wiki:
 | Tier | Docs | Purpose |
 |---|---|---|
 | **Core** | `PHILOSOPHY.md`, `ARCHITECTURE.md`, `PORTABILITY.md`, `README.md`, `fundamentals/what-is-a-skill.md`, `FORMAT.md` | Understand the model, the shape, and the format. |
-| **Intermediate** | `fundamentals/types.md`, `fundamentals/structure.md`, `fundamentals/form-and-style.md`, `fundamentals/evaluation.md`, `fundamentals/common-mistakes.md`, `PACKAGE.md`, `EVALUATION.md`, `GOVERNANCE.md`, `REVIEW_PRINCIPLES.md` | Write, package, evaluate, and review skills. |
+| **Intermediate** | `fundamentals/types.md`, `fundamentals/structure.md`, `fundamentals/dependencies-and-bundling.md`, `fundamentals/tooling-awareness.md`, `fundamentals/form-and-style.md`, `fundamentals/evaluation.md`, `fundamentals/common-mistakes.md`, `PACKAGE.md`, `EVALUATION.md`, `GOVERNANCE.md`, `REVIEW_PRINCIPLES.md` | Write, package, evaluate, and review skills. |
 | **Advanced** | `EXTENSIBILITY.md`, `MIGRATION.md`, `CONTEXT_BUDGET.md`, `TRIGGER_EVALS.md`, `PATTERN_CATALOG.md`, individual pattern docs | Compose, optimize, migrate, and extend skills. |
 
 ### Progressive reading paths
@@ -57,8 +57,8 @@ A few ideas unlock the rest of the wiki:
 | Path | Goal | Read in this order |
 |---|---|---|
 | **First 10 minutes** | Get the mindset | [`PHILOSOPHY.md`](../PHILOSOPHY.md) → [`ARCHITECTURE.md`](../ARCHITECTURE.md) → [`fundamentals/what-is-a-skill.md`](./fundamentals/what-is-a-skill.md) |
-| **Write a skill** | Draft a working skill | [`fundamentals/what-is-a-skill.md`](./fundamentals/what-is-a-skill.md) → [`fundamentals/types.md`](./fundamentals/types.md) → [`FORMAT.md`](./FORMAT.md) → [`fundamentals/structure.md`](./fundamentals/structure.md) → [`fundamentals/form-and-style.md`](./fundamentals/form-and-style.md) → [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md) → [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) |
-| **Review a skill** | Check an existing skill | [`REVIEW_PRINCIPLES.md`](./REVIEW_PRINCIPLES.md) → [`QUICKREF.md`](./QUICKREF.md) → [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) → [`fundamentals/types.md`](./fundamentals/types.md) → [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md) → [`GOVERNANCE.md`](./GOVERNANCE.md) |
+| **Write a skill** | Draft a working skill | [`fundamentals/what-is-a-skill.md`](./fundamentals/what-is-a-skill.md) → [`fundamentals/types.md`](./fundamentals/types.md) → [`FORMAT.md`](./FORMAT.md) → [`fundamentals/structure.md`](./fundamentals/structure.md) → [`fundamentals/dependencies-and-bundling.md`](./fundamentals/dependencies-and-bundling.md) → [`fundamentals/tooling-awareness.md`](./fundamentals/tooling-awareness.md) → [`fundamentals/form-and-style.md`](./fundamentals/form-and-style.md) → [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md) → [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) |
+| **Review a skill** | Check an existing skill | [`REVIEW_PRINCIPLES.md`](./REVIEW_PRINCIPLES.md) → [`QUICKREF.md`](./QUICKREF.md) → [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) → [`fundamentals/types.md`](./fundamentals/types.md) → [`fundamentals/tooling-awareness.md`](./fundamentals/tooling-awareness.md) → [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md) → [`GOVERNANCE.md`](./GOVERNANCE.md) |
 | **Compose skills** | Build multi-skill workflows | [`ARCHITECTURE.md`](../ARCHITECTURE.md) → [`PATTERN_CATALOG.md`](./PATTERN_CATALOG.md) → [`patterns/conductor.md`](./patterns/conductor.md) → [`patterns/building-block.md`](./patterns/building-block.md) → [`patterns/context-reports.md`](./patterns/context-reports.md) |
 | **Make a skill portable/global** | Run across projects | [`PORTABILITY.md`](../PORTABILITY.md) → [`PACKAGE.md`](./PACKAGE.md) → [`patterns/global-pluggable.md`](./patterns/global-pluggable.md) → [`patterns/configurable.md`](./patterns/configurable.md) → [`patterns/initialization.md`](./patterns/initialization.md) → [`MIGRATION.md`](./MIGRATION.md) |
 | **Evaluate skills** | Test routing and behavior | [`EVALUATION.md`](./EVALUATION.md) → [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) → [`CONTEXT_BUDGET.md`](./CONTEXT_BUDGET.md) → [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) |
@@ -93,6 +93,7 @@ Every skill must satisfy these.
 | **What is a skill?** | [`fundamentals/what-is-a-skill.md`](./fundamentals/what-is-a-skill.md) | Definition, root virtues, failure modes. |
 | **Types** | [`fundamentals/types.md`](./fundamentals/types.md) | Building block, conductor, wrapper, multi-layer. |
 | **Structure** | [`fundamentals/structure.md`](./fundamentals/structure.md) | `SKILL.md`, `references/`, `scripts/`, `subagents/`, `assets/`, progressive disclosure. |
+| **Tooling awareness** | [`fundamentals/tooling-awareness.md`](./fundamentals/tooling-awareness.md) | Capability-first design, tool discovery, selection, degradation disclosure. |
 | **Form and style** | [`fundamentals/form-and-style.md`](./fundamentals/form-and-style.md) | Steps, guidelines, completion criteria, leading words, pruning. |
 | **Common mistakes** | [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md) | Bloat, sediment, duplication, no-op instructions, hidden dependencies. |
 | **Evaluation** | [`fundamentals/evaluation.md`](./fundamentals/evaluation.md) | Trigger evals, predictability tests, review checklists. |
@@ -194,7 +195,8 @@ For fast lookup and cross-cutting guides, keep these at hand:
 1. Read [`fundamentals/what-is-a-skill.md`](./fundamentals/what-is-a-skill.md) and [`fundamentals/types.md`](./fundamentals/types.md).
 2. Choose the right type: building block, conductor, or wrapper.
 3. Draft the smallest viable `SKILL.md` using [`FORMAT.md`](./FORMAT.md) and [`fundamentals/structure.md`](./fundamentals/structure.md).
-4. Check [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md) before expanding.
+4. Declare dependencies and design the capability-to-tool strategy using [`fundamentals/dependencies-and-bundling.md`](./fundamentals/dependencies-and-bundling.md) and [`fundamentals/tooling-awareness.md`](./fundamentals/tooling-awareness.md).
+5. Check [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md) before expanding.
 5. If the skill is global, configurable, stateful, report-producing, reusable, or versioned, read the relevant pattern docs. See [`PATTERN_CATALOG.md`](./PATTERN_CATALOG.md) to choose which patterns compose.
 6. Review against [`fundamentals/evaluation.md`](./fundamentals/evaluation.md). For practical testing, see [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) and [`CONTEXT_BUDGET.md`](./CONTEXT_BUDGET.md).
 
@@ -256,6 +258,7 @@ Key terms to know before reading the subdocuments:
 - **Leading word** — a compact concept that anchors behavior in the model's priors.
 - **Completion criterion** — a checkable condition that tells the agent a step is done.
 - **Fail closed** — stop and explain when a required capability is missing.
+- **Tooling awareness** — select the best available tool for each capability and disclose the choice.
 - **Building block** — a narrow, reusable skill consumed by others.
 - **Conductor** — a skill that coordinates other skills through phases.
 - **Wrapper** — a thin skill that adapts another skill for human interaction.

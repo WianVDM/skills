@@ -100,7 +100,6 @@ name: plan-and-implement
 version: 1.0.0
 metadata:
   author: workflow-team
-  verification_level: tested
 invocation: user-invoked
 description: Plan a change and then delegate implementation to a focused worker. Use when a task requires judgment about approach before any files are changed.
 ---

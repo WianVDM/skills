@@ -130,12 +130,12 @@ If you cannot fill in both blanks clearly, the skill is not well-defined enough.
 
 ---
 
+## Related documents
+
+- [`types.md`](./types.md) — choosing the right skill type once you have decided a skill is the answer.
+- [`lifecycle.md`](./lifecycle.md) — the full skill lifecycle from decision to retirement.
+- [`common-mistakes.md`](./common-mistakes.md) — failure modes that often follow from choosing the wrong shape.
+
 ## Research basis
 
-- The decision tree is our own framework, but it is strongly informed by the research finding that not every problem deserves a skill and that the agent's default behavior is often sufficient.
-- The distinction between **skills** (judgment-shaped guidance) and **scripts** (deterministic logic) is a common denominator across the research sources.
-- The distinction between **skills** and **MCP servers** is supported by the MCP research: MCP exposes structured capabilities; skills decide how to use them.
-- The distinction between **skills** and **prompt templates** is our own framing, supported by the research observation that skills are reusable agent guidance while prompt templates are reusable user input.
-- The **scripts-first rule** is our own practice, aligned with the research emphasis on moving deterministic logic out of the context window and into reliable code.
-- The **litmus test** is our own heuristic for forcing a clear objective before writing a skill.
-
+See [SOURCES.md](../SOURCES.md).

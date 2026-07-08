@@ -33,6 +33,7 @@ Silent failures are more common and more dangerous. The agent appears to work, b
 | The output looks right but violates a rule. | The rule is stated as a negation or buried in detail. |
 | The skill fires for unrelated queries. | The `description` is too broad or shares keywords with another skill. |
 | The agent re-derives behavior the skill already encodes. | The skill is not being reached by the model, or the contract is not load-bearing. |
+| The skill reconstructs data from partial sources while a better tool is configured. | **Adapter tunnel vision**: the skill treats its own adapters as the only way to fulfill a capability. See [`common-mistakes.md`](./common-mistakes.md) and [`tooling-awareness.md`](./tooling-awareness.md). |
 
 ### Signals to watch
 
@@ -48,20 +49,21 @@ To detect silent failures early, watch for:
 
 ## What to do when the model ignores the skill
 
-When the model loads the skill but does not follow it, start by diagnosing the cause before adding more text.
+When the model loads the skill but does not follow it, start by diagnosing the cause before adding more text. The failure modes themselves are defined in [`common-mistakes.md`](./common-mistakes.md); this section focuses on how to diagnose and remediate them.
 
-### Common causes and fixes
+### Diagnosis and remediation guide
 
-| Cause | Diagnosis | Fix |
+| Symptom | Diagnosis | Remediation |
 |---|---|---|
-| **Weak description** | The skill only fires when the user names it explicitly. | Front-load the leading word and add realistic trigger phrases. See [`TRIGGER_EVALS.md`](../TRIGGER_EVALS.md). |
-| **Body too long** | The agent misses the key instruction in a wall of text. | Move detail to `references/`; keep the body focused on contract and steps. See [`structure.md`](./structure.md). |
-| **Vague completion criteria** | The agent stops when it *feels* done, not when the skill says it is done. | Rewrite every step to end with a checkable condition. See [`form-and-style.md`](./form-and-style.md). |
-| **Premature completion** | The agent rushes to the visible post-completion steps. | Sharpen the current step's criterion first; split or delegate the later work if the rush persists. See [`form-and-style.md`](./form-and-style.md). |
-| **Conflicting context** | Another rule or context file contradicts the skill. | Resolve the conflict in the context file or make the skill's contract more explicit. See [`context-file.md`](../patterns/context-file.md). |
-| **Negated rules** | The agent misses a "do not X" instruction. | Pair every negative with a positive directive. See [`form-and-style.md`](./form-and-style.md). |
-| **Skill not reached by other skills** | A conductor or building block does not invoke the skill. | Add a reach clause to the description, or make the skill explicitly callable by name. See [`FORMAT.md`](../FORMAT.md). |
-| **Model drift** | The behavior changed after a harness or model update. | Re-run trigger and behavioral evals; update the description if routing thresholds shifted. |
+| The skill only fires when the user names it explicitly. | Weak description. | Front-load the leading word and add realistic trigger phrases. See [`TRIGGER_EVALS.md`](../TRIGGER_EVALS.md). |
+| The agent misses the key instruction in a wall of text. | Body too long. | Move detail to `references/`; keep the body focused on contract and steps. See [`structure.md`](./structure.md). |
+| The agent stops when it *feels* done, not when the skill says it is done. | Vague completion criteria. | Rewrite every step to end with a checkable condition. See [`form-and-style.md`](./form-and-style.md). |
+| The agent rushes to the visible post-completion steps. | Premature completion. | Sharpen the current step's criterion first; split or delegate the later work if the rush persists. See [`form-and-style.md`](./form-and-style.md). |
+| Another rule or context file contradicts the skill. | Conflicting context. | Resolve the conflict in the context file or make the skill's contract more explicit. See [`context-file.md`](../patterns/context-file.md). |
+| The agent misses a "do not X" instruction. | Negated rule without a positive directive. | Pair every negative with a positive directive. See [`form-and-style.md`](./form-and-style.md). |
+| A conductor or building block does not invoke the skill. | Skill not reachable by other skills. | Add a reach clause to the description, or make the skill explicitly callable by name. See [`FORMAT.md`](../FORMAT.md). |
+| The behavior changed after a harness or model update. | Model drift. | Re-run trigger and behavioral evals; update the description if routing thresholds shifted. |
+| The skill reconstructs data from partial sources while a better tool is configured. | Adapter tunnel vision. | Reframe the step around the needed capability, discover available tools, and route through the best one. See [`common-mistakes.md#adapter-tunnel-vision`](./common-mistakes.md) and [`tooling-awareness.md`](./tooling-awareness.md). |
 
 ### First-aid checklist
 

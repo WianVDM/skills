@@ -40,11 +40,6 @@
             "maxLength": 64
           },
           "uniqueItems": true
-        },
-        "verification_level": {
-          "type": "string",
-          "enum": ["unverified", "declared", "tested", "formal"],
-          "description": "Verification level for the skill. See GOVERNANCE.md."
         }
       },
       "additionalProperties": true

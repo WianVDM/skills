@@ -20,7 +20,7 @@ How finely you divide skills matters. Each split spends one of two loads:
 Two cuts guide splitting:
 
 1. **By invocation** — split off a model-invoked skill when you have a distinct **leading word** that should trigger it on its own, or when another skill must reach it. The new description must earn its context load.
-2. **By sequence** — split a run of steps when the steps ahead tempt the agent to rush the current step (**premature completion**). Keeping later steps out of view encourages the agent to do more legwork on the current task.
+2. **By sequence** — split a run of steps when the later steps tempt the agent to rush the current step (**premature completion**). See [form-and-style.md](./form-and-style.md) for how completion criteria and hidden post-completion steps cause premature completion. Keeping later steps out of view encourages the agent to do more legwork on the current task.
 
 Beware the reverse: merging sequences exposes each step's post-completion steps to what follows, inviting premature completion.
 
@@ -193,17 +193,12 @@ One-way consistency does not mean ignoring context. It means the skill makes the
 - [`../patterns/context-file.md`](../patterns/context-file.md) — always-on guidance that is not a skill.
 - [`../patterns/mode.md`](../patterns/mode.md) — transient behavior switches.
 - [`../patterns/conductor-implementer-split.md`](../patterns/conductor-implementer-split.md) — separating reasoning from execution.
-- [`../fundamentals/structure.md`](../fundamentals/structure.md) — invocation mode and `SKILL.md` structure.
-- [`../fundamentals/common-mistakes.md`](../fundamentals/common-mistakes.md) — splitting, bloat, and premature completion.
+- [`./structure.md`](./structure.md) — invocation mode and `SKILL.md` structure.
+- [`./when-to-create-a-skill.md`](./when-to-create-a-skill.md) — when to create a skill instead of a script, MCP, or prompt template.
+- [`./common-mistakes.md`](./common-mistakes.md) — splitting, bloat, and premature completion.
 
 ---
 
 ## Research basis
 
-- The building block / conductor / wrapper taxonomy is our own chosen model, supported by the research taxonomy work which identified similar separation of concerns across sources.
-- **Matt Pocock's** skill work and **obra/superpowers** both emphasize narrow, reusable skills and conductor-like orchestration skills.
-- **Claude Code**, **Cursor**, and **Codex** all support skills that are loaded on demand and composed, which motivates the building block and conductor types.
-- The **wrapper** concept is our own framing for the user-facing boundary layer observed across harnesses (e.g., Cursor commands with `disable-model-invocation`, Claude Code user-invoked skills).
-- The **multi-layer / hybrid** concept is our own, added to acknowledge that real skills rarely fit one type perfectly while still needing a clear primary role.
-- Cross-cutting patterns (discipline skill, context-file, mode, conductor/implementer split) are drawn from the research and are documented as patterns rather than primary types.
-
+See [SOURCES.md](../SOURCES.md).
