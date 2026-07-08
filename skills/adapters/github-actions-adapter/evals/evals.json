@@ -1,0 +1,146 @@
+{
+  "version": "1",
+  "skill": "github-actions-adapter",
+  "tests": [
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Fetch GitHub Actions check runs for this PR",
+      "expected": "github-actions-adapter"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Use github-actions-adapter as the CI source",
+      "expected": "github-actions-adapter"
+    },
+    {
+      "id": "trigger-should-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Get CI status from GitHub Actions for the head commit",
+      "expected": "github-actions-adapter"
+    },
+    {
+      "id": "trigger-should-04",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Fetch GitHub Actions job logs for the failing check",
+      "expected": "github-actions-adapter"
+    },
+    {
+      "id": "trigger-should-05",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "What checks failed in GitHub Actions?",
+      "expected": "github-actions-adapter"
+    },
+    {
+      "id": "trigger-should-06",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Load GitHub Actions CI results for this pull request",
+      "expected": "github-actions-adapter"
+    },
+    {
+      "id": "trigger-should-07",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Collect GitHub Actions build status for the PR",
+      "expected": "github-actions-adapter"
+    },
+    {
+      "id": "trigger-should-08",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Get github-actions-adapter to fetch check runs",
+      "expected": "github-actions-adapter"
+    },
+    {
+      "id": "trigger-should-09",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Fetch the GitHub Actions check run summary",
+      "expected": "github-actions-adapter"
+    },
+    {
+      "id": "trigger-should-10",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Use GitHub Actions as the CI source for pr-report",
+      "expected": "github-actions-adapter"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Run the test suite",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Check PR status",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-03",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "PR report for #123",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-04",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Audit this skill for standards issues",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-05",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Write a PR report",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-06",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Fetch SonarCloud findings",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-07",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Resolve Jira ticket OC-1234",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-08",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Create a new skill from scratch",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-09",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Verify the current branch",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-10",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Plan the next steps for this project",
+      "expected": ""
+    }
+  ]
+}

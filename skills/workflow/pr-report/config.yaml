@@ -1,0 +1,39 @@
+# Config declaration for pr-report
+
+# Shared keys are resolved once per workspace and stored in .agents/config/shared.yaml.
+shared:
+  - key: agents.context_dir
+    required: true
+    default: .agents/context
+  - key: agents.config_dir
+    required: true
+    default: .agents/config
+
+# Skill-specific keys are stored in .agents/config/pr-report.yaml.
+skill:
+  - key: pr-report.adapters.pr.source
+    required: true
+    default: auto
+    description: PR source adapter to use (e.g., github-pr-adapter, gitlab-pr-adapter, manual-pr-adapter, auto).
+  - key: pr-report.adapters.ci.source
+    required: false
+    default: auto
+    description: CI / build adapter to use (e.g., github-actions-adapter, azure-pipelines-adapter, none, auto).
+  - key: pr-report.adapters.static_analysis.source
+    required: false
+    default: auto
+    description: Static-analysis adapter to use (e.g., sonarcloud-adapter, sonarqube-adapter, none, auto).
+  - key: pr-report.adapters.issue_tracker.source
+    required: false
+    default: auto
+    description: Issue tracker / scope adapter to use (e.g., jira-adapter, linear-adapter, github-issues-adapter, none, auto).
+  - key: pr-report.adapters.notification.sources
+    required: false
+    default: []
+    description: List of notification-source adapters to query for additional feedback (e.g., teams-adapter, slack-adapter).
+  - key: pr-report.bots
+    required: false
+    default: {}
+    description: Bot/human reviewer username mappings and default source types/severities. See references/CONFIG_PATTERN.md.
+
+requires_setup: true

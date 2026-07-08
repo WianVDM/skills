@@ -1,6 +1,6 @@
 # Context Scout
 
-A focused worker for the `pr-report` skill. Scans `.agents/context/` for reports or artifacts matching the PR's ticket/issue key.
+Follow the `worker-contract` return contract. Scans `.agents/context/` for reports matching the PR's ticket/issue key and ranks them by relevance.
 
 ## In scope
 
@@ -11,64 +11,27 @@ A focused worker for the `pr-report` skill. Scans `.agents/context/` for reports
 
 ## Out of scope
 
-- Do not read full report bodies unless needed.
-- Do not write to report or state files.
-- Do not produce new analysis.
+- Reading full report bodies unless needed.
+- Writing to report or state files.
+- Producing new analysis.
 
 ## Inputs
-
-The parent skill provides:
 
 - Ticket/issue key (required)
 - Optional PR number fallback
 
 ## Outputs
 
-Use the standard worker return contract.
+Return the standard worker contract with a `Findings` section containing:
 
-```yaml
----
-status: complete | partial | needs_input | blocked
-artifacts: []
----
-```
-
-## Summary
-Whether relevant context was found and how useful it is likely to be.
-
-## Findings
-
-### High Relevance
-| File | Report Type | Summary | Why High |
-|------|-------------|---------|----------|
-
-### Medium Relevance
-| File | Report Type | Summary | Why Medium |
-|------|-------------|---------|------------|
-
-### Low Relevance
-| File | Report Type | Summary | Why Low |
-|------|-------------|---------|---------|
-
-### Ignored
-- Reports whose `skill` frontmatter field is `pr-report`, to avoid circular self-reference.
-
-## Decisions made
-- File matched by name containing the ticket key.
-- File matched by frontmatter `ticket` or `key` field.
-- Relevance classified based on report type and summary proximity to the PR scope.
-
-## Open questions
-- ...
-
-## Blockers
-- `.agents/context/` directory missing or unreadable.
+- High-relevance reports
+- Medium-relevance reports
+- Low-relevance reports
+- Ignored reports (self-referential `pr-report` files)
 
 ## Rules
 
-- Match files whose name or frontmatter `ticket`/`key` field contains the exact ticket key.
-- Read frontmatter to determine report type and summary.
-- Do not read full report bodies unless needed.
-- Group files by relevance: high, medium, low.
+- Match by filename or frontmatter `ticket`/`key`.
+- Read only frontmatter unless the summary is unclear.
 - Ignore reports whose `skill` is `pr-report` to avoid circular self-reference.
-- Do not ask the user directly unless explicitly authorized. If you need user input, return `status: needs_input` with the exact question and options.
+- Escalate to `needs_input` if the context directory is missing or unreadable.

@@ -1,0 +1,146 @@
+{
+  "version": "1",
+  "skill": "pr-report",
+  "tests": [
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "/pr-report",
+      "expected": "pr-report"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Check PR status",
+      "expected": "pr-report"
+    },
+    {
+      "id": "trigger-should-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "PR report for #123",
+      "expected": "pr-report"
+    },
+    {
+      "id": "trigger-should-04",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Review feedback on my pull request",
+      "expected": "pr-report"
+    },
+    {
+      "id": "trigger-should-05",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "What changed since the last look on PR 456?",
+      "expected": "pr-report"
+    },
+    {
+      "id": "trigger-should-06",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Check status of pull request 789",
+      "expected": "pr-report"
+    },
+    {
+      "id": "trigger-should-07",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "PR review comments and failing checks",
+      "expected": "pr-report"
+    },
+    {
+      "id": "trigger-should-08",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "What does my PR need from me right now?",
+      "expected": "pr-report"
+    },
+    {
+      "id": "trigger-should-09",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Check PR status for OC-1234",
+      "expected": "pr-report"
+    },
+    {
+      "id": "trigger-should-10",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Generate a PR report for the current branch",
+      "expected": "pr-report"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Audit this skill for standards issues",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Create a new skill from scratch",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-03",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Run the test suite",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-04",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Fix the login bug",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-05",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Write a PRD for the new feature",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-06",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Merge latest upstream into this branch",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-07",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Verify the current branch",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-08",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Debrief ticket PROJ-123",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-09",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Triage this incoming bug",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-10",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Plan the next steps for this project",
+      "expected": ""
+    }
+  ]
+}

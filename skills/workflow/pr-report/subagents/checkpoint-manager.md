@@ -1,77 +1,41 @@
 # Checkpoint Manager
 
-A bookkeeping worker for the `pr-report` skill. Reads the current state and report, updates the phase checklist, and reports progress.
+Follow the `worker-contract` return contract. Reads the current `state.md` and report document, updates the phase checklist and current focus, and returns a concise status summary.
 
 ## In scope
 
-- Read `.agents/context/pr-report/{key}/state.md`.
-- Read `.agents/context/pr-report/{key}-report.md`.
-- Infer completed, in-progress, and pending phases.
+- Read `{context_dir}/pr-report/{key}/state.md` and `{context_dir}/pr-report/{key}-report.md`.
+- Infer completed, in-progress, and pending phases from `<!-- STATUS: completed -->` markers and the state checklist.
 - Update `## Phase Checklist`, `## Current Focus`, and `## Last Completed Action`.
-- Return a concise status summary.
+- Return a concise status summary with completed sections, pending sections, and the next recommended action.
 
 ## Out of scope
 
-- Do not fetch PR, CI, or review data.
-- Do not form triage or synthesis decisions.
-- Do not write new content into the report document.
+- Fetching PR, CI, or review data.
+- Forming triage or synthesis decisions.
+- Writing report content unless explicitly authorized as the report writer.
 
 ## Inputs
-
-The parent skill provides:
 
 - PR key
 - Path to state file
 - Path to report document
-- What just happened (e.g., "thread-analyzer returned normalized threads")
-- Optional: specific question (e.g., "where were we after compaction?")
+- What just happened (e.g., "the PR source adapter returned normalized threads")
+- Optional: specific question, e.g., "where were we after compaction?"
 
 ## Outputs
 
-Use the standard worker return contract.
+Return the standard worker contract with `status` and any updated artifact paths. Include:
 
-```yaml
----
-status: complete | partial | needs_input | blocked
-artifacts:
-  - .agents/context/pr-report/{key}/state.md
----
-```
-
-## Summary
-Concise statement of current progress and next focus.
-
-## Findings
-
-### Phase Status
-| Phase | Status | Evidence |
-|-------|--------|----------|
-
-### Completed Report Sections
-- ...
-
-### Pending Report Sections
-- ...
-
-### Current Focus
-{next pending phase and action}
-
-### Last Completed Action
-{what just happened}
-
-## Decisions made
-- Phase marked complete because all required sections contain `<!-- STATUS: completed -->`.
-- Phase marked in-progress because some sections are pending.
-
-## Open questions
-- ...
-
-## Blockers
-- ...
+- Phase status table
+- Completed report sections
+- Pending report sections
+- Current focus
+- Last completed action
 
 ## Rules
 
-- Infer completion from `<!-- STATUS: completed -->` markers in the report.
+- Infer completion from `<!-- STATUS: completed -->` markers.
 - Be conservative: only mark a phase complete when evidence exists.
 - After compaction, report exact state without assumption.
-- Do not ask the user directly unless explicitly authorized. If you need user input, return `status: needs_input` with the exact question and options.
+- Escalate to `needs_input` with the exact question and options if user input is required.

@@ -1,6 +1,6 @@
 # Issue Synthesizer
 
-A focused worker for the `pr-report` skill. Groups, challenges, and weights feedback to produce a concise issue board.
+Follow the `worker-contract` return contract. Groups, challenges, and weights feedback to produce a concise issue board.
 
 ## In scope
 
@@ -10,14 +10,12 @@ A focused worker for the `pr-report` skill. Groups, challenges, and weights feed
 
 ## Out of scope
 
-- Do not fetch new PR data here.
-- Do not write to report or state files.
+- Fetching new PR data.
+- Writing to report or state files.
 
 ## Inputs
 
-The parent skill provides:
-
-- PR metadata
+- PR metadata and changed files
 - Normalized review threads
 - Static-analysis findings
 - CI failures
@@ -27,53 +25,14 @@ The parent skill provides:
 
 ## Outputs
 
-Use the standard worker return contract.
+Return the standard worker contract with a `Findings` section containing:
 
-```yaml
----
-status: complete | partial | needs_input | blocked
-artifacts: []
----
-```
-
-## Summary
-Overall issue health and the top concerns requiring attention.
-
-## Findings
-
-### Issues Requiring Action
-| ID | Source | Severity | Category | Confidence | Why Address | Related Comments / Findings |
-|----|--------|----------|----------|------------|-------------|------------------------------|
-
-### Resolved Since Last Check
-| Item | Source | How | Notes |
-|------|--------|-----|-------|
-
-### Addressed by Us — Pending Resolve
-| Item | Source | Our Response |
-|------|--------|--------------|
-
-### Rebuttals Requiring Response
-| Item | Reviewer | Their Reply |
-|------|----------|-------------|
-
-### Dismissed / No Action Needed
-| Item | Source | Reason |
-|------|--------|--------|
-
-### Top Issues for Chat Summary
-| Severity | Source | One-line Summary |
-|----------|--------|------------------|
-
-## Decisions made
-- Severity downgraded because a comment did not survive challenge against scope or changes.
-- Duplicate concerns grouped under a single issue.
-
-## Open questions
-- ...
-
-## Blockers
-- Missing ticket scope prevents confident challenge.
+- Issues requiring action
+- Resolved since last check
+- Addressed by us — pending resolve
+- Rebuttals requiring response
+- Dismissed / no action needed
+- Top issues for chat summary
 
 ## Rules
 
@@ -83,4 +42,4 @@ Overall issue health and the top concerns requiring attention.
 - Downgrade severity when a comment does not survive challenge.
 - Never report an uncertain thread as open.
 - Suggested next step: address open items, re-request review, wait for reviewer, or fix CI.
-- Do not ask the user directly unless explicitly authorized. If you need user input, return `status: needs_input` with the exact question and options.
+- Escalate to `needs_input` if the synthesized board cannot be formed without missing scope.

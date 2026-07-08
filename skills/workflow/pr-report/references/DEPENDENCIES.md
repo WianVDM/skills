@@ -1,22 +1,62 @@
 # Dependencies
 
-## Optional consumed context
+## Required skills
 
-The skill scans `.agents/context/` for any reports matching the ticket/issue key and uses relevant ones. Examples include:
+- `detect-project-context` — locates the project root, config directory, and context directory.
+- `context-reports` — provides the canonical vocabulary and conventions for context reports.
+- `worker-contract` — provides the canonical subagent return contract.
+- `token-resolver` — resolves tokens from env vars, MCP config, or user input without leaking secrets.
+- `checkpoint-manager` — maintains phase checklist and resume state.
+- `context-scout` — scans context reports for related ticket/issue keys.
+- `issue-synthesizer` — groups, challenges, and weights feedback into an actionable issue board.
+- `scope-checker` — compares feedback against ticket scope or PR intent.
 
-- `.agents/context/debrief/{key}.md` — ticket scope, acceptance criteria, assumptions.
-- `.agents/context/baseline/{key}.md` — UI evidence or pre-change state relevant to the PR.
+## Adapter skills
+
+The conductor invokes adapter building blocks by name. At least one PR source adapter is required. All others are optional and loaded lazily.
+
+### Built-in adapters
+
+- `github-pr-adapter` — PR metadata, files, reviews, and inline threads from GitHub.
+- `github-actions-adapter` — CI check runs and logs from GitHub Actions.
+- `sonarcloud-adapter` — static-analysis findings from SonarCloud.
+- `jira-adapter` — ticket scope and acceptance criteria from Jira.
+- `manual-pr-adapter` — fallback for unsupported tools or manual processes.
+- `context-report-adapter` — discovers related reports in the context directory.
+
+### Community / optional adapters
+
+- `gitlab-pr-adapter`, `gitlab-ci-adapter`
+- `gitea-pr-adapter`
+- `azure-devops-pr-adapter`, `azure-pipelines-adapter`
+- `bitbucket-pr-adapter`
+- `sonarqube-adapter`, `codeql-adapter`, `semgrep-adapter`
+- `linear-adapter`, `github-issues-adapter`
+- `teams-adapter`, `slack-adapter`
+
+See `references/ADAPTER_ARCHITECTURE.md` for the adapter interface and registry format.
+
+## Consumed context reports
+
+The skill scans `{context_dir}/` for reports matching the ticket or PR key. Relevant reports include, but are not limited to:
+
+- `{context_dir}/debrief/{key}.md` — ticket scope, acceptance criteria, assumptions.
+- `{context_dir}/baseline/{key}.md` — UI evidence or pre-change state.
+- Any `{context_dir}/{type}/{key}.md` report whose frontmatter references the ticket or PR.
 
 Any matching report type may be consumed if it adds useful context. The skill handles absence gracefully.
 
-## Required capabilities
+## Required tools and capabilities
 
-- Access to the PR platform for the target repository (GitHub, Azure DevOps, GitLab, Bitbucket, or manual input).
-- Optional access to CI/build systems, static-analysis services, and issue trackers depending on what is configured or detected.
+- Read files in the project.
+- Write files to the detected context directory.
+- Execute scripts (Python 3.x) for deterministic helpers.
+- Access to the configured PR source adapter (GitHub, GitLab, Gitea, Azure DevOps, Bitbucket, or manual input).
+- Optional access to CI, static-analysis, issue-tracker, and notification adapters depending on configuration.
 
 ## Environment variables
 
-No environment variables are hardcoded. Tokens are resolved from config or detected MCP server config. Commonly referenced variables include:
+No environment variables are hardcoded. Token references are resolved through the `token-resolver` building block. Commonly referenced variables include:
 
 - `GITHUB_TOKEN` / `GITHUB_PERSONAL_ACCESS_TOKEN`
 - `GITLAB_TOKEN`

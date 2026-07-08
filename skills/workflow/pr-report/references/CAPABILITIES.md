@@ -1,54 +1,41 @@
 # Capability Detection
 
-`pr-report` discovers which providers are available and chooses the right adapter for each. It never assumes a specific harness or tool. Provider detection is the default behavior; explicit configuration overrides detection.
+`pr-report` discovers which adapters are available and chooses the right one for each role. It never assumes a specific harness or tool. Adapter detection is the default behavior; explicit configuration overrides detection.
+
+Adapter roles and available implementations are defined in `references/ADAPTER_ARCHITECTURE.md`. The conductor loads only the adapters needed for the current run, using lazy dependency evaluation.
 
 ## Detected capabilities
 
-| Capability | Adapters | Detection method |
-|------------|----------|------------------|
-| PR platform | GitHub, Azure DevOps, GitLab, Bitbucket, manual | Configured `pr_provider`; MCP server availability; git remote. |
-| CI / build | GitHub Actions, Azure Pipelines, GitLab CI, Jenkins, none | Configured `ci.provider`; MCP server availability; PR platform. |
-| Static analysis | SonarCloud, SonarQube, CodeQL, Semgrep, none | Configured `static_analysis.provider`; MCP server availability; tokens. |
-| Issue tracker | Jira, GitHub, Linear, none | Configured `issue_tracker.provider`; MCP server availability; tokens. |
+| Adapter role | Built-in adapters | Detection method |
+|---|---|---|
+| PR source | `github-pr-adapter`, `manual-pr-adapter` | Configured `adapters.pr.source`; git remote; user input. |
+| CI / build | `github-actions-adapter` | Configured `adapters.ci.source`; MCP server availability; PR source. |
+| Static analysis | `sonarcloud-adapter` | Configured `adapters.static_analysis.source`; MCP server availability; tokens. |
+| Issue tracker | `jira-adapter` | Configured `adapters.issue_tracker.source`; MCP server availability; tokens. |
+| Notification | `teams-adapter`, `slack-adapter` (community) | Configured `adapters.notification.sources`. |
 
-## Harness detection
+Community adapters for GitLab, Gitea, Azure DevOps, Bitbucket, SonarQube, CodeQL, Semgrep, Linear, and others are documented in the adapter registry.
 
-1. Read `harness` from config.
-2. If `auto`, inspect environment variables and the configured `mcp_config_sources` in order.
-3. Detect an available harness by checking which configured MCP config paths exist, parse, and contain usable `mcpServers`. The skill does not assume or hardcode harness names such as `kimi`, `claude`, `gemini`, or `vscode`; it relies on file contents and env vars such as `MCP_CONFIG_PATH`, `CLAUDE_MCP_CONFIG`, `KIMI_MCP_CONFIG`, `GEMINI_MCP_CONFIG`, and `VSCODE_MCP_CONFIG`.
-4. Write the detected harness source to `notes` using a descriptive label, not a vendor name, unless the user configured one.
+## Adapter discovery
 
-## Token extraction
+1. Read `adapters.{role}.source` from config.
+2. If `auto`, inspect the git remote and configured MCP config sources to suggest a default adapter.
+3. If the adapter is missing or disabled, report plainly and continue without that source.
+4. If the adapter is configured but fails to connect, stop and consult the user.
 
-For the detected MCP config, parse `mcpServers` and inspect each server's `env` block:
+Adapter detection does not rely on hardcoded harness names or tool paths. It uses the shared `detect-project-context` and `token-resolver` building blocks.
 
-| Provider | Token keys searched |
-|---|---|
-| GitHub | `GITHUB_PERSONAL_ACCESS_TOKEN`, `GITHUB_TOKEN` |
-| SonarCloud/SonarQube | `SONARQUBE_TOKEN`, `SONAR_TOKEN`, `SONARCLOUD_TOKEN` |
-| Jira | `JIRA_API_TOKEN`, `JIRA_TOKEN` |
+## Token resolution
 
-Also extract provider URLs and organizations when present.
-
-## Token validation
-
-Test each extracted token with a lightweight call before trusting it:
-
-| Provider | Validation call |
-|---|---|
-| GitHub | Authenticated call to the GraphQL viewer endpoint or equivalent. |
-| SonarCloud | Lightweight component lookup for the configured project. |
-| Jira | Lightweight authenticated user lookup. |
-
-If validation fails, try the next source. If all sources fail, consult the user.
+Token resolution is delegated to the `token-resolver` building block. See `references/CONFIG_PATTERN.md` for the resolution order and security rules.
 
 ## Graceful degradation
 
-Distinguish **missing/disabled** resources from **connection failures**.
+Distinguish **missing/disabled** adapters from **connection failures**.
 
 | Situation | Behavior |
 |-----------|----------|
-| Provider not configured or MCP missing | Report plainly and continue without that source. |
-| Provider configured but connection fails | Stop and consult the user. |
+| Adapter not configured or unavailable | Report plainly and continue without that source. |
+| Adapter configured but connection fails | Stop and consult the user. |
 
 Always include a one-line note in the report when a source is skipped because it is missing or disabled.

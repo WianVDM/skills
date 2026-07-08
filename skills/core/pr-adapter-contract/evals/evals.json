@@ -1,0 +1,146 @@
+{
+  "version": "1",
+  "skill": "pr-adapter-contract",
+  "tests": [
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "What is the adapter contract for pr-report?",
+      "expected": "pr-adapter-contract"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Implement a pr-report adapter",
+      "expected": "pr-adapter-contract"
+    },
+    {
+      "id": "trigger-should-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "What shape should a CI adapter return to pr-report?",
+      "expected": "pr-adapter-contract"
+    },
+    {
+      "id": "trigger-should-04",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Review the pr-report adapter interface",
+      "expected": "pr-adapter-contract"
+    },
+    {
+      "id": "trigger-should-05",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "What is the normalized pr-source shape?",
+      "expected": "pr-adapter-contract"
+    },
+    {
+      "id": "trigger-should-06",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Map a new issue tracker to the pr-report adapter shape",
+      "expected": "pr-adapter-contract"
+    },
+    {
+      "id": "trigger-should-07",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "What envelope status values can a pr-report adapter return?",
+      "expected": "pr-adapter-contract"
+    },
+    {
+      "id": "trigger-should-08",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Show me the adapter contract for the pr-report conductor",
+      "expected": "pr-adapter-contract"
+    },
+    {
+      "id": "trigger-should-09",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Build a manual pr-source adapter that follows the pr-report contract",
+      "expected": "pr-adapter-contract"
+    },
+    {
+      "id": "trigger-should-10",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "What fields must a static-analysis-source adapter return?",
+      "expected": "pr-adapter-contract"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Run the pr-report workflow",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Check PR status",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-03",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Fetch GitHub Actions check runs",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-04",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Write a PR report",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-05",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Resolve Jira ticket OC-1234",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-06",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Audit this skill for standards issues",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-07",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Create a new skill from scratch",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-08",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Plan the next steps for this project",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-09",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Verify the current branch",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-10",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Triage this incoming bug",
+      "expected": ""
+    }
+  ]
+}

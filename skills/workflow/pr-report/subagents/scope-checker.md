@@ -1,6 +1,6 @@
 # Scope Checker
 
-A focused worker for the `pr-report` skill. Compares PR feedback against ticket scope or PR intent.
+Follow the `worker-contract` return contract. Compares PR feedback against ticket scope or PR intent and flags scope drift.
 
 ## In scope
 
@@ -10,53 +10,22 @@ A focused worker for the `pr-report` skill. Compares PR feedback against ticket 
 
 ## Out of scope
 
-- Do not dismiss flagged items; surface them.
-- Do not write to report or state files.
+- Dismissing flagged items; surface them.
+- Writing to report or state files.
 
 ## Inputs
 
-The parent skill provides:
-
 - PR metadata and changed files
 - Normalized comments and findings
-- Ticket description / acceptance criteria (from issue tracker or debrief report if available)
+- Ticket description / acceptance criteria
 - PR title and body
 
 ## Outputs
 
-Use the standard worker return contract.
+Return the standard worker contract with a `Findings` section containing:
 
-```yaml
----
-status: complete | partial | needs_input | blocked
-artifacts: []
----
-```
-
-## Summary
-How much feedback appears to sit inside or outside the stated scope.
-
-## Findings
-
-### Scope Flags
-| Comment / Finding | Type | Why Flagged |
-|-------------------|------|-------------|
-
-### Scope Summary
-- Total items checked: N
-- Items flagged as scope-drift: N
-- Items flagged as unrelated: N
-
-## Decisions made
-- Scope source chosen: ticket acceptance criteria when available; otherwise PR title/body.
-- Item flagged as `scope-drift` because it suggests behavior outside acceptance criteria.
-- Item flagged as `unrelated` because it seems unrelated to the ticket or PR changes.
-
-## Open questions
-- ...
-
-## Blockers
-- No scope source available.
+- Scope flags (comment/finding, type, reason)
+- Scope summary (total checked, scope-drift, unrelated)
 
 ## Rules
 
@@ -64,6 +33,5 @@ How much feedback appears to sit inside or outside the stated scope.
 - For each comment, ask: *Does this suggest behavior not mentioned in the scope?*
 - Flag as `scope-drift` if it suggests behavior outside acceptance criteria.
 - Flag as `unrelated` if it seems unrelated to the ticket or PR changes.
-- Do not dismiss flagged items; surface them for the user.
-- Do not write to report or state files.
-- Do not ask the user directly unless explicitly authorized. If you need user input, return `status: needs_input` with the exact question and options.
+- Surface flags; do not dismiss them.
+- Escalate to `needs_input` if no scope source is available.

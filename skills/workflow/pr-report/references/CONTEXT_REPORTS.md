@@ -7,7 +7,7 @@
 ### Markdown report
 
 ```text
-.agents/context/pr-report/{key}-report.md
+{context_dir}/pr-report/{key}-report.md
 ```
 
 Canonical report. Contains PR summary, changed files, CI status, static analysis, triaged issues, resolved items, unclear items, and scope flags.
@@ -15,7 +15,7 @@ Canonical report. Contains PR summary, changed files, CI status, static analysis
 ### HTML dashboard
 
 ```text
-.agents/context/pr-report/{key}-report.html
+{context_dir}/pr-report/{key}-report.html
 ```
 
 Optional human-facing dashboard rendered from the Markdown report. The Markdown report remains canonical.
@@ -23,10 +23,12 @@ Optional human-facing dashboard rendered from the Markdown report. The Markdown 
 ### State file
 
 ```text
-.agents/context/pr-report/{key}/state.md
+{context_dir}/pr-report/{key}/state.md
 ```
 
 Working memory: phase checklist, comment history, review tracking, CI history, triage decisions.
+
+`{context_dir}` is discovered by `detect-project-context`. The default is `{project-root}/.agents/context`, but the skill does not assume that path.
 
 ## Key placeholder
 
@@ -37,12 +39,12 @@ Working memory: phase checklist, comment history, review tracking, CI history, t
 
 ## Consumed context
 
-The skill scans `.agents/context/` for reports that relate to the current PR or ticket. It does not assume that any specific report type exists.
+The skill scans `{context_dir}/` for reports that relate to the current PR or ticket. It does not assume that any specific report type exists.
 
 ### Scanning behavior
 
 1. Derive `{key}` from the PR (ticket key if available, otherwise `pr-{pr_number}`).
-2. Walk `.agents/context/` recursively.
+2. Walk `{context_dir}/` recursively.
 3. Consider any file whose basename contains `{key}` a candidate report.
 4. Read the frontmatter of each candidate.
 
@@ -72,7 +74,7 @@ The skill also treats reports as relevant when their `summary`, `description`, o
 
 ### Local config
 
-`.agents/config/pr-report.yaml` supplies provider selection, tokens by reference, and bot mappings. It is read on every run.
+`{config_dir}/pr-report.yaml` supplies adapter selection, tokens by reference, and bot mappings. It is read on every run.
 
 ## Report freshness
 

@@ -28,7 +28,7 @@ At the start of Phase 2, create the report document with all sections marked pen
 ```markdown
 ---
 skill: pr-report
-version: 1.0.0
+version: 1
 key: OC-1234
 pr_number: 1234
 repo: owner/repo
@@ -85,8 +85,8 @@ After context compaction:
 
 ## Resume rules
 
-1. Read `.agents/context/pr-report/{key}/state.md`.
-2. Read `.agents/context/pr-report/{key}-report.md`.
+1. Read `{context_dir}/pr-report/{key}/state.md`.
+2. Read `{context_dir}/pr-report/{key}-report.md`.
 3. Call `checkpoint-manager` for a status summary.
 4. Resume from the first unchecked phase in `## Phase Checklist`.
 5. Do not restart completed phases unless new evidence contradicts them.

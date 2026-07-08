@@ -50,8 +50,9 @@ The skills in this repo are grouped into primary functional domains. Because man
 
 | Domain | Path | Skills |
 |---|---|---|
-| **Core** | `skills/core/` | `baseline`, `context-reports`, `detect-project-context`, `eval-format`, `worker-contract` |
+| **Core** | `skills/core/` | `baseline`, `context-reports`, `detect-project-context`, `eval-format`, `token-resolver`, `worker-contract` |
 | **Tooling** | `skills/tooling/` | `find-skills`, `install-skill`, `list-available-skills`, `parse-skill-frontmatter`, `search-skills-registry`, `validate-skill-frontmatter` |
+| **Adapters** | `skills/adapters/` | `github-pr-adapter`, `github-actions-adapter`, `sonarcloud-adapter`, `jira-adapter`, `manual-pr-adapter` |
 | **Authoring** | `skills/authoring/` | `audit-skill`, `decide-skill-shape`, `review-skill`, `run-trigger-evals`, `write-a-skill` |
 | **Workflow** | `skills/workflow/` | `debrief`, `handoff`, `merge-latest`, `orchestrate`, `plan-next`, `pr-report`, `to-issues`, `to-prd`, `triage`, `verify-branch` |
 | **Engineering** | `skills/engineering/` | `diagnose`, `improve-codebase-architecture`, `prototype`, `tdd` |

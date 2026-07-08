@@ -1,0 +1,146 @@
+{
+  "version": "1",
+  "skill": "jira-adapter",
+  "tests": [
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Fetch Jira ticket scope for this PR",
+      "expected": "jira-adapter"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Use jira-adapter as the issue tracker source",
+      "expected": "jira-adapter"
+    },
+    {
+      "id": "trigger-should-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Resolve Jira ticket OC-1234",
+      "expected": "jira-adapter"
+    },
+    {
+      "id": "trigger-should-04",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Get Jira issue details for OC-1234",
+      "expected": "jira-adapter"
+    },
+    {
+      "id": "trigger-should-05",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Load Jira ticket scope and acceptance criteria",
+      "expected": "jira-adapter"
+    },
+    {
+      "id": "trigger-should-06",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Use Jira as the issue tracker source for pr-report",
+      "expected": "jira-adapter"
+    },
+    {
+      "id": "trigger-should-07",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Fetch Jira ticket scope from my-org.atlassian.net",
+      "expected": "jira-adapter"
+    },
+    {
+      "id": "trigger-should-08",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "What is the Jira ticket scope for this PR?",
+      "expected": "jira-adapter"
+    },
+    {
+      "id": "trigger-should-09",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Get jira-adapter to resolve the ticket",
+      "expected": "jira-adapter"
+    },
+    {
+      "id": "trigger-should-10",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Resolve the Jira ticket from the PR title",
+      "expected": "jira-adapter"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Run the test suite",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Check PR status",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-03",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "PR report for #123",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-04",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Audit this skill for standards issues",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-05",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Write a PR report",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-06",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Fetch GitHub Actions check runs",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-07",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Fetch SonarCloud findings",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-08",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Create a new skill from scratch",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-09",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Verify the current branch",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-10",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Plan the next steps for this project",
+      "expected": ""
+    }
+  ]
+}

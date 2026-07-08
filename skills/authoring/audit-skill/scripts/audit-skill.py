@@ -17,7 +17,9 @@ from typing import Optional
 # Regex patterns
 SECRET_PATTERNS = [
     re.compile(r"(?i)(api[_-]?key|apikey)\s*[:=]\s*['\"]?[a-z0-9_\-]{16,}['\"]?"),
-    re.compile(r"(?i)(password|passwd|pwd|secret|token)\s*[:=]\s*['\"]?[^\s'\"]+['\"]?"),
+    re.compile(r"(?i)(password|passwd|pwd|secret)\s*[:=]\s*['\"]?[^\s'\"]+['\"]?"),
+    # Token values only when not an env-var reference like ${TOKEN} or $TOKEN
+    re.compile(r"(?i)(token)\s*[:=]\s*['\"]?((?!\$\{)[^\s'\"]+)['\"]?"),
     re.compile(r"(?i)(bearer|basic)\s+[a-z0-9_\-]{20,}"),
     re.compile(r"-----BEGIN (RSA |OPENSSH |PGP )?PRIVATE KEY-----"),
 ]
@@ -134,6 +136,8 @@ def find_markdown_links(text: str) -> list[str]:
 def resolve_link(md_file: Path, link: str) -> bool:
     if link.startswith("http://") or link.startswith("https://") or link.startswith("#"):
         return True
+    # Strip URL fragment before checking file existence
+    link = link.split("#", 1)[0]
     target = (md_file.parent / link).resolve()
     return target.exists()
 
