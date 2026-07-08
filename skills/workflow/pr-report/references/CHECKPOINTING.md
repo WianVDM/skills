@@ -52,6 +52,7 @@ updated_at: 2026-06-26T08:00:00Z
 <!-- STATUS: pending --> ## Reviewer Status
 <!-- STATUS: pending --> ## Scope Flags
 <!-- STATUS: pending --> ## Dismissed / No Action Needed
+<!-- STATUS: pending --> ## Data Sources
 ```
 
 As sections are completed, replace `pending` with `completed` and fill the content.

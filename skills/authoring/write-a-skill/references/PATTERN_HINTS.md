@@ -1,7 +1,7 @@
 # Pattern hints (condensed)
 
 > **This is a condensed fallback.** The canonical pattern documents live in `docs/skill-standards/patterns/`. If that directory is available, prefer it and treat this file as a degraded copy for projects that ship without the full standards wiki.
-> Last synced: 2026-07-07.
+> Last synced: 2026-07-08.
 
 Use these decision rules to decide which Layer 2 architecture patterns apply to a skill.
 
@@ -17,6 +17,7 @@ Use these decision rules to decide which Layer 2 architecture patterns apply to 
 | **Context-file** | The guidance should be always-on and has no clear trigger. | There is a clear on-demand workflow. |
 | **Mode** | The user wants a transient behavior switch. | The behavior should be encoded persistently in the skill. |
 | **Conductor/implementer split** | The skill needs to separate reasoning from execution. | The skill is small enough to reason and execute inline. |
+| **Capability matrix** | The skill has multiple load-bearing capabilities and each may be fulfilled by more than one tool category. | The skill has only one happy path with one obvious tool. |
 
 ## Default starting point
 
@@ -24,6 +25,16 @@ Use these decision rules to decide which Layer 2 architecture patterns apply to 
 2. Promote to a **conductor** if it coordinates multiple skills or tools.
 3. Add a **wrapper** only if a human-facing layer is needed.
 4. Apply Layer 2 patterns only after the core shape is clear.
+
+## Capability matrix
+
+For every load-bearing capability, document:
+
+- The outcome needed.
+- The preferred tool if available.
+- The fallback tool(s).
+- The degraded-output disclosure if the fallback is used.
+- The user-consent prompt or preference key.
 
 ## Canonical source
 

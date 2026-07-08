@@ -6,8 +6,7 @@ invocation: model-invoked
 metadata:
   tags: [adapter, pr-source, github, building-block]
   author: Wian van der Merwe
-  version: "1.0.0"
-  verification_level: declared
+  version: "1.0.1"
 ---
 
 # GitHub PR Adapter
@@ -62,6 +61,22 @@ The token is resolved by the `token-resolver` building block before this adapter
 
 Standard worker return contract with the `pr-source` adapter shape.
 
+## Interface operations
+
+- `resolve_pr(user_input, repo, current_branch)` → normalized `pr_number`, `repo`, `branch`, `base`, `ticket_key`, `url`.
+- `fetch_metadata(pr_id)` → title, body, author, state, draft, base, head, mergeable, review decision.
+- `fetch_changed_files(pr_id)` → list of files with status, additions, deletions, previous path.
+- `fetch_reviews(pr_id)` → list of top-level reviews with id, reviewer, state, body, submitted_at.
+- `fetch_review_threads(pr_id)` → list of inline threads with path, line, is_resolved, resolution, source_type, comments.
+
+## Completion criteria
+
+- `complete`: PR resolved and all requested metadata, files, reviews, and threads normalized in the `pr-source` shape.
+- `partial`: Some data fetched but not all (e.g., GraphQL unavailable, only REST data returned); missing items are listed.
+- `needs_input`: Token is missing or invalid, or the PR cannot be resolved unambiguously.
+- `blocked`: API is unreachable or the repository/PR is inaccessible even with a valid token.
+- `skipped`: Not applicable for this adapter.
+
 ## Implementation notes
 
 - Use the GitHub GraphQL API as the source of truth for `reviewThread.isResolved`.
@@ -71,8 +86,8 @@ Standard worker return contract with the `pr-source` adapter shape.
 ## Rules
 
 - Do not log the token.
-- Return `blocked` if the token is invalid or the API is unreachable.
-- Return `needs_input` if the PR cannot be resolved unambiguously.
+- Return `needs_input` if the token is missing or invalid, or if the PR cannot be resolved unambiguously.
+- Return `blocked` if the API is unreachable or the repository is inaccessible even with a valid token.
 - Normalize all timestamps to ISO 8601 UTC.
 
 ## Dependencies

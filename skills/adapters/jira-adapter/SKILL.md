@@ -6,8 +6,7 @@ invocation: model-invoked
 metadata:
   tags: [pr-report, adapter, issue-tracker-source, jira, building-block]
   author: Wian van der Merwe
-  version: "1.0.0"
-  verification_level: declared
+  version: "1.0.1"
 ---
 
 # jira-adapter

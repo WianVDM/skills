@@ -6,10 +6,18 @@
 - `context-reports` — provides the canonical vocabulary and conventions for context reports.
 - `worker-contract` — provides the canonical subagent return contract.
 - `token-resolver` — resolves tokens from env vars, MCP config, or user input without leaking secrets.
+- `pr-adapter-contract` — defines the normalized adapter interface contract.
+
+## Internal subagents
+
+The following workers are defined inside `pr-report/subagents/` and are not separate skills:
+
 - `checkpoint-manager` — maintains phase checklist and resume state.
 - `context-scout` — scans context reports for related ticket/issue keys.
 - `issue-synthesizer` — groups, challenges, and weights feedback into an actionable issue board.
 - `scope-checker` — compares feedback against ticket scope or PR intent.
+- `report-writer` — fills pending report sections.
+- `html-renderer` — renders the optional HTML dashboard.
 
 ## Adapter skills
 

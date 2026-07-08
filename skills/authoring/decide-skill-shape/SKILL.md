@@ -1,12 +1,11 @@
 ---
 name: decide-skill-shape
 description: Help decide whether a problem should be solved by a new skill, an existing skill, a script, an MCP server, a context file, or a mode. Use when the user is unsure what shape to build, or when a conductor needs a shape recommendation.
-version: 1.0.0
+version: 1.0.1
 invocation: model-invoked
 metadata:
   author: Wian van der Merwe
   tags: [authoring, building-block, design, decision]
-  verification_level: declared
 depends:
   - list-available-skills
 ---
@@ -50,7 +49,8 @@ Conductor.
 2. **Explore existing solutions.**
    - Run `list-available-skills` to discover local skills.
    - Optionally run `search-skills-registry` to find third-party skills.
-   - **Completion criterion:** an alternatives report exists listing existing skills and registry results.
+   - Also consider whether an existing tool, MCP server, native binary, or context file already fulfills the capability before building a new skill.
+   - **Completion criterion:** an alternatives report exists listing existing skills, tool categories, and registry results.
 3. **Classify the problem.**
    - Ask one question at a time when the answer shapes the recommendation:
      - Is this a repeated, judgment-shaped task or a narrow, deterministic transformation?

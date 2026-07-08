@@ -10,7 +10,7 @@
 {context_dir}/pr-report/{key}-report.md
 ```
 
-Canonical report. Contains PR summary, changed files, CI status, static analysis, triaged issues, resolved items, unclear items, and scope flags.
+Canonical report. Contains PR summary, changed files, CI status, static analysis, triaged issues, resolved items, unclear items, scope flags, and a **Data sources** section listing the tool used for each capability.
 
 ### HTML dashboard
 
@@ -75,6 +75,18 @@ The skill also treats reports as relevant when their `summary`, `description`, o
 ### Local config
 
 `{config_dir}/pr-report.yaml` supplies adapter selection, tokens by reference, and bot mappings. It is read on every run.
+
+## Data sources section
+
+The canonical report must include a **Data sources** section (after the triaged sections and before finalization) that lists, for every capability, the tool that was used and any alternatives that were available: [rest stays same]
+
+- Capability name (e.g., PR metadata, CI / build status, static analysis findings).
+- Tool used (e.g., `github-pr-adapter`, GitHub MCP, `gh`).
+- Alternative tools detected.
+- Whether a degraded source was accepted, and if so, why and what better tool was available.
+- Confidence assigned to the data from that source.
+
+This section makes the tool-selection process transparent and auditable. It is generated during the collect phase and finalized before the report is presented.
 
 ## Report freshness
 

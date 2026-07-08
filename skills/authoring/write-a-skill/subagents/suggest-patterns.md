@@ -30,3 +30,9 @@ When suggesting patterns, also evaluate whether the skill should use **lazy depe
 - If the skill has multiple independent methods or branches, recommend evaluating recommended/optional dependencies lazily, per path.
 - If the skill has only one happy path or no optional tooling, eager evaluation is fine.
 - Note where the design draft should document the dependency evaluation strategy.
+
+Also evaluate whether the skill should use a **capability matrix**:
+
+- If the skill has multiple load-bearing capabilities that could be fulfilled by different tool categories, recommend the capability matrix pattern from [PATTERN_HINTS.md](../references/PATTERN_HINTS.md).
+- For each capability, ask the conductor to confirm the preferred tool, fallback tools, and degraded-output disclosure.
+- Note where the design draft should document the capability-to-tool strategy.

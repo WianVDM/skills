@@ -97,35 +97,35 @@
       "id": "trigger-not-04",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Audit this skill for standards issues",
+      "prompt": "Fetch GitHub Actions check runs",
       "expected": ""
     },
     {
       "id": "trigger-not-05",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Write a PR report",
+      "prompt": "Fetch the GitHub PR review threads",
       "expected": ""
     },
     {
       "id": "trigger-not-06",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Fetch GitHub Actions check runs",
+      "prompt": "Resolve Jira ticket OC-1234",
       "expected": ""
     },
     {
       "id": "trigger-not-07",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Resolve Jira ticket OC-1234",
+      "prompt": "Audit this skill for standards issues",
       "expected": ""
     },
     {
       "id": "trigger-not-08",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Create a new skill from scratch",
+      "prompt": "Write a PR report",
       "expected": ""
     },
     {
@@ -141,6 +141,38 @@
       "category": "should-not-trigger",
       "prompt": "Plan the next steps for this project",
       "expected": ""
+    },
+    {
+      "id": "behavior-01",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Given SonarCloud issues for my-org_repo on branch feature/OC-1234-fix, return the normalized static-analysis-source shape.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "adapter_role: static-analysis-source"
+        },
+        {
+          "type": "output_contains",
+          "value": "source_type: static_analysis"
+        }
+      ]
+    },
+    {
+      "id": "behavior-02",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "The SonarCloud token is missing. What status should the adapter return?",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "status: needs_input"
+        },
+        {
+          "type": "output_contains",
+          "value": "SONAR_TOKEN"
+        }
+      ]
     }
   ]
 }

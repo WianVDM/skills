@@ -1,14 +1,13 @@
 ---
 name: handoff
 description: "Write a session handoff snapshot for an optional key, so a fresh session can continue."
-version: 1.0.0
+version: 1.0.1
 license: Proprietary
 invocation: user-invoked
 disable-model-invocation: true
 metadata:
   author: Wian van der Merwe
   tags: [workflow, building-block, handoff, context]
-  verification_level: tested
 ---
 
 # handoff

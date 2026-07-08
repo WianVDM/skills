@@ -1,76 +1,76 @@
 {
   "version": "1",
-  "skill": "manual-pr-adapter",
+  "skill": "token-resolver",
   "tests": [
     {
       "id": "trigger-should-01",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Use manual-pr-adapter as the PR source",
-      "expected": "manual-pr-adapter"
+      "prompt": "Resolve the GitHub token without exposing it",
+      "expected": "token-resolver"
     },
     {
       "id": "trigger-should-02",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Collect PR data manually",
-      "expected": "manual-pr-adapter"
+      "prompt": "Use token-resolver to get the Jira API token",
+      "expected": "token-resolver"
     },
     {
       "id": "trigger-should-03",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Load PR data from a CSV file",
-      "expected": "manual-pr-adapter"
+      "prompt": "Resolve a token from environment variables and MCP config",
+      "expected": "token-resolver"
     },
     {
       "id": "trigger-should-04",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Read PR metadata from a markdown file",
-      "expected": "manual-pr-adapter"
+      "prompt": "Get the SonarCloud token securely",
+      "expected": "token-resolver"
     },
     {
       "id": "trigger-should-05",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Use manual as the PR source for pr-report",
-      "expected": "manual-pr-adapter"
+      "prompt": "Resolve the token for this adapter",
+      "expected": "token-resolver"
     },
     {
       "id": "trigger-should-06",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Collect PR comments from a JSON file",
-      "expected": "manual-pr-adapter"
+      "prompt": "Look up the GitHub personal access token without logging it",
+      "expected": "token-resolver"
     },
     {
       "id": "trigger-should-07",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Parse manual PR review feedback",
-      "expected": "manual-pr-adapter"
+      "prompt": "Find the API token from MCP config",
+      "expected": "token-resolver"
     },
     {
       "id": "trigger-should-08",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Get manual-pr-adapter to read the PR data",
-      "expected": "manual-pr-adapter"
+      "prompt": "Prompt once for the token and persist the env-var name",
+      "expected": "token-resolver"
     },
     {
       "id": "trigger-should-09",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Fetch PR data from user input",
-      "expected": "manual-pr-adapter"
+      "prompt": "Resolve the Azure DevOps token for the PR adapter",
+      "expected": "token-resolver"
     },
     {
       "id": "trigger-should-10",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Use manual PR data collection",
-      "expected": "manual-pr-adapter"
+      "prompt": "Which skill resolves tokens securely?",
+      "expected": "token-resolver"
     },
     {
       "id": "trigger-not-01",
@@ -90,42 +90,42 @@
       "id": "trigger-not-03",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "PR report for #123",
+      "prompt": "Fetch GitHub Actions check runs",
       "expected": ""
     },
     {
       "id": "trigger-not-04",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Fetch GitHub Actions check runs",
+      "prompt": "Write a PR report",
       "expected": ""
     },
     {
       "id": "trigger-not-05",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Fetch SonarCloud findings",
+      "prompt": "Resolve Jira ticket OC-1234",
       "expected": ""
     },
     {
       "id": "trigger-not-06",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Resolve Jira ticket OC-1234",
+      "prompt": "Audit this skill for standards issues",
       "expected": ""
     },
     {
       "id": "trigger-not-07",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Audit this skill for standards issues",
+      "prompt": "Create a new skill from scratch",
       "expected": ""
     },
     {
       "id": "trigger-not-08",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Write a PR report",
+      "prompt": "Plan the next steps for this project",
       "expected": ""
     },
     {
@@ -139,36 +139,8 @@
       "id": "trigger-not-10",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Plan the next steps for this project",
+      "prompt": "Detect the project context",
       "expected": ""
-    },
-    {
-      "id": "behavior-01",
-      "type": "behavior",
-      "baseline_type": "no_skill",
-      "prompt": "Given a CSV file with PR comments, return the normalized pr-source shape.",
-      "assertions": [
-        {
-          "type": "output_contains",
-          "value": "adapter_role: pr-source"
-        },
-        {
-          "type": "output_contains",
-          "value": "status: complete"
-        }
-      ]
-    },
-    {
-      "id": "behavior-02",
-      "type": "behavior",
-      "baseline_type": "no_skill",
-      "prompt": "No manual PR data file or user input is provided. What status should the adapter return?",
-      "assertions": [
-        {
-          "type": "output_contains",
-          "value": "status: needs_input"
-        }
-      ]
     }
   ]
 }

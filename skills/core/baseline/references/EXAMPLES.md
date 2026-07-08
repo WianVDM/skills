@@ -55,8 +55,8 @@ summary: "Auth guard redirects to login during token refresh when navigating to 
 3. Quickly navigate to `/dashboard` before the token refresh completes.
 
 ## Screenshots
-- [initial](OC-4644-main/screenshots/initial.png): Login page loaded.
-- [final](OC-4644-main/screenshots/final.png): Redirected to login instead of dashboard.
+- `OC-4644-main/screenshots/initial.png`: Login page loaded.
+- `OC-4644-main/screenshots/final.png`: Redirected to login instead of dashboard.
 
 ## Findings
 The bug is reproducible. Navigating to `/dashboard` during token refresh causes the auth guard to redirect back to `/login`.
@@ -187,7 +187,7 @@ summary: "Checkout 'Complete Purchase' button is unresponsive based on user-prov
 - Target URL: https://staging.example.com/checkout
 
 ## User-provided screenshots
-- [checkout-page](OC-5000-main/screenshots/checkout-page.png): Checkout page with unresponsive button.
+- `OC-5000-main/screenshots/checkout-page.png`: Checkout page with unresponsive button.
 
 ## User description
 > The "Complete Purchase" button does nothing when clicked. No console errors are visible.

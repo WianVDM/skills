@@ -5,9 +5,8 @@ argument-hint: "Scope, ticket key, or feature/bug to baseline"
 metadata:
   tags: [core, building-block, initialization, shared-config]
   author: Wian van der Merwe
-  version: "1.0.0"
+  version: "1.0.1"
   scope: global
-  verification_level: declared
 invocation: model-invoked
 ---
 

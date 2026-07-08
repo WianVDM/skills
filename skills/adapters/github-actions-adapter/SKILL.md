@@ -6,13 +6,12 @@ invocation: model-invoked
 metadata:
   tags: [pr-report, adapter, ci-source, github-actions, building-block]
   author: Wian van der Merwe
-  version: "1.0.0"
-  verification_level: declared
+  version: "1.0.1"
 ---
 
 # github-actions-adapter
 
-Tool building block that implements the `ci-source` adapter interface for the redesigned `pr-report` skill. It translates GitHub Actions API data into the normalized CI/build shape expected by the conductor.
+Tool building block that implements the `ci-source` adapter interface for `pr-report`. It translates GitHub Actions API data into the normalized CI/build shape expected by the conductor.
 
 ## In scope
 
@@ -97,18 +96,15 @@ log_summary:
     - "FAIL src/auth/login.test.ts:42"
     - "Expected: 200"
     - "Received: 401"
-
-## Decisions made
-- Source selected because pr-report config set `ci.source: github-actions-adapter`.
-- Token resolved via the token-resolver building block from `GITHUB_TOKEN`.
-- Conclusion `failure` mapped to normalized status `failing`.
-
-## Open questions
-- None.
-
-## Blockers
-- None.
 ```
+
+## Completion criteria
+
+- `complete`: All check runs for the head commit fetched and normalized, including a log summary for any failing required check.
+- `partial`: Some check runs or log summaries are unavailable; missing items are listed.
+- `needs_input`: Token is missing or invalid.
+- `blocked`: Repository or commit is unreachable, or the API returns a persistent error.
+- `skipped`: Not applicable for this adapter.
 
 ## Rules
 
@@ -118,7 +114,7 @@ log_summary:
 - If the token is missing or invalid, return `needs_input` with the required env-var name.
 - If the repository or commit is unreachable, return `blocked` with the HTTP error.
 - If the API returns partial data, return `partial` and list the missing checks.
-- Mark `is_required: true` only for checks listed in `required_checks` or branch protection rules.
+- Mark `is_required: true` only for checks listed in `required_checks` config. If branch protection rules are also fetched, include them, but declare that capability in the adapter dependencies.
 - Keep `error_lines` short and relevant; the conductor may truncate very long logs.
 - Reference the adapter contract at `pr-adapter-contract` for envelope shape and status semantics.
 

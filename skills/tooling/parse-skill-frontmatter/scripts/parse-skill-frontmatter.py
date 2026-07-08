@@ -47,7 +47,6 @@ def parse_frontmatter(skill_md: Path) -> dict:
             tags = _extract_metadata_value(data, "tags") or []
             result["tags"] = tags if isinstance(tags, list) else []
             result["author"] = _extract_metadata_value(data, "author")
-            result["verification_level"] = _extract_metadata_value(data, "verification_level")
             return result
     except Exception:
         pass
@@ -56,7 +55,6 @@ def parse_frontmatter(skill_md: Path) -> dict:
     result = {k: None for k in CANONICAL_FIELDS}
     result["tags"] = []
     result["author"] = None
-    result["verification_level"] = None
     for line in block.splitlines():
         stripped = line.strip()
         if not stripped or stripped.startswith("#") or ":" not in stripped:
@@ -84,11 +82,9 @@ def parse_frontmatter(skill_md: Path) -> dict:
                     tags = [t.strip().strip('"').strip("'") for t in raw[1:-1].split(",")]
                     tags = [t for t in tags if t]
                 break
-            # author / verification_level are leaf scalars under metadata
+            # author is a leaf scalar under metadata
             if stripped.startswith("author:"):
                 result["author"] = stripped.split(":", 1)[1].strip().strip('"').strip("'")
-            if stripped.startswith("verification_level:"):
-                result["verification_level"] = stripped.split(":", 1)[1].strip().strip('"').strip("'")
             if stripped.endswith(":") and not line.startswith(" "):
                 in_metadata = False
 

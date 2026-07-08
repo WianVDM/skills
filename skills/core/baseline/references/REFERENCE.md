@@ -137,8 +137,8 @@ summary: "<one-sentence synthesis of what was captured and the key finding>"
 3. <step three>
 
 ## Screenshots
-- [initial](<scope>-<branch>/screenshots/initial.png): Initial state.
-- [final](<scope>-<branch>/screenshots/final.png): Final or error state.
+- `<scope>-<branch>/screenshots/initial.png`: Initial state.
+- `<scope>-<branch>/screenshots/final.png`: Final or error state.
 
 ## Console errors
 ```

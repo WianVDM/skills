@@ -1,29 +1,32 @@
 # Capability Detection
 
-`pr-report` discovers which adapters are available and chooses the right one for each role. It never assumes a specific harness or tool. Adapter detection is the default behavior; explicit configuration overrides detection.
+`pr-report` discovers which tools are available for each capability and chooses the best one. It never assumes a specific harness or tool. Adapters are one source among skill adapters, MCP tools/servers, native binaries, direct APIs, harness tools, and manual fallback.
 
-Adapter roles and available implementations are defined in `references/ADAPTER_ARCHITECTURE.md`. The conductor loads only the adapters needed for the current run, using lazy dependency evaluation.
+Tool roles and available implementations are defined in [TOOL_SELECTION.md](TOOL_SELECTION.md). The conductor loads only the tools needed for the current run, using lazy dependency evaluation.
 
 ## Detected capabilities
 
-| Adapter role | Built-in adapters | Detection method |
+| Capability | Built-in tools | Detection method |
 |---|---|---|
-| PR source | `github-pr-adapter`, `manual-pr-adapter` | Configured `adapters.pr.source`; git remote; user input. |
-| CI / build | `github-actions-adapter` | Configured `adapters.ci.source`; MCP server availability; PR source. |
-| Static analysis | `sonarcloud-adapter` | Configured `adapters.static_analysis.source`; MCP server availability; tokens. |
-| Issue tracker | `jira-adapter` | Configured `adapters.issue_tracker.source`; MCP server availability; tokens. |
-| Notification | `teams-adapter`, `slack-adapter` (community) | Configured `adapters.notification.sources`. |
+| PR source | `github-pr-adapter`, `manual-pr-adapter`, GitHub MCP, `gh` CLI | Configured `adapters.pr.source`; MCP server availability; git remote; user input. |
+| CI / build | `github-actions-adapter`, GitHub Checks MCP, commit-status API | Configured `adapters.ci.source`; MCP server availability; PR source. |
+| Static analysis | `sonarcloud-adapter`, SonarQube/SonarCloud MCP | Configured `adapters.static_analysis.source`; MCP server availability; tokens. |
+| Issue tracker | `jira-adapter`, Jira MCP | Configured `adapters.issue_tracker.source`; MCP server availability; tokens. |
+| Notification | `teams-adapter`, `slack-adapter` (community), Teams/Slack MCP | Configured `adapters.notification.sources`. |
 
-Community adapters for GitLab, Gitea, Azure DevOps, Bitbucket, SonarQube, CodeQL, Semgrep, Linear, and others are documented in the adapter registry.
+Community adapters and direct APIs for GitLab, Gitea, Azure DevOps, Bitbucket, SonarQube, CodeQL, Semgrep, Linear, and others are documented in the adapter registry.
 
-## Adapter discovery
+## Tool discovery
 
-1. Read `adapters.{role}.source` from config.
-2. If `auto`, inspect the git remote and configured MCP config sources to suggest a default adapter.
-3. If the adapter is missing or disabled, report plainly and continue without that source.
-4. If the adapter is configured but fails to connect, stop and consult the user.
+1. Read `adapters.{role}.source` and `tooling.preference` from config.
+2. If `auto` or not configured, inspect all tool categories: configured adapters, MCP servers and tools, native binaries, direct APIs, and manual fallback.
+3. If the best available tool is not the configured adapter, disclose it and ask the user whether to switch.
+4. If a tool is missing or disabled, report plainly and continue without that source.
+5. If a tool is configured but fails to connect, stop and consult the user.
 
-Adapter detection does not rely on hardcoded harness names or tool paths. It uses the shared `detect-project-context` and `token-resolver` building blocks.
+Tool discovery does not rely on hardcoded harness names or tool paths. It uses the shared `detect-project-context` and `token-resolver` building blocks.
+
+The full capability-to-tool mapping and selection hierarchy are in [TOOL_SELECTION.md](TOOL_SELECTION.md).
 
 ## Token resolution
 
@@ -38,4 +41,4 @@ Distinguish **missing/disabled** adapters from **connection failures**.
 | Adapter not configured or unavailable | Report plainly and continue without that source. |
 | Adapter configured but connection fails | Stop and consult the user. |
 
-Always include a one-line note in the report when a source is skipped because it is missing or disabled.
+Always include a one-line note in the report when a source is skipped because it is missing or disabled, and note the best available tool if a degraded source is used.

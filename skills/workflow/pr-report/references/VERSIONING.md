@@ -22,7 +22,7 @@ A single release may bump one, both, or neither.
 
 ## Current versions
 
-- Skill version: `1.0.0`
+- Skill version: `1.0.1`
 - Report/state schema version: `1`
 
 ## Breaking changes

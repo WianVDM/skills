@@ -52,7 +52,9 @@ NEAR_MISS_TEMPLATES = [
 def parse_skill_frontmatter(skill_md: Path) -> dict:
     """Load the shared frontmatter parser and parse a SKILL.md file."""
     parser_path = (
-        Path(__file__).resolve().parent.parent.parent
+        Path(__file__).resolve().parents[4]
+        / "skills"
+        / "tooling"
         / "parse-skill-frontmatter"
         / "scripts"
         / "parse-skill-frontmatter.py"

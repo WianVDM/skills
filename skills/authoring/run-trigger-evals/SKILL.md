@@ -1,12 +1,11 @@
 ---
 name: run-trigger-evals
 description: Generate and update trigger evals for model-invoked skills in evals/evals.json.
-version: 1.0.0
+version: 1.0.1
 invocation: model-invoked
 metadata:
   author: Wian van der Merwe
   tags: [authoring, building-block, evals, testing]
-  verification_level: declared
 depends:
   - parse-skill-frontmatter
 ---

@@ -36,7 +36,6 @@ invocation: model-invoked
 metadata:
   author: composition-test
   tags: [test, sample]
-  verification_level: declared
 ---
 
 # sample-composition-skill
@@ -55,6 +54,7 @@ Building block.
 - Validate the frontmatter against the schema.
 - Audit the skill for blockers.
 - Generate trigger evals.
+- Demonstrate a capability-to-tool strategy: discover available tools for the fetch-data capability and disclose the choice.
 
 ## Out of scope
 
@@ -69,6 +69,12 @@ A conductor wants to verify the dependency chain is healthy.
 | Branch | Trigger | Outcome |
 |---|---|---|
 | **run** | User wants to run the composition test. | All dependency checks pass. |
+
+## Capability-to-tool strategy
+
+| Capability | Preferred tool | Fallback tool | Degraded disclosure |
+|---|---|---|---|
+| Fetch data | `native-binary` if available | `manual-fallback` | Falls back to manual input; the user is asked to confirm. |
 
 ## References
 
@@ -88,7 +94,7 @@ def run(cmd: list[str], cwd: Path | None = None) -> tuple[int, str, str]:
 
 
 def main():
-    repo_root = Path(__file__).resolve().parent.parent.parent.parent
+    repo_root = Path(__file__).resolve().parents[4]
     skills_dir = repo_root / "skills"
 
     with tempfile.TemporaryDirectory(prefix="write-a-skill-composition-") as tmp:
@@ -101,7 +107,7 @@ def main():
 
         # 1. detect-project-context
         rc, out, err = run([
-            sys.executable, str(skills_dir / "detect-project-context" / "scripts" / "detect-project-context.py"),
+            sys.executable, str(skills_dir / "core" / "detect-project-context" / "scripts" / "detect-project-context.py"),
             "--start", str(repo_root), "--json",
         ])
         data = json.loads(out)
@@ -114,7 +120,7 @@ def main():
 
         # 2. list-available-skills (project scope only)
         rc, out, err = run([
-            sys.executable, str(skills_dir / "list-available-skills" / "scripts" / "list-available-skills.py"),
+            sys.executable, str(skills_dir / "tooling" / "list-available-skills" / "scripts" / "list-available-skills.py"),
             "--project-root", str(repo_root), "--exclude-user", "--json",
         ])
         data = json.loads(out)
@@ -127,7 +133,7 @@ def main():
 
         # 3. parse-skill-frontmatter
         rc, out, err = run([
-            sys.executable, str(skills_dir / "parse-skill-frontmatter" / "scripts" / "parse-skill-frontmatter.py"),
+            sys.executable, str(skills_dir / "tooling" / "parse-skill-frontmatter" / "scripts" / "parse-skill-frontmatter.py"),
             str(sample_skill_dir / "SKILL.md"), "--json",
         ])
         data = json.loads(out)
@@ -140,7 +146,7 @@ def main():
 
         # 4. validate-skill-frontmatter
         rc, out, err = run([
-            sys.executable, str(skills_dir / "validate-skill-frontmatter" / "scripts" / "validate-skill-frontmatter.py"),
+            sys.executable, str(skills_dir / "tooling" / "validate-skill-frontmatter" / "scripts" / "validate-skill-frontmatter.py"),
             str(sample_skill_dir / "SKILL.md"), "--json",
         ])
         data = json.loads(out)
@@ -153,20 +159,23 @@ def main():
 
         # 5. audit-skill
         rc, out, err = run([
-            sys.executable, str(skills_dir / "audit-skill" / "scripts" / "audit-skill.py"),
+            sys.executable, str(skills_dir / "authoring" / "audit-skill" / "scripts" / "audit-skill.py"),
             str(sample_skill_dir), "--json",
         ])
         data = json.loads(out)
+        findings = {f["id"]: f for f in data.get("findings", [])}
+        ta01_ok = findings.get("TA-01", {}).get("result") in ("PASS", "MANUAL", "N/A")
+        ta02_ok = findings.get("TA-02", {}).get("result") in ("PASS", "MANUAL", "N/A")
         results.append({
             "step": "audit-skill",
-            "pass": rc == 0 and data.get("summary", {}).get("blockers") == 0,
+            "pass": rc == 0 and data.get("summary", {}).get("blockers") == 0 and ta01_ok and ta02_ok,
             "rc": rc,
             "error": err,
         })
 
         # 6. run-trigger-evals
         rc, out, err = run([
-            sys.executable, str(skills_dir / "run-trigger-evals" / "scripts" / "run-trigger-evals.py"),
+            sys.executable, str(skills_dir / "authoring" / "run-trigger-evals" / "scripts" / "run-trigger-evals.py"),
             str(sample_skill_dir), "--json",
         ])
         data = json.loads(out)

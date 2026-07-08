@@ -6,6 +6,13 @@ The canonical audit rubric has been promoted to a shared skill-standards referen
 
 This local file is kept as a pointer. `audit-skill` evaluates skills against the canonical rubric in the standards directory.
 
+## Tooling awareness IDs
+
+| ID | Category | One-line explanation |
+|---|---|---|
+| TA-01 | Tooling awareness | Capability-first tool selection: the skill names capabilities before tools and discovers available sources. |
+| TA-02 | Tooling awareness | Degradation disclosure: if a weaker tool is used, the skill tells the user and gets consent. |
+
 ## Rubric ID reference
 
 A one-line explanation of each ID emitted by `audit-skill`:
@@ -49,7 +56,8 @@ A one-line explanation of each ID emitted by `audit-skill`:
 | D03 | Dependencies | Required MCP servers are declared. |
 | D04 | Dependencies | Skill dependencies are declared. |
 | D05 | Dependencies | Environment variables are declared. |
-| D06 | Dependencies | Runtime references to other skills are declared in `depends`. |
+| D06 | Dependencies | Lazy dependency evaluation is used when appropriate. |
+| D07 | Dependencies | Runtime references to other skills are declared in `depends`. |
 | P01 | Portability | No hardcoded project-specific paths. |
 | P02 | Portability | Global/pluggable skills detect environment. |
 | P03 | Portability | Degradation behavior is documented. |
@@ -58,4 +66,3 @@ A one-line explanation of each ID emitted by `audit-skill`:
 | E03 | Evaluation | Discipline skills have pressure tests. |
 | E04 | Evaluation | Composition tests exist for composable skills. |
 | G01 | Governance | License is declared if distributed. |
-| G02 | Governance | Verification level is declared if distributed. |

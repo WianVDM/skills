@@ -6,8 +6,7 @@ invocation: model-invoked
 metadata:
   tags: [pr-report, adapter, contract, building-block]
   author: Wian van der Merwe
-  version: "1.0.0"
-  verification_level: declared
+  version: "1.0.1"
 ---
 
 # PR Adapter Contract
@@ -117,18 +116,10 @@ The normalized data for this source type.
 
 - Return the normalized shape, not raw provider data.
 - Never log or expose the resolved token.
-- Distinguish the five status values clearly.
 - If the token is missing or invalid, return `needs_input` with the required env-var name.
 - If the provider is unreachable, return `blocked` with the error detail.
 - If only partial data is available, return `partial` and note what is missing.
 - Mark required checks explicitly using `is_required`.
-
-## Out of scope
-
-- Synthesizing or triaging issues. The conductor owns that.
-- Writing the PR report. The conductor owns that.
-- Fixing code or replying to comments. The entire skill is out of scope for that.
-- Provider-specific implementation details. Each adapter owns those.
 
 ## References
 

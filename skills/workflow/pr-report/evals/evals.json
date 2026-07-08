@@ -141,6 +141,34 @@
       "category": "should-not-trigger",
       "prompt": "Plan the next steps for this project",
       "expected": ""
+    },
+    {
+      "id": "behavioral-mcp-reviews-01",
+      "type": "behavioral",
+      "category": "tool-selection",
+      "prompt": "Given a GitHub PR and a configured GitHub MCP server, run /pr-report. The github-pr-adapter is also configured. Expect the report to include full top-level review bodies from the GitHub MCP tool, not reconstructed summaries from the adapter.",
+      "expected": "Top-level review bodies are fetched from the GitHub MCP tool when it is the best available source."
+    },
+    {
+      "id": "behavioral-sonar-fallback-01",
+      "type": "behavioral",
+      "category": "tool-selection",
+      "prompt": "Given a SonarCloud adapter failure and a configured SonarQube MCP server, run /pr-report. Expect the agent to offer to use the SonarQube MCP server before recording static analysis as unavailable.",
+      "expected": "The SonarQube MCP server is offered as a fallback before the capability is marked unavailable."
+    },
+    {
+      "id": "behavioral-partial-retry-01",
+      "type": "behavioral",
+      "category": "tool-selection",
+      "prompt": "Given a partial result from the configured PR adapter and a better available tool (e.g., GitHub MCP), run /pr-report. Expect the agent to disclose the better tool and ask whether to retry before accepting the partial result.",
+      "expected": "The better tool is disclosed and the user is asked before degraded data is accepted."
+    },
+    {
+      "id": "behavioral-degradation-disclosure-01",
+      "type": "behavioral",
+      "category": "degradation-disclosure",
+      "prompt": "Given that only a degraded source is available for CI/build status and tooling.degraded_mode is ask, run /pr-report. Expect the report and chat summary to name the degraded tool, the better tool, the impact, and how to override.",
+      "expected": "Degradation is disclosed with degraded tool, better tool, impact, and override instruction."
     }
   ]
 }

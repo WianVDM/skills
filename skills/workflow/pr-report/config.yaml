@@ -31,6 +31,14 @@ skill:
     required: false
     default: []
     description: List of notification-source adapters to query for additional feedback (e.g., teams-adapter, slack-adapter).
+  - key: pr-report.tooling.preference
+    required: false
+    default: auto
+    description: Tool selection strategy per capability. `auto` selects the best available tool; `adapters` prefers skill adapters; `mcp` prefers MCP tools; `manual` always asks.
+  - key: pr-report.tooling.degraded_mode
+    required: false
+    default: ask
+    description: Behavior when only a degraded source is available. `ask` prompts the user; `accept` proceeds silently; `reject` skips the capability.
   - key: pr-report.bots
     required: false
     default: {}

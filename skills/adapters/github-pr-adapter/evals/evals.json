@@ -97,50 +97,82 @@
       "id": "trigger-not-04",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Audit this skill for standards issues",
+      "prompt": "Fetch GitHub Actions check runs",
       "expected": ""
     },
     {
       "id": "trigger-not-05",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Write a PR report",
+      "prompt": "Fetch SonarCloud findings",
       "expected": ""
     },
     {
       "id": "trigger-not-06",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Fetch GitHub Actions check runs",
+      "prompt": "Resolve Jira ticket OC-1234",
       "expected": ""
     },
     {
       "id": "trigger-not-07",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Fetch SonarCloud findings",
+      "prompt": "Audit this skill for standards issues",
       "expected": ""
     },
     {
       "id": "trigger-not-08",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Resolve Jira ticket OC-1234",
+      "prompt": "Write a PR report",
       "expected": ""
     },
     {
       "id": "trigger-not-09",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Create a new skill from scratch",
+      "prompt": "Verify the current branch",
       "expected": ""
     },
     {
       "id": "trigger-not-10",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Verify the current branch",
+      "prompt": "Plan the next steps for this project",
       "expected": ""
+    },
+    {
+      "id": "behavior-01",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Given GitHub PR #123 in owner/repo, return the normalized pr-source shape with metadata, changed files, reviews, and threads.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "adapter_role: pr-source"
+        },
+        {
+          "type": "output_contains",
+          "value": "pr_number: 123"
+        }
+      ]
+    },
+    {
+      "id": "behavior-02",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "The GitHub token is missing. What status should the adapter return?",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "status: needs_input"
+        },
+        {
+          "type": "output_contains",
+          "value": "GITHUB_TOKEN"
+        }
+      ]
     }
   ]
 }

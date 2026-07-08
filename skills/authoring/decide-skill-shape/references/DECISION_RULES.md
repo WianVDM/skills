@@ -7,7 +7,7 @@ Use these rules to recommend the right shape for a capability. These rules are a
 | Shape | Best for | Avoid when |
 |---|---|---|
 | **New skill** | Repeated, judgment-shaped tasks that need a reusable contract and can fire autonomously or by name. | The task is one-off, deterministic, or better handled by a script. |
-| **Existing skill** | The problem is already covered by a local or third-party skill. | The existing skill is a poor fit or would require significant extension. |
+| **Existing skill** | The problem is already covered by a local or third-party skill, or by an existing tool, MCP server, or native binary that can fulfill the capability. | The existing option is a poor fit or would require significant extension. |
 | **Script** | Narrow, deterministic tasks that need repeatable, fast execution. | The task requires judgment, user interaction, or coordination. |
 | **MCP server** | The task needs external tools, real-time data, or sandboxed execution. | The task is pure reasoning or does not need external capabilities. |
 | **Context file** | Reference, configuration, or shared conventions that skills consume. | The task is behavior or process that should be invoked. |
@@ -34,7 +34,7 @@ Ask one question at a time when the answer shapes the recommendation. These four
 ## Decision heuristics
 
 - If the task is **repeated and judgment-shaped**, lean toward a **new skill**.
-- If the task is **already covered**, lean toward **reusing an existing skill** or installing one.
+- If the task is **already covered by a skill, tool, MCP server, or native binary**, lean toward **reusing or extending that option** before creating a new skill.
 - If the task is **narrow and deterministic**, lean toward a **script**.
 - If the task needs **external tools or real-time data**, lean toward an **MCP server**.
 - If the task is **reference or configuration**, lean toward a **context file**.

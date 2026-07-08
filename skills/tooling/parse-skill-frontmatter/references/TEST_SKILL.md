@@ -6,7 +6,6 @@ invocation: model-invoked
 metadata:
   author: Test Author
   tags: [fixture, test, frontmatter]
-  verification_level: tested
 depends:
   - audit-skill
   - validate-skill-frontmatter

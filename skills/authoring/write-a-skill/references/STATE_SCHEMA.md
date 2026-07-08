@@ -157,6 +157,14 @@ Why this recommendation was made.
 - Recommended/optional dependencies checked per method/branch: [...]
 - How the skill handles missing tooling for a specific path: [...]
 
+## Capability-to-tool strategy
+
+For each load-bearing capability:
+
+| Capability | Preferred tool | Fallback tools | Degraded-output disclosure | Consent / preference key |
+|---|---|---|---|---|
+| ... | ... | ... | ... | ... |
+
 ## Artifacts to create
 - SKILL.md
 - README.md (if non-trivial)

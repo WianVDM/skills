@@ -7,14 +7,13 @@ Before considering the skill complete or using it in a real run:
 - [ ] `name` is lowercase with hyphens and matches the directory name.
 - [ ] `description` is under 1024 characters and includes triggers.
 - [ ] `license`, `invocation`, and `metadata` are present.
-- [ ] `metadata.verification_level` is declared.
 
 ## SKILL.md
 
 - [ ] Focuses on intent and guidelines, not exact commands.
 - [ ] Declares skill type (workflow/conductor).
 - [ ] Lists out-of-scope behavior.
-- [ ] Includes an `## Initialization` section documenting lazy dependency evaluation.
+- [ ] Documents lazy dependency evaluation and first-run behavior via a pointer to `references/CONFIG_PATTERN.md`.
 - [ ] Links to all reference files.
 
 ## Config
@@ -26,14 +25,13 @@ Before considering the skill complete or using it in a real run:
 ## References
 
 - [ ] All linked reference files exist.
-- [ ] `ADAPTER_ARCHITECTURE.md` documents the adapter taxonomy and interface contract.
+- [ ] `ADAPTER_ARCHITECTURE.md` documents the adapter taxonomy and discovery model; the detailed interface contract lives in the `pr-adapter-contract` building block.
 - [ ] `ADAPTER_REGISTRY.md` documents the default registry and how to override it.
 - [ ] `CONFIG_PATTERN.md` documents detect/ask/persist/reuse using `{config_dir}` and `{context_dir}` discovered by `detect-project-context`.
 - [ ] `CONFIG_PATTERN.md` does not hardcode harness names or tool paths.
 - [ ] `CONTEXT_REPORTS.md` documents output schemas and locations using `{context_dir}`.
 - [ ] `CONTEXT_REPORTS.md` documents generic context scanning, relevance from frontmatter, and fallback behavior.
 - [ ] `CAPABILITIES.md` documents adapter discovery and lazy loading.
-- [ ] `PROVIDER_ADAPTERS.md`, `CI_ADAPTERS.md`, and `STATIC_ANALYSIS.md` link to the adapter architecture and built-in adapter skills.
 - [ ] `COMMENT_TRIAGE.md` documents source weighting and challenge rules.
 - [ ] `CHECKPOINTING.md` documents phases and resume rules.
 - [ ] `REFERENCE.md` documents skill version vs report/state schema version and migration strategy.
@@ -70,3 +68,5 @@ Before considering the skill complete or using it in a real run:
 5. Context compaction mid-run — skill resumes from the pending phase.
 6. Unsupported PR platform — skill falls back to `manual-pr-adapter` without failing.
 7. Missing CI/static-analysis/issue-tracker — skill reports plainly and continues.
+8. Better tool available than configured adapter — skill discloses the better tool and asks before accepting degraded data.
+9. Degraded source accepted — skill records the degraded source and the better alternative in the Data sources section.

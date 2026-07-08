@@ -9,7 +9,7 @@ metadata:
 
 # Adapter Registry
 
-Default registry for the `pr-report` conductor. Users can extend or override it in project config. The registry format is documented in [CONFIG_PATTERN.md](CONFIG_PATTERN.md).
+This registry contains the default skill adapters that ship with `pr-report`. It is not the complete tool catalog. The conductor also considers MCP tools, native binaries, direct APIs, and manual fallback. See [TOOL_SELECTION.md](TOOL_SELECTION.md) for the full capability-to-tool mapping and selection rules.
 
 ## Built-in adapters
 

@@ -377,6 +377,18 @@ def check_dependencies(skill_dir: Path, body: str) -> list[dict]:
         else:
             result = "MANUAL"
         findings.append(finding(fid, "Dependencies", severity, check, result, recommendation))
+
+    # D06 — Lazy dependency evaluation (canonical rubric definition)
+    has_branches = bool(re.search(r"(?i)(?:##\s*branch|\bbranch\b|\bmethod\b)", body))
+    if not has_branches:
+        findings.append(na_finding("D06", "Dependencies", "warning", "Lazy dependency evaluation is used when appropriate"))
+    else:
+        lazy_keywords = ["lazily", "lazy evaluation", "when the relevant", "per path", "when the specific", "only when"]
+        has_lazy = any(kw in body.lower() for kw in lazy_keywords)
+        if has_lazy:
+            findings.append(pass_finding("D06", "Dependencies", "warning", "Lazy dependency evaluation is used when appropriate"))
+        else:
+            findings.append(manual_finding("D06", "Dependencies", "warning", "Lazy dependency evaluation is used when appropriate", "If the skill has multiple methods or branches, evaluate recommended/optional dependencies lazily per path and document the strategy."))
     return findings
 
 
@@ -429,9 +441,9 @@ def check_dependency_references(skill_dir: Path, fm: dict, files: list[Path]) ->
 
     check = "Runtime references to other skills are declared in `depends`"
     if missing:
-        findings.append(fail_finding("D06", "Dependencies", "blocker", check, f"Add {sorted(missing)} to `depends` in `SKILL.md` frontmatter."))
+        findings.append(fail_finding("D07", "Dependencies", "blocker", check, f"Add {sorted(missing)} to `depends` in `SKILL.md` frontmatter."))
     else:
-        findings.append(pass_finding("D06", "Dependencies", "blocker", check))
+        findings.append(pass_finding("D07", "Dependencies", "blocker", check))
     return findings
 
 
@@ -480,12 +492,65 @@ def check_governance(fm: dict) -> list[dict]:
     else:
         findings.append(manual_finding("G01", "Governance", "warning", check, "Add a `license` field if the skill is distributed."))
 
-    metadata = fm.get("metadata", {})
-    check = "Verification level is declared if distributed"
-    if isinstance(metadata, dict) and metadata.get("verification_level"):
-        findings.append(pass_finding("G02", "Governance", "warning", check))
+    return findings
+
+
+def check_tooling_awareness(skill_dir: Path, body: str) -> list[dict]:
+    """Check TA-01 and TA-02 from the tooling-awareness rubric."""
+    findings = []
+    body_lower = body.lower()
+
+    # TA-01 — Capability-first tool selection
+    capability_signals = [
+        "capability", "outcome", "best available", "selects the best", "preferred tool",
+        "tool selection", "detect available", "discover available", "available tools",
+        "tooling awareness", "capability-first", "capability-to-tool",
+    ]
+    adapter_only_patterns = [
+        r"\bonly\b.{0,15}\badapter\b",
+        r"\badapter\b.{0,15}\bonly\b",
+        r"\buses? the [\w-]*adapter\b",
+        r"\busing the [\w-]*adapter\b",
+        r"\bthe adapter returns\b",
+        r"\badapter as the only\b",
+    ]
+    has_capability_language = any(sig in body_lower for sig in capability_signals)
+    has_adapter_only = any(re.search(pat, body_lower) for pat in adapter_only_patterns)
+
+    check_ta01 = "Capability-first tool selection"
+    if has_adapter_only and not has_capability_language:
+        findings.append(fail_finding(
+            "TA-01", "Tooling awareness", "warning", check_ta01,
+            "Design each capability step as an outcome first, then discover and select the best available tool. Avoid adapter-only phrasing."
+        ))
+    elif has_capability_language:
+        findings.append(pass_finding("TA-01", "Tooling awareness", "warning", check_ta01))
     else:
-        findings.append(manual_finding("G02", "Governance", "warning", check, "Add `metadata.verification_level` if the skill is distributed."))
+        findings.append(manual_finding(
+            "TA-01", "Tooling awareness", "warning", check_ta01,
+            "Review whether the skill names capabilities before tools and discovers available tools for each capability."
+        ))
+
+    # TA-02 — Degradation disclosure
+    fallback_signals = ["fallback", "degraded", "if missing", "if unavailable", "without it", "weaker tool", "degraded source"]
+    has_fallback = any(sig in body_lower for sig in fallback_signals)
+
+    check_ta02 = "Degradation disclosure"
+    if not has_fallback:
+        findings.append(na_finding("TA-02", "Tooling awareness", "warning", check_ta02))
+    else:
+        disclosure_signals = [
+            "better tool", "better source", "impact", "consent", "confirm", "disclose",
+            "preferred", "disclosure", "because", "override", "available",
+        ]
+        matched = sum(1 for sig in disclosure_signals if sig in body_lower)
+        if matched >= 3:
+            findings.append(pass_finding("TA-02", "Tooling awareness", "warning", check_ta02))
+        else:
+            findings.append(manual_finding(
+                "TA-02", "Tooling awareness", "warning", check_ta02,
+                "When using a degraded source, tell the user what tool was used, what better tool is available, the impact, and how to override."
+            ))
 
     return findings
 
@@ -525,6 +590,7 @@ def audit(skill_path: str) -> dict:
     findings.extend(check_portability(skill_dir if skill_dir.is_dir() else skill_dir.parent, body))
     findings.extend(check_evaluation(skill_dir if skill_dir.is_dir() else skill_dir.parent, fm))
     findings.extend(check_governance(fm))
+    findings.extend(check_tooling_awareness(skill_dir if skill_dir.is_dir() else skill_dir.parent, body))
 
     counts = {"blockers": 0, "warnings": 0, "suggestions": 0, "manual": 0}
     remediation = []

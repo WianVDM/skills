@@ -60,6 +60,13 @@ These verify that the conductor classifies intent into the correct branch and ga
 9. **Branch workflow disclosure.** Verify that `SKILL.md` points to `references/BRANCH_WORKFLOWS.md` for detailed phase lists and stays under 300 lines.
 10. **Invocation declaration.** Verify that `SKILL.md` frontmatter contains `invocation: user-invoked`.
 
+## Tooling-awareness behavioral evals
+
+1. **Better tool available.** Configure a better tool for a capability the drafted skill needs. Run the Create branch and verify the design either uses the better tool or discloses it and asks for consent.
+2. **Adapter fallback.** Remove the preferred tool from the design. Verify the skill names the degraded source and explains the impact before proceeding.
+3. **Lazy tool discovery.** Trigger a branch that uses a recommended tool. Verify the conductor checks for that tool only when the branch is selected, not at initialization.
+4. **Capability matrix in draft.** Run the Create branch full gate and verify the design draft contains a capability-to-tool mapping for each load-bearing capability.
+
 ## Composition tests
 
 These verify that the conductor composes building-block skills correctly and handles their outputs.
@@ -78,6 +85,7 @@ After any change to this skill, run:
 - [ ] All 10 should-not-trigger queries do not lead to invoking `write-a-skill`.
 - [ ] All four branch classification evals.
 - [ ] All 10 behavioral evals.
+- [ ] All 4 tooling-awareness behavioral evals.
 - [ ] A self-review of `write-a-skill` using its own Change branch review gate.
 - [ ] A self-update check of `write-a-skill` using its own Change branch update gate.
 - [ ] Verify all reference links in `SKILL.md` and `README.md` resolve.

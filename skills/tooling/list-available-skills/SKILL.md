@@ -1,12 +1,11 @@
 ---
 name: list-available-skills
 description: Discover skills already available in the project and user scope by scanning canonical skill directories.
-version: 1.0.0
+version: 1.0.1
 invocation: model-invoked
 metadata:
   author: Wian van der Merwe
   tags: [tooling, building-block, discovery, skills]
-  verification_level: declared
 depends:
   - parse-skill-frontmatter
 ---

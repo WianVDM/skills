@@ -142,8 +142,7 @@ python skills/parse-skill-frontmatter/scripts/parse-skill-frontmatter.py skills/
   "depends": [...],
   "metadata": {
     "author": "...",
-    "tags": [...],
-    "verification_level": "declared"
+    "tags": [...]
   }
 }
 ```

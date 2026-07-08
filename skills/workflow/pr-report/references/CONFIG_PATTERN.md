@@ -22,23 +22,37 @@ Reports and state live in the detected project context directory:
 
 ## First-run flow
 
-1. **Load existing config** — read `{config_dir}/pr-report.yaml` if it exists.
-2. **Detect project context** — use `detect-project-context` to find `{project-root}`, `{config_dir}`, and `{context_dir}`.
-3. **Detect environment** — inspect git remote, environment variables, and configured MCP config sources for adapter tokens and endpoints.
-4. **Ask only for missing values** — required: PR source adapter. Optional: CI, static-analysis, issue-tracker, and notification adapters.
-5. **Persist** — write the resolved config to `{config_dir}/pr-report.yaml`.
-6. **Continue** — use the newly created config.
+See the `## Initialization` section in `SKILL.md` for the first-run sequence. The summary is:
 
-## Adapter detection
+1. Load existing config.
+2. Detect project context and environment.
+3. Ask only for missing values.
+4. Persist resolved config.
+5. Continue using the new config.
 
-Provider detection is the default behavior. When an adapter setting is `auto`, the skill selects an adapter by inspecting, in order:
+## Adapter and tool detection
 
+Provider detection is the default behavior. When an adapter setting is `auto`, the skill selects the best tool for the capability by inspecting, in order:
+
+- Explicit per-capability tool preferences (`tooling.preference`).
 - The configured `adapters.{role}.source` value.
-- Available MCP servers and environment variables.
-- The git remote.
-- Project files such as CI configuration.
+- Available MCP servers and tools.
+- Native binaries (`gh`, `git`, `curl`, etc.).
+- Direct APIs and environment variables.
+- The git remote and project files such as CI configuration.
 
-The skill does not assume a specific harness, model, or tool. It uses the adapter registry documented in `references/ADAPTER_ARCHITECTURE.md` to map `source` names to adapter implementations.
+The skill does not assume a specific harness, model, or tool. It uses the capability-to-tool mapping in `references/TOOL_SELECTION.md` and the adapter registry in `references/ADAPTER_ARCHITECTURE.md` to map `source` names to implementations.
+
+### Tooling preference and degraded mode
+
+Two config keys control tool selection behavior globally:
+
+- `tooling.preference` — `auto` selects the best available tool; `adapters` prefers skill adapters; `mcp` prefers MCP tools; `manual` always asks.
+- `tooling.degraded_mode` — `ask` prompts the user before accepting a degraded source; `accept` proceeds silently; `reject` skips the capability.
+
+When `tooling.preference` is set to anything other than `auto`, the conductor still detects all available tools, but it ranks the preferred category first unless that category cannot fulfill the capability. The final tool choice and any override are recorded in state.
+
+When `tooling.degraded_mode` is `ask` (the default), the conductor stops and asks the user whether to use a better tool, accept the degraded source, or skip the capability. The disclosure template is in `references/TOOL_SELECTION.md`.
 
 ### Token resolution
 
@@ -94,6 +108,11 @@ adapters:
       token: ${JIRA_TOKEN}
   notification:
     sources: []                    # [teams-adapter, slack-adapter, ...]
+
+  # Tooling preference controls how capabilities are mapped to tools.
+  tooling:
+    preference: auto              # auto | adapters | mcp | manual
+    degraded_mode: ask            # ask | accept | reject
 
 bots:
   sonarqube:

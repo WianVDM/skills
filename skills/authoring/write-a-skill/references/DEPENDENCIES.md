@@ -52,6 +52,21 @@ This document follows the dependency taxonomy defined in `docs/skill-standards/f
 - Network access is required only for `search-skills-registry` and for the optional standards-initialization fetch.
 - Subagents may use web search to research alternatives, but the core skill does not require it.
 
+## Tool categories
+
+`write-a-skill` may consume skills that depend on any of the following tool categories. The conductor must teach authors to design capability-first and consider every category before hardcoding an adapter:
+
+| Category | Examples |
+|---|---|
+| **Skill adapters** | `github-pr-adapter`, `sonarcloud-adapter`, `jira-adapter` |
+| **MCP tools / servers** | `github_get_pull_request_reviews`, SonarQube MCP, Jira MCP |
+| **Native binaries** | `gh`, `git`, `curl`, `jq` |
+| **Direct APIs** | Provider REST or GraphQL endpoints |
+| **Harness tools** | Built-in browser, file system, search, shell |
+| **Manual fallback** | User input, CSV, markdown files |
+
+A drafted skill must not treat its own adapters as the only source for a capability.
+
 ## Environment variables
 
 - None. This skill does not read environment variables directly.

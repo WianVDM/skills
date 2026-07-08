@@ -1,12 +1,11 @@
 ---
 name: audit-skill
 description: Check a skill against the skill fundamentals and report blockers, warnings, and suggestions with a structured remediation plan.
-version: 1.0.0
+version: 1.0.1
 invocation: model-invoked
 metadata:
   author: Wian van der Merwe
   tags: [authoring, building-block, audit, fundamentals]
-  verification_level: declared
 ---
 
 # audit-skill
@@ -63,7 +62,7 @@ Building block.
 
 ## Rubric
 
-The full rubric is maintained in `docs/skill-standards/AUDIT_RUBRIC.md`. It covers identity, type/shape, scope, structure, form/style, security, dependencies, portability, evaluation, and governance.
+The full rubric is maintained in `docs/skill-standards/AUDIT_RUBRIC.md`. It covers identity, type/shape, scope, structure, form/style, security, dependencies, portability, evaluation, governance, and **tooling awareness** (`TA-01`, `TA-02`).
 
 ## Output format
 

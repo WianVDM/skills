@@ -9,7 +9,9 @@ metadata:
 
 # PR Report Adapter Architecture
 
-`pr-report` is a thin conductor. It consumes normalized adapter output and owns synthesis, triage, and reporting. Adapters translate provider-specific data into the normalized shapes defined by the `pr-adapter-contract` building block.
+`pr-report` is a thin conductor. It consumes normalized output from the best available tool for each capability and owns synthesis, triage, and reporting. Adapters translate provider-specific data into the normalized shapes defined by the `pr-adapter-contract` building block.
+
+Adapters are one implementation strategy, not the only source of truth. The conductor also considers MCP tools, native binaries, direct APIs, and manual fallback. The full capability-to-tool mapping is in [TOOL_SELECTION.md](TOOL_SELECTION.md).
 
 ## Adapter taxonomy
 
@@ -28,14 +30,18 @@ The full contract — envelope shape, status semantics, operation schemas, and a
 
 ## Discovery and registration
 
-Adapters are registered by name in `pr-report` config. The conductor does not hardcode adapter names. The default registry ships with the conductor; users can override or extend it per project. See [ADAPTER_REGISTRY.md](ADAPTER_REGISTRY.md) for the registry and [CONFIG_PATTERN.md](CONFIG_PATTERN.md) for config schema.
+Adapters are one source among skill adapters, MCP tools/servers, native binaries, direct APIs, and manual fallback. The conductor selects the best tool for each capability using the rules in [TOOL_SELECTION.md](TOOL_SELECTION.md).
+
+Adapters may be registered by name in `pr-report` config. The conductor does not hardcode adapter names, but it does ship with a default registry. Users can override or extend the registry per project. See [ADAPTER_REGISTRY.md](ADAPTER_REGISTRY.md) for the registry and [CONFIG_PATTERN.md](CONFIG_PATTERN.md) for config schema.
 
 ### Discovery rules
 
-1. If `source` is a known adapter name, invoke it.
-2. If `source` is `auto`, detect from the PR source, environment variables, or config files.
-3. If `source` is a file path, treat it as a script or config-only adapter.
-4. If `source` is `manual` or missing, use the manual adapter.
+1. Discover all available tool categories first (adapters, MCP tools, native binaries, direct APIs) using [TOOL_SELECTION.md](TOOL_SELECTION.md).
+2. If a configured adapter is the best available tool for a capability, invoke it.
+3. If the configured adapter is not the best available tool, disclose the better tool and ask the user whether to switch.
+4. If `source` is `auto`, detect from the PR source, environment variables, MCP config, or config files.
+5. If `source` is a file path, treat it as a script or config-only adapter.
+6. If `source` is `manual` or missing, use the manual adapter.
 
 ## Built-in adapters
 
@@ -43,7 +49,7 @@ The redesigned `pr-report` ships with a small set of built-in adapters. See [ADA
 
 ## Manual adapter
 
-The manual adapter is the default for unsupported tools and manual processes. It is a first-class adapter, not a degraded fallback. Details, input modes, and formats live in `manual-pr-adapter`.
+The manual adapter is the default for unsupported tools and manual processes. It is a first-class adapter, not a degraded fallback. It is used when it is the best or only available tool for a capability. Details, input modes, and formats live in `manual-pr-adapter`.
 
 ## Config-only adapter
 
@@ -64,12 +70,12 @@ Adapters must distinguish five states: `complete`, `partial`, `needs_input`, `bl
 | Status | Conductor behavior |
 |---|---|
 | `complete` | Use the data. |
-| `partial` | Use what is available and note gaps. |
+| `partial` | Check whether a better tool is available; if so, fall back to it before accepting the partial data. If the best available tool is still partial, disclose and apply `tooling.degraded_mode`. |
 | `needs_input` | Ask the user and retry. |
 | `blocked` | Stop and consult the user. |
 | `skipped` | Continue without that source. |
 
-The conductor does not fail because one adapter is missing. It reports plainly which sources are unavailable and proceeds with the rest.
+If a better tool is available for a capability but the configured adapter returned `partial` or `blocked`, the conductor must disclose the better tool and offer to switch before accepting degradation.
 
 ## Adapter checklist
 
@@ -92,7 +98,8 @@ Adapters do not synthesize or triage issues, write the PR report, fix code, or r
 - `token-resolver` — token resolution
 - `context-reports` — context report format
 - `manual-pr-adapter` — manual adapter details
-- [ADAPTER_REGISTRY.md](ADAPTER_REGISTRY.md) — adapter registry
+- [TOOL_SELECTION.md](TOOL_SELECTION.md) — capability-to-tool mapping and selection rules
+- [ADAPTER_REGISTRY.md](ADAPTER_REGISTRY.md) — default adapter registry
 - [CONFIG_PATTERN.md](CONFIG_PATTERN.md) — adapter config
 - [COMMENT_TRIAGE.md](COMMENT_TRIAGE.md) — how normalized items are triaged
 - [CHECKPOINTING.md](CHECKPOINTING.md) — state and resumption

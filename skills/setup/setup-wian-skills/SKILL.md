@@ -1,13 +1,12 @@
 ---
 name: setup-wian-skills
 description: Sync skills from a source package and resolve shared project configuration once. Run when setting up or updating a workspace.
-version: 1.0.0
+version: 1.0.1
 invocation: user-invoked
 license: Proprietary
 metadata:
   author: Wian van der Merwe
   tags: [setup, conductor, bootstrap, sync, configuration]
-  verification_level: declared
 depends:
   - list-available-skills
   - install-skill

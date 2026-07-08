@@ -6,8 +6,7 @@ invocation: model-invoked
 metadata:
   tags: [adapter, pr-source, manual, building-block]
   author: Wian van der Merwe
-  version: "1.0.0"
-  verification_level: declared
+  version: "1.0.1"
 ---
 
 # Manual PR Adapter

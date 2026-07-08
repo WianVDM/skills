@@ -31,3 +31,8 @@ If the design draft specifies lazy dependency evaluation, ensure the `SKILL.md` 
 - A statement that required dependencies are checked at initialization.
 - A statement that recommended/optional dependencies are evaluated when the relevant method or branch is selected.
 - A reference to the tooling catalog or dependencies document that explains the per-path strategy.
+
+If the design draft specifies a capability-to-tool strategy, ensure the `SKILL.md` body includes:
+- A statement that the skill discovers tools per capability (adapters, MCP servers, native binaries, direct APIs, harness tools, manual fallback).
+- A statement of the preferred tool and fallback tools for each load-bearing capability.
+- A disclosure template or section explaining degraded sources and how user consent or recorded preferences are obtained.

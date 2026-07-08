@@ -1,12 +1,11 @@
 ---
 name: write-a-skill
 description: Skill-design conductor for creating, reviewing, and updating skills that follow the skill standards.
-version: 1.0.0
+version: 1.0.1
 invocation: user-invoked
 metadata:
   author: Wian van der Merwe
   tags: [authoring, conductor, skill-design, standards]
-  verification_level: declared
 depends:
   - detect-project-context
   - decide-skill-shape
@@ -77,10 +76,22 @@ The conductor runs this 10-phase pipeline. Each phase has a completion criterion
 | 4. **Define identity** | Name, description, invocation, author, tags. Version only if the user requires it or the skill will be shared/consumed. | Frontmatter skeleton exists and user confirmed. |
 | 5. **Define scope** | In-scope, out-of-scope, branches, assumptions. | Scope boundaries are explicit and defensible. |
 | 6. **Select patterns** | Apply fundamentals; suggest Layer 2 patterns. Decide if the skill is configurable and, if so, which shared and skill-specific keys it needs. | Pattern list and config declaration (if any) exist and user confirmed. |
+| 6b. **Design capability-to-tool strategy** | For each load-bearing capability, identify the preferred tool, fallback tools, and degraded-output disclosure. Document the selection rule and user-consent behavior. | A capability-to-tool mapping exists for every load-bearing capability; the user has confirmed or corrected the strategy. |
 | 7. **Draft artifacts** | Generate `SKILL.md`, optional `README.md`, `references/`, `subagents/`, `scripts/`, `assets/`, and `config.yaml` if the skill is configurable. | Draft files exist and are linked correctly. |
 | 8. **Audit and validate** | Run `audit-skill` and `validate-skill-frontmatter`. | Audit report exists with no blocking failures. |
 | 9. **Generate evals** | Run `run-trigger-evals` for model-invoked skills. | `evals/evals.json` exists or user declined. |
 | 10. **Confirm and write** | Present the full plan; write files only after explicit approval. | User approved; files written; decision log updated. |
+
+## Tooling-awareness design checklist
+
+Before drafting, confirm for every load-bearing capability:
+
+- [ ] Each capability step names the outcome before choosing a tool.
+- [ ] The skill detects available tools across all categories (skill adapters, MCP servers, native binaries, direct APIs, harness tools, manual fallback).
+- [ ] The skill prefers the best available tool, not just the adapter it ships with.
+- [ ] The preferred tool, fallback tools, and selection rule are documented.
+- [ ] If a degraded source is used, the skill tells the user what better option was available and gets explicit or recorded consent.
+- [ ] The full dependency surface is declared in `references/DEPENDENCIES.md` and `skills.json`.
 
 ## Subagent prompts
 
@@ -175,6 +186,19 @@ Summarize completed work, pending work, current focus, and the recommended next 
 - **Required** — the skill cannot function without this dependency.
 - **Recommended** — improves output or experience; the skill runs degraded if it is missing.
 - **Optional** — only needed for a side branch or advanced feature.
+
+Dependencies are not limited to other skills. The skills drafted by this conductor may depend on any of the following tool categories:
+
+| Category | Examples |
+|---|---|
+| **Skill adapters** | `github-pr-adapter`, `sonarcloud-adapter`, `jira-adapter` |
+| **MCP tools / servers** | `github_get_pull_request_reviews`, SonarQube MCP, Jira MCP |
+| **Native binaries** | `gh`, `git`, `curl`, `jq` |
+| **Direct APIs** | Provider REST or GraphQL endpoints |
+| **Harness tools** | Built-in browser, file system, search, shell |
+| **Manual fallback** | User input, CSV, markdown files |
+
+The conductor must teach authors to design capability-first: identify the needed outcome, discover available tools across categories, select the best one, and disclose the choice.
 
 ### Required skills
 

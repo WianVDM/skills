@@ -48,13 +48,12 @@ Rules:
 
 ## Report template
 
-Path: `{context_dir}/pr-report/{key}-report.md`.
+The report template schema is documented in [CONTEXT_REPORTS.md](CONTEXT_REPORTS.md). This section covers the state and delta logic only.
 
-Frontmatter: `skill`, `version`, `key`, `pr_number`, `repo`, `branch`, `base`, `report_status`, `updated_at`, `consumed_context`.
+The report uses the following sections and status markers:
 
-Sections: PR Summary, Changed Files, CI / Build Status, Static Analysis Findings, Issues Requiring Action, Resolved Since Last Check, Threads with Unclear Status, Addressed by Us — Pending Resolve, Rebuttals Requiring Response, Reviewer Status, Scope Flags, Dismissed / No Action Needed.
-
-Mark each section with `<!-- STATUS: pending -->` initially and `<!-- STATUS: completed -->` when filled.
+- Sections: PR Summary, Changed Files, CI / Build Status, Static Analysis Findings, Issues Requiring Action, Resolved Since Last Check, Threads with Unclear Status, Addressed by Us — Pending Resolve, Rebuttals Requiring Response, Reviewer Status, Scope Flags, Dismissed / No Action Needed.
+- Mark each section with `<!-- STATUS: pending -->` initially and `<!-- STATUS: completed -->` when filled.
 
 ## Chat delivery
 

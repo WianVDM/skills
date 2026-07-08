@@ -59,18 +59,18 @@ Write one core objective, explicit in-scope items, and explicit out-of-scope ite
 
 **Completion criterion:** the scope boundaries are explicit and do not contradict each other.
 
-#### 6. Select patterns
+#### 6. Select patterns and capability-to-tool strategy
 
-**Why:** applying the right patterns makes the skill portable, maintainable, and composable.
+**Why:** applying the right patterns makes the skill portable, maintainable, and composable. Designing the capability-to-tool strategy up front prevents adapter tunnel vision.
 
-Apply the fundamentals from [references/FUNDAMENTALS.md](FUNDAMENTALS.md) and select Layer 2 patterns using [references/PATTERN_HINTS.md](PATTERN_HINTS.md). For dependencies, decide:
+Apply the fundamentals from [references/FUNDAMENTALS.md](FUNDAMENTALS.md) and select Layer 2 patterns using [PATTERN_HINTS.md](PATTERN_HINTS.md). For each load-bearing capability, build a capability matrix (preferred tool, fallback tools, degraded-output disclosure, user-consent behavior) using the guidance in [PATTERN_HINTS.md](PATTERN_HINTS.md). For dependencies, decide:
 
 - Which are **required** and must be checked at initialization.
 - Which are **recommended** or **optional** and can be evaluated **lazily** when the relevant method or branch is selected.
 
-Document the lazy evaluation strategy in the design draft so the drafted skill does not ask the user to configure unrelated tooling upfront.
+Document the lazy evaluation strategy and the capability-to-tool matrix in the design draft so the drafted skill does not ask the user to configure unrelated tooling upfront.
 
-**Completion criterion:** the pattern list exists, the dependency evaluation strategy is documented, and the user has confirmed it.
+**Completion criterion:** the pattern list exists, the capability-to-tool matrix covers every load-bearing capability, the dependency evaluation strategy is documented, and the user has confirmed it.
 
 #### 7. Draft artifacts
 
@@ -113,9 +113,10 @@ A compressed version of the full gate for minimal skills.
 3. **Define identity** — name, description, invocation, scope.
 4. **Define scope** — one objective, in-scope, out-of-scope.
 5. **Select patterns** — apply fundamentals.
-6. **Draft** — write the skill files.
-7. **Audit** — run `audit-skill` and `validate-skill-frontmatter`.
-8. **Confirm and write** — get approval before writing.
+6. **Design capability-to-tool strategy** — for each load-bearing capability, note the preferred tool, fallback, and degraded-output disclosure.
+7. **Draft** — write the skill files.
+8. **Audit** — run `audit-skill` and `validate-skill-frontmatter`.
+9. **Confirm and write** — get approval before writing.
 
 ### Create branch — decide gate
 
@@ -136,7 +137,7 @@ The `change` branch audits or updates an existing skill. **Understanding must co
 
 For both the `review` and `update` gates, invoke the `review-skill` conductor. It applies the review principles from `docs/skill-standards/REVIEW_PRINCIPLES.md` (or the fallback copy in `review-skill/references/REVIEW_PRINCIPLES.md`). After a full audit, it produces a verdict-led report. If the core questions cannot be answered, it produces an incomplete report.
 
-When reviewing a skill with multiple methods or branches, pay special attention to lazy dependency evaluation: required dependencies should be checked eagerly, and recommended/optional dependencies should be evaluated lazily per path. The full dependency surface must still be declared in `references/DEPENDENCIES.md` and `skills.json`.
+When reviewing a skill with multiple methods or branches, pay special attention to **tooling awareness** and **lazy dependency evaluation**: required dependencies should be checked eagerly, and recommended/optional dependencies should be evaluated lazily per path. The full dependency surface must still be declared in `references/DEPENDENCIES.md` and `skills.json`. When reviewing any skill, check whether it names capabilities before tools, discovers available tools across categories, and discloses degraded sources with user consent.
 
 After the comprehension step is complete, the `review-skill` conductor runs the remaining workflow:
 

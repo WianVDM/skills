@@ -97,35 +97,35 @@
       "id": "trigger-not-04",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Audit this skill for standards issues",
+      "prompt": "Fetch GitHub Actions check runs",
       "expected": ""
     },
     {
       "id": "trigger-not-05",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Write a PR report",
+      "prompt": "Fetch SonarCloud findings",
       "expected": ""
     },
     {
       "id": "trigger-not-06",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Fetch GitHub Actions check runs",
+      "prompt": "Fetch the GitHub PR review threads",
       "expected": ""
     },
     {
       "id": "trigger-not-07",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Fetch SonarCloud findings",
+      "prompt": "Audit this skill for standards issues",
       "expected": ""
     },
     {
       "id": "trigger-not-08",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Create a new skill from scratch",
+      "prompt": "Write a PR report",
       "expected": ""
     },
     {
@@ -141,6 +141,38 @@
       "category": "should-not-trigger",
       "prompt": "Plan the next steps for this project",
       "expected": ""
+    },
+    {
+      "id": "behavior-01",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Given Jira ticket OC-1234 at my-org.atlassian.net, return the normalized issue-tracker-source shape with acceptance criteria.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "adapter_role: issue-tracker-source"
+        },
+        {
+          "type": "output_contains",
+          "value": "key: OC-1234"
+        }
+      ]
+    },
+    {
+      "id": "behavior-02",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "The Jira token is missing. What status should the adapter return?",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "status: needs_input"
+        },
+        {
+          "type": "output_contains",
+          "value": "JIRA_TOKEN"
+        }
+      ]
     }
   ]
 }

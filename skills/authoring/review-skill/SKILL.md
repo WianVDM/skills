@@ -1,12 +1,11 @@
 ---
 name: review-skill
 description: Audit an existing skill against the skill standards, apply the review principles, and produce a verdict-led report or remediation plan after explicit approval. Use when reviewing or updating a skill.
-version: 1.0.0
+version: 1.0.1
 invocation: model-invoked
 metadata:
   author: Wian van der Merwe
   tags: [authoring, conductor, audit, remediation]
-  verification_level: declared
 depends:
   - audit-skill
   - validate-skill-frontmatter
@@ -72,8 +71,8 @@ Both gates share the same comprehension and audit phase. The `update` gate adds 
    - **Completion criterion:** all skill files are loaded.
 2. **Comprehend the skill.**
    - Apply the review principles from `references/REVIEW_PRINCIPLES.md` (a fallback copy of `docs/skill-standards/REVIEW_PRINCIPLES.md`).
-   - Answer the five core questions and record the answers.
-   - **Completion criterion:** the five core questions are answered, or the missing information is documented.
+   - Answer the seven core questions and record the answers, including the tooling-awareness question.
+   - **Completion criterion:** the seven core questions are answered, or the missing information is documented.
 3. **Produce an incomplete report if necessary.**
    - If the core questions cannot be answered, write `{context}/skill-review/{skill-name}-incomplete.md` with open questions and stop.
    - **Completion criterion:** incomplete report exists and no verdict is issued.
@@ -109,13 +108,15 @@ Both gates share the same comprehension and audit phase. The `update` gate adds 
 
 ## Core question checklist
 
-Before scoring, answer and record the five core questions from `references/REVIEW_PRINCIPLES.md`:
+Before scoring, answer and record the seven core questions from `references/REVIEW_PRINCIPLES.md`:
 
 1. **Justify** — What single judgment does this skill make predictable? Would the agent be wrong without it?
 2. **Shape** — Is this a skill, or should it be a script, MCP server, context file, or extension of an existing skill?
 3. **Scope** — Is the objective one sentence? Are the boundaries explicit and non-overlapping?
 4. **Prune** — Is every line load-bearing? Can a section, example, or reference be removed without changing behavior?
 5. **Focus** — Does the phrasing produce the right result? Can leading words, negation pairs, or checkable completion criteria make it leaner?
+6. **Dependencies** — Are required dependencies checked eagerly and recommended/optional dependencies evaluated lazily when the skill has multiple methods or branches? Is the full dependency surface still declared?
+7. **Tooling awareness** — Does the skill name capabilities before tools? Does it detect available tools, prefer the best one, and disclose degraded sources?
 
 If any question cannot be answered, produce an incomplete report instead of a verdict.
 
