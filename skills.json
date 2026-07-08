@@ -264,8 +264,10 @@
     },
     "setup-wian-skills": {
       "required": [
+        "detect-project-context",
         "list-available-skills",
-        "install-skill"
+        "install-skill",
+        "validate-skill-frontmatter"
       ]
     },
     "to-issues": {

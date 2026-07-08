@@ -1,22 +1,24 @@
 ---
 name: setup-wian-skills
-description: Sync skills from a source package and resolve shared project configuration once. Run when setting up or updating a workspace.
+description: Sync skills from github.com/WianVDM/skills, resolve shared configuration, and present the initialization checklist. Use when setting up or updating a workspace.
 version: 1.0.1
 invocation: user-invoked
 license: Proprietary
 metadata:
   author: Wian van der Merwe
-  tags: [setup, conductor, bootstrap, sync, configuration]
+  tags: [setup, conductor, bootstrap, sync, configuration, wian-skills]
 depends:
+  - detect-project-context
   - list-available-skills
   - install-skill
+  - validate-skill-frontmatter
 ---
 
 # Setup Wian's Skills
 
 ## Purpose
 
-Sync skills from a source package into a project or user scope, collect shared configuration once, and present a checklist for skill-specific initialization.
+Sync skills from the canonical source package (`github.com/WianVDM/skills`) into the current workspace, resolve shared configuration keys once, and present a checklist for any skill-specific initialization.
 
 ## Type
 
@@ -24,88 +26,136 @@ Conductor.
 
 ## In scope
 
-- Sync skills from a configured source package into project or user scope.
-- Detect local modifications and ask before overwriting.
-- Collect shared configuration keys once and write them to the shared config file.
-- Present a checklist of skills that need skill-specific initialization.
-- Write a context report summarizing the sync and configuration state.
+- Sync skills from `github.com/WianVDM/skills` into project or user scope.
+- Resolve conflicts with locally modified or same-name skills.
+- Gather shared configuration once, deduplicate keys, and infer answers from previous responses.
+- Confirm the full plan before applying changes.
+- Present the initialization checklist and write a context report.
 
 ## Out of scope
 
-- Editing project-owned files such as `AGENTS.md`, `CLAUDE.md`, or `README.md`. Write context reports to `.agents/context/` instead.
-- Running arbitrary scripts from skill directories without explicit user approval. Require approval for each script execution.
-- Installing skills from arbitrary third-party sources. Use only the configured source package.
+- Installing skills from sources other than `github.com/WianVDM/skills`. Use `install-skill` for that.
+- Editing project-owned files such as `AGENTS.md`, `CLAUDE.md`, or `README.md`. Write context reports to the detected context directory instead of project-owned files.
+- Running arbitrary scripts from skill directories without explicit approval.
+- Modifying target-only skills. Surface them and do not change them.
+
+## Quality guarantees
+
+- No changes are applied without explicit user approval.
+- The sync is applied atomically and rolled back if any step fails.
+- Every installed or updated skill is validated after sync.
 
 ## When to use
 
 - First time a workspace uses these skills.
-- After the source package changes and the workspace needs updates.
+- After the source package releases a new version.
 - When a new shared configuration key must be resolved.
+- Before a long work session to verify the workspace is on the latest skill versions.
+
+## Branch entry
+
+| Branch | Trigger | Outcome |
+|---|---|---|
+| **sync** | No `--preview` flag (default) | Run the full sync workflow. |
+| **preview** | `/setup-wian-skills --preview` | Show the plan and configuration questions without applying changes. |
+
+**Completion criterion:** the branch is one of {sync, preview} and the user has confirmed or corrected the default.
+
+## Workflow
+
+### 1. Pre-flight checks
+
+Verify required capabilities before any network or disk operations:
+
+- `detect-project-context`, `list-available-skills`, `install-skill`, and `validate-skill-frontmatter` are available.
+- A network fetch tool is available (`git` preferred; `curl` as fallback).
+- The workspace is trusted enough to read and write skill files; if not, stop.
+
+**Completion criterion:** all required capabilities are present, or the skill stops and reports what is missing.
+
+### 2. Resolve source and target
+
+- Source is always `github.com/WianVDM/skills`.
+- Determine the version to sync: latest release by default, or `--version <tag>` if supplied.
+- Use `detect-project-context` to find the project root, the recommended config directory, and the recommended context directory.
+- Ask whether to target project or user scope; resolve the canonical storage path for the chosen scope.
+
+**Completion criterion:** source version, target scope, and canonical target path are resolved.
+
+### 3. Discover and plan
+
+Use `list-available-skills` to discover installed skills. For each installed skill, determine whether it is a symlink or a regular copy. If any installed skill is a symlink, ask the user which installation pattern to use for this sync:
+
+- **Follow the symlink pattern** (recommended default): install or update skills as symlinks, matching the existing layout.
+- **Install to the canonical target path**: copy skills directly into the resolved target directory, ignoring the symlink pattern.
+
+Then fetch the source package and compare it to the installed inventory. Determine a status for each skill (`missing`, `changed`, `identical`, `modified`, `older`, or `target-only`). See [references/SYNC_RULES.md](references/SYNC_RULES.md) for status definitions.
+
+**Completion criterion:** a sync plan exists with a status and proposed action for every skill, and the installation pattern is resolved.
+
+### 4. Resolve conflicts
+
+For every `modified` or `older` skill, ask per skill:
+
+- **Backup, then overwrite** (recommended default)
+- **Overwrite**
+- **Keep local**
+- **Skip**
+
+In the **preview** branch, show the proposed resolution only.
+
+**Completion criterion:** the user has chosen an action for every conflict, or the skill aborts.
+
+### 5. Gather and prompt for configuration
+
+Read `config.yaml` from every skill in the approved sync plan. Build a configuration graph per [references/CONFIG_DECLARATION.md](references/CONFIG_DECLARATION.md):
+
+- Collect, deduplicate, and infer `shared` keys.
+- Preserve existing values from the shared config file.
+- Ask one question at a time for each unresolved key, allowing earlier answers to unlock, skip, or rephrase later questions.
+
+In the **preview** branch, list the questions that would be asked; do not prompt.
+
+**Completion criterion:** every required key has a value, or the skill stops and explains what is missing.
+
+### 6. Confirm the full plan
+
+Present the complete plan for explicit approval: source version, target scope, skills to change, conflict resolutions, backup locations, config keys to write, and skills requiring initialization. If the user declines, abort without writing files.
+
+**Completion criterion:** the user has approved the plan.
+
+### 7. Apply and validate
+
+Use `install-skill` to copy each approved skill into the target scope, or create symlinks if the user chose the symlink pattern. Apply changes in an order that allows rollback:
+
+- Back up locally modified skills before overwriting if the user chose that option.
+- Install or update each skill using the resolved pattern (symlink or copy).
+- If any step fails, roll back to the pre-sync state.
+- Run `validate-skill-frontmatter` on every installed or updated skill and record the results.
+
+In the **preview** branch, skip this phase entirely.
+
+**Completion criterion:** approved skills are installed and validated, or the workspace is rolled back.
+
+### 8. Finalize
+
+- Write the resolved shared config, preserving existing unchanged keys.
+- Present the initialization checklist for skills with `requires_setup: true` or an `## Initialization` section.
+- Write a context report to `{context_dir}/setup-wian-skills/last-sync.md`, where `{context_dir}` is the recommended context directory from `detect-project-context`, summarizing the sync, backups, config changes, validation results, and next steps.
+
+In the **preview** branch, skip this phase.
+
+**Completion criterion:** shared config is written, the checklist is displayed, and the context report is written.
+
+## Failure handling
+
+- Missing required dependency or source fetch failure: stop and report what is missing.
+- User declines the sync plan or a required config key: abort without writing files.
+- Sync step failure during apply: roll back to the pre-sync state and report the failure.
 
 ## Dependencies
 
 See [references/DEPENDENCIES.md](references/DEPENDENCIES.md).
-
-## Workflow
-
-### 1. Resolve scope and source
-
-Detect the project root and ask whether to target project scope or user scope. Determine the source package from the configured default or from a user-supplied argument.
-
-When targeting user scope, resolve the path to its canonical storage location before comparing or installing skills. See [Default source configuration](references/DEFAULTS.md) for symlink-farm guidance.
-
-**Completion criterion:** scope, source, and canonical target path are resolved.
-
-### 2. Discover installed skills
-
-Use `list-available-skills` to find skills already present in the target scope.
-
-**Completion criterion:** an inventory of installed skills exists.
-
-### 3. Build and confirm sync plan
-
-Fetch the source package, compare it to the installed inventory, and build a plan:
-
-- install missing skills
-- update changed skills
-- skip identical skills
-- flag locally modified skills for confirmation
-- surface `target-only` skills without changing them
-- ignore generated files listed in `sync.excludes` when comparing content
-
-Present the plan and confirm before applying.
-
-**Completion criterion:** user has approved the sync plan.
-
-### 4. Apply sync
-
-Use `install-skill` to copy each approved skill into the target scope.
-
-**Completion criterion:** approved skills are installed.
-
-### 5. Resolve shared configuration
-
-Read `config.yaml` from each installed skill. Collect unique `shared` keys. For each missing shared key, prompt once using its default; do not batch all missing keys into a single prompt. Write the shared config file.
-
-If a required key cannot be resolved and has no default, stop and explain what is missing.
-
-**Completion criterion:** shared config is written and every missing key has been individually prompted and resolved.
-
-### 6. Present initialization checklist
-
-Identify skills that declare `requires_setup: true` in `config.yaml` or have an `Initialization` section. Present them as a checklist for the user to run.
-
-**Completion criterion:** checklist is displayed and the user knows the next commands.
-
-### 7. Write context report
-
-Write a summary to `.agents/context/setup-wian-skills/last-sync.md`.
-
-**Completion criterion:** context report is written.
-
-## Failure handling
-
-If the source package cannot be fetched, stop and report the failure. If a required dependency is missing, stop and list what is missing. If the user declines the sync plan, abort without writing files.
 
 ## References
 

@@ -1,23 +1,28 @@
 # setup-wian-skills
 
-Sync skills from a source package into the current workspace and resolve shared configuration once.
+Sync skills from `github.com/WianVDM/skills` into the current workspace and resolve shared configuration once.
 
 ## Usage
 
 ```text
 /setup-wian-skills
-/setup-wian-skills <owner>/<repo>
+/setup-wian-skills --preview
+/setup-wian-skills --version <tag>
 ```
 
 ## What it does
 
-1. Resolves target scope (project or user) and source package.
-2. Discovers installed skills.
-3. Builds and confirms an install/update plan.
-4. Applies the approved sync.
-5. Collects shared configuration keys once.
-6. Presents an initialization checklist for skill-specific setup.
-7. Writes a context report.
+1. Detects the existing installation pattern (symlink or copy) and asks whether to follow it.
+2. Builds a sync plan from the latest (or pinned) source release and asks for explicit approval before applying changes.
+3. Resolves conflicts with locally modified or same-name skills.
+4. Gathers shared configuration once and prompts for missing keys.
+5. Applies the sync atomically, rolls back on failure, and validates every installed skill.
+6. Presents the initialization checklist and writes a context report.
+
+## Options
+
+- `--preview`: Show the sync plan and configuration questions without applying changes.
+- `--version <tag>`: Sync a specific release or tag instead of the latest.
 
 ## References
 
