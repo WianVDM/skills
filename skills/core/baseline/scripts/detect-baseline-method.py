@@ -55,7 +55,7 @@ def _detect_mcp_files(cwd: Path):
     Searches for `mcp.json` in the project root and in immediate subdirectories
     (including hidden directories such as editor/harness config folders) without
     naming specific vendors. Also checks the project-agnostic
-    `.agents/config/mcp.json` convention.
+    `{config_dir}/mcp.json` convention.
     """
     mcp_files = []
     skip_dirs = {"node_modules", ".git", "dist", "build", "out"}
@@ -195,24 +195,40 @@ def _detect_test_runner(cwd: Path):
 
 
 def _detect_code_snapshot(cwd: Path):
-    """Detect whether project source files are available for code snapshot baselines."""
+    """Detect whether project source files are available for code snapshot baselines.
+
+    Performs a bounded depth-first search up to MAX_DEPTH directory levels below
+    the project root to keep the scan deterministic and cheap.
+    """
     source_extensions = {
         ".js", ".ts", ".jsx", ".tsx",
         ".py", ".go", ".java", ".kt", ".swift",
         ".cs", ".cpp", ".c", ".h", ".rb", ".php",
         ".rs", ".scala", ".clj", ".elm",
     }
-    # Bounded walk: root and one level of subdirectories keeps it cheap.
-    for entry in sorted(cwd.iterdir()):
-        if entry.is_file() and entry.suffix in source_extensions:
-            return True, "high", "project source files available"
-        if entry.is_dir() and not entry.name.startswith("."):
-            try:
-                for child in sorted(entry.iterdir()):
-                    if child.is_file() and child.suffix in source_extensions:
-                        return True, "high", "project source files available"
-            except OSError:
+    MAX_DEPTH = 4
+    skip_names = {".git", "node_modules", "dist", "build", "out", "__pycache__", ".venv", "venv"}
+
+    def walk(path: Path, depth: int):
+        if depth > MAX_DEPTH:
+            return None
+        try:
+            entries = sorted(path.iterdir())
+        except OSError:
+            return None
+        for entry in entries:
+            if entry.name in skip_names:
                 continue
+            if entry.is_file() and entry.suffix in source_extensions:
+                return True
+            if entry.is_dir():
+                result = walk(entry, depth + 1)
+                if result:
+                    return True
+        return None
+
+    if walk(cwd, 0):
+        return True, "high", "project source files available"
     return False, "low", "no recognizable source files found"
 
 

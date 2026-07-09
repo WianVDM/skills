@@ -75,7 +75,7 @@ Stop immediately and flag if:
 ## Artifact directory structure
 
 ```text
-.agents/context/baseline/
+{context_dir}/baseline/
 ├── {scope}-{branch}.md
 ├── {scope}-{branch}.html        # optional
 └── {scope}-{branch}/
@@ -104,13 +104,13 @@ The `{scope}-{branch}` directory may also contain a `.state/` subdirectory used 
 ```markdown
 ---
 skill: baseline
-version: 1.0.0
+version: 1.0.1
 scope: <scope>
 branch: <branch>
 commit: <commit>
 method: ui-browser|api-http|test-runner|code-snapshot|manual
 consumed_context:
-  - .agents/context/<skill>/<scope>.md
+  - {context_dir}/<skill>/<scope>.md
 baselined_at: <timestamp>
 type: <bug|feature|module|route|api|manual>
 reproducible: true              # only when type is bug
@@ -218,4 +218,4 @@ Generated alongside the Markdown report when `output.default_format` is `html-bo
 
 ## Versioning
 
-Reports include `version: 1.0.0` to match the skill's version. When the skill version changes, report consumers should check the version field and handle older schemas if needed. Treat older reports as potentially stale and prefer re-capturing.
+Reports include `version: 1.0.1` to match the skill's version. When the skill version changes, report consumers should check the version field and handle older schemas if needed. Treat older reports as potentially stale and prefer re-capturing.

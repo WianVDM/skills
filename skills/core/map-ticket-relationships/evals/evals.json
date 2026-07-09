@@ -173,6 +173,27 @@
           "value": "\"status\": \"blocked\""
         }
       ]
+    },
+    {
+      "id": "composition-research-to-map",
+      "type": "composition",
+      "prompt": "Feed a research-ticket output envelope for OC-4644 into map-ticket-relationships and verify the relationship graph contains parent, linked, and implementation artifacts.",
+      "available_skills": ["research-ticket", "map-ticket-relationships"],
+      "expected_selection": ["research-ticket", "map-ticket-relationships"],
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"parent\""
+        },
+        {
+          "type": "output_contains",
+          "value": "\"linked\""
+        },
+        {
+          "type": "output_contains",
+          "value": "\"implementation\""
+        }
+      ]
     }
   ]
 }

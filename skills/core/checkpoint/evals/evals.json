@@ -87,6 +87,45 @@
           "value": "Build context graph"
         }
       ]
+    },
+    {
+      "id": "pressure-missing-state",
+      "type": "pressure",
+      "prompt": "Resume checkpoint from a state file that does not exist.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"error\""
+        }
+      ]
+    },
+    {
+      "id": "pressure-corrupt-state",
+      "type": "pressure",
+      "prompt": "Validate a checkpoint state file whose frontmatter is malformed and missing the closing '---' marker.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"error\""
+        }
+      ]
+    },
+    {
+      "id": "composition-create-update-resume",
+      "type": "composition",
+      "prompt": "Create a checkpoint, update it to mark a phase complete, and resume to verify the next pending phase.",
+      "available_skills": ["checkpoint"],
+      "expected_selection": ["checkpoint"],
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"complete\""
+        },
+        {
+          "type": "output_contains",
+          "value": "\"next_pending_phase\""
+        }
+      ]
     }
   ]
 }

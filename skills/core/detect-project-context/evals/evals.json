@@ -141,6 +141,66 @@
       "category": "should-not-trigger",
       "prompt": "Tell me the root of the filesystem.",
       "expected": ""
+    },
+    {
+      "id": "behavior-no-marker",
+      "type": "behavior",
+      "category": "edge-case",
+      "setup": "Run the script from a temporary directory that contains no marker directories and is not inside a git repository.",
+      "input": "python scripts/detect-project-context.py --start /tmp/no-marker --json",
+      "expected": {
+        "project_root": null,
+        "marker": null,
+        "confidence": "low",
+        "recommended_skills_dir": null,
+        "recommended_context_dir": null,
+        "recommended_config_dir": null
+      }
+    },
+    {
+      "id": "behavior-nested-subdir",
+      "type": "behavior",
+      "category": "happy-path",
+      "setup": "Create a project with `.agents/context` and run the script from a deeply nested subdirectory (e.g. `src/app/components`).",
+      "input": "python scripts/detect-project-context.py --start src/app/components --json",
+      "expected": {
+        "project_root": "/path/to/project",
+        "marker": ".agents",
+        "confidence": "high",
+        "recommended_context_dir": "/path/to/project/.agents/context"
+      }
+    },
+    {
+      "id": "behavior-multiple-markers",
+      "type": "behavior",
+      "category": "edge-case",
+      "setup": "Create a project with both `.pi` and `.agents` marker directories at the root. The nearest marker in the search order is `.agents`, so it should be selected.",
+      "input": "python scripts/detect-project-context.py --start . --json",
+      "expected": {
+        "project_root": "/path/to/project",
+        "marker": ".agents"
+      }
+    },
+    {
+      "id": "behavior-invalid-start",
+      "type": "behavior",
+      "category": "error-handling",
+      "setup": "Pass a non-existent path to --start.",
+      "input": "python scripts/detect-project-context.py --start /does/not/exist --json",
+      "expected": {
+        "error": "start path does not exist"
+      }
+    },
+    {
+      "id": "behavior-git-fallback",
+      "type": "behavior",
+      "category": "edge-case",
+      "setup": "Run from a git repository that has no marker directories. No marker should be found, but the project_root should be the git root and confidence should be low.",
+      "input": "python scripts/detect-project-context.py --start . --json",
+      "expected": {
+        "marker": null,
+        "confidence": "low"
+      }
     }
   ]
 }

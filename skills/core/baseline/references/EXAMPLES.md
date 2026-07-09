@@ -17,12 +17,12 @@ Replace placeholders with values detected or confirmed for the project.
 
 ### Generated report
 
-`.agents/context/baseline/OC-4644-main.md`:
+`{context_dir}/baseline/OC-4644-main.md`:
 
 ```markdown
 ---
 skill: baseline
-version: 1.0.0
+version: 1.0.1
 scope: OC-4644
 branch: main
 commit: abc1234
@@ -30,7 +30,7 @@ type: bug
 reproducible: true
 method: ui-browser
 consumed_context:
-  - .agents/context/<skill>/OC-4644.md
+  - {context_dir}/<skill>/OC-4644.md
 baselined_at: 2026-06-26T08:42:00Z
 artifacts_dir: OC-4644-main
 summary: "Auth guard redirects to login during token refresh when navigating to /dashboard before the token refresh completes."
@@ -47,7 +47,7 @@ summary: "Auth guard redirects to login during token refresh when navigating to 
 
 ## Authentication
 - Method: session-file
-- Session: `.agents/context/baseline/sessions/default.json`
+- Session: `{context_dir}/baseline/sessions/default.json`
 
 ## Reproduction steps
 1. Navigate to `/login`.
@@ -68,7 +68,7 @@ None.
 ### Generated artifacts
 
 ```text
-.agents/context/baseline/
+{context_dir}/baseline/
 ├── OC-4644-main.md
 ├── OC-4644-main.html
 └── OC-4644-main/
@@ -85,7 +85,7 @@ None.
 ### Input
 
 - Scope: `OC-3075` rewards dashboard
-- Method: `project-test` (detected)
+- Method: `test-runner` (detected)
 - Branch: `main`
 - Commit: `def5678`
 
@@ -94,14 +94,14 @@ None.
 ```yaml
 ---
 skill: baseline
-version: 1.0.0
+version: 1.0.1
 scope: OC-3075
 branch: main
 commit: def5678
 type: feature
 method: test-runner
 consumed_context:
-  - .agents/context/<skill>/OC-3075.md
+  - {context_dir}/<skill>/OC-3075.md
 baselined_at: 2026-06-26T09:00:00Z
 artifacts_dir: OC-3075-main
 summary: "Rewards dashboard current layout, empty and loading states captured before upcoming redesign."
@@ -124,7 +124,7 @@ summary: "Rewards dashboard current layout, empty and loading states captured be
 ```yaml
 ---
 skill: baseline
-version: 1.0.0
+version: 1.0.1
 scope: user-profile-endpoint
 branch: main
 commit: def5678
@@ -146,7 +146,7 @@ summary: "User profile endpoint returns 200 with the expected profile payload."
 ```yaml
 ---
 skill: baseline
-version: 1.0.0
+version: 1.0.1
 scope: auth-guard-module
 branch: main
 commit: def5678
@@ -166,7 +166,7 @@ summary: "Snapshot of the auth guard module before refactoring."
 ```markdown
 ---
 skill: baseline
-version: 1.0.0
+version: 1.0.1
 scope: OC-5000
 branch: main
 commit: 789abcd
@@ -200,7 +200,7 @@ Unable to reproduce with automation. Manual baseline captured from user evidence
 
 ## Example 6: config after first run
 
-`.agents/config/baseline.yaml`:
+`{config_dir}/baseline.yaml`:
 
 ```yaml
 preferences:

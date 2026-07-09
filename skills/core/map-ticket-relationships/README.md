@@ -1,22 +1,11 @@
 # map-ticket-relationships
 
-Building-block skill that maps all relationships surrounding a ticket: parent, children, siblings, duplicates, linked tickets, blocked-by/blocks, implementation PRs/branches, original feature for bugs, attachments, and affected files.
+Building-block skill that maps relationships surrounding a ticket: parent, children, siblings, duplicates, linked tickets, blocked-by/blocks, implementation artifacts, original feature for bugs, attachments, and affected files. It consumes normalized `ticket_data` from `research-ticket` and enriches it with local `git` inspection. This first version does not call tracker APIs.
 
-Consumes normalized `ticket_data` from `research-ticket` and enriches it with local `git` inspection. Does not call tracker APIs in this first version.
-
-## Files
-
-- `SKILL.md` — full skill contract and design.
-- `references/DEPENDENCIES.md` — tools, binaries, and skill dependencies.
-- `references/CONFIG_PATTERN.md` — supported configuration keys.
-- `scripts/map-ticket-relationships.py` — deterministic stdin/stdout JSON script.
-- `evals/evals.json` — trigger and behavior tests.
-- `README.md` — this summary.
+See [`SKILL.md`](SKILL.md) for the full input/output contract and known limitations.
 
 ## Quick usage
 
 ```bash
 cat input.json | python3 scripts/map-ticket-relationships.py
 ```
-
-See `SKILL.md` for the full input/output contract.

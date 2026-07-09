@@ -7,6 +7,7 @@ metadata:
   author: Wian van der Merwe
   tags: [relationships, ticket-graph, dependencies, building-block]
   verification_level: declared
+license: Proprietary
 depends:
   - context-reports
   - worker-contract
@@ -62,9 +63,7 @@ ticket_data: { ... }  # normalized output from research-ticket
 git_state:
   branch: SHB-362
   commit: abc1234
-  remote: origin
 codebase_root: /path/to/project
-max_depth: 1
 infer_by_file: true
 ---
 ```
@@ -73,9 +72,8 @@ infer_by_file: true
 |---|---|---|
 | `ticket_key` | yes | Ticket/issue key to map. |
 | `ticket_data` | yes | Normalized ticket from `research-ticket`. Must contain `related_tickets`, `dev_info`, `attachments`, and optionally `description`/`summary`. |
-| `git_state` | no | Current branch/commit/remote. If omitted, local git discovery is skipped. |
+| `git_state` | no | Current branch/commit. If omitted, local git discovery is skipped. |
 | `codebase_root` | no | Root of the codebase. Defaults to the current working directory. |
-| `max_depth` | no | Graph depth. Default `1`, capped at `2`. |
 | `infer_by_file` | no | Infer affected files from ticket description. Default `false`. |
 
 ### Output
@@ -136,5 +134,5 @@ Run map-ticket-relationships with ticket_key OC-4644 and tracker_data from resea
 ## Notes
 
 - This first version does not call tracker APIs. It uses only the data provided in `ticket_data` plus local `git` inspection.
-- `max_depth` is capped at `2` to prevent runaway graph expansion.
-- `infer_by_file` performs lightweight path-like extraction from the ticket description; it is not a semantic code search.
+- Sibling mapping relies on the parent ticket's children. If `ticket_data` does not include explicit siblings, a gap note is returned because this version does not fetch parent data.
+- `infer_by_file` performs lightweight, filesystem-validated extraction from the ticket description; it is not a semantic code search.

@@ -35,6 +35,7 @@ context-reports/
 - **Reference, not workflow:** this skill defines shared conventions, not a process.
 - **Type-organized directories:** reports live under `.agents/context/{report-type}/{key}.md`.
 - **Frontmatter envelope:** reports include skill, version, key, generated_at, summary, and artifacts.
+- **Machine-readable schema:** the shared envelope is also defined in `references/context-report-schema.json`.
 - **Freshness matters:** consumers validate timestamps and underlying source changes.
 - **Missing reports are explicit:** required reports stop or consult the user; optional reports are noted.
 

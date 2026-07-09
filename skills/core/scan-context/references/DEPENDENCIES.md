@@ -2,9 +2,8 @@
 
 ## Tools
 
-- `python3` — required for `scripts/scan-context.py`.
+- `bash` — executes the deterministic Python script.
 - `read` — to inspect report frontmatter when the script is not used directly.
-- `find` / `bash` — optional; the script uses Python's standard library instead.
 
 ## Python standard library
 
@@ -12,12 +11,15 @@
 
 ## Optional Python packages
 
-- `pyyaml` — enables full YAML frontmatter parsing. If absent, the script falls back to a regex-based parser for the fields it needs.
+- `pyyaml` — enables full YAML frontmatter parsing. If absent, the script falls back to a vendored regex-based parser for the fields it needs.
 
-## Required skills
+## Required skill dependencies
 
-- `context-reports` — provides the canonical report directory layout, frontmatter schema, and freshness rules.
-- `worker-contract` — provides the canonical return contract for subagents and workers.
+None. `scan-context` is a deterministic script that does not invoke other skills.
+
+## Recommended skill dependencies
+
+- `context-reports` — provides the canonical report directory layout, frontmatter schema, and freshness rules. The script reads reports directly, but follows the conventions defined by `context-reports` when present.
 
 ## Environment variables
 

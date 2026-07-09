@@ -112,23 +112,39 @@ def _discover_prs_from_merge_commits(key: str, cwd: Path | None = None) -> list[
 
 
 def _extract_affected_files(text: str | None, cwd: Path | None = None) -> list[str]:
-    """Lightweight extraction of path-like strings from ticket text."""
+    """Extract likely file paths from ticket text and validate them.
+
+    Candidates must look like a source file (contain a slash and, when no
+    filesystem match is found, end with an extension) to reduce false positives
+    from prose or markdown links. When a `cwd` is provided, the candidate must
+    exist under that root to be included.
+    """
     if not text:
         return []
-    # Match path-like strings: at least one slash, optional filename extension
-    path_re = re.compile(r"[\w\-./]+/[\w\-./]+(?:\.[\w\-]+)?")
+    # Require at least one directory separator and an optional file extension.
+    path_re = re.compile(
+        r"(?<![a-zA-Z0-9_\-./])"
+        r"([a-zA-Z0-9_\-]+(?:/[a-zA-Z0-9_\-]+)+(?:\.[a-zA-Z0-9_\-]+)?)"
+        r"(?![a-zA-Z0-9_\-./])"
+    )
     candidates = path_re.findall(text)
     affected: list[str] = []
     seen: set[str] = set()
+    root = cwd if cwd else Path(".")
     for candidate in candidates:
-        # Skip URLs and markdown links
         if candidate.startswith("http") or candidate.startswith("www"):
             continue
-        # Heuristic: must contain at least one directory separator and look like a path
-        if "/" not in candidate:
-            continue
-        # Avoid double-counting variants that differ only by leading ./
         clean = candidate.lstrip("./")
+        if not clean:
+            continue
+        # Validate against the filesystem when possible.
+        if root.exists():
+            target = root / clean
+            if not target.exists():
+                continue
+        elif "." not in clean.split("/")[-1]:
+            # No filesystem access and no extension; skip ambiguous matches.
+            continue
         if clean and clean not in seen:
             seen.add(clean)
             affected.append(clean)
@@ -172,11 +188,6 @@ def _trace_original_feature(
     affected_files = _extract_affected_files(description, cwd)
     if affected_files and _git_available(cwd):
         for file_path in affected_files[:3]:
-            try:
-                resolved_cwd = Path(cwd or ".").resolve()
-                Path(cwd or ".").joinpath(file_path).relative_to(resolved_cwd)
-            except ValueError:
-                continue
             output = _run_git(
                 ["log", "--all", "--format=%H", "--reverse", "--", file_path],
                 cwd=cwd,
@@ -203,15 +214,12 @@ def map_relationships(
     ticket_data: dict,
     git_state: dict | None,
     codebase_root: str,
-    max_depth: int,
     infer_by_file: bool,
 ) -> dict:
     """Build the relationship graph."""
     cwd = Path(codebase_root) if codebase_root else Path(".")
     if not cwd.exists():
         cwd = Path(".")
-
-    max_depth = min(max(1, max_depth), 2)
 
     related = ticket_data.get("related_tickets", {}) or {}
     dev_info = ticket_data.get("dev_info", {}) or {}
@@ -227,16 +235,18 @@ def map_relationships(
     blocked_by = _normalize_list(related.get("blocked_by"))
     blocks = _normalize_list(related.get("blocks"))
 
+    gaps: list[str] = []
+
     # Siblings are other children of the same parent. Use explicit tracker data if
     # available; otherwise this remains empty because we do not call tracker APIs in v1.
     siblings = _normalize_list(related.get("siblings"))
+    if not siblings and parent:
+        gaps.append("Sibling derivation requires fetching the parent ticket's children; not available in v1.")
 
     # Implementation artifacts from tracker data
     prs = _normalize_list(dev_info.get("prs", []))
     branches = _normalize_list(dev_info.get("branches", []))
     commits = _normalize_list(dev_info.get("commits", []))
-
-    gaps: list[str] = []
 
     # Enrich with git discovery
     if _git_available(cwd):
@@ -348,7 +358,6 @@ def main():
                 },
                 "git_state": {"branch": "feature/OC-4644", "commit": "abc1234", "remote": "origin"},
                 "codebase_root": ".",
-                "max_depth": 1,
                 "infer_by_file": True,
             },
             "output": {
@@ -426,7 +435,6 @@ def main():
         ticket_data=ticket_data,
         git_state=git_state,
         codebase_root=codebase_root,
-        max_depth=max_depth,
         infer_by_file=infer_by_file,
     )
     print(json.dumps(result, indent=2))

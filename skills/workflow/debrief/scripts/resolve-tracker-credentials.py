@@ -63,11 +63,7 @@ def _run(data: dict) -> dict:
                 credentials[key[:-4]] = None
                 continue
 
-            resolved_key = key[:-4]
-            if resolved_key.lower() == "token" or "token" in resolved_key.lower():
-                credentials[resolved_key] = "***"
-            else:
-                credentials[resolved_key] = env_value
+            credentials[key[:-4]] = env_value
         else:
             credentials[key] = value
 

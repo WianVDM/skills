@@ -109,6 +109,85 @@
       "description": "The skill should be selected when a conductor has assumptions and evidence from explore-code.",
       "available_skills": ["challenge-assumptions", "explore-code", "research-ticket"],
       "expected_selection": ["challenge-assumptions"]
+    },
+    {
+      "id": "ca-pressure-01",
+      "type": "pressure",
+      "name": "Direct contradiction is detected",
+      "description": "A sentence that explicitly negates the assumption is flagged as challenged.",
+      "input": {
+        "assumptions": [{"text": "Token refresh happens in auth.guard.ts."}],
+        "evidence": {
+          "codebase": "Token refresh does not happen in auth.guard.ts; it is handled by the interceptor."
+        }
+      },
+      "expected": {
+        "assumptions": [
+          {
+            "status": "challenged",
+            "disproof_refs_contains": ["codebase"]
+          }
+        ]
+      }
+    },
+    {
+      "id": "ca-pressure-02",
+      "type": "pressure",
+      "name": "Neutral evidence does not trigger false positive",
+      "description": "Evidence that restates the assumption without contradiction is marked as holds.",
+      "input": {
+        "assumptions": [{"text": "Token refresh happens in auth.guard.ts."}],
+        "evidence": {
+          "codebase": "The auth.guard.ts file is responsible for route protection."
+        }
+      },
+      "expected": {
+        "assumptions": [
+          {
+            "status": "holds"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ca-pressure-03",
+      "type": "pressure",
+      "name": "Distant contradiction marker is ignored",
+      "description": "A contradiction marker that is far from the assumption phrase does not trigger a challenge.",
+      "input": {
+        "assumptions": [{"text": "Token refresh happens in auth.guard.ts."}],
+        "evidence": {
+          "codebase": "Token refresh happens in auth.guard.ts. The interceptor does not handle retries."
+        },
+        "proximity": 3
+      },
+      "expected": {
+        "assumptions": [
+          {
+            "status": "holds"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ca-pressure-04",
+      "type": "pressure",
+      "name": "Alternative handler phrasing is detected",
+      "description": "Evidence that attributes the same responsibility to a different component is flagged as challenged.",
+      "input": {
+        "assumptions": [{"text": "Token refresh happens in auth.guard.ts."}],
+        "evidence": {
+          "codebase": "The refresh interceptor handles token refresh before the guard runs."
+        }
+      },
+      "expected": {
+        "assumptions": [
+          {
+            "status": "challenged",
+            "disproof_refs_contains": ["codebase"]
+          }
+        ]
+      }
     }
   ]
 }

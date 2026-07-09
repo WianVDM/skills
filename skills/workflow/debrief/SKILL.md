@@ -16,7 +16,6 @@ depends:
   - scan-context
   - context-reports
   - worker-contract
-  - baseline
   - detect-project-context
 ---
 
@@ -65,7 +64,7 @@ Each phase ends by updating `checkpoint` state. The conductor always records the
 Steps:
 
 1. Detect project context (`detect-project-context`).
-2. Load config (`load-skill-config`).
+2. Load config (`load-skill-config`) with the defaults from `references/CONFIG_PATTERN.md`.
 3. Detect the issue tracker (`detect-issue-tracker`) if `issue_tracker: auto`; otherwise validate the configured tracker.
 4. Extract the ticket key (`extract-ticket-key`) from user input, branch, or previous state.
 5. Get git state (`get-git-state`) if needed.
@@ -84,7 +83,11 @@ Steps:
 3. Explore code (`explore-code`) only if the task type is `code`/`ui` or a code-related ambiguity exists.
 4. Scan context (`scan-context`) for related baseline reports, handoffs, or prior debriefs.
 5. Detect verifiable state (`detect-verifiable-state`).
-6. Run `baseline` only if verifiable and `baseline_mode` is not `skip`. If `baseline` returns `needs_input`, surface the question to the user and record the response in `checkpoint`.
+6. Run `baseline` according to `baseline_mode`:
+   - If `baseline_mode` is `skip`, record the skip reason and do not run `baseline`.
+   - If `baseline_mode` is `required` and `detect-verifiable-state` returns `verifiable: false`, stop and ask the user for the observable state or the acceptance criteria that make the ticket verifiable. Record the user's response in `checkpoint`.
+   - If `baseline_mode` is `required` or `optional` and `detect-verifiable-state` returns `verifiable: true`, run `baseline`. If `baseline` returns `needs_input`, surface the question to the user and record the response in `checkpoint`.
+   - If `baseline_mode` is `optional` and `detect-verifiable-state` returns `verifiable: false`, record the skip reason and continue.
 7. Update `checkpoint`.
 
 ### Phase 2 — Form and challenge assumptions
@@ -94,7 +97,7 @@ Steps:
 Steps:
 
 1. Identify ambiguities from the gathered evidence.
-2. Form explicit assumptions (`form-assumptions` subagent).
+2. Form explicit assumptions (`form-assumptions` subagent). The subagent returns a worker-contract result; the conductor extracts the `assumptions` object from the `## Findings` section.
 3. Challenge assumptions (`challenge-assumptions`).
 4. Calculate confidence (`calculate-confidence`).
 5. If confidence is Red (below the threshold), produce a blocker report and ask the user to resolve the blockers. Record overrides in `checkpoint`.
@@ -107,10 +110,11 @@ Steps:
 
 Steps:
 
-1. Synthesize the final report (`synthesis-writer` subagent) from all evidence, assumptions, and confidence.
-2. Write the report incrementally: update the report file after each phase so that context compaction does not lose progress.
-3. Finalize the report at the canonical path.
-4. Update `checkpoint`.
+1. Synthesize the final report (`synthesis-writer` subagent) from all evidence, assumptions, and confidence. The subagent returns a worker-contract result; the conductor extracts the written `report_path` from the `artifacts` frontmatter and the summary from the `## Summary` section.
+2. Check whether `{context_dir}/debrief/{key}-{slug}.md` already exists. If it does, confirm with the user before overwriting and record the decision in `checkpoint`. If the user declines, append a suffix or choose a new slug and confirm again.
+3. Write the report incrementally: update the report file after each phase so that context compaction does not lose progress.
+4. Finalize the report at the canonical path.
+5. Update `checkpoint`.
 
 ### Phase 4 — Present
 

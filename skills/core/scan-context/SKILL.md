@@ -2,13 +2,14 @@
 name: scan-context
 description: "Discover related context reports in a project's context directory by ticket key, project, branch, or report type. Use when a skill needs to find prior baselines, handoffs, debriefs, or other shared reports."
 version: 1.0.0
+license: Proprietary
 invocation: model-invoked
 metadata:
   author: Wian van der Merwe
   tags: [core, building-block, context, reports, discovery]
-depends:
-  - context-reports
-  - worker-contract
+allowed-tools:
+  - read
+  - bash
 ---
 
 # scan-context
@@ -99,9 +100,12 @@ The skill returns a JSON object:
 | `reports` | Ranked list of matching report metadata. |
 | `path` | Absolute path to the report file. |
 | `type` | Report type inferred from the subdirectory name. |
-| `ticket_key` | Ticket key from frontmatter, when present. |
+| `ticket_key` | Ticket key from frontmatter (`key`, `ticket_key`, or `ticket`), when present. |
 | `branch` | Branch from frontmatter, when present. |
-| `generated_at` | ISO 8601 timestamp from frontmatter, when present. |
+| `generated_at` | ISO 8601 timestamp from frontmatter (`generated_at`, `baselined_at`, or `updated_at`), when present. |
+| `scope` | Scope from frontmatter, when present. |
+| `method` | Method from frontmatter, when present. |
+| `parent` | Parent reference from frontmatter, when present. |
 | `relevance` | `High`, `Medium`, or `Low`. |
 | `matched_by` | `ticket_key`, `branch`, `project`, or `recency`. |
 | `fresh` | `true` if the report is newer than the freshness threshold. |
@@ -111,7 +115,7 @@ The skill returns a JSON object:
 1. **Accept and validate input.** Ensure `context_dir` exists and is a directory.
 2. **Discover report directories.** Use the requested `report_types` or scan all immediate subdirectories of `context_dir`.
 3. **Collect `.md` files.** Skip hidden directories and files.
-4. **Parse frontmatter.** Extract `key`, `ticket_key`, `branch`, and `generated_at` from each report.
+4. **Parse frontmatter.** Extract `key`, `ticket_key`, `ticket`, `branch`, `generated_at`, `baselined_at`, `updated_at`, `scope`, `method`, and `parent` from each report. PyYAML is used when available; otherwise a vendored fallback parser handles the same scalar and nested fields.
 5. **Match and rank.** Score each report by match type and recency.
 6. **Apply freshness.** Compare `generated_at` against the configured threshold.
 7. **Return results.** Emit the top `top_n` reports as JSON.
@@ -120,7 +124,7 @@ The skill returns a JSON object:
 
 Relevance is determined in this order:
 
-1. **High** — exact ticket key match (`ticket_key` matches the report's `key` or `ticket_key`).
+1. **High** — exact ticket key match (`ticket_key` matches the report's `key`, `ticket_key`, or `ticket`).
 2. **Medium** — branch match (`branch` matches the report's `branch`).
 3. **Low** — project match (report key begins with the project prefix).
 
@@ -134,9 +138,10 @@ Within the same relevance tier, newer reports rank higher. Reports with no direc
 
 ## Dependencies
 
+`scan-context` is a deterministic Python script. The preferred frontmatter parser is PyYAML; if it is unavailable, the script falls back to a vendored parser and discloses the degraded source because YAML coverage is reduced.
+
 See [references/DEPENDENCIES.md](references/DEPENDENCIES.md).
 
 ## References
 
-- `context-reports`
-- `worker-contract`
+- `context-reports` (recommended convention)

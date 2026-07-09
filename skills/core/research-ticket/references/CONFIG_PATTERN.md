@@ -20,7 +20,6 @@ All trackers share the following common fields:
 | Field | Required | Type | Description |
 |---|---|---|---|
 | `token_env` | yes | string | Name of the environment variable that holds the API token. |
-| `mcp_server_name` | no | string | Optional MCP server name to prefer over REST calls. |
 
 Tracker-specific fields:
 
@@ -32,7 +31,6 @@ tracker_config:
   server_url: https://your-domain.atlassian.net
   token_env: JIRA_API_TOKEN
   username_env: JIRA_USERNAME
-  mcp_server_name: jira
 ```
 
 | Field | Required | Description |
@@ -40,7 +38,6 @@ tracker_config:
 | `server_url` | yes | Base URL of the Jira instance. |
 | `token_env` | yes | Env var name for the API token or password. |
 | `username_env` | no | Env var name for the username/email when using basic auth. |
-| `mcp_server_name` | no | Optional MCP server name. |
 
 ### `github`
 
@@ -49,14 +46,12 @@ tracker: github
 tracker_config:
   token_env: GITHUB_TOKEN
   repo: owner/repo
-  mcp_server_name: github
 ```
 
 | Field | Required | Description |
 |---|---|---|
 | `token_env` | yes | Env var name for the GitHub token. |
 | `repo` | yes | Repository in `owner/repo` format. |
-| `mcp_server_name` | no | Optional MCP server name. |
 
 ### `linear`
 
@@ -65,14 +60,12 @@ tracker: linear
 tracker_config:
   token_env: LINEAR_API_KEY
   team: ENG
-  mcp_server_name: linear
 ```
 
 | Field | Required | Description |
 |---|---|---|
 | `token_env` | yes | Env var name for the Linear API key. |
 | `team` | no | Team identifier used to resolve issue identifiers. |
-| `mcp_server_name` | no | Optional MCP server name. |
 
 ### `manual`
 
@@ -121,3 +114,8 @@ The `scope` array controls which categories are returned. If omitted, all catego
 | `dev_info` | Linked PRs, branches, and commits. |
 | `related` | Parent, children, duplicates, linked, blocked-by, and blocks. |
 | `worklog` | Time tracking entries. |
+
+## Notes
+
+- All tracker calls in v1 use REST APIs via `bash` and environment variables. MCP server support is not implemented.
+- Jira `dev_info` is returned only when the `development` field is provided by the server; otherwise the response is `partial` with a gap note.

@@ -23,13 +23,13 @@ verify UI
 | Invocation | Model-invoked |
 | Scope | Global |
 | Leading word | Capture |
-| Version | 1.0.0 |
+| Version | 1.0.1 |
 
 ## Output paths
 
-- Markdown report: `.agents/context/baseline/{scope}-{branch}.md`
-- Optional HTML gallery: `.agents/context/baseline/{scope}-{branch}.html`
-- Artifacts: `.agents/context/baseline/{scope}-{branch}/`
+- Markdown report: `{context_dir}/baseline/{scope}-{branch}.md`
+- Optional HTML gallery: `{context_dir}/baseline/{scope}-{branch}.html`
+- Artifacts: `{context_dir}/baseline/{scope}-{branch}/`
 
 `{scope}` and `{branch}` are slugified.
 
@@ -47,7 +47,7 @@ Read-only helper scripts. They do not mutate project files.
 
 ## State and resumption
 
-State file: `.agents/context/baseline/.state/{scope}-{branch}.json`.
+State file: `{context_dir}/baseline/.state/{scope}-{branch}.json`.
 
 - Resume from the last step if branch and commit still match.
 - Archive stale state with `.stale` and start fresh if they differ.

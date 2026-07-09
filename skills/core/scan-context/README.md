@@ -1,12 +1,8 @@
 # scan-context
 
-A building-block skill that discovers related context reports in a project's `{context_dir}/`. It matches by ticket key, project, branch, and report type, ranks results by relevance and freshness, and returns structured JSON.
+A building-block skill that discovers related context reports in a project's `{context_dir}/`.
 
-## Usage
-
-```bash
-echo '{"context_dir": "/path/to/.agents/context", "ticket_key": "OC-4644"}' | python3 scripts/scan-context.py
-```
+See [`SKILL.md`](SKILL.md) for the full contract, usage, and configuration.
 
 ## Files
 

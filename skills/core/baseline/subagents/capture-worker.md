@@ -65,6 +65,7 @@ The `Summary` section must contain enough information for the parent skill to co
 - Include a manifest file when there are more than three artifacts.
 - If the capture tool cannot save directly to the target path, capture to a temporary location and move the files afterward.
 - Do not leave artifacts in the project root.
+- **Escalate before overwriting.** If an artifact file already exists in the target directory, do not replace it silently. Return `status: needs_input` describing the conflict and asking whether to overwrite, archive the existing artifact, or abort. The parent skill must obtain explicit user confirmation before any overwrite occurs.
 
 ## Method-specific notes
 

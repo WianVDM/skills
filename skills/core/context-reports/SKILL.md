@@ -62,7 +62,7 @@ Examples:
 
 Reports use frontmatter and a markdown body. The frontmatter is the shared envelope; the body is skill-specific. A skill must document what reports it produces and what reports from other skills it consumes.
 
-For the full schema and consumer declaration format, see [`references/SCHEMA.md`](references/SCHEMA.md).
+For the full schema and consumer declaration format, see [`references/SCHEMA.md`](references/SCHEMA.md). A machine-readable JSON Schema is available at [`references/context-report-schema.json`](references/context-report-schema.json).
 
 ## Producer/consumer rules
 

@@ -9,11 +9,11 @@ The `baseline` skill produces and consumes reports in the shared context directo
 Canonical reports live at:
 
 ```text
-{project-root}/.agents/context/baseline/{scope}-{branch}.md
-{project-root}/.agents/context/baseline/{scope}-{branch}.html   # optional
+{project-root}/{context_dir}/baseline/{scope}-{branch}.md
+{project-root}/{context_dir}/baseline/{scope}-{branch}.html   # optional
 ```
 
-The `{scope}` and `{branch}` placeholders are slugified. For example, a scope of `auth-guard-race-condition` on branch `main` produces:
+The `{scope}` and `{branch}` placeholders are slugified. For example, a scope of `auth-guard-race-condition` on branch `main` with `{context_dir}` set to `.agents/context` produces:
 
 ```text
 .agents/context/baseline/auth-guard-race-condition-main.md
@@ -29,7 +29,7 @@ When `output.default_format` is `html-both`, the skill also writes a self-contai
 
 ## Optional consumed context
 
-The `baseline` skill may consume existing context reports from other skills or the user. These reports live under `.agents/context/{type}/{key}.md`, where `{type}` is the producing skill or report category and `{key}` is the report identifier.
+The `baseline` skill may consume existing context reports from other skills or the user. These reports live under `{context_dir}/{type}/{key}.md`, where `{type}` is the producing skill or report category and `{key}` is the report identifier.
 
 The skill matches context reports generically by comparing the current baseline `scope`, `ticket`, or `branch` against the report filename and frontmatter fields. Any report produced by the `baseline` skill itself is excluded to avoid circular self-reference.
 
@@ -37,7 +37,7 @@ These reports are optional. The skill must handle their absence gracefully and m
 
 ### Example context reports
 
-A report at `.agents/context/<skill>/<scope>.md` whose frontmatter includes `scope: <scope>`, `branch: <branch>`, or `ticket: <ticket>` would be considered a candidate for consumption.
+A report at `{context_dir}/<skill>/<scope>.md` whose frontmatter includes `scope: <scope>`, `branch: <branch>`, or `ticket: <ticket>` would be considered a candidate for consumption.
 
 ---
 
@@ -48,13 +48,13 @@ Every baseline report must include this frontmatter:
 ```yaml
 ---
 skill: baseline
-version: 1.0.0
+version: 1.0.1
 scope: auth-guard-race-condition
 branch: main
 commit: abc1234
 method: ui-browser
 consumed_context:
-  - .agents/context/<skill>/<scope>.md
+  - {context_dir}/<skill>/<scope>.md
 baselined_at: 2026-06-26T08:42:00Z
 type: bug                          # bug | feature | module | route | api | manual
 reproducible: true                 # only for type: bug; omit for all other types
@@ -77,7 +77,7 @@ summary: "Auth guard redirects to login during token refresh."  # required one-s
 | `baselined_at` | yes | ISO 8601 timestamp of capture. |
 | `type` | yes | Category of baseline: `bug`, `feature`, `module`, `route`, `api`, `manual`. |
 | `reproducible` | no | For `bug` baselines only: whether the bug was reproduced. Omit for all other types. |
-| `artifacts_dir` | no | Directory containing captured evidence, relative to `.agents/context/baseline/`. |
+| `artifacts_dir` | no | Directory containing captured evidence, relative to `{context_dir}/baseline/`. |
 | `summary` | **yes** | One-sentence synthesis of what the baseline captured and why it matters. |
 
 ### Type-specific frontmatter rules

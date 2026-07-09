@@ -1,6 +1,6 @@
 # Baseline Configuration and Notes
 
-Config and notes are stored in `.agents/config/baseline.yaml`. Shared settings are read from `.agents/config/shared.yaml` if present. All project context stays in the project.
+Config and notes are stored in `{config_dir}/baseline.yaml`. Shared settings are read from `{config_dir}/shared.yaml` if present. All project context stays in the project.
 
 ---
 
@@ -121,4 +121,4 @@ On first run, the skill has no project defaults. It should:
 5. Ask for `viewport` only for UI/browser methods.
 6. Default `output.default_format` to `md` unless the user prefers `html-both`.
 
-Persist the resolved choices in `.agents/config/baseline.yaml`.
+Persist the resolved choices in `{config_dir}/baseline.yaml`.

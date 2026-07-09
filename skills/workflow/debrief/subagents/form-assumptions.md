@@ -34,7 +34,22 @@ Turn ambiguities and evidence into a list of explicit, testable assumptions for 
 
 ## Return format
 
-Return a YAML object:
+Return a worker-contract result. The response must begin with this YAML frontmatter:
+
+```yaml
+---
+status: complete
+artifacts: []
+---
+```
+
+Then provide the following sections:
+
+### ## Summary
+A one-sentence statement of what you did, e.g., "Turned 3 ambiguities into explicit assumptions."
+
+### ## Findings
+Return the structured assumptions under this heading as a YAML object:
 
 ```yaml
 assumptions:
@@ -56,6 +71,17 @@ assumptions:
 | `basis` | yes | The evidence or reasoning that supports it. |
 | `status` | yes | `holds`, `challenged`, `inconclusive`, or `unresolved`. |
 | `evidence_refs` | no | List of file paths, ticket fields, or report sections that ground the assumption. |
+
+### ## Decisions made
+- List any interpretation choices you made when evidence was ambiguous.
+
+### ## Open questions
+- List any ambiguities that remain unresolved.
+
+### ## Blockers
+- List anything that prevented you from forming an assumption.
+
+If required inputs are missing, return `status: needs_input` and explain what is needed in `## Open questions`. If you cannot proceed, return `status: blocked` and explain why in `## Blockers`.
 
 ## Completion criterion
 

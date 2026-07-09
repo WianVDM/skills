@@ -18,6 +18,7 @@ from typing import Any
 
 DEFAULT_MAX_SIGNALS = 10
 DEFAULT_CONTEXT_WINDOW = 10
+DEFAULT_PROXIMITY = 3
 
 # Negation and contradiction markers used to detect disproof.
 CONTRADICTION_MARKERS = {
@@ -41,6 +42,10 @@ STOP_WORDS = {
 }
 
 
+# Common verbs that can be negated with an auxiliary.
+COPULA_VERBS = {"is", "are", "was", "were", "does", "did", "will", "would", "should", "can", "could"}
+
+
 def normalize(text: str) -> str:
     """Lowercase and remove non-alphanumeric spacing for matching."""
     return re.sub(r"[^a-z0-9\s]", " ", text.lower())
@@ -51,62 +56,95 @@ def extract_words(text: str) -> list[str]:
     return [w for w in normalize(text).split() if w and w not in STOP_WORDS]
 
 
-def extract_key_phrases(text: str) -> list[str]:
-    """Extract short noun/verb phrases from the assumption text."""
+def extract_key_phrases(text: str, max_phrases: int = DEFAULT_MAX_SIGNALS) -> list[str]:
+    """Extract short noun/verb phrases from the assumption text, shortest first.
+
+    Shorter phrases (e.g., "token refresh", "auth guard") produce more useful
+    natural-language negations and synonyms than the full sentence.
+    """
     words = extract_words(text)
-    # Return progressively shorter tail phrases to catch different wordings.
+    if len(words) < 2:
+        return []
     phrases = []
-    for length in range(min(len(words), 6), 1, -1):
+    seen = set()
+    # Build phrases from shortest to longest, excluding the full sentence.
+    for length in range(2, min(len(words), 6) + 1):
+        if length == len(words):
+            continue
         for start in range(0, len(words) - length + 1):
             phrase = " ".join(words[start:start + length])
-            if phrase not in phrases:
+            if phrase not in seen:
+                seen.add(phrase)
                 phrases.append(phrase)
-    # Limit to most informative longer phrases.
-    return phrases[:DEFAULT_MAX_SIGNALS]
+    return phrases[:max_phrases]
+
+
+def _negation_variants(phrase: str) -> list[str]:
+    """Return natural-language negations of a phrase."""
+    signals = [
+        f"not {phrase}",
+        f"no {phrase}",
+        f"never {phrase}",
+        f"{phrase} is not",
+        f"is not {phrase}",
+        f"{phrase} are not",
+        f"are not {phrase}",
+        f"{phrase} was not",
+        f"was not {phrase}",
+        f"{phrase} does not",
+        f"does not {phrase}",
+        f"{phrase} did not",
+        f"did not {phrase}",
+        f"{phrase} not",
+        f"missing {phrase}",
+        f"removed {phrase}",
+        f"replaced {phrase}",
+        f"deprecated {phrase}",
+        f"outdated {phrase}",
+        f"obsolete {phrase}",
+        f"superseded {phrase}",
+        f"unsupported {phrase}",
+        f"not supported {phrase}",
+        f"not implemented {phrase}",
+        f"not handled {phrase}",
+        f"not applicable {phrase}",
+        f"instead of {phrase}",
+        f"rather than {phrase}",
+    ]
+    return signals
+
 
 
 def generate_disproof_signals(assumption_text: str) -> list[str]:
-    """Generate a list of disproof signals to search for."""
+    """Generate a list of natural-language disproof signals to search for."""
     words = extract_words(assumption_text)
     signals: list[str] = []
-    seen = set()
+    seen: set[str] = set()
 
-    # Add negated versions of the whole assumption.
-    for negation in ("not", "never", "no"):
-        negated = f"{negation} {' '.join(words)}"
-        if negated not in seen:
-            signals.append(negated)
-            seen.add(negated)
+    def _add(signal: str) -> None:
+        if signal and signal not in seen:
+            signals.append(signal)
+            seen.add(signal)
 
-    # Add negation of common "is/are/does/was/will" patterns.
-    for verb in ("is", "are", "was", "were", "does", "did", "will", "would", "should", "can", "could"):
-        if words and words[0] == verb:
-            negated = f"{verb} not {' '.join(words[1:])}".strip()
-            if negated not in seen:
-                signals.append(negated)
-                seen.add(negated)
-            negated_contraction = f"{verb}n't {' '.join(words[1:])}".strip()
-            if negated_contraction not in seen:
-                signals.append(negated_contraction)
-                seen.add(negated_contraction)
+    # Phrase-level negations and synonyms are the primary signal source.
+    for phrase in extract_key_phrases(assumption_text, max_phrases=DEFAULT_MAX_SIGNALS * 2):
+        # Alternative handler phrasing first: "Y handles X" vs "X handled by Y".
+        if len(phrase.split()) >= 2:
+            _add(f"handles {phrase}")
+            _add(f"{phrase} handled by")
+            _add(f"handled by {phrase}")
+        # Location-style negations.
+        _add(f"not in {phrase}")
+        _add(f"not at {phrase}")
+        # Standard negations and synonyms.
+        for signal in _negation_variants(phrase):
+            _add(signal)
 
-    # Add key phrases with contradiction markers.
-    for phrase in extract_key_phrases(assumption_text):
-        for marker in CONTRADICTION_MARKERS:
-            signal = f"{marker} {phrase}"
-            if signal not in seen:
-                signals.append(signal)
-                seen.add(signal)
+    # For very short assumptions, add a few simple whole-sentence negations.
+    if len(words) <= 3:
+        for signal in ("not " + " ".join(words), "no " + " ".join(words), "never " + " ".join(words)):
+            _add(signal)
 
-    # Add "instead of" / "rather than" variants for the core phrase.
-    for phrase in extract_key_phrases(assumption_text)[:3]:
-        for alt in ("instead of", "rather than"):
-            signal = f"{alt} {phrase}"
-            if signal not in seen:
-                signals.append(signal)
-                seen.add(signal)
-
-    # Deduplicate while preserving order.
     return list(dict.fromkeys(signals))[:DEFAULT_MAX_SIGNALS]
 
 
@@ -127,33 +165,72 @@ def flatten_evidence(evidence: Any) -> dict[str, str]:
     return flat
 
 
-def find_contradictions(assumption_text: str, signals: list[str], evidence: dict[str, str], context_window: int) -> list[dict[str, Any]]:
-    """Search evidence for disproof signals within a context window of the assumption text."""
+def _phrase_indices(source_words: list[str], phrase_words: list[str]) -> list[int]:
+    """Return start indices of phrase in source_words, allowing 1-word gaps."""
+    if not phrase_words:
+        return []
+    indices = []
+    for i in range(len(source_words) - len(phrase_words) + 1):
+        match = True
+        for j, pw in enumerate(phrase_words):
+            if i + j >= len(source_words) or source_words[i + j] != pw:
+                match = False
+                break
+        if match:
+            indices.append(i)
+    return indices
+
+
+def _marker_adjacent_to_phrase(source_words: list[str], phrase_words: list[str], marker: str, proximity: int) -> bool:
+    """Return True if a contradiction marker appears within proximity words of phrase."""
+    marker_words = marker.split()
+    phrase_indices = _phrase_indices(source_words, phrase_words)
+    if not phrase_indices:
+        return False
+
+    for idx in phrase_indices:
+        # Check window [idx - proximity, idx + len(phrase) + proximity]
+        start = max(0, idx - proximity)
+        end = min(len(source_words), idx + len(phrase_words) + proximity)
+        window = source_words[start:end]
+        for i in range(len(window) - len(marker_words) + 1):
+            if window[i:i + len(marker_words)] == marker_words:
+                return True
+    return False
+
+
+def find_contradictions(assumption_text: str, signals: list[str], evidence: dict[str, str], context_window: int, proximity: int) -> list[dict[str, Any]]:
+    """Search evidence for disproof signals adjacent to assumption phrases."""
     hits: list[dict[str, Any]] = []
-    assumption_words = set(extract_words(assumption_text))
+    assumption_words = extract_words(assumption_text)
     if not assumption_words:
         return hits
+
+    # Build phrase list: the full assumption and key phrases.
+    key_phrases = extract_key_phrases(assumption_text, max_phrases=DEFAULT_MAX_SIGNALS)
+    phrases = [" ".join(assumption_words)] + key_phrases
 
     for source_key, source_text in evidence.items():
         normalized_source = normalize(source_text)
         source_words = normalized_source.split()
 
-        # Find windows where assumption words appear close together.
-        for i in range(len(source_words)):
-            window = source_words[i:i + context_window]
-            window_set = set(window)
-            overlap = assumption_words & window_set
-            if len(overlap) < min(2, len(assumption_words)):
+        # Check adjacency of contradiction markers to assumption phrases.
+        for phrase in phrases:
+            phrase_words = phrase.split()
+            if not phrase_words:
                 continue
-
-            # Check if any contradiction marker appears in this window.
             for marker in CONTRADICTION_MARKERS:
-                if marker in window:
-                    snippet = " ".join(window)
+                if _marker_adjacent_to_phrase(source_words, phrase_words, marker, proximity):
+                    # Find an occurrence of the phrase in the source to build a snippet.
+                    indices = _phrase_indices(source_words, phrase_words)
+                    idx = indices[0] if indices else 0
+                    start = max(0, idx - context_window)
+                    end = min(len(source_words), idx + len(phrase_words) + context_window)
+                    snippet = " ".join(source_words[start:end])
                     hit = {
                         "source": source_key,
                         "snippet": snippet,
-                        "reason": f"contradiction marker '{marker}' near assumption words"
+                        "reason": f"contradiction marker '{marker}' adjacent to phrase '{phrase}'"
                     }
                     if hit not in hits:
                         hits.append(hit)
@@ -162,7 +239,6 @@ def find_contradictions(assumption_text: str, signals: list[str], evidence: dict
         # Also check for explicit disproof signals anywhere in the evidence.
         for signal in signals:
             if signal in normalized_source:
-                # Find the surrounding context for the snippet.
                 idx = normalized_source.find(signal)
                 start = max(0, idx - 40)
                 end = min(len(normalized_source), idx + len(signal) + 40)
@@ -210,6 +286,7 @@ def main() -> None:
     evidence = input_data.get("evidence") or {}
     max_signals = int(input_data.get("max_signals", DEFAULT_MAX_SIGNALS))
     context_window = int(input_data.get("context_window", DEFAULT_CONTEXT_WINDOW))
+    proximity = int(input_data.get("proximity", DEFAULT_PROXIMITY))
 
     if not isinstance(assumptions, list):
         print(json.dumps({"status": "needs_input", "error": "assumptions must be a list"}, indent=2))
@@ -248,7 +325,7 @@ def main() -> None:
             continue
 
         signals = generate_disproof_signals(text)[:max_signals]
-        hits = find_contradictions(text, signals, flat_evidence, context_window)
+        hits = find_contradictions(text, signals, flat_evidence, context_window, proximity)
 
         if hits:
             disproof_refs = sorted({hit["source"] for hit in hits})

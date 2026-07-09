@@ -8,11 +8,11 @@
 ## Required tools and capabilities
 
 - `read` — to inspect this skill's `SKILL.md` and reference files when the skill is loaded or invoked.
-- `bash` — to run the `scripts/research-ticket.py` helper and to make REST API calls via environment variables when an MCP server is unavailable.
+- `bash` — to run the `scripts/research-ticket.py` helper and to make REST API calls via environment variables.
 
 ## Recommended tools and capabilities
 
-- `mcp` — to invoke tracker MCP servers when they are configured. If `mcp` is unavailable, the skill falls back to REST API calls via `bash` and environment variables.
+None in v1.0.0. All tracker calls use REST APIs via `bash` and environment variables.
 
 ## Required binaries
 
@@ -35,7 +35,7 @@ The actual variable names are configured by the caller in `tracker_config.token_
 
 ## Required MCP servers
 
-None. MCP servers are optional. If a tracker MCP server is configured and available, the skill may prefer it; otherwise it uses REST API calls.
+None. MCP server invocation is not implemented in v1.0.0.
 
 ## Optional configuration files
 

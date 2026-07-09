@@ -5,7 +5,7 @@ Reads JSON from stdin:
   {
     "marker_dir": "<path>",
     "skill_name": "debrief",
-    "defaults": { ... }   // optional
+    "defaults": { ... }   // optional; caller should provide skill-specific defaults
   }
 
 Loads:
@@ -27,19 +27,6 @@ try:
     import yaml
 except ImportError:  # pragma: no cover - PyYAML is a normal dependency
     yaml = None
-
-
-DEBRIEF_DEFAULTS = {
-    "confidence_threshold": 85,
-    "green_threshold": 85,
-    "yellow_threshold": 60,
-    "baseline_mode": "optional",
-    "issue_tracker": "auto",
-    "max_resolution_loops": 2,
-    "freshness_hours": 24,
-    "explore_code_max_files": 20,
-    "max_history_rows": 20,
-}
 
 
 def _help() -> str:
@@ -89,12 +76,8 @@ def _type_check(base: dict, override: dict, path: str = "") -> list:
         if key not in base:
             continue
         expected = base[key]
-        if isinstance(expected, dict):
-            if not isinstance(value, dict):
-                errors.append(f"{current_path} must be a mapping")
-            else:
-                errors.extend(_type_check(expected, value, current_path))
-        elif isinstance(expected, bool) and not isinstance(value, bool):
+        # Check bool before int because isinstance(True, int) is True in Python.
+        if isinstance(expected, bool) and not isinstance(value, bool):
             errors.append(f"{current_path} must be a boolean")
         elif isinstance(expected, int) and not isinstance(value, int):
             errors.append(f"{current_path} must be an integer")
@@ -102,60 +85,10 @@ def _type_check(base: dict, override: dict, path: str = "") -> list:
             errors.append(f"{current_path} must be a string")
         elif isinstance(expected, list) and not isinstance(value, list):
             errors.append(f"{current_path} must be a list")
-    return errors
-
-
-def _validate_debrief(config: dict) -> list:
-    """Validate debrief-specific schema rules."""
-    errors = []
-    int_keys = [
-        "confidence_threshold",
-        "green_threshold",
-        "yellow_threshold",
-        "max_resolution_loops",
-        "freshness_hours",
-        "explore_code_max_files",
-        "max_history_rows",
-    ]
-
-    for key in int_keys:
-        if key in config and not isinstance(config[key], int):
-            errors.append(f"{key} must be an integer")
-
-    for key in ("confidence_threshold", "green_threshold", "yellow_threshold"):
-        if key in config and isinstance(config[key], int):
-            if not (0 <= config[key] <= 100):
-                errors.append(f"{key} must be between 0 and 100")
-
-    if isinstance(config.get("green_threshold"), int) and isinstance(config.get("yellow_threshold"), int):
-        if config["green_threshold"] <= config["yellow_threshold"]:
-            errors.append("green_threshold must be greater than yellow_threshold")
-
-    if "baseline_mode" in config and config["baseline_mode"] not in ("optional", "skip", "required"):
-        errors.append("baseline_mode must be optional, skip, or required")
-
-    if "issue_tracker" in config and config["issue_tracker"] not in (
-        "auto",
-        "jira",
-        "github",
-        "linear",
-        "manual",
-    ):
-        errors.append("issue_tracker must be auto, jira, github, linear, or manual")
-
-    tracker = config.get("issue_tracker")
-    if tracker and tracker not in ("auto", "manual"):
-        trackers = config.get("trackers")
-        if not isinstance(trackers, dict) or tracker not in trackers:
-            errors.append(f"trackers.{tracker} block must be present when issue_tracker is {tracker}")
-
-    if isinstance(config.get("trackers"), dict):
-        for tracker_name, tracker_cfg in config["trackers"].items():
-            if isinstance(tracker_cfg, dict):
-                for key, value in tracker_cfg.items():
-                    if key.endswith("_env") and not isinstance(value, str):
-                        errors.append(f"trackers.{tracker_name}.{key} must be an environment-variable name string")
-
+        elif isinstance(expected, dict) and isinstance(value, dict):
+            errors.extend(_type_check(expected, value, current_path))
+        elif isinstance(expected, dict):
+            errors.append(f"{current_path} must be a mapping")
     return errors
 
 
@@ -170,9 +103,6 @@ def _run(data: dict) -> dict:
             "config": {},
             "errors": ["marker_dir and skill_name are required"],
         }
-
-    if skill_name == "debrief" and not defaults:
-        defaults = DEBRIEF_DEFAULTS
 
     marker_path = Path(marker_dir)
     config = dict(defaults)
@@ -200,9 +130,6 @@ def _run(data: dict) -> dict:
     # Type check against defaults
     type_errors = _type_check(defaults, config)
     errors.extend(type_errors)
-
-    if skill_name == "debrief":
-        errors.extend(_validate_debrief(config))
 
     if errors:
         return {"status": "error", "config": config, "errors": errors}

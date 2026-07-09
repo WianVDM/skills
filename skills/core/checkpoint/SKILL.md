@@ -7,6 +7,7 @@ metadata:
   author: Wian van der Merwe
   tags: [state, resume, checkpoint, building-block]
   verification_level: declared
+license: Proprietary
 depends:
   - context-reports
 ---
@@ -127,6 +128,7 @@ Create a new state file with an initial phase checklist.
 | `phases` | List of phase names to pre-populate the checklist. |
 | `focus` | Optional initial focus. |
 | `max_history_rows` | Optional history row limit (default 20). |
+| `overwrite` | Optional. If `true`, overwrite an existing state file. Default `false`. |
 
 | Output | Description |
 |---|---|
@@ -195,7 +197,7 @@ If `update` or `resume` is called on a missing or corrupt state file and `create
 ## Security and safety
 
 - Only reads/writes the caller-provided `state_path`.
-- Never overwrites silently without caller instruction. `create` fails if the target file already exists.
+- Never overwrites silently. `create` returns `blocked` if the target file already exists, unless the caller passes `overwrite: true`.
 - Archives history rather than deleting it.
 - Does not execute code, run shells, or install tools.
 

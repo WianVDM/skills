@@ -47,8 +47,12 @@ When the selected method lacks tooling:
 1. Explain the gap for that method only.
 2. Offer to configure a recommended tool, switch to an alternative method, or use manual fallback.
 3. Ask for explicit confirmation before generating any config file.
-4. Record the chosen tooling path in `.agents/config/baseline.yaml` after confirmation.
+4. Record the chosen tooling path in `{config_dir}/baseline.yaml` after confirmation.
 
 If the user declines all alternatives, the skill stops and reports `blocked` for that method.
 
 If the selected method fails, document the failure, ask whether to retry, try the next best method, or abort, and update notes with any workaround.
+
+### Source-file detection limitations
+
+The bundled `detect-baseline-method.py` script looks for source files up to a bounded depth (currently three directory levels below the project root) to keep scans cheap and deterministic. Deeply nested repositories with source files more than three levels below the root may be reported as `code-snapshot: unavailable` even though source exists. In such cases, the skill should either invoke a deeper search explicitly, ask the user to confirm the target files, or treat the limitation as documented and select another method.

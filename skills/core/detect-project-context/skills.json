@@ -1,0 +1,35 @@
+{
+  "name": "detect-project-context",
+  "version": "1.0.1",
+  "description": "Detect the project root, harness, skill directories, config directories, and conventions for any workspace.",
+  "license": "MIT",
+  "skills": ["detect-project-context"],
+  "namespaces": {
+    "detect-project-context": "detect-project-context:detect-project-context"
+  },
+  "requirements": {
+    "skills": [],
+    "tools": [
+      "file-read",
+      "directory-list"
+    ],
+    "mcp_servers": [],
+    "binaries": [
+      "python3"
+    ],
+    "environment_variables": []
+  },
+  "recommended": {
+    "description": "No optional dependencies. The script uses only the Python standard library.",
+    "skills": [],
+    "mcp_servers": [],
+    "binaries": [
+      "git"
+    ],
+    "environment_variables": []
+  },
+  "verification": {
+    "level": "declared",
+    "evals": "evals/evals.json"
+  }
+}

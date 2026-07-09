@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/WianVDM/skills/main/skills/core/context-reports/references/context-report-schema.json",
+  "title": "Context Report Envelope",
+  "description": "Shared frontmatter envelope for context reports produced and consumed by skills. Individual skills may add skill-specific fields; this schema defines the canonical shared fields.",
+  "type": "object",
+  "required": ["skill", "version", "key", "generated_at"],
+  "additionalProperties": true,
+  "properties": {
+    "skill": {
+      "type": "string",
+      "description": "Name of the producing skill.",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "description": "Version of the producing skill. Should follow semantic versioning when a version is declared.",
+      "minLength": 1
+    },
+    "key": {
+      "type": "string",
+      "description": "Report identifier, usually matching the ticket, session, or feature key the report is about.",
+      "minLength": 1
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when the report was generated."
+    },
+    "summary": {
+      "type": "string",
+      "description": "One-sentence synthesis of the report's content."
+    },
+    "artifacts": {
+      "type": "array",
+      "description": "List of related report or artifact paths.",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "ticket": {
+      "type": "string",
+      "description": "Ticket key the report is about (used by debrief and ticket-research)."
+    },
+    "scope": {
+      "type": "string",
+      "description": "Scope identifier, e.g., feature, route, bug, module (used by baseline)."
+    },
+    "branch": {
+      "type": "string",
+      "description": "Branch the report was produced on (used by debrief and baseline)."
+    },
+    "commit": {
+      "type": "string",
+      "description": "Commit hash the report was produced at (used by debrief and baseline)."
+    },
+    "method": {
+      "type": "string",
+      "description": "Capture method, e.g., ui-browser, api-http, test-runner, code-snapshot, manual (used by baseline)."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of the last update (used by debrief)."
+    },
+    "baselined_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when the baseline was captured (used by baseline)."
+    },
+    "parent": {
+      "type": "string",
+      "description": "Parent ticket key, if any (used by debrief)."
+    },
+    "parent_debrief": {
+      "type": "string",
+      "description": "Path to the parent debrief report (used by debrief)."
+    }
+  }
+}

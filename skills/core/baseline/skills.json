@@ -1,10 +1,8 @@
 {
   "name": "baseline",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Capture a reproducible snapshot of the current state of a feature, module, route, API, or bug on a specified branch.",
-  "compatibility": {
-    "harnesses": ["pi"]
-  },
+  "license": "MIT",
   "skills": ["baseline"],
   "namespaces": {
     "baseline": "baseline:baseline"
@@ -19,31 +17,16 @@
       "shell-exec",
       "search"
     ],
-    "mcp_servers": [
-      {
-        "name": "playwright",
-        "capabilities": ["browser-automation", "screenshot", "navigation"]
-      },
-      {
-        "name": "stagehand",
-        "capabilities": ["browser-automation", "ai-navigation", "screenshot"]
-      },
-      {
-        "name": "puppeteer",
-        "capabilities": ["browser-automation", "screenshot", "navigation"]
-      }
-    ],
+    "mcp_servers": [],
     "binaries": [
       "python3",
       "git"
     ],
-    "environment_variables": [
-      "AUTH_USERNAME",
-      "AUTH_PASSWORD"
-    ]
+    "environment_variables": []
   },
   "recommended": {
     "description": "Recommended tooling is evaluated lazily per method. See references/TOOLING.md and references/DEPENDENCIES.md.",
+    "skills": ["detect-project-context"],
     "mcp_servers": [
       "playwright",
       "stagehand",
@@ -53,6 +36,10 @@
       "curl",
       "http",
       "httpx"
+    ],
+    "environment_variables": [
+      "AUTH_USERNAME",
+      "AUTH_PASSWORD"
     ]
   },
   "verification": {

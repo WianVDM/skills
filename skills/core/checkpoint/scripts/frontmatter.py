@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
-"""Shared frontmatter parser for debrief scripts.
+"""Shared frontmatter parser for checkpoint scripts.
 
-Reads JSON from stdin with the contract described in the debrief skill design
-and writes JSON to stdout. Also exposes backward-compatible helpers:
+Also exposes backward-compatible helpers:
 
     parse_frontmatter(text: str) -> dict
     dump_frontmatter(data: dict, text: str = "") -> str
-
-Usage:
-    echo '{"source":"/path/to/file.md","source_type":"file","strict":false}' | python _frontmatter.py
 """
 
 import json
@@ -310,7 +306,7 @@ def _run_from_json(data: dict) -> dict:
 
 
 def _help() -> str:
-    return """_frontmatter.py — parse YAML frontmatter from markdown
+    return """frontmatter.py — parse YAML frontmatter from markdown
 
 Reads JSON from stdin:
   {"source": "<path or string>", "source_type": "file" | "string", "strict": false}

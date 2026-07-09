@@ -6,6 +6,7 @@ invocation: model-invoked
 metadata:
   author: Wian van der Merwe
   tags: [ticket, issue-tracker, research, building-block]
+license: Proprietary
 depends:
   - context-reports
   - worker-contract
@@ -101,6 +102,7 @@ ticket:
   source: jira
   summary: "Auth guard race condition"
   description: "..."
+  issue_type: "Bug"
   status: "In Progress"
   priority: "High"
   assignee: "..."
@@ -142,9 +144,9 @@ context_graph: []
 
 | Adapter | Source | Notes |
 |---|---|---|
-| `jira` | MCP server or REST API via env vars | Richest metadata; supports parent/child, links, worklog. |
-| `github` | MCP server or GitHub API via env vars | Issue-centric; PR links via development info. |
-| `linear` | MCP server or Linear API via env vars | Team-based identifiers; supports related issues. |
+| `jira` | REST API via env vars | Richest metadata; supports parent/child, links, worklog. |
+| `github` | GitHub API via env vars | Issue-centric; PR links via development info. |
+| `linear` | Linear API via env vars | Team-based identifiers; supports related issues. |
 | `manual` | User-provided context | No API calls; user provides summary, description, acceptance criteria, and related context. |
 
 The script implementing this skill (`scripts/research-ticket.py`) reads JSON from stdin and writes JSON to stdout. It is deterministic and can be invoked by the model directly or by a conductor.
@@ -157,7 +159,7 @@ Only the selected tracker adapter is initialized. Other trackers and their crede
 
 - **Required skills**: `context-reports`, `worker-contract`.
 - **Required tools**: `read`, `bash`.
-- **Recommended tools**: `mcp` — for tracker MCP servers; if absent, the skill falls back to REST API calls via `bash` and environment variables.
+- **Recommended tools**: None in v1.0.0; the skill uses REST API calls via `bash` and environment variables.
 - **Required binaries**: Python 3.x for the deterministic helper script.
 - **Environment variables**: Referenced through `tracker_config`, not hardcoded. Common examples include `JIRA_API_TOKEN`, `JIRA_USERNAME`, `GITHUB_TOKEN`, and `LINEAR_API_KEY`.
 
@@ -177,7 +179,6 @@ trackers:
     server_url: https://your-domain.atlassian.net
     token_env: JIRA_API_TOKEN
     username_env: JIRA_USERNAME
-    mcp_server_name: jira
   github:
     token_env: GITHUB_TOKEN
     repo: owner/repo
@@ -191,13 +192,20 @@ trackers:
 - No plaintext secrets in skill files.
 - Tokens are referenced via env var names in config.
 - Read-only by default; does not modify trackers.
-- Prefer read-only MCP servers when available.
+- REST API calls are used in v1; MCP server support is not yet implemented.
 
 ## Example usage by a conductor
 
 ```text
 Run research-ticket with ticket_key OC-4644, tracker jira, and tracker_config from {marker_dir}/config/debrief.yaml. Fetch core, comments, attachments, dev_info, and related.
 ```
+
+## Known limitations
+
+- `acceptance_criteria` is inferred only when an explicit "Acceptance criteria" or "AC" header is present in the description; it stops at the next markdown heading.
+- GitHub `history` (status transitions) is not fetched in v1; the field is returned empty.
+- Jira `dev_info` is read from the `development` field when the server provides it. If that field is absent, the response is `partial` with a gap note rather than a silently empty object.
+- MCP server invocation is not implemented in v1. All tracker calls use REST APIs via `bash` and environment variables.
 
 ## Resolved design decisions
 

@@ -17,6 +17,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+from typing import Optional
 
 DEFAULT_MAX_FILES = 20
 DEFAULT_TIME_BOX = 5
@@ -64,23 +65,26 @@ def tool_available(name: str) -> bool:
     return rc == 0
 
 
-def search_root(cwd: str, workspace: str | None) -> str:
+def search_root(cwd: str, workspace: Optional[str], project_root: Optional[str]) -> str:
     """Determine the root directory to search, respecting workspace scoping."""
-    root = cwd
+    root = project_root or cwd
     if workspace:
-        ws_path = os.path.join(cwd, workspace)
+        # Prefer workspace relative to project root; fall back to cwd if not found there.
+        ws_path = os.path.join(root, workspace)
+        if not os.path.isdir(ws_path):
+            ws_path = os.path.join(cwd, workspace)
         if os.path.isdir(ws_path):
             root = ws_path
     return root
 
 
-def find_files_rg(keywords: list[str], cwd: str, workspace: str | None) -> dict[str, int]:
+def find_files_rg(keywords: list[str], cwd: str, workspace: Optional[str], project_root: Optional[str]) -> dict[str, int]:
     """Search for files matching keywords using ripgrep (rg)."""
     results: dict[str, int] = {}
     if not keywords or not tool_available("rg"):
         return results
 
-    root = search_root(cwd, workspace)
+    root = search_root(cwd, workspace, project_root)
     for kw in keywords:
         cmd = ["rg", "-l", "-i", "--no-heading", "--max-columns", "200", kw, root]
         rc, stdout, _ = run_cmd(cmd, cwd)
@@ -96,13 +100,13 @@ def find_files_rg(keywords: list[str], cwd: str, workspace: str | None) -> dict[
     return results
 
 
-def find_files_python(keywords: list[str], cwd: str, workspace: str | None) -> dict[str, int]:
+def find_files_python(keywords: list[str], cwd: str, workspace: Optional[str], project_root: Optional[str]) -> dict[str, int]:
     """Fallback file search using Python's os.walk and simple text matching."""
     results: dict[str, int] = {}
     if not keywords:
         return results
 
-    root = search_root(cwd, workspace)
+    root = search_root(cwd, workspace, project_root)
     exclude_dirs = {".git", "node_modules", ".venv", "venv", "__pycache__", ".pi"}
 
     for dirpath, dirnames, filenames in os.walk(root):
@@ -127,11 +131,11 @@ def find_files_python(keywords: list[str], cwd: str, workspace: str | None) -> d
     return results
 
 
-def find_files(keywords: list[str], cwd: str, workspace: str | None) -> dict[str, int]:
+def find_files(keywords: list[str], cwd: str, workspace: Optional[str], project_root: Optional[str]) -> dict[str, int]:
     """Try rg first, then Python fallback."""
-    results = find_files_rg(keywords, cwd, workspace)
+    results = find_files_rg(keywords, cwd, workspace, project_root)
     if not results:
-        results = find_files_python(keywords, cwd, workspace)
+        results = find_files_python(keywords, cwd, workspace, project_root)
     return results
 
 
@@ -150,14 +154,15 @@ def summarize_file(path: str, limit: int = DEFAULT_READ_LIMIT) -> str:
 
 def relevance_label(path: str, score: int, keywords: list[str], is_mentioned: bool) -> str:
     """Assign a relevance label based on mention, keyword density, and path."""
+    posix_path = Path(path).as_posix().lower()
     if is_mentioned:
         return "High"
-    if score >= 3 and any(kw in path.lower() for kw in keywords):
+    if score >= 3 and any(kw in posix_path for kw in keywords):
         return "High"
     if score >= 2:
-        if "/test" in path or "/tests" in path or "test." in path:
+        if "/test" in posix_path or "/tests" in posix_path or "test." in posix_path:
             return "Medium"
-        if "/adr" in path or "/docs" in path:
+        if "/adr" in posix_path or "/docs" in posix_path:
             return "Medium"
         return "Medium"
     return "Low"
@@ -217,6 +222,8 @@ def main() -> None:
     mentioned_files = input_data.get("mentioned_files") or []
     task_type = input_data.get("task_type", "code")
     workspace = input_data.get("workspace") or None
+    project_root = input_data.get("project_root") or None
+    force = bool(input_data.get("force", False))
     time_box = input_data.get("time_box_minutes", DEFAULT_TIME_BOX)
     max_files = input_data.get("max_files", DEFAULT_MAX_FILES)
     min_relevance = input_data.get("min_relevance", DEFAULT_MIN_RELEVANCE)
@@ -229,18 +236,18 @@ def main() -> None:
         }, indent=2))
         sys.exit(0)
 
-    if task_type == "process":
+    if task_type == "process" and not force:
         print(json.dumps({
             "status": "complete",
             "relevant_files": [],
             "snippets": [],
-            "claims_vs_code": [],
             "missing_files": [],
-            "note": "process tickets skipped by default"
+            "note": "process tickets skipped by default; set force: true to override"
         }, indent=2))
         sys.exit(0)
 
     cwd = os.getcwd()
+    project_root = project_root or cwd
     mentioned_abs: set[str] = set()
     for mf in mentioned_files:
         p = os.path.abspath(mf) if os.path.isabs(mf) else os.path.abspath(os.path.join(cwd, mf))
@@ -267,7 +274,7 @@ def main() -> None:
     # Search for keywords if time remains
     time_budget = time_box * 60
     if keywords and (time.time() - start) < time_budget:
-        found = find_files(keywords, cwd, workspace)
+        found = find_files(keywords, cwd, workspace, project_root)
         for path, score in found.items():
             if path in mentioned_abs:
                 relevant[path]["score"] = max(relevant[path].get("score", 0), score)
@@ -285,7 +292,8 @@ def main() -> None:
     ranked = []
     for abs_path, data in relevant.items():
         is_mentioned = data["mentioned"]
-        is_test_doc = "/test" in abs_path or "/tests" in abs_path or "test." in abs_path or "/adr" in abs_path or "/docs" in abs_path
+        posix_path = Path(abs_path).as_posix()
+        is_test_doc = "/test" in posix_path or "/tests" in posix_path or "test." in posix_path or "/adr" in posix_path or "/docs" in posix_path
         label = relevance_label(abs_path, data["score"], keywords, is_mentioned)
         tie = rank_score(label, data["score"], is_mentioned, is_test_doc)
         if RELEVANCE_SCORES[label] < RELEVANCE_SCORES[min_relevance]:
@@ -303,19 +311,6 @@ def main() -> None:
         for r in ranked
     ]
 
-    claims_vs_code = []
-    for mf in mentioned_files:
-        p = os.path.abspath(mf) if os.path.isabs(mf) else os.path.abspath(os.path.join(cwd, mf))
-        if os.path.isfile(p):
-            summary = summarize_file(p, limit=50)
-            claim = f"{mf} is mentioned in the ticket"
-            verdict = "confirmed" if any(kw in summary.lower() for kw in keywords) else "partial"
-            claims_vs_code.append({
-                "claim": claim,
-                "verdict": verdict,
-                "evidence": summary[:200]
-            })
-
     status = "complete"
     if missing:
         status = "partial"
@@ -326,7 +321,6 @@ def main() -> None:
         "status": status,
         "relevant_files": relevant_files,
         "snippets": snippets,
-        "claims_vs_code": claims_vs_code,
         "missing_files": missing
     }
     print(json.dumps(result, indent=2))

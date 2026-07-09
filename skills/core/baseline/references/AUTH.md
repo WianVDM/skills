@@ -10,7 +10,7 @@ Many baselines require navigating an authenticated page. The `baseline` skill sh
 |--------|-------------|-------------|
 | **none** | Page is public | Nothing |
 | **existing-session** | User already signed in via browser profile | Nothing |
-| **session-file** | User signs in once, skill saves session | Save cookies/localStorage to `.agents/context/baseline/sessions/` |
+| **session-file** | User signs in once, skill saves session | Save cookies/localStorage to `{context_dir}/baseline/sessions/` |
 | **env-vars** | Credentials available as environment variables | Reference env var names only |
 | **manual** | No safe persistence option | Ask user each time |
 
@@ -44,7 +44,7 @@ Session files store cookies and localStorage so the skill can restore an authent
 ### Location
 
 ```text
-.agents/context/baseline/sessions/
+{context_dir}/baseline/sessions/
 ├── default.json
 └── {ticket-key}.json
 ```
@@ -82,7 +82,7 @@ The skill reads the values at runtime and uses them to authenticate. This keeps 
 
 ## Security notes
 
-- **Never store plaintext passwords or tokens in `.agents/config/baseline.yaml`.**
+- **Never store plaintext passwords or tokens in `{config_dir}/baseline.yaml`.**
 - Prefer session files over credentials.
 - Prefer env-var references over plaintext credentials.
 - If credentials must be stored, warn the user and restrict file permissions.

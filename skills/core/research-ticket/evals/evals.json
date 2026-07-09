@@ -136,6 +136,23 @@
           "value": "What is your Jira API token"
         }
       ]
+    },
+    {
+      "id": "composition-research-to-map",
+      "type": "composition",
+      "prompt": "Run research-ticket for Jira ticket OC-4644 and feed the normalized output into map-ticket-relationships to build a relationship graph.",
+      "available_skills": ["research-ticket", "map-ticket-relationships"],
+      "expected_selection": ["research-ticket", "map-ticket-relationships"],
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"related_tickets\""
+        },
+        {
+          "type": "output_contains",
+          "value": "\"dev_info\""
+        }
+      ]
     }
   ]
 }

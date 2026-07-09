@@ -8,6 +8,7 @@ metadata:
   version: "1.0.1"
   scope: global
 invocation: model-invoked
+license: MIT
 ---
 
 # baseline
@@ -27,11 +28,11 @@ Conductor. Delegates scope, context, method selection, and capture to focused wo
 
 ## Process overview
 
-1. **Load config and detect required capabilities.** Read `.agents/config/baseline.yaml` and shared config. Check that `git` and `python3` are available. Stop if a required capability is missing and explain what is required.
+1. **Load config and detect required capabilities.** Read `{config_dir}/baseline.yaml` and shared config. Check that `git` and `python3` are available. Stop if a required capability is missing and explain what is required.
 
 2. **Resolve scope and branch.** Delegate to `scope-resolver`. If scope is ambiguous, stop and ask. Confirm before switching branches. Record the commit hash.
 
-3. **Consume related context.** Delegate to `context-scout`. Read matching reports from `.agents/context/`, excluding baseline outputs. Handle missing reports gracefully.
+3. **Consume related context.** Delegate to `context-scout`. Read matching reports from `{context_dir}/`, excluding baseline outputs. Handle missing reports gracefully.
 
 4. **Select capture method.** Delegate to `method-selector`. Respect user preferences from config. Ask when multiple methods are viable. Identify a fallback.
 
@@ -41,13 +42,13 @@ Conductor. Delegates scope, context, method selection, and capture to focused wo
 
 7. **Capture evidence.** Delegate to `capture-worker`. Gather screenshots, logs, responses, or file contents. Record enough findings for a one-sentence summary.
 
-8. **Generate reports.** Write the canonical Markdown report and optional HTML gallery to `.agents/context/baseline/`. Include all required frontmatter.
+8. **Generate reports.** Write the canonical Markdown report and optional HTML gallery to `{context_dir}/baseline/`. Include all required frontmatter.
 
-9. **Curate notes.** Update `.agents/config/baseline.yaml` with new notes and tooling preferences, but never silently overwrite existing values. Archive or remove the state file.
+9. **Curate notes.** Update `{config_dir}/baseline.yaml` with new notes and tooling preferences, but never silently overwrite existing values. Archive or remove the state file.
 
 ## Resumption
 
-The skill writes a state file at `.agents/context/baseline/.state/{scope}-{branch}.json` after each step.
+The skill writes a state file at `{context_dir}/baseline/.state/{scope}-{branch}.json` after each step.
 
 - Resume from the last step if branch and commit still match.
 - Archive stale state with `.stale` and start fresh if they differ.

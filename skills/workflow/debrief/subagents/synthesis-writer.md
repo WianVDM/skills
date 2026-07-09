@@ -32,15 +32,37 @@ Write the final `debrief` report from the gathered evidence, assumptions, and co
 
 ## Return format
 
-Return a short YAML summary:
+Return a worker-contract result. The response must begin with this YAML frontmatter:
 
 ```yaml
-report_path: "{context_dir}/debrief/OC-4644-auth-guard.md"
+---
 status: complete
-confidence: 85
-confidence_level: Green
-confidence_gap_count: 1
+artifacts:
+  - "{context_dir}/debrief/{key}-{slug}.md"
+---
 ```
+
+Then provide the following sections:
+
+### ## Summary
+A one-sentence statement, e.g., "Wrote the debrief report for {key} with confidence {confidence}% ({confidence_level})."
+
+### ## Findings
+- The report follows the canonical debrief report schema.
+- The confidence gaps are recorded in the report frontmatter.
+- The report is written to the path provided by the conductor.
+
+### ## Decisions made
+- Record any choices made about report structure, omitting sections, or handling missing data.
+- Record the overwrite confirmation decision: confirmed / declined / not applicable.
+
+### ## Open questions
+- List any unresolved questions that should be surfaced to the user.
+
+### ## Blockers
+- List any external blocker that prevented writing the report.
+
+If the conductor has not provided a report path, return `status: needs_input` and explain what is needed in `## Open questions`. If you cannot write the report, return `status: blocked` and explain why in `## Blockers`.
 
 ## Report schema
 

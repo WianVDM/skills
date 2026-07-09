@@ -132,6 +132,43 @@ def validate_tracker_config(tracker, cfg):
     return missing
 
 
+def _extract_jira_dev_info(fields, scope):
+    """Extract development (PR/branch/commit) info from Jira fields.
+
+    If the development field is not present, return a gap note so the caller
+    knows the data is unavailable rather than silently empty.
+    """
+    dev_info = {"prs": [], "branches": [], "commits": []}
+    if "dev_info" not in scope:
+        return dev_info, []
+
+    development = fields.get("development")
+    if isinstance(development, dict):
+        prs = []
+        for item in development.get("pullRequests", development.get("prs", [])):
+            url = item.get("url") or item.get("displayId") or ""
+            if url:
+                prs.append(url)
+        branches = [
+            b.get("name", "") or b.get("displayId", "")
+            for b in development.get("branches", [])
+        ]
+        commits = [
+            c.get("id", "") or c.get("displayId", "")
+            for c in development.get("commits", [])
+        ]
+        dev_info = {
+            "prs": [p for p in prs if p],
+            "branches": [b for b in branches if b],
+            "commits": [c for c in commits if c],
+        }
+        return dev_info, []
+
+    return dev_info, [
+        "Jira development field is not available; linked PRs, branches, and commits could not be retrieved."
+    ]
+
+
 # ---------------------------------------------------------------------------
 # Adapters
 # ---------------------------------------------------------------------------
@@ -148,6 +185,7 @@ def manual_adapter(ticket_key, scope, context):
         "source": "manual",
         "summary": context.get("summary", ""),
         "description": context.get("description", ""),
+        "issue_type": context.get("issue_type", ""),
         "status": context.get("status", ""),
         "priority": context.get("priority", ""),
         "assignee": context.get("assignee", ""),
@@ -255,6 +293,7 @@ def normalize_jira(issue, scope, cfg):
         "source": "jira",
         "summary": extract_text(fields.get("summary")),
         "description": description,
+        "issue_type": (fields.get("issuetype") or {}).get("name", ""),
         "status": (fields.get("status") or {}).get("name", ""),
         "priority": (fields.get("priority") or {}).get("name", ""),
         "assignee": ((fields.get("assignee") or {}).get("displayName", "")),
@@ -265,6 +304,9 @@ def normalize_jira(issue, scope, cfg):
         "components": [c.get("name", "") for c in fields.get("components", [])],
         "acceptance_criteria": acceptance,
     }
+
+    status = "complete"
+    gaps = []
 
     comments = []
     if "comments" in scope:
@@ -331,10 +373,10 @@ def normalize_jira(issue, scope, cfg):
             else:
                 related["linked"].append(tkey)
 
-    dev_info = {"prs": [], "branches": [], "commits": []}
-    if "dev_info" in scope:
-        # Jira v1 adapter does not yet call /dev-status; expose only the link placeholders.
-        dev_info = {"prs": [], "branches": [], "commits": []}
+    dev_info, dev_gaps = _extract_jira_dev_info(fields, scope)
+    gaps.extend(dev_gaps)
+    if dev_gaps:
+        status = "partial"
 
     worklog = []
     if "worklog" in scope:
@@ -347,11 +389,9 @@ def normalize_jira(issue, scope, cfg):
             })
 
     context_sources = ["jira"]
-    if cfg.get("mcp_server_name"):
-        context_sources.insert(0, f"mcp:{cfg['mcp_server_name']}")
 
     return build_output(
-        status="complete",
+        status=status,
         ticket=ticket,
         comments=comments,
         attachments=attachments,
@@ -360,6 +400,7 @@ def normalize_jira(issue, scope, cfg):
         related=related,
         worklog=worklog,
         context_graph=build_context_graph(key, scope, context_sources),
+        gaps=gaps,
     )
 
 
@@ -410,6 +451,8 @@ def github_adapter(ticket_key, cfg, scope):
         issue = items[0]
 
     comments = []
+    gaps = []
+    status = "complete"
     if "comments" in scope and issue.get("comments_url"):
         try:
             with urlopen(Request(issue["comments_url"], headers=headers), timeout=15) as resp:
@@ -423,12 +466,16 @@ def github_adapter(ticket_key, cfg, scope):
                 for c in comments_raw
             ]
         except Exception as exc:  # noqa: BLE001
-            pass  # degrade gracefully
+            gaps.append(f"GitHub comments could not be fetched: {exc}")
+            status = "partial"
 
-    return normalize_github(issue, comments, scope, cfg)
+    return normalize_github(issue, comments, scope, cfg, status=status, gaps=gaps)
 
 
-def normalize_github(issue, comments, scope, cfg):
+def normalize_github(issue, comments, scope, cfg, status="complete", gaps=None):
+    if gaps is None:
+        gaps = []
+
     description = issue.get("body", "") or ""
     ticket = {
         "key": str(issue.get("number", issue.get("id", ""))),
@@ -485,11 +532,9 @@ def normalize_github(issue, comments, scope, cfg):
     worklog = []
 
     context_sources = ["github"]
-    if cfg.get("mcp_server_name"):
-        context_sources.insert(0, f"mcp:{cfg['mcp_server_name']}")
 
     return build_output(
-        status="complete",
+        status=status,
         ticket=ticket,
         comments=comments,
         attachments=attachments,
@@ -498,6 +543,7 @@ def normalize_github(issue, comments, scope, cfg):
         related=related,
         worklog=worklog,
         context_graph=build_context_graph(ticket["key"], scope, context_sources),
+        gaps=gaps,
     )
 
 
@@ -644,8 +690,6 @@ def normalize_linear(issue, scope, cfg):
     }
 
     context_sources = ["linear"]
-    if cfg.get("mcp_server_name"):
-        context_sources.insert(0, f"mcp:{cfg['mcp_server_name']}")
 
     return build_output(
         status="complete",
@@ -799,6 +843,7 @@ def build_output(
     related=None,
     worklog=None,
     context_graph=None,
+    gaps=None,
 ):
     if dev_info is None:
         dev_info = {"prs": [], "branches": [], "commits": []}
@@ -821,6 +866,7 @@ def build_output(
         "related_tickets": related,
         "worklog": worklog or [],
         "context_graph": context_graph or [],
+        "gaps": gaps or [],
     }
 
 

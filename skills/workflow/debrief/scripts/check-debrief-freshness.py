@@ -164,8 +164,9 @@ if __name__ == "__main__":
     try:
         result = _run(data)
     except FileNotFoundError as exc:
-        print(json.dumps({"fresh": False, "reason": str(exc)}), file=sys.stderr)
-        sys.exit(2)
+        result = {"fresh": False, "reason": str(exc)}
+        print(json.dumps(result, indent=2))
+        sys.exit(1)
     except Exception as exc:
         print(json.dumps({"fresh": False, "reason": str(exc)}), file=sys.stderr)
         sys.exit(2)

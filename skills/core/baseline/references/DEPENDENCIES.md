@@ -16,7 +16,7 @@ None required. The skill works without other skills.
 
 ## Optional consumed context
 
-The skill may scan and read reports from `.agents/context/{type}/{key}.md` when the `{key}` matches the scope, ticket, or branch. These reports are produced by other skills or by the user; `baseline` does not depend on any specific skill being present.
+The skill may scan and read reports from `{context_dir}/{type}/{key}.md` when the `{key}` matches the scope, ticket, or branch. These reports are produced by other skills or by the user; `baseline` does not depend on any specific skill being present.
 
 The skill matches context reports generically by comparing the provided `scope`, `ticket`, or `branch` against the report's filename and frontmatter fields (for example, `scope`, `ticket`, `key`, or `branch`).
 

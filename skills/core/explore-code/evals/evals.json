@@ -97,7 +97,7 @@
       "id": "ec-behavior-05",
       "type": "behavior",
       "name": "Respects process skip",
-      "description": "The script returns complete with empty results for process tickets.",
+      "description": "The script returns complete with empty results for process tickets unless force is true.",
       "input": {
         "ticket_summary": "Update quarterly planning doc",
         "mentioned_files": [],
@@ -106,7 +106,61 @@
       "expected": {
         "status": "complete",
         "relevant_files_count_max": 0,
-        "note": "process tickets skipped by default"
+        "note": "process tickets skipped by default; set force: true to override"
+      }
+    },
+    {
+      "id": "ec-behavior-06",
+      "type": "behavior",
+      "name": "Force overrides process skip",
+      "description": "When task_type is process and force is true, the script runs the search anyway.",
+      "input": {
+        "ticket_summary": "Update quarterly planning doc",
+        "mentioned_files": [],
+        "task_type": "process",
+        "force": true,
+        "max_files": 5
+      },
+      "expected": {
+        "status": "complete",
+        "relevant_files_count_min": 1,
+        "note_missing": "process tickets skipped by default"
+      }
+    },
+    {
+      "id": "ec-behavior-07",
+      "type": "behavior",
+      "name": "Workspace scoping resolves against project_root",
+      "description": "The script resolves workspace relative to project_root rather than cwd.",
+      "input": {
+        "ticket_summary": "Find frontend components",
+        "mentioned_files": [],
+        "task_type": "code",
+        "project_root": "skills/core/explore-code",
+        "workspace": "scripts",
+        "max_files": 10
+      },
+      "expected": {
+        "status": "complete",
+        "relevant_files_count_min": 1,
+        "all_paths_under_workspace": "scripts"
+      }
+    },
+    {
+      "id": "ec-behavior-08",
+      "type": "behavior",
+      "name": "Falls back to Python walk when rg is missing",
+      "description": "If rg is not available, the script still finds files using Python os.walk.",
+      "input": {
+        "ticket_summary": "explore code script",
+        "mentioned_files": [],
+        "task_type": "code",
+        "project_root": "skills/core/explore-code",
+        "max_files": 10
+      },
+      "expected": {
+        "status": "complete",
+        "relevant_files_count_min": 1
       }
     }
   ]

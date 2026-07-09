@@ -133,7 +133,7 @@
     {
       "id": "behavior-05",
       "type": "behavior",
-      "category": "freshness",
+      "category": "freshness-stale",
       "description": "Flags a report as stale when generated_at is older than the threshold.",
       "input": {
         "context_dir": "test-context",
@@ -145,6 +145,71 @@
         "reports": [
           {
             "fresh": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "behavior-06",
+      "type": "behavior",
+      "category": "ticket-alias",
+      "description": "Matches reports that use 'ticket' instead of 'ticket_key' in frontmatter.",
+      "input": {
+        "context_dir": "test-context",
+        "ticket_key": "OC-5000",
+        "report_types": ["debrief"]
+      },
+      "expected": {
+        "status": "complete",
+        "reports": [
+          {
+            "type": "debrief",
+            "ticket_key": "OC-5000",
+            "relevance": "High",
+            "matched_by": "ticket_key"
+          }
+        ]
+      }
+    },
+    {
+      "id": "behavior-07",
+      "type": "behavior",
+      "category": "baselined-at-alias",
+      "description": "Uses 'baselined_at' or 'updated_at' when 'generated_at' is absent.",
+      "input": {
+        "context_dir": "test-context",
+        "ticket_key": "OC-6000",
+        "report_types": ["baseline"]
+      },
+      "expected": {
+        "status": "complete",
+        "reports": [
+          {
+            "type": "baseline",
+            "ticket_key": "OC-6000",
+            "generated_at_present": true,
+            "relevance": "High",
+            "matched_by": "ticket_key"
+          }
+        ]
+      }
+    },
+    {
+      "id": "behavior-08",
+      "type": "behavior",
+      "category": "freshness-fresh",
+      "description": "Flags a report as fresh when it is newer than the threshold.",
+      "input": {
+        "context_dir": "test-context",
+        "ticket_key": "OC-7000",
+        "artifact_freshness_hours": 720,
+        "report_types": ["baseline"]
+      },
+      "expected": {
+        "status": "complete",
+        "reports": [
+          {
+            "fresh": true
           }
         ]
       }

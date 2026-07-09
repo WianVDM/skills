@@ -2,18 +2,13 @@
 name: explore-code
 description: "Search the codebase for evidence related to a specific question, ticket, or ambiguity. Find mentioned files, similar patterns, relevant tests, ADRs, and docs. Use when a skill needs code context to resolve uncertainty."
 version: 1.0.0
+license: Proprietary
 invocation: model-invoked
 metadata:
   author: Wian van der Merwe
   tags: [codebase, exploration, evidence, building-block]
   verification_level: declared
-depends:
-  - worker-contract
-  - context-reports
 allowed-tools:
-  - read
-  - ffgrep
-  - fffind
   - bash
 ---
 
@@ -66,6 +61,8 @@ The skill accepts a JSON object via stdin to `scripts/explore-code.py`.
   "mentioned_files": ["src/app/guards/auth.guard.ts"],
   "task_type": "code",
   "workspace": null,
+  "project_root": null,
+  "force": false,
   "time_box_minutes": 5,
   "max_files": 20
 }
@@ -76,9 +73,13 @@ The skill accepts a JSON object via stdin to `scripts/explore-code.py`.
 | `ticket_summary` | yes | — | Ticket summary, question, or short description to search against. |
 | `mentioned_files` | no | `[]` | Files explicitly mentioned in the ticket. Paths can be relative or absolute. |
 | `task_type` | no | `"code"` | One of `code`, `ui`, `docs`, `process`. Exploration is skipped for `process` unless `force` is true. |
-| `workspace` | no | `null` | Monorepo workspace name to scope searches. |
+| `workspace` | no | `null` | Monorepo workspace name to scope searches. Resolved relative to `project_root` (or the current working directory if no project root is supplied). |
+| `project_root` | no | `null` | Project root directory used to resolve `workspace` and relative paths. Defaults to the current working directory. |
+| `force` | no | `false` | When true, run exploration even for `process` task types. |
 | `time_box_minutes` | no | `5` | Target time budget in minutes; used to limit search breadth. |
 | `max_files` | no | `20` | Maximum number of relevant files to return. |
+| `min_relevance` | no | `"Low"` | Minimum relevance threshold to include in results. One of `High`, `Medium`, `Low`. |
+| `read_limit_lines` | no | `200` | Maximum number of lines to read from a discovered file when generating a `content_summary`. |
 
 ### Output
 
@@ -98,13 +99,6 @@ The skill accepts a JSON object via stdin to `scripts/explore-code.py`.
       "content_summary": "canActivate checks isAuthenticated before refresh completes"
     }
   ],
-  "claims_vs_code": [
-    {
-      "claim": "token refresh is handled in auth.guard.ts",
-      "verdict": "confirmed",
-      "evidence": "refreshToken observable and canActivate logic present"
-    }
-  ],
   "missing_files": []
 }
 ```
@@ -114,7 +108,6 @@ The skill accepts a JSON object via stdin to `scripts/explore-code.py`.
 | `status` | `complete`, `partial`, `blocked`, or `needs_input`. |
 | `relevant_files` | Ranked list of `{path, relevance, reason}`. |
 | `snippets` | Summarized content for the top files. |
-| `claims_vs_code` | List of contradictions or confirmations between ticket claims and code. |
 | `missing_files` | Mentioned files that could not be found. |
 
 ### Status values
@@ -149,7 +142,8 @@ Run explore-code with question "Where is token refresh handled?", workspace "fro
 ## Implementation notes
 
 - The deterministic entry point is `scripts/explore-code.py`.
-- The script uses `ffgrep`, `fffind`, or `bash` (`rg`/`find`) to search the filesystem.
+- The script uses `ripgrep` (`rg`) when available, and falls back to Python's built-in directory walk. It does not call LLMs.
+- `workspace` is resolved relative to `project_root` (or the current working directory) to keep monorepo scoping safe.
 - Relevance is scored heuristically; callers should treat rankings as evidence, not decisions.
 - No LLM calls are made inside the script.
 

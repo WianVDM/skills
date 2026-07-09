@@ -169,6 +169,140 @@
       "category": "should-not-trigger",
       "prompt": "capture the state of the conversation so far",
       "expected": ""
+    },
+    {
+      "id": "behavior-missing-capability",
+      "type": "behavior",
+      "category": "failure-handling",
+      "setup": "Run the baseline skill in an environment where git or python3 is missing.",
+      "input": "baseline SHB-283",
+      "expected": {
+        "status": "blocked",
+        "reason": "required capability missing",
+        "next_action": "explain what is required and stop"
+      }
+    },
+    {
+      "id": "behavior-ambiguous-scope",
+      "type": "behavior",
+      "category": "failure-handling",
+      "setup": "No scope is provided and no matching context reports exist.",
+      "input": "baseline",
+      "expected": {
+        "status": "needs_input",
+        "question": "ask user to clarify scope"
+      }
+    },
+    {
+      "id": "behavior-missing-tooling",
+      "type": "behavior",
+      "category": "failure-handling",
+      "setup": "The selected method is ui-browser but no browser automation tooling is available and the user declines all alternatives.",
+      "input": "baseline the dashboard using UI capture",
+      "expected": {
+        "status": "blocked",
+        "reason": "no available tooling for selected method",
+        "next_action": "offer manual fallback or switch methods"
+      }
+    },
+    {
+      "id": "behavior-stale-state",
+      "type": "behavior",
+      "category": "edge-case",
+      "setup": "A state file exists for the same scope but branch or commit differs from current.",
+      "input": "baseline SHB-283",
+      "expected": {
+        "state": "archive stale state",
+        "action": "start fresh or warn about staleness"
+      }
+    },
+    {
+      "id": "behavior-user-rejects-branch",
+      "type": "behavior",
+      "category": "failure-handling",
+      "setup": "Target branch differs from current branch and user rejects switching.",
+      "input": "baseline SHB-283 on branch release/2.0",
+      "expected": {
+        "status": "needs_input",
+        "action": "ask whether to proceed with current branch or abort"
+      }
+    },
+    {
+      "id": "behavior-manual-fallback",
+      "type": "behavior",
+      "category": "happy-path",
+      "setup": "No automated capture method is viable; user chooses manual fallback.",
+      "input": "baseline the checkout button issue manually",
+      "expected": {
+        "method": "manual",
+        "status": "complete",
+        "artifacts": "user-provided evidence recorded"
+      }
+    },
+    {
+      "id": "report-required-frontmatter",
+      "type": "report",
+      "category": "schema",
+      "setup": "Generate a baseline report for a bug on branch main.",
+      "input": "baseline the auth guard race condition",
+      "expected": {
+        "required_fields": [
+          "skill",
+          "version",
+          "scope",
+          "branch",
+          "commit",
+          "method",
+          "baselined_at",
+          "type",
+          "summary"
+        ],
+        "version": "1.0.1"
+      }
+    },
+    {
+      "id": "report-reproducible-only-bug",
+      "type": "report",
+      "category": "schema",
+      "setup": "Generate reports for each baseline type.",
+      "input": "baseline a feature, then a bug, then an API",
+      "expected": {
+        "feature": "reproducible absent",
+        "bug": "reproducible present",
+        "api": "reproducible absent"
+      }
+    },
+    {
+      "id": "report-exclude-baseline-outputs",
+      "type": "report",
+      "category": "schema",
+      "setup": "The context directory contains a previous baseline report and reports from other skills matching the same scope.",
+      "input": "baseline SHB-283",
+      "expected": {
+        "consumed_context": "does not include baseline outputs"
+      }
+    },
+    {
+      "id": "composition-detect-project-context",
+      "type": "composition",
+      "category": "integration",
+      "setup": "The baseline skill is invoked in a project where detect-project-context returns a non-default context directory.",
+      "input": "baseline SHB-283",
+      "expected": {
+        "context_dir": "uses detected recommended_context_dir",
+        "config_dir": "uses detected recommended_config_dir"
+      }
+    },
+    {
+      "id": "composition-worker-contract",
+      "type": "composition",
+      "category": "integration",
+      "setup": "A subagent worker returns a result to the baseline conductor.",
+      "input": "capture worker completes capture",
+      "expected": {
+        "return_format": "standard worker contract",
+        "sections": ["status", "artifacts", "Summary", "Findings", "Decisions made", "Open questions", "Blockers"]
+      }
     }
   ]
 }

@@ -2,21 +2,11 @@
 
 This file lists the tools, binaries, environment variables, and skill dependencies required by `explore-code`.
 
-## Required harness tools
+## Required tools
 
 | Tool | Purpose |
 |---|---|
-| `read` | Read discovered files to confirm existence and summarize content. |
-| `ffgrep` | Fast content search across the codebase for keywords and patterns. |
-| `fffind` | Fuzzy/glob file discovery for finding tests, ADRs, and comparable files. |
-| `bash` | Fallback to `rg`/`find` when harness tools are unavailable or for directory traversal. |
-
-## Recommended harness tools
-
-| Tool | Purpose |
-|---|---|
-| `find` | Alternative path discovery in environments where `fffind` is unavailable. |
-| `grep` | Generic fallback text search when `ffgrep` is unavailable. |
+| `bash` | Executes the deterministic Python script and any `rg` subprocess calls. |
 
 ## Required binaries
 
@@ -24,22 +14,25 @@ This file lists the tools, binaries, environment variables, and skill dependenci
 |---|---|---|
 | `python3` | 3.9+ | Runs the deterministic entry point `scripts/explore-code.py`. |
 
+## Recommended binaries
+
+| Binary | Purpose |
+|---|---|
+| `rg` (ripgrep) | Fast content search across the codebase when available. The script falls back to Python's built-in directory walk if `rg` is missing. |
+
 ## Optional binaries
 
 | Binary | Purpose |
 |---|---|
-| `rg` (ripgrep) | Fast fallback content search when `ffgrep` is unavailable. |
-| `find` (POSIX/MSYS) | Directory traversal fallback. |
+| `find` (POSIX/MSYS) | Alternative directory traversal when the Python fallback is insufficient. |
 
 ## Environment variables
 
-`explore-code` does not require any environment variables. It uses the caller-provided `workspace` and project root to scope searches.
+`explore-code` does not require any environment variables. It uses the caller-provided `workspace` and `project_root` to scope searches.
 
 ## Required skill dependencies
 
-| Skill | Reason |
-|---|---|
-| `worker-contract` | The skill returns a structured result to conductors and must follow the shared worker/subagent return format, forbidden actions, and scope boundaries. |
+None. `explore-code` is a deterministic script that does not invoke other skills.
 
 ## Recommended skill dependencies
 

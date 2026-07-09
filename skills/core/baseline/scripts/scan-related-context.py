@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
-"""Scan .agents/context/ for reports related to a baseline scope.
+"""Scan the project context directory for reports related to a baseline scope.
 
-Accepts --scope, --branch, and --ticket arguments. Recursively scans
-.agents/context/ for Markdown files whose filename or frontmatter matches one
-of the provided terms. Reads the frontmatter of each match and extracts
-skill, version, ticket, key, scope, branch, and summary.
+Accepts --scope, --branch, and --ticket arguments. Recursively scans the
+detected context directory for Markdown files whose filename or frontmatter
+matches one of the provided terms. Reads the frontmatter of each match and
+extracts skill, version, ticket, key, scope, branch, and summary.
+
+By default the script uses `detect-project-context` to locate the context
+directory. Override with --context-dir.
 
 Excludes reports where the producing skill is "baseline" to avoid circular
 self-reference, and also excludes files inside the baseline output directory
-(.agents/context/baseline/) by path.
+(`{context_dir}/baseline/`) by path.
 
 Outputs JSON:
     {
@@ -25,14 +28,61 @@ Outputs JSON:
 The script is read-only, deterministic, and safe to run in any project.
 """
 
+from typing import Optional
 import argparse
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
-CONTEXT_DIR = ".agents/context"
 RELEVANCE_ORDER = {"high": 0, "medium": 1, "low": 2}
+
+
+def _detect_context_dir(start: Path) -> Path:
+    """Use detect-project-context to find the recommended context directory.
+
+    Raises RuntimeError if the context directory cannot be detected, so that
+    the caller can fail closed rather than silently falling back to a
+    hardcoded harness-specific path.
+    """
+    detect_script = Path(__file__).resolve().parents[2] / "detect-project-context" / "scripts" / "detect-project-context.py"
+    if detect_script.is_file():
+        try:
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(detect_script),
+                    "--start",
+                    str(start),
+                    "--json",
+                ],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            if result.returncode == 0:
+                data = json.loads(result.stdout)
+                if data.get("error"):
+                    raise RuntimeError(
+                        f"detect-project-context failed: {data['error']}"
+                    )
+                context_dir = data.get("recommended_context_dir")
+                if context_dir:
+                    return Path(context_dir)
+        except subprocess.SubprocessError as exc:
+            raise RuntimeError(
+                f"detect-project-context subprocess failed: {exc}"
+            ) from exc
+        except json.JSONDecodeError as exc:
+            raise RuntimeError(
+                f"detect-project-context returned invalid JSON: {exc}"
+            ) from exc
+
+    raise RuntimeError(
+        "Could not detect the project context directory. "
+        "Provide --context-dir explicitly."
+    )
 
 
 def _parse_frontmatter(text: str) -> dict:
@@ -78,7 +128,7 @@ def _normalise(term: str) -> str:
     return term.strip().upper()
 
 
-def _calculate_relevance(path: Path, frontmatter: dict, terms: list) -> str | None:
+def _calculate_relevance(path: Path, frontmatter: dict, terms: list) -> Optional[str]:
     """Calculate the highest relevance for a file against the given terms."""
     stem = path.stem.upper()
 
@@ -152,14 +202,19 @@ def scan_related_context(terms: list, context_dir: Path):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Scan .agents/context/ for reports related to a baseline scope."
+        description="Scan the project context directory for reports related to a baseline scope."
     )
     parser.add_argument("--scope", help="Scope or feature name to search for.")
     parser.add_argument("--branch", help="Branch name to search for.")
     parser.add_argument("--ticket", help="Ticket key to search for.")
     parser.add_argument(
         "--context-dir",
-        help="Override the context directory. Default: .agents/context/",
+        help="Override the context directory. Default: detected via detect-project-context.",
+    )
+    parser.add_argument(
+        "--start",
+        default=".",
+        help="Directory to start from when detecting the context directory. Default: current directory.",
     )
     args = parser.parse_args()
 
@@ -171,7 +226,17 @@ def main():
         )
         return 1
 
-    context_dir = Path(args.context_dir).resolve() if args.context_dir else Path.cwd() / CONTEXT_DIR
+    if args.context_dir:
+        context_dir = Path(args.context_dir).resolve()
+    else:
+        try:
+            context_dir = _detect_context_dir(Path(args.start).resolve())
+        except RuntimeError as exc:
+            print(
+                json.dumps({"error": str(exc), "status": "blocked"}),
+                file=sys.stderr,
+            )
+            return 1
 
     try:
         matches = scan_related_context(terms, context_dir)

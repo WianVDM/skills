@@ -44,11 +44,114 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
+def _parse_scalar(value: str):
+    """Parse a simple YAML scalar value (vendored from debrief/_frontmatter.py)."""
+    value = value.strip()
+    if not value or value in ("null", "Null", "NULL", "None", "none", "~"):
+        return None
+    low = value.lower()
+    if low in ("true", "yes"):
+        return True
+    if low in ("false", "no"):
+        return False
+    if low in ("null", "none", "~"):
+        return None
+    if len(value) >= 2 and (
+        (value.startswith('"') and value.endswith('"'))
+        or (value.startswith("'") and value.endswith("'"))
+    ):
+        return value[1:-1]
+    try:
+        return int(value)
+    except ValueError:
+        pass
+    try:
+        return float(value)
+    except ValueError:
+        pass
+    return value
+
+
+def _fallback_parse(fm_text: str) -> dict:
+    """Parse a simple YAML-like frontmatter block (vendored from debrief/_frontmatter.py).
+
+    Supports:
+      - key: value
+      - key:
+          - item1
+          - item2
+      - key:
+          nested_key: value
+      - list-of-dicts under a key
+
+    Does not support multi-line scalars, anchors, aliases, or complex types.
+    """
+    data = {}
+    current_key = None
+    current_list = None
+    current_dict = None
+
+    def _flush():
+        if current_key is None:
+            return
+        if current_list:
+            data[current_key] = current_list
+        elif current_dict:
+            data[current_key] = current_dict
+        else:
+            data[current_key] = None
+
+    for raw_line in fm_text.splitlines():
+        line = raw_line.rstrip()
+        if not line:
+            continue
+        stripped = line.lstrip()
+        if stripped.startswith("#"):
+            continue
+        indent = len(line) - len(stripped)
+
+        if indent == 0 and ":" in stripped:
+            _flush()
+            key, sep, value = stripped.partition(":")
+            key = key.strip()
+            value = value.strip()
+            if not value:
+                current_key = key
+                current_list = []
+                current_dict = {}
+            else:
+                data[key] = _parse_scalar(value)
+                current_key = None
+                current_list = None
+                current_dict = None
+            continue
+
+        if current_key is not None and indent > 0:
+            if stripped.startswith("- "):
+                item = stripped[2:].strip()
+                if ":" in item:
+                    k, sep, v = item.partition(":")
+                    k = k.strip()
+                    v = v.strip()
+                    current_list.append({k: _parse_scalar(v)})
+                else:
+                    current_list.append(_parse_scalar(item))
+            elif ":" in stripped:
+                k, sep, v = stripped.partition(":")
+                k = k.strip()
+                v = v.strip()
+                current_dict[k] = _parse_scalar(v)
+            continue
+
+    _flush()
+    return data
+
+
 def _parse_frontmatter(path: Path) -> dict:
     """Extract YAML frontmatter from a markdown file.
 
-    Uses PyYAML when available; otherwise falls back to a regex parser that
-    extracts only the fields this script needs.
+    Uses PyYAML when available; otherwise falls back to a vendored parser that
+    handles the scalar and nested fields used by baseline and debrief reports.
     """
     text = path.read_text(encoding="utf-8", errors="replace")
     if not text.startswith("---"):
@@ -58,7 +161,9 @@ def _parse_frontmatter(path: Path) -> dict:
     if end == -1:
         return {}
 
-    block = text[3:end]
+    block = text[3:end].strip()
+    if not block:
+        return {}
 
     try:
         import yaml
@@ -69,20 +174,25 @@ def _parse_frontmatter(path: Path) -> dict:
     except Exception:
         pass
 
-    # Fallback regex parser for the fields we need.
-    data = {}
-    patterns = {
-        "key": r'^(?:key|ticket_key):\s*["\']?([^"\n\r]+)["\']?\s*$',
-        "branch": r'^branch:\s*["\']?([^"\n\r]+)["\']?\s*$',
-        "generated_at": r'^generated_at:\s*["\']?([^"\n\r]+)["\']?\s*$',
-    }
-    for field, pattern in patterns.items():
-        match = re.search(pattern, block, re.MULTILINE | re.IGNORECASE)
-        if match:
-            value = match.group(1).strip()
-            if value:
-                data[field] = value
-    return data
+    return _fallback_parse(block)
+
+
+def _report_ticket_key(frontmatter: dict) -> str | None:
+    """Return the best available ticket key from frontmatter."""
+    return (
+        frontmatter.get("key")
+        or frontmatter.get("ticket_key")
+        or frontmatter.get("ticket")
+    )
+
+
+def _report_timestamp(frontmatter: dict) -> str | datetime | None:
+    """Return the best available timestamp from frontmatter."""
+    return (
+        frontmatter.get("generated_at")
+        or frontmatter.get("baselined_at")
+        or frontmatter.get("updated_at")
+    )
 
 
 def _extract_project(ticket_key: str | None) -> str | None:
@@ -151,18 +261,20 @@ def _score_report(
     branch: str | None,
 ) -> tuple[int, str, datetime | None]:
     """Return (relevance_score, matched_by, generated_at) for a report."""
-    report_key = frontmatter.get("key") or frontmatter.get("ticket_key")
+    report_key = _report_ticket_key(frontmatter)
     report_branch = frontmatter.get("branch")
     report_project = _extract_project(report_key)
 
-    if ticket_key and report_key and ticket_key.upper() == report_key.upper():
-        return 3, "ticket_key", _parse_iso_datetime(frontmatter.get("generated_at"))
-    if branch and report_branch and branch.lower() == report_branch.lower():
-        return 2, "branch", _parse_iso_datetime(frontmatter.get("generated_at"))
-    if project and report_project and project.upper() == report_project:
-        return 1, "project", _parse_iso_datetime(frontmatter.get("generated_at"))
+    timestamp = _parse_iso_datetime(_report_timestamp(frontmatter))
 
-    return 0, "recency", _parse_iso_datetime(frontmatter.get("generated_at"))
+    if ticket_key and report_key and ticket_key.upper() == report_key.upper():
+        return 3, "ticket_key", timestamp
+    if branch and report_branch and branch.lower() == report_branch.lower():
+        return 2, "branch", timestamp
+    if project and report_project and project.upper() == report_project:
+        return 1, "project", timestamp
+
+    return 0, "recency", timestamp
 
 
 def _report_type_for(context_dir: Path, file_path: Path) -> str:
@@ -224,18 +336,22 @@ def scan_context(args: dict) -> dict:
             if relevance_score == 0:
                 continue
 
-            report_key = frontmatter.get("key") or frontmatter.get("ticket_key")
+            report_key = _report_ticket_key(frontmatter)
+            timestamp = _report_timestamp(frontmatter)
             reports.append({
                 "path": str(file_path),
                 "type": report_type,
                 "ticket_key": report_key,
                 "branch": frontmatter.get("branch"),
-                "generated_at": _format_datetime(frontmatter.get("generated_at")),
+                "generated_at": _format_datetime(timestamp),
                 "relevance": {3: "High", 2: "Medium", 1: "Low"}.get(
                     relevance_score, "Low"
                 ),
                 "matched_by": matched_by,
                 "fresh": _is_fresh(generated_at, threshold_hours),
+                "scope": frontmatter.get("scope"),
+                "method": frontmatter.get("method"),
+                "parent": frontmatter.get("parent"),
             })
 
     def _sort_key(item: dict) -> tuple[int, float]:

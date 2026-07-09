@@ -6,20 +6,17 @@ Configuration is passed per-call by the caller rather than read from a dedicated
 
 | Key | Type | Default | Description |
 |---|---|---|---|
-| `max_depth` | integer | `1` | How many levels of the relationship graph to expand. Capped at `2` to prevent runaway expansion. |
-| `infer_by_file` | boolean | `false` | Whether to infer affected files from path-like strings in the ticket description. |
-| `codebase_root` | string | `.` (cwd) | Root directory used for local `git` discovery. |
-| `git_remote` | string | `origin` | Remote name to use when resolving remote branches. |
+| `infer_by_file` | boolean | `false` | Whether to infer affected files from path-like strings in the ticket description. Candidates are validated against the filesystem under `codebase_root` when possible. |
+| `codebase_root` | string | `.` (cwd) | Root directory used for local `git` discovery and affected-file validation. |
 
 ## Example
 
 ```yaml
 map_ticket_relationships:
-  max_depth: 1
   infer_by_file: true
 ```
 
 ## Notes
 
 - This skill does not read its own config file. The caller passes these values directly in the input envelope.
-- `max_depth` is enforced by the script; values greater than `2` are clamped to `2`.
+- This version does not expand the graph recursively. Multi-level relationship expansion is deferred to a future version that calls tracker APIs.

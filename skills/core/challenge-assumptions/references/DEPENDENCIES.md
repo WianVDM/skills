@@ -2,21 +2,12 @@
 
 This file lists the tools, binaries, environment variables, and skill dependencies required by `challenge-assumptions`.
 
-## Required harness tools
+## Required tools
 
 | Tool | Purpose |
 |---|---|
-| `read` | Read the `SKILL.md` and reference files. |
-| `ffgrep` | Search codebase evidence for contradiction signals when the caller provides file paths. |
-| `fffind` | Locate evidence files referenced by path when the caller provides them. |
-| `bash` | Execute the deterministic Python script. |
-
-## Recommended harness tools
-
-| Tool | Purpose |
-|---|---|
-| `grep` | Generic fallback text search when `ffgrep` is unavailable. |
-| `find` | Alternative path discovery when `fffind` is unavailable. |
+| `bash` | Executes the deterministic Python script. |
+| `read` | Inspect reference files or caller-provided evidence paths when the script is not used directly. |
 
 ## Required binaries
 
@@ -34,15 +25,14 @@ None.
 
 ## Required skill dependencies
 
-| Skill | Reason |
-|---|---|
-| `context-reports` | The skill may cite its findings in shared context reports; it follows the shared report conventions when applicable. |
-| `worker-contract` | The skill returns a structured result to conductors and must follow the shared worker/subagent return format, forbidden actions, and scope boundaries. |
-| `explore-code` | The skill may consume codebase evidence produced by `explore-code` when searching for disproof signals. |
+None. `challenge-assumptions` is a deterministic script that does not invoke other skills.
 
 ## Recommended skill dependencies
 
-None.
+| Skill | Reason |
+|---|---|
+| `explore-code` | The skill may consume codebase evidence produced by `explore-code` when searching for disproof signals. |
+| `context-reports` | The skill may cite its findings in shared context reports; should follow shared report conventions when applicable. |
 
 ## Out-of-scope dependencies
 

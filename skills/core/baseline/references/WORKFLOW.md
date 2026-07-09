@@ -2,11 +2,11 @@
 
 Detailed workflow for the `baseline` skill.
 
-After each step, write the state file at `.agents/context/baseline/.state/{scope}-{branch}.json` with the current step and any resolved values.
+After each step, write the state file at `{context_dir}/baseline/.state/{scope}-{branch}.json` with the current step and any resolved values.
 
 ## 0. Resume if fresh
 
-Check `.agents/context/baseline/.state/{scope}-{branch}.json`.
+Check `{context_dir}/baseline/.state/{scope}-{branch}.json`.
 
 - If it exists and `branch`/`commit` still match, resume from `current_step`.
 - If it is stale, archive it with `.stale` and start fresh.
@@ -14,7 +14,7 @@ Check `.agents/context/baseline/.state/{scope}-{branch}.json`.
 
 ## 1. Load config
 
-Read `.agents/config/baseline.yaml` and `.agents/config/shared.yaml` if they exist.
+Read `{config_dir}/baseline.yaml` and `{config_dir}/shared.yaml` if they exist.
 
 ## 2. Detect required capabilities
 
@@ -23,7 +23,7 @@ Check that `git` and `python3` are available. If either is missing, stop and rep
 ## 3. Resolve scope
 
 - Use the user-provided scope if available.
-- If none, scan `.agents/context/` for context reports whose frontmatter might imply a scope.
+- If none, scan `{context_dir}/` for context reports whose frontmatter might imply a scope.
 - If still ambiguous, stop and ask.
 
 ## 4. Resolve branch and commit
@@ -34,11 +34,11 @@ Check that `git` and `python3` are available. If either is missing, stop and rep
 
 ## 5. Consume related context
 
-Scan `.agents/context/` for reports whose frontmatter matches `scope`, `ticket`/`key`, or `branch`.
+Scan `{context_dir}/` for reports whose frontmatter matches `scope`, `ticket`/`key`, or `branch`.
 
 Exclude:
 - Reports whose `skill` frontmatter is `baseline`.
-- Files inside `.agents/context/baseline/`.
+- Files inside `{context_dir}/baseline/`.
 
 Handle missing reports gracefully.
 
@@ -48,7 +48,7 @@ Handle missing reports gracefully.
 - Select the best method.
 - Check tooling for the selected method only, using `references/TOOLING.md`.
 - If tooling is missing, explain the gap and offer: configure a recommended tool, switch to an alternative method, or use manual fallback.
-- Persist the choice in `.agents/config/baseline.yaml` only after explicit confirmation.
+- Persist the choice in `{config_dir}/baseline.yaml` only after explicit confirmation.
 
 ## 7. Resolve target and authentication
 
@@ -62,9 +62,9 @@ Execute the chosen method. Gather evidence such as screenshots, logs, responses,
 
 ## 9. Generate artifacts and reports
 
-Save captured evidence to `.agents/context/baseline/{scope}-{branch}/`.
+Save captured evidence to `{context_dir}/baseline/{scope}-{branch}/`.
 
-Write the canonical report at `.agents/context/baseline/{scope}-{branch}.md` with:
+Write the canonical report at `{context_dir}/baseline/{scope}-{branch}.md` with:
 
 - All required frontmatter: `skill`, `version`, `scope`, `branch`, `commit`, `method`, `baselined_at`, `type`, `summary`.
 - `reproducible` only when `type` is `bug`.
@@ -74,7 +74,7 @@ Optionally generate an HTML gallery.
 
 ## 10. Curate notes and finalize
 
-Update `.agents/config/baseline.yaml` with workarounds, preferences, tooling choices, or decisions discovered. Archive or remove the state file.
+Update `{config_dir}/baseline.yaml` with workarounds, preferences, tooling choices, or decisions discovered. Archive or remove the state file.
 
 ## Hard-stop conditions
 
@@ -86,4 +86,3 @@ Stop and consult the user if:
 - A required capability (`git` or `python3`) is missing.
 - The selected method has no available tooling and the user declines all alternatives (including manual fallback).
 - Authentication is required but cannot be resolved.
-- A required capability (git, Python 3, or the chosen capture method) is missing.

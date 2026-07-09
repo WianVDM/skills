@@ -18,16 +18,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-# Allow importing the shared _frontmatter parser from the debrief skill.
-_DEBRIEF_SCRIPTS = Path(__file__).resolve().parents[3] / "workflow" / "debrief" / "scripts"
-if str(_DEBRIEF_SCRIPTS) not in sys.path:
-    sys.path.insert(0, str(_DEBRIEF_SCRIPTS))
-
-try:
-    import _frontmatter  # type: ignore
-except ImportError as _exc:  # pragma: no cover
-    sys.stderr.write(f"ERROR: cannot import _frontmatter parser: {_exc}\n")
-    sys.exit(2)
+import frontmatter  # vendored parser from scripts/frontmatter.py
 
 
 DEFAULT_MAX_HISTORY_ROWS = 20
@@ -221,18 +212,18 @@ def _read_state(path: str) -> tuple[dict, dict, str]:
     text = state_path.read_text(encoding="utf-8")
     if not text.startswith("---"):
         raise ValueError(f"state file is missing YAML frontmatter: {path}")
-    frontmatter = _frontmatter.parse_frontmatter(text)
+    fm = frontmatter.parse_frontmatter(text)
     end = text.find("---", 3)
     body = text[end + 3 :].lstrip("\n") if end != -1 else ""
     parsed_body = _parse_state_body(body)
-    return frontmatter, parsed_body, body
+    return fm, parsed_body, body
 
 
-def _write_state(path: str, frontmatter: dict, body: str) -> None:
+def _write_state(path: str, fm: dict, body: str) -> None:
     state_path = Path(path)
     state_path.parent.mkdir(parents=True, exist_ok=True)
     # dump_frontmatter with empty text returns only the frontmatter block.
-    fm_text = _frontmatter.dump_frontmatter(frontmatter, "").rstrip()
+    fm_text = frontmatter.dump_frontmatter(fm, "").rstrip()
     text = f"{fm_text}\n\n{body}"
     state_path.write_text(text, encoding="utf-8")
 
@@ -322,8 +313,14 @@ def _op_create(data: dict) -> dict:
     if not phases or not isinstance(phases, list):
         return _fail(["missing or invalid input: phases (list required)"])
 
-    if Path(state_path).exists():
-        return _fail([f"state file already exists: {state_path}"])
+    overwrite = data.get("overwrite", False) is True
+
+    if Path(state_path).exists() and not overwrite:
+        return {
+            "status": "blocked",
+            "state_path": state_path,
+            "errors": [f"state file already exists: {state_path}"],
+        }
 
     phase_checklist = [
         {"text": _phase_item_text(i, phase), "status": "pending", "phase": phase.strip()}
@@ -381,10 +378,6 @@ def _op_update(data: dict) -> dict:
         for item in checklist:
             if item["phase"].lower() == target:
                 return item
-        # Fallback: substring match.
-        for item in checklist:
-            if target in item["text"].lower():
-                return item
         return None
 
     if completed_phase:
@@ -392,9 +385,6 @@ def _op_update(data: dict) -> dict:
         if item is None:
             return _fail([f"completed_phase not found in checklist: {completed_phase}"])
         item["status"] = "completed"
-        # A completed phase cannot also be in-progress.
-        if item["status"] == "in-progress":
-            item["status"] = "completed"
 
     if in_progress_phase:
         # Clear any existing in-progress marker first.

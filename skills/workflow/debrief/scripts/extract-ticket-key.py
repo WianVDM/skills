@@ -14,7 +14,7 @@ import json
 import re
 import sys
 
-TICKET_RE = re.compile(r"[A-Z][A-Z0-9]+-\d+")
+TICKET_RE = re.compile(r"[A-Z][A-Z0-9]*-\d+")
 
 
 def _help() -> str:

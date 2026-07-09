@@ -55,6 +55,7 @@ def _run(data: dict) -> dict:
         "penalty_unresolved": 10,
         "penalty_contradiction": 15,
         "penalty_ambiguity": 5,
+        "penalty_inconclusive": 5,
     }
 
     cfg = {**defaults, **config}
@@ -66,11 +67,19 @@ def _run(data: dict) -> dict:
         penalty_unresolved = int(cfg["penalty_unresolved"])
         penalty_contradiction = int(cfg["penalty_contradiction"])
         penalty_ambiguity = int(cfg["penalty_ambiguity"])
+        penalty_inconclusive = int(cfg["penalty_inconclusive"])
     except (KeyError, TypeError, ValueError):
         return {
             "confidence_pct": 0,
             "confidence_level": "Red",
             "confidence_gap": ["Invalid confidence configuration"],
+        }
+
+    if green_threshold <= yellow_threshold:
+        return {
+            "confidence_pct": 0,
+            "confidence_level": "Red",
+            "confidence_gap": ["green_threshold must be greater than yellow_threshold"],
         }
 
     confidence = 100
@@ -90,6 +99,9 @@ def _run(data: dict) -> dict:
         elif status == "unresolved":
             confidence -= penalty_unresolved
             gap.append(f"Assumption '{text}' is unresolved.")
+        elif status == "inconclusive":
+            confidence -= penalty_inconclusive
+            gap.append(f"Assumption '{text}' is inconclusive.")
 
     for contradiction in contradictions:
         confidence -= penalty_contradiction

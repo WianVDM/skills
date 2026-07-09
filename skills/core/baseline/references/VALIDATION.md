@@ -7,7 +7,7 @@ Checklist for validating the `baseline` skill after changes or before release.
 ## Structure checks
 
 - [x] `SKILL.md` frontmatter is complete: `name`, `description`, `version`, `scope`, `invocation`, `metadata`.
-- [x] The skill version matches the report `version` declared in `CONTEXT_REPORTS.md` and `REFERENCE.md` (skill 1.0.0, report 1.0.0).
+- [x] The skill version matches the report `version` declared in `CONTEXT_REPORTS.md` and `REFERENCE.md` (skill 1.0.1, report 1.0.1).
 - [x] All reference links resolve: `CONFIG_PATTERN.md`, `CAPABILITIES.md`, `CONTEXT_REPORTS.md`, `REFERENCE.md`, `AUTH.md`, `WORKFLOW.md`, `DEPENDENCIES.md`, `EXAMPLES.md`.
 - [x] `SKILL.md` is concise and does not duplicate deep detail from `references/`.
 - [x] Progressive disclosure is followed: overview in `SKILL.md`, detail in `references/`.
@@ -24,11 +24,11 @@ Checklist for validating the `baseline` skill after changes or before release.
 
 ## Context scanning
 
-- [x] The skill scans `.agents/context/` for relevant reports before capture.
+- [x] The skill scans `{context_dir}/` for relevant reports before capture.
 - [x] The scan matches scope, ticket, and branch keys generically by filename and frontmatter.
 - [x] The skill handles missing consumed context gracefully.
 - [x] The skill records consumed context in the report frontmatter.
-- [x] `consumed_context` excludes reports produced by this skill and files inside `.agents/context/baseline/` unless explicitly provided as non-baseline context.
+- [x] `consumed_context` excludes reports produced by this skill and files inside `{context_dir}/baseline/` unless explicitly provided as non-baseline context.
 - [x] The skill does not fail silently when a consumed report is missing but expected by explicit config.
 
 ## Standard worker return contracts
@@ -65,7 +65,7 @@ Checklist for validating the `baseline` skill after changes or before release.
 - [x] Default config does not hardcode project-specific values such as URLs, ports, or commands.
 - [x] Default `verification_method` is `auto` or detection-based.
 - [x] Bootstrap includes scope resolution, branch resolution, method detection, and validation.
-- [x] The skill persists resolved choices in `.agents/config/baseline.yaml` without overwriting existing values silently.
+- [x] The skill persists resolved choices in `{config_dir}/baseline.yaml` without overwriting existing values silently.
 - [x] The skill asks the user when detection is ambiguous or insufficient.
 
 ## Method agnosticism
@@ -100,7 +100,7 @@ Checklist for validating the `baseline` skill after changes or before release.
 - [x] Behavior evals cover happy path, missing config, ambiguous scope, no capture method, stale report, user rejects branch, and manual fallback.
 - [x] Report evals cover required frontmatter, summary generation, and type-appropriate `reproducible` handling.
 - [x] A review cadence is documented (e.g., on every minor/major version bump and at least quarterly).
-- [x] `EXAMPLES.md` uses the current report schema (`version: 1.0.0`, `scope:`, `branch:`, `commit:`, `summary:`).
+- [x] `EXAMPLES.md` uses the current report schema (`version: 1.0.1`, `scope:`, `branch:`, `commit:`, `summary:`).
 
 ## Security
 
@@ -119,7 +119,8 @@ After running through this checklist, record the result:
 - `PARTIAL` — some non-blocking gaps remain; document them in the skill notes.
 - `FAIL` — blocking issue must be resolved before release.
 
-**Result: PASS**
+Result: ________________
 
-Validated by: baseline review (2026-07-07)
-Notes: Verdict Keep (conditional). Remediation applied to resolve version consistency, invocation mode, config implementation, and method-name alignment.
+Validated by: ________________
+Date: ________________
+Notes: ________________

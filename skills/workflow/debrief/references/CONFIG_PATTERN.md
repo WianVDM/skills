@@ -6,7 +6,6 @@
 
 ```yaml
 # debrief.yaml
-confidence_threshold: 85       # integer; debrief is Green at or above this value
 green_threshold: 85            # integer; maps to confidence_level Green
 yellow_threshold: 60           # integer; maps to confidence_level Yellow, otherwise Red
 baseline_mode: "optional"      # enum: optional | skip | required
@@ -15,6 +14,13 @@ max_resolution_loops: 2        # integer; max times the user can add info before
 freshness_hours: 24            # integer; report age considered fresh
 explore_code_max_files: 20     # integer; file-count limit for explore-code
 max_history_rows: 20           # integer; checkpoint history row limit before archive
+
+# Confidence penalty config
+penalty_challenged: 10         # integer; subtracted per challenged assumption
+penalty_unresolved: 10         # integer; subtracted per unresolved assumption
+penalty_contradiction: 15      # integer; subtracted per contradiction
+penalty_ambiguity: 5           # integer; subtracted per unresolved ambiguity
+penalty_inconclusive: 5        # integer; subtracted per inconclusive assumption
 
 # Tracker-specific config
 trackers:
@@ -33,7 +39,6 @@ trackers:
 ## Defaults
 
 ```yaml
-confidence_threshold: 85
 green_threshold: 85
 yellow_threshold: 60
 baseline_mode: "optional"
@@ -42,6 +47,11 @@ max_resolution_loops: 2
 freshness_hours: 24
 explore_code_max_files: 20
 max_history_rows: 20
+penalty_challenged: 10
+penalty_unresolved: 10
+penalty_contradiction: 15
+penalty_ambiguity: 5
+penalty_inconclusive: 5
 ```
 
 ## Slug generation
@@ -58,9 +68,10 @@ Example: `Auth guard race condition` → `OC-4644-auth-guard-race-condition.md`.
 
 ## Validation rules
 
-- `confidence_threshold`, `green_threshold`, `yellow_threshold` must be integers between 0 and 100.
+- `green_threshold` and `yellow_threshold` must be integers between 0 and 100.
 - `green_threshold` must be greater than `yellow_threshold`.
 - `baseline_mode` must be one of `optional`, `skip`, `required`.
 - `issue_tracker` must be one of `auto`, `jira`, `github`, `linear`, `manual`.
 - If `issue_tracker` is not `auto`, the corresponding `trackers.{name}` block must be present.
 - `token_env` values are env var names, not secret values.
+- Penalty keys (`penalty_challenged`, `penalty_unresolved`, `penalty_contradiction`, `penalty_ambiguity`, `penalty_inconclusive`) must be non-negative integers.

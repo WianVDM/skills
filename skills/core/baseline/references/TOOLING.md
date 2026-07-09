@@ -19,9 +19,9 @@ Use for pages, routes, components, or visual interactions.
 
 | Tool | When to use | Config surface |
 |------|-------------|--------------|
-| Playwright MCP | Harness provides a Playwright MCP server. | `.agents/config/mcp.json` or harness-native MCP config. |
-| Stagehand MCP | AI-driven browser automation via MCP. | `.agents/config/mcp.json` or harness-native MCP config. |
-| Puppeteer MCP | Direct Chrome DevTools Protocol access. | `.agents/config/mcp.json` or harness-native MCP config. |
+| Playwright MCP | Harness provides a Playwright MCP server. | `{config_dir}/mcp.json` or harness-native MCP config. |
+| Stagehand MCP | AI-driven browser automation via MCP. | `{config_dir}/mcp.json` or harness-native MCP config. |
+| Puppeteer MCP | Direct Chrome DevTools Protocol access. | `{config_dir}/mcp.json` or harness-native MCP config. |
 | Project-local Playwright | Existing test suite already uses Playwright. | `playwright.config.*` |
 | Project-local Cypress | Existing test suite already uses Cypress. | `cypress.config.*` |
 
@@ -107,4 +107,4 @@ Always available. The user provides evidence directly.
 
 ## Persisting tooling preferences
 
-When the user chooses a tooling path for a method, the skill records it in `.agents/config/baseline.yaml` under `tooling.{method}` so the same question is not repeated every run.
+When the user chooses a tooling path for a method, the skill records it in `{config_dir}/baseline.yaml` under `tooling.{method}` so the same question is not repeated every run.
