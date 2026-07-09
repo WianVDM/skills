@@ -4,14 +4,13 @@ This is a **skills repository**: a public collection of agent skills for AI codi
 
 ## Start here
 
-- `README.md` — project overview
-- `docs/skill-standards/README.md` — standards wiki
-- `docs/manifestos/philosophy.md` — design principles
+- Project overview: a public collection of agent skills for any harness supporting the Agent Skills standard. Full details in [README.md](./README.md).
+- Standards wiki: rules, patterns, and reference for writing skills. Full details in [docs/skill-standards/README.md](./docs/skill-standards/README.md).
+- Design principles: why these skills exist and what they optimize for. Full details in [docs/manifestos/philosophy.md](./docs/manifestos/philosophy.md).
 
 ## Project rules
 
 - **Skill versioning:** rolling increment, not SemVer. Bump once per release.
-- **Docs:** human voice. See global `VOICE.md`.
 
 ## Layout
 
