@@ -1,23 +1,20 @@
 # Agent conventions for this repo
 
-This repo is **Wian's Skills** — a public collection of agent skills for AI coding assistants.
+This is a **skills repository**: a public collection of agent skills for AI coding assistants.
 
-## Versioning
+## Start here
 
-This project uses a simple rolling increment for skill versions, not SemVer:
+- `README.md` — project overview
+- `docs/skill-standards/README.md` — standards wiki
+- `docs/manifestos/philosophy.md` — design principles
 
-- Any change to a skill increments its version by exactly one digit.
-- `1.0.0` → `1.0.1`
-- `1.0.9` → `1.1.0`
-- `1.9.9` → `2.0.0`
+## Project rules
 
-The next version is always computed from the latest published version on GitHub. Bump once per published release.
+- **Skill versioning:** rolling increment, not SemVer. Bump once per release.
+- **Docs:** human voice. See global `VOICE.md`.
 
-## User-specific conventions
+## Layout
 
-For user-specific rules, see [`.agents/AGENTS.md`](./.agents/AGENTS.md).
-
-## Where to look next
-
-- For standards: `docs/skill-standards/README.md`
-- For project setup: `README.md`
+- `skills/` — skills by domain
+- `docs/` — manifestos and standards
+- `skills.json` — bundle and dependencies
