@@ -28,7 +28,7 @@ A harness may track this distinction via a context variable or explicit flag. He
 Agent-authored skills start in **personal scope**: they are local to the user or project and are not distributed until reviewed. Promotion to project, org, or public scope requires:
 
 - Human review or approved CI attestation.
-- Evaluation pass (see [docs/skill-standards/EVALUATION.md](./EVALUATION.md)).
+- Evaluation pass (see [reference/evaluation-framework.md](./evaluation-framework.md)).
 - Security scan (separate from functional evaluation).
 - Version bump if the schema or behavior changed and the skill is shared or consumed.
 
@@ -118,7 +118,7 @@ Signatures are **recommended but not sufficient**. They provide integrity, not t
 
 ## Agent-authored skill evaluation
 
-Agent-authored skills use the same functional evaluation framework as human-authored skills (see [docs/skill-standards/EVALUATION.md](./EVALUATION.md)), plus additional tests:
+Agent-authored skills use the same functional evaluation framework as human-authored skills (see [reference/evaluation-framework.md](./evaluation-framework.md)), plus additional tests:
 
 - **Anti-rationalization test** — the skill does not quietly undermine its own rules.
 - **Scope test** — the skill stays within its declared scope.
@@ -184,6 +184,6 @@ The following governance concerns are **limited** and are documented as such:
 
 ## Related documents
 
-- [`docs/skill-standards/PACKAGE.md`](./PACKAGE.md) — package envelope, versioning, dependencies.
-- [`docs/skill-standards/EVALUATION.md`](./EVALUATION.md) — evaluation framework and agent-authored skill tests.
-- [`fundamentals/security.md`](./fundamentals/security.md) — security fundamentals.
+- [`reference/package.md`](./package.md) — package envelope, versioning, dependencies.
+- [`reference/evaluation-framework.md`](./evaluation-framework.md) — evaluation framework and agent-authored skill tests.
+- [`fundamentals/security.md`](../fundamentals/security.md) — security fundamentals.

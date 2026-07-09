@@ -154,7 +154,7 @@ requires_setup: true
 - `skill` lists keys that should live in `.agents/config/{skill-name}.yaml`.
 - `requires_setup: true` signals that the skill needs skill-specific initialization after installation.
 
-Shared keys must be registered in `docs/skill-standards/CONFIG_KEYS.md`. Unregistered keys are treated as skill-specific. This prevents duplicate prompts for the same value across different skills.
+Shared keys must be registered in `docs/skill-standards/reference/config-keys.md`. Unregistered keys are treated as skill-specific. This prevents duplicate prompts for the same value across different skills.
 
 A setup conductor (such as `setup-wian-skills`) can read these declarations, collect shared keys once, and present a checklist of skills that need individual initialization.
 
@@ -174,5 +174,5 @@ Do not use `config.yaml` when:
 
 ## Central shared-key registry
 
-The registry at `docs/skill-standards/CONFIG_KEYS.md` defines the canonical meaning, type, and default for each shared key. Skill authors should register new shared keys before declaring them in `config.yaml`.
+The registry at `docs/skill-standards/reference/config-keys.md` defines the canonical meaning, type, and default for each shared key. Skill authors should register new shared keys before declaring them in `config.yaml`.
 

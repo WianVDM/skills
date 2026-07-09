@@ -114,4 +114,4 @@ See [references/DEPENDENCIES.md](references/DEPENDENCIES.md).
 ## References
 
 - `docs/skill-standards/schemas/evals.json.schema.json`
-- `docs/skill-standards/EVALUATION.md`
+- `docs/skill-standards/reference/evaluation-framework.md`

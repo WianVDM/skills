@@ -50,7 +50,7 @@ Push deep detail into `references/`. Push worker prompts into `subagents/`. Push
 
 ## Frontmatter
 
-A skill declares its identity in the frontmatter of `SKILL.md`. See [`../FORMAT.md`](../FORMAT.md) for the full portable frontmatter schema and [`../PACKAGE.md`](../PACKAGE.md) for package-level metadata. The rest of this section covers the structural role of frontmatter and how to write a strong description.
+A skill declares its identity in the frontmatter of `SKILL.md`. See [`../FORMAT.md`](../reference/format.md) for the full portable frontmatter schema and [`../PACKAGE.md`](../reference/package.md) for package-level metadata. The rest of this section covers the structural role of frontmatter and how to write a strong description.
 
 ```yaml
 ---
@@ -210,4 +210,4 @@ Templates and static resources. Useful when a skill produces files from a fixed 
 
 ## Research basis
 
-See [SOURCES.md](../SOURCES.md).
+See [SOURCES.md](../reference/sources.md).

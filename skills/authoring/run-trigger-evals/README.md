@@ -69,4 +69,4 @@ run-trigger-evals/
 - Frontmatter parsing is delegated to the shared `parse-skill-frontmatter` skill.
 - Improve the case-generation logic as the standards for trigger evals evolve.
 - Keep the eval schema path in sync with `docs/skill-standards/schemas/evals.json.schema.json`.
-- Keep the eval format reference in sync with `docs/skill-standards/TRIGGER_EVALS.md`.
+- Keep the eval format reference in sync with `docs/skill-standards/reference/trigger-evals.md`.

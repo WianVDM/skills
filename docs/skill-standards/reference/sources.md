@@ -68,6 +68,6 @@ The dependency taxonomy (required, recommended, optional) and transitive closure
 
 ## Related documents
 
-- [docs/ARCHITECTURE.md](../ARCHITECTURE.md) — the full context stack.
-- [PACKAGE.md](./PACKAGE.md) — skill packaging, dependencies, and versioning.
-- [EVALUATION.md](./EVALUATION.md) — the full evaluation framework.
+- [manifestos/architecture.md](../../manifestos/architecture.md) — the full context stack.
+- [package.md](./package.md) — skill packaging, dependencies, and versioning.
+- [evaluation-framework.md](./evaluation-framework.md) — the full evaluation framework.

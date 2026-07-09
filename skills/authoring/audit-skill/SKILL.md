@@ -62,11 +62,11 @@ Building block.
 
 ## Rubric
 
-The full rubric is maintained in `docs/skill-standards/AUDIT_RUBRIC.md`. It covers identity, type/shape, scope, structure, form/style, security, dependencies, portability, evaluation, governance, and **tooling awareness** (`TA-01`, `TA-02`).
+The full rubric is maintained in `docs/skill-standards/reference/audit-rubric.md`. It covers identity, type/shape, scope, structure, form/style, security, dependencies, portability, evaluation, governance, and **tooling awareness** (`TA-01`, `TA-02`).
 
 ## Output format
 
-See `docs/skill-standards/AUDIT_RUBRIC.md` for the report schema.
+See `docs/skill-standards/reference/audit-rubric.md` for the report schema.
 
 ## Security
 
@@ -103,5 +103,5 @@ Negative tests have been verified: the script reports blockers for a deliberatel
 
 ## References
 
-- `docs/skill-standards/AUDIT_RUBRIC.md` — canonical audit rubric
+- `docs/skill-standards/reference/audit-rubric.md` — canonical audit rubric
 - `docs/skill-standards/schemas/skill-frontmatter.schema.json`

@@ -19,7 +19,7 @@ The skill supports two gates:
 - **review** — applies the review principles, runs a full audit, and produces a verdict-led audit report or an incomplete report.
 - **update** — applies the review principles, produces a verdict-led audit report, a remediation plan, and applies changes after approval.
 
-Before the rubric is scored, the conductor applies the review principles from `references/REVIEW_PRINCIPLES.md` (a fallback copy of `docs/skill-standards/REVIEW_PRINCIPLES.md`). The verdict is always based on the full audit. If the core questions cannot be answered, the report is marked incomplete.
+Before the rubric is scored, the conductor applies the review principles from `references/REVIEW_PRINCIPLES.md` (a fallback copy of `docs/skill-standards/reference/review-principles.md`). The verdict is always based on the full audit. If the core questions cannot be answered, the report is marked incomplete.
 
 ## Directory layout
 

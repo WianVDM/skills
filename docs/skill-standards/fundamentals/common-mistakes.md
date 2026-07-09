@@ -200,4 +200,4 @@ Ending a step before it is genuinely done because the agent's attention slips to
 
 ## Research basis
 
-See [SOURCES.md](../SOURCES.md).
+See [SOURCES.md](../reference/sources.md).

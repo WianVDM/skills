@@ -2,6 +2,12 @@
 
 Skills change shape as they mature: a local helper becomes a global reusable block, a context file grows into a workflow, or the standard itself moves to a new version. This guide provides safe paths for the most common migrations.
 
+## Quick guide
+
+1. See the sections below for the common shape changes.
+2. Update the `version` metadata if the contract or schema changed and the skill is shared or consumed. See [`reference/governance.md`](../reference/governance.md) for governance rules.
+3. Re-run trigger and behavioral evals after the migration. See [`reference/trigger-evals.md`](../reference/trigger-evals.md) and [`reference/evaluation-framework.md`](../reference/evaluation-framework.md).
+
 A good migration preserves the **core contract** while changing how the skill is discovered, invoked, or packaged. Do not migrate for its own sake; migrate when the new shape solves a real problem.
 
 ---
@@ -125,7 +131,7 @@ Do not delete the original context file. Keep it as a lightweight baseline. The 
 
 ### 5. Add evaluation
 
-Because the skill is now triggered, write trigger evals to confirm it fires at the right times. See `TRIGGER_EVALS.md` and `EVALUATION.md`.
+Because the skill is now triggered, write trigger evals to confirm it fires at the right times. See [reference/trigger-evals.md](../reference/trigger-evals.md) and [reference/evaluation-framework.md](../reference/evaluation-framework.md).
 
 ### Example: from `CONVENTIONS.md` to `tdd-discipline/SKILL.md`
 
@@ -215,7 +221,7 @@ This standard is versioned. When the format or package schema changes, skills ma
 
 ### Fallback strategy
 
-If a harness does not yet support the v2 schema, maintain a v1-compatible copy and a v2 copy. The plain-markdown export path from `PORTABILITY.md` can help bridge the gap.
+If a harness does not yet support the v2 schema, maintain a v1-compatible copy and a v2 copy. The plain-markdown export path from [`patterns/portability.md`](../patterns/portability.md) can help bridge the gap.
 
 ---
 
@@ -234,12 +240,12 @@ If a harness does not yet support the v2 schema, maintain a v1-compatible copy a
 
 ## Related documents
 
-- [`patterns/global-pluggable.md`](./patterns/global-pluggable.md) — making a skill work in any project.
-- [`patterns/configurable.md`](./patterns/configurable.md) — config and notes.
-- [`patterns/initialization.md`](./patterns/initialization.md) — first-run setup.
-- [`patterns/context-file.md`](./patterns/context-file.md) — when to use a context file instead of a skill.
-- [`patterns/discipline-skill.md`](./patterns/discipline-skill.md) — converting advice into enforceable discipline.
-- [`patterns/versioning.md`](./patterns/versioning.md) — version bumps and deprecation.
-- [`TRIGGER_EVALS.md`](./TRIGGER_EVALS.md) — how to test routing after a migration.
-- [`EVALUATION.md`](./EVALUATION.md) — full evaluation framework.
-- [`PORTABILITY.md`](../PORTABILITY.md) — degradation and cross-harness compatibility.
+- [`patterns/global-pluggable.md`](../patterns/global-pluggable.md) — making a skill work in any project.
+- [`patterns/configurable.md`](../patterns/configurable.md) — config and notes.
+- [`patterns/initialization.md`](../patterns/initialization.md) — first-run setup.
+- [`patterns/context-file.md`](../patterns/context-file.md) — when to use a context file instead of a skill.
+- [`patterns/discipline-skill.md`](../patterns/discipline-skill.md) — converting advice into enforceable discipline.
+- [`patterns/versioning.md`](../patterns/versioning.md) — version bumps and deprecation.
+- [`reference/trigger-evals.md`](../reference/trigger-evals.md) — how to test routing after a migration.
+- [`reference/evaluation-framework.md`](../reference/evaluation-framework.md) — full evaluation framework.
+- [`patterns/portability.md`](../patterns/portability.md) — degradation and cross-harness compatibility.

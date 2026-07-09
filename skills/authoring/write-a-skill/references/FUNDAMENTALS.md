@@ -32,6 +32,6 @@ A skill is not a script, MCP server, prompt template, rule, or application code.
 
 ## Canonical source
 
-For the full, maintained version of these fundamentals, see `docs/skill-standards/fundamentals/` and `docs/skill-standards/SOURCES.md`.
+For the full, maintained version of these fundamentals, see `docs/skill-standards/fundamentals/` and `docs/skill-standards/reference/sources.md`.
 
 Update this fallback only after the canonical docs change, and only to the minimum needed for self-contained operation.

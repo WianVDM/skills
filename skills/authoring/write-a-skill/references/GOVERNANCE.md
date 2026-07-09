@@ -6,14 +6,14 @@ This file holds governance notes for human maintainers of `write-a-skill`. It do
 
 `write-a-skill` tracks its own changes because it is a shared conductor consumed by other skills and workflows. For skills produced by this conductor, `version` is optional unless the user requires it or the skill will be shared or consumed.
 
-`write-a-skill` uses the versioning scheme defined in the project [`AGENT.md`](../../../../AGENT.md): all skills and artifacts start at **v1.0.0**, and increments are strictly right-to-left (v1.0.0 → v1.0.1 → ... → v1.0.9 → v1.1.0) with no semantic meaning assigned to major, minor, or patch. Bumps are based on the latest version published to GitHub, and each release bumps the version exactly once.
+`write-a-skill` uses the versioning scheme defined in the project [`AGENTS.md`](../../../../AGENTS.md): all skills and artifacts start at **v1.0.0**, and increments are strictly right-to-left (v1.0.0 → v1.0.1 → ... → v1.0.9 → v1.1.0) with no semantic meaning assigned to major, minor, or patch. Bumps are based on the latest version published to GitHub, and each release bumps the version exactly once.
 
 Current version: **v1.0.0**.
 
 ## Migration history
 
 - **v4.7.0 → v1.0.0**: reset all skill versions to v1.0.0 under the new project-specific versioning scheme documented in `AGENT.md`. No functional changes; no state migration required.
-- **4.6.0 → 4.7.0**: added a pre-audit comprehension step to the `change` branch using the review principles in `docs/skill-standards/REVIEW_PRINCIPLES.md`; `review-skill` now produces a verdict-led audit report or an incomplete report. Updated the initialization routine to detect canonical standards via the configured `standards_path` and fall back to embedded references. No state migration required.
+- **4.6.0 → 4.7.0**: added a pre-audit comprehension step to the `change` branch using the review principles in `docs/skill-standards/reference/review-principles.md`; `review-skill` now produces a verdict-led audit report or an incomplete report. Updated the initialization routine to detect canonical standards via the configured `standards_path` and fall back to embedded references. No state migration required.
 - **4.5.0 → 4.6.0**: extracted the `review` and `update` gates into a new `review-skill` conductor; declared it as a dependency and delegated the `change` branch in `BRANCH_WORKFLOWS.md` to it. No state migration required.
 - **4.4.0 → 4.5.0**: extracted the `decide` gate into a new `decide-skill-shape` conductor; declared it as a dependency and delegated the `decide` gate in `BRANCH_WORKFLOWS.md` to it. No state migration required.
 - **4.3.0 → 4.4.0**: extracted the shared `evals/evals.json` schema and evaluation conventions into a new `eval-format` vocabulary building block; declared it as a dependency and pointed `EVAL.md` to it. No state migration required.

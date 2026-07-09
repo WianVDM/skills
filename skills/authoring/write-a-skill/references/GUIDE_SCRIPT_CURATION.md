@@ -2,7 +2,7 @@
 
 For general guidance on when to use scripts, how to structure them, and script conventions, see the canonical standards:
 
-- `docs/skill-standards/FORMAT.md`
+- `docs/skill-standards/reference/format.md`
 - `docs/skill-standards/patterns/building-block.md`
 
 ## write-a-skill specific guidance

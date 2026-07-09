@@ -430,7 +430,7 @@ The canonical locations for installed skills are:
 
 A harness may also read from native paths for compatibility (e.g., `.claude/skills/`, `.codex/skills/`, `.cursor/skills/`). Native paths are secondary; they should be symlinks or loader indexes to the canonical `.agents/skills/` tree where possible.
 
-See [docs/PORTABILITY.md](../PORTABILITY.md) for the full degradation model.
+See [patterns/portability.md](../patterns/portability.md) for the full degradation model.
 
 ---
 

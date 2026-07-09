@@ -42,7 +42,7 @@ To detect silent failures early, watch for:
 - **Trace and tool calls.** Did the agent read the files the skill told it to read? Did it run the expected commands?
 - **Output shape.** Does the output match the contract the skill defines? (Format, scope, depth, style.)
 - **Completion criteria.** Did the agent stop at the checkable condition defined in the skill, or did it stop early?
-- **Trigger coverage.** Do representative user prompts actually load the skill? (See [`TRIGGER_EVALS.md`](../TRIGGER_EVALS.md).)
+- **Trigger coverage.** Do representative user prompts actually load the skill? (See [`TRIGGER_EVALS.md`](../reference/trigger-evals.md).)
 - **Comparison.** Run the same task with and without the skill. If the output is the same, the skill is not changing behavior.
 
 ---
@@ -55,13 +55,13 @@ When the model loads the skill but does not follow it, start by diagnosing the c
 
 | Symptom | Diagnosis | Remediation |
 |---|---|---|
-| The skill only fires when the user names it explicitly. | Weak description. | Front-load the leading word and add realistic trigger phrases. See [`TRIGGER_EVALS.md`](../TRIGGER_EVALS.md). |
+| The skill only fires when the user names it explicitly. | Weak description. | Front-load the leading word and add realistic trigger phrases. See [`TRIGGER_EVALS.md`](../reference/trigger-evals.md). |
 | The agent misses the key instruction in a wall of text. | Body too long. | Move detail to `references/`; keep the body focused on contract and steps. See [`structure.md`](./structure.md). |
 | The agent stops when it *feels* done, not when the skill says it is done. | Vague completion criteria. | Rewrite every step to end with a checkable condition. See [`form-and-style.md`](./form-and-style.md). |
 | The agent rushes to the visible post-completion steps. | Premature completion. | Sharpen the current step's criterion first; split or delegate the later work if the rush persists. See [`form-and-style.md`](./form-and-style.md). |
 | Another rule or context file contradicts the skill. | Conflicting context. | Resolve the conflict in the context file or make the skill's contract more explicit. See [`context-file.md`](../patterns/context-file.md). |
 | The agent misses a "do not X" instruction. | Negated rule without a positive directive. | Pair every negative with a positive directive. See [`form-and-style.md`](./form-and-style.md). |
-| A conductor or building block does not invoke the skill. | Skill not reachable by other skills. | Add a reach clause to the description, or make the skill explicitly callable by name. See [`FORMAT.md`](../FORMAT.md). |
+| A conductor or building block does not invoke the skill. | Skill not reachable by other skills. | Add a reach clause to the description, or make the skill explicitly callable by name. See [`FORMAT.md`](../reference/format.md). |
 | The behavior changed after a harness or model update. | Model drift. | Re-run trigger and behavioral evals; update the description if routing thresholds shifted. |
 | The skill reconstructs data from partial sources while a better tool is configured. | Adapter tunnel vision. | Reframe the step around the needed capability, discover available tools, and route through the best one. See [`common-mistakes.md#adapter-tunnel-vision`](./common-mistakes.md) and [`tooling-awareness.md`](./tooling-awareness.md). |
 
@@ -89,7 +89,7 @@ The natural reaction to a failing skill is to add more instructions. That usuall
 
 - If the skill never loads despite a strong description, the harness routing may have changed.
 - If the skill loads but the model ignores a clear instruction, the model may be struggling with the phrasing or context budget.
-- If the skill works in one harness but not another, check portability and degradation behavior. See [`PORTABILITY.md`](../../PORTABILITY.md).
+- If the skill works in one harness but not another, check portability and degradation behavior. See [`PORTABILITY.md`](../patterns/portability.md).
 
 Do not rewrite the skill to compensate for transient harness behavior unless the behavior is stable and reproducible.
 
@@ -123,7 +123,7 @@ Splitting is the right move when a branch of the skill has become a distinct res
 - The branch is **long and independent** enough that hiding its post-completion steps improves the parent skill.
 - The description is becoming too broad because it must cover two very different tasks.
 
-Do not split just for organization. If the split skill would rarely be used on its own, keep it as a reference or sub-step. See [`CONTEXT_BUDGET.md`](../CONTEXT_BUDGET.md) for splitting guidance.
+Do not split just for organization. If the split skill would rarely be used on its own, keep it as a reference or sub-step. See [`CONTEXT_BUDGET.md`](../reference/context-budget.md) for splitting guidance.
 
 ### Prune a skill
 
@@ -153,7 +153,7 @@ When retiring:
 3. Update skills that depended on it.
 4. After a reasonable transition period, remove the skill directory or move it to an archive.
 
-See [`MIGRATION.md`](../MIGRATION.md) and [`fundamentals/lifecycle.md`](./lifecycle.md).
+See [`MIGRATION.md`](../guides/migrate-a-skill.md) and [`fundamentals/lifecycle.md`](./lifecycle.md).
 
 ---
 
@@ -171,12 +171,12 @@ See [`MIGRATION.md`](../MIGRATION.md) and [`fundamentals/lifecycle.md`](./lifecy
 
 ## Related documents
 
-- [`TRIGGER_EVALS.md`](../TRIGGER_EVALS.md) — testing whether a skill fires at the right times.
-- [`EVALUATION.md`](../EVALUATION.md) — the full evaluation framework.
-- [`CONTEXT_BUDGET.md`](../CONTEXT_BUDGET.md) — when to split or merge skills for context efficiency.
+- [`TRIGGER_EVALS.md`](../reference/trigger-evals.md) — testing whether a skill fires at the right times.
+- [`EVALUATION.md`](../reference/evaluation-framework.md) — the full evaluation framework.
+- [`CONTEXT_BUDGET.md`](../reference/context-budget.md) — when to split or merge skills for context efficiency.
 - [`fundamentals/form-and-style.md`](./form-and-style.md) — completion criteria, leading words, and negation pairs.
 - [`fundamentals/common-mistakes.md`](./common-mistakes.md) — bloat, sediment, duplication, and no-op instructions.
 - [`fundamentals/structure.md`](./structure.md) — progressive disclosure and the information hierarchy.
 - [`fundamentals/lifecycle.md`](./lifecycle.md) — draft, test, publish, maintain, retire.
-- [`MIGRATION.md`](../MIGRATION.md) — shape changes and deprecation paths.
-- [`PORTABILITY.md`](../../PORTABILITY.md) — degradation and cross-harness behavior.
+- [`MIGRATION.md`](../guides/migrate-a-skill.md) — shape changes and deprecation paths.
+- [`PORTABILITY.md`](../patterns/portability.md) — degradation and cross-harness behavior.

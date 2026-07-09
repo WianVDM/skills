@@ -135,7 +135,7 @@ For the full decide workflow, invoke the `decide-skill-shape` skill. It will:
 
 The `change` branch audits or updates an existing skill. **Understanding must come before scoring, but the verdict follows the full audit.**
 
-For both the `review` and `update` gates, invoke the `review-skill` conductor. It applies the review principles from `docs/skill-standards/REVIEW_PRINCIPLES.md` (or the fallback copy in `review-skill/references/REVIEW_PRINCIPLES.md`). After a full audit, it produces a verdict-led report. If the core questions cannot be answered, it produces an incomplete report.
+For both the `review` and `update` gates, invoke the `review-skill` conductor. It applies the review principles from `docs/skill-standards/reference/review-principles.md` (or the fallback copy in `review-skill/references/REVIEW_PRINCIPLES.md`). After a full audit, it produces a verdict-led report. If the core questions cannot be answered, it produces an incomplete report.
 
 When reviewing a skill with multiple methods or branches, pay special attention to **tooling awareness** and **lazy dependency evaluation**: required dependencies should be checked eagerly, and recommended/optional dependencies should be evaluated lazily per path. The full dependency surface must still be declared in `references/DEPENDENCIES.md` and `skills.json`. When reviewing any skill, check whether it names capabilities before tools, discovers available tools across categories, and discloses degraded sources with user consent.
 
@@ -153,7 +153,7 @@ After the comprehension step is complete, the `review-skill` conductor runs the 
 ### Change branch — review gate (legacy inline detail)
 
 1. **Read the skill** — load all files.
-2. **Comprehend the skill** — apply the review principles from `docs/skill-standards/REVIEW_PRINCIPLES.md`.
+2. **Comprehend the skill** — apply the review principles from `docs/skill-standards/reference/review-principles.md`.
 3. **Produce an incomplete report** if the core questions cannot be answered.
 4. **Run `audit-skill`** — evaluate against the rubric, informed by the comprehension step.
 5. **Run `validate-skill-frontmatter`** — check schema compliance.
@@ -162,7 +162,7 @@ After the comprehension step is complete, the `review-skill` conductor runs the 
 ### Change branch — update gate (legacy inline detail)
 
 1. **Read the skill** — load `SKILL.md`, `README.md`, references, subagents, scripts, and assets.
-2. **Comprehend the skill** — apply the review principles from `docs/skill-standards/REVIEW_PRINCIPLES.md`.
+2. **Comprehend the skill** — apply the review principles from `docs/skill-standards/reference/review-principles.md`.
 3. **Produce an incomplete report** if the core questions cannot be answered.
 4. **Run `audit-skill`** — evaluate against the rubric, informed by the comprehension step.
 5. **Run `validate-skill-frontmatter`** — check schema compliance.

@@ -2,7 +2,7 @@
 
 ## At a glance
 
-This manifesto defines portability as **contract plus degradation rules**: a portable core, canonical install paths, and fallback behavior for harnesses that only support a subset of the standard. It covers plain-markdown export, convention-file fallback, dependency mapping, and minimal-harness injection.
+This document defines portability as **contract plus degradation rules**: a portable core, canonical install paths, and fallback behavior for harnesses that only support a subset of the standard. It covers plain-markdown export, convention-file fallback, dependency mapping, and minimal-harness injection.
 
 **Read this if:** you want a skill to work across Claude Code, Cursor, Codex, Aider, and future harnesses.
 
@@ -22,7 +22,7 @@ The portable core of any skill is:
 
 A harness that supports this core can load and execute the skill. A harness that does not support some features (e.g., subagents, scripts, or YAML frontmatter) falls back to the parts it does support.
 
-See [docs/skill-standards/FORMAT.md](./skill-standards/FORMAT.md) for the full format specification and [docs/skill-standards/PACKAGE.md](./skill-standards/PACKAGE.md) for the package envelope.
+See [reference/format.md](../reference/format.md) for the full format specification and [reference/package.md](../reference/package.md) for the package envelope.
 
 ---
 

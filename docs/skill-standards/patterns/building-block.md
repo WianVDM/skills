@@ -95,7 +95,7 @@ Declare:
 
 Dependencies are not bad. Hidden dependencies are.
 
-The canonical place is `references/DEPENDENCIES.md` or the `requirements` object in `skills.json`. See [`../PACKAGE.md`](../PACKAGE.md) for the package-level dependency model.
+The canonical place is `references/DEPENDENCIES.md` or the `requirements` object in `skills.json`. See [`../PACKAGE.md`](../reference/package.md) for the package-level dependency model.
 
 Example `references/DEPENDENCIES.md`:
 

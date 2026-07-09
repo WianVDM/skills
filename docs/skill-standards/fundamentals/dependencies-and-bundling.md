@@ -160,11 +160,11 @@ A `DEPENDENCIES.md` file should distinguish required, recommended, and optional 
 
 ### `skills.json` `requirements.skills`
 
-For packages, the `requirements.skills` array in `skills.json` is the machine-readable declaration. It is used for transitive closure, policy gates, and lock-file generation. See [`PACKAGE.md`](../PACKAGE.md) for the full `requirements` schema.
+For packages, the `requirements.skills` array in `skills.json` is the machine-readable declaration. It is used for transitive closure, policy gates, and lock-file generation. See [`PACKAGE.md`](../reference/package.md) for the full `requirements` schema.
 
 The Vercel `skills` CLI also uses a root `skills.json` for one-shot bundle installs: when `npx skills add owner/repo` sees `skills.json`, it installs every skill path listed in the `skills` array. Those paths must be relative, starting with `./` (e.g., `"./skills/authoring/write-a-skill"`).
 
-The `requirements.skills` array is currently **flat**. To encode the taxonomy, use a naming convention in `references/DEPENDENCIES.md` and separate `recommended_skills` / `optional_skills` fields only if the harness supports them. If the harness only supports `requirements.skills`, treat the listed entries as required by default and note exceptions in `references/DEPENDENCIES.md`. See [`PACKAGE.md`](../PACKAGE.md) for the full schema.
+The `requirements.skills` array is currently **flat**. To encode the taxonomy, use a naming convention in `references/DEPENDENCIES.md` and separate `recommended_skills` / `optional_skills` fields only if the harness supports them. If the harness only supports `requirements.skills`, treat the listed entries as required by default and note exceptions in `references/DEPENDENCIES.md`. See [`PACKAGE.md`](../reference/package.md) for the full schema.
 
 ### `SKILL.md` frontmatter `depends`
 
@@ -262,7 +262,7 @@ When a skill is selected for install, the harness must resolve its full dependen
 - **Optional** dependencies are surfaced only; install only when explicitly selected.
 - **Conflicts** fail the install with a clear explanation.
 
-The resolved graph is recorded in `skills.lock` (see [`PACKAGE.md`](../PACKAGE.md)). A skill must check availability at initialization and report one of the states in the self-diagnostics contract below. Even when the harness pre-installs dependencies, network failures, partial installs, or harness-specific loader limits can leave a dependency missing.
+The resolved graph is recorded in `skills.lock` (see [`PACKAGE.md`](../reference/package.md)). A skill must check availability at initialization and report one of the states in the self-diagnostics contract below. Even when the harness pre-installs dependencies, network failures, partial installs, or harness-specific loader limits can leave a dependency missing.
 
 ---
 
@@ -459,17 +459,17 @@ Remediation: Install `worker-contract` before using `write-a-skill`.
 
 ## Related documents
 
-- [`PACKAGE.md`](../PACKAGE.md) — `skills.json`, `skills.lock`, versioning, and lifecycle.
-- [`FORMAT.md`](../FORMAT.md) — `SKILL.md` frontmatter and portable core.
+- [`PACKAGE.md`](../reference/package.md) — `skills.json`, `skills.lock`, versioning, and lifecycle.
+- [`FORMAT.md`](../reference/format.md) — `SKILL.md` frontmatter and portable core.
 - [`patterns/building-block.md`](../patterns/building-block.md) — reusable skills and dependency declaration.
 - [`patterns/conductor.md`](../patterns/conductor.md) — how conductors compose building blocks.
 - [`fundamentals/structure.md`](./structure.md) — skill layout and reference conventions.
 - [`fundamentals/types.md`](./types.md) — choosing skill types and their dependency patterns.
 - [`fundamentals/evaluation.md`](./evaluation.md) — testing skills, including dependency failure cases.
-- [`PORTABILITY.md`](../../PORTABILITY.md) — cross-harness degradation model.
+- [`PORTABILITY.md`](../patterns/portability.md) — cross-harness degradation model.
 
 ---
 
 ## Research basis
 
-See [SOURCES.md](../SOURCES.md).
+See [SOURCES.md](../reference/sources.md).

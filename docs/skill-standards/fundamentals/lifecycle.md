@@ -12,7 +12,7 @@ Before writing anything, confirm that a skill is the right solution.
 - Does the agent vary without guidance?
 - Would a script, MCP server, prompt template, or documentation change solve it instead?
 
-See [when-to-create-a-skill.md](./when-to-create-a-skill.md).
+See [when-to-create-a-skill.md](../start/when-to-create-a-skill.md).
 
 ---
 
@@ -93,7 +93,7 @@ Once the skill is stable, publish or install it.
 - Bump the version if the schema, config, or behavior changed.
 - Document breaking changes.
 - Add or update `README.md` for human maintainers.
-- Declare compatibility, dependencies, and package-level verification metadata clearly in `skills.json`. See [`../PACKAGE.md`](../PACKAGE.md) for the package envelope.
+- Declare compatibility, dependencies, and package-level verification metadata clearly in `skills.json`. See [`../PACKAGE.md`](../reference/package.md) for the package envelope.
 
 ---
 
@@ -137,4 +137,4 @@ When deprecating, document the replacement path and update any skills that depen
 
 ## Research basis
 
-See [SOURCES.md](../SOURCES.md).
+See [SOURCES.md](../reference/sources.md).

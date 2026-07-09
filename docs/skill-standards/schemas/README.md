@@ -11,8 +11,8 @@ This directory contains JSON Schema files for the portable skill standards. They
 
 The canonical specifications live in the markdown documents:
 
-- `FORMAT.md` — the `SKILL.md` frontmatter and portable core.
-- `PACKAGE.md` — the package envelope, lifecycle, and schemas.
-- `EVALUATION.md` — the evaluation framework and assertion semantics.
+- [`reference/format.md`](../reference/format.md) — the `SKILL.md` frontmatter and portable core.
+- [`reference/package.md`](../reference/package.md) — the package envelope, lifecycle, and schemas.
+- [`reference/evaluation-framework.md`](../reference/evaluation-framework.md) — the evaluation framework and assertion semantics.
 
 Schemas are forward-compatible: they allow additional properties where the standard says harnesses should ignore unknown fields, and they constrain the fields required for portable interchange.

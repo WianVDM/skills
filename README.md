@@ -33,6 +33,7 @@ Run `/setup-wian-skills` again at any time to check for updates.
 ## What's in this repo
 
 - `skills/` — the skills themselves, grouped by functional domain. Each leaf directory contains a `SKILL.md` and optional supporting files.
+- `docs/manifestos/` — the high-level manifestos: philosophy, architecture.
 - `docs/skill-standards/` — the standards these skills follow: format, fundamentals, patterns, evaluation, and governance.
 
 ## How to navigate
@@ -41,7 +42,7 @@ Run `/setup-wian-skills` again at any time to check for updates.
 |---|---|
 | Install and use these skills | This README, then run `/setup-wian-skills` |
 | Understand the standards | [`docs/skill-standards/README.md`](./docs/skill-standards/README.md) |
-| Write a new skill | [`docs/skill-standards/README.md`](./docs/skill-standards/README.md) and [`docs/skill-standards/FORMAT.md`](./docs/skill-standards/FORMAT.md) |
+| Write a new skill | [`docs/skill-standards/README.md`](./docs/skill-standards/README.md) and [`docs/skill-standards/reference/format.md`](./docs/skill-standards/reference/format.md) |
 | See available skills | Browse the [`skills/`](./skills) directory |
 
 ## Available skill categories
@@ -77,13 +78,13 @@ User-invoked skills must be typed explicitly. Model-invoked skills are loaded au
 
 Configurable skills declare their requirements in a `config.yaml` file. Shared keys are collected once into `.agents/config/shared.yaml` by the setup skill. Skill-specific keys live in `.agents/config/{skill-name}.yaml`.
 
-See [`docs/skill-standards/patterns/configurable.md`](./docs/skill-standards/patterns/configurable.md) and [`docs/skill-standards/CONFIG_KEYS.md`](./docs/skill-standards/CONFIG_KEYS.md) for the convention.
+See [`docs/skill-standards/patterns/configurable.md`](./docs/skill-standards/patterns/configurable.md) and [`docs/skill-standards/reference/config-keys.md`](./docs/skill-standards/reference/config-keys.md) for the convention.
 
 ## Documentation
 
-- [`docs/PHILOSOPHY.md`](./docs/PHILOSOPHY.md) — why these skills exist.
-- [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) — structural layers and composition.
-- [`docs/PORTABILITY.md`](./docs/PORTABILITY.md) — portability across harnesses.
+- [`docs/manifestos/philosophy.md`](./docs/manifestos/philosophy.md) — why these skills exist.
+- [`docs/manifestos/architecture.md`](./docs/manifestos/architecture.md) — structural layers and composition.
+- [`docs/skill-standards/patterns/portability.md`](./docs/skill-standards/patterns/portability.md) — portability across harnesses.
 - [`docs/skill-standards/README.md`](./docs/skill-standards/README.md) — the full standards wiki.
 
 ## Acknowledgments

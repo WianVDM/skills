@@ -19,7 +19,7 @@ A skill exists to wrangle determinism out of a stochastic system. The root virtu
 
 Every other concept in these standards serves predictability. Cost, maintainability, and clarity are symptoms of it, not rivals.
 
-See [evaluation.md](./evaluation.md) for the predictability test.
+See [`../fundamentals/evaluation.md`](../fundamentals/evaluation.md) for the predictability test.
 
 ---
 
@@ -34,7 +34,7 @@ How the skill is reached and the cost paid for that reach.
 - **Model-invoked** skills keep their description, so the agent can fire them and other skills can reach them. They pay **context load**.
 - **User-invoked** skills strip the description, so only the human can reach them by name. They pay **cognitive load**.
 
-See [structure.md](./structure.md) for invocation mode.
+See [`../fundamentals/structure.md`](../fundamentals/structure.md) for invocation mode.
 
 ### 2. Information hierarchy
 
@@ -45,7 +45,7 @@ How the skill's content is arranged and how far down the ladder each piece sits.
 - **Disclosed reference** — material behind a context pointer in a sibling file.
 - **External reference** — shared reference outside the skill system, reachable by any skill.
 
-See [structure.md](./structure.md) for progressive disclosure and the information hierarchy.
+See [`../fundamentals/structure.md`](../fundamentals/structure.md) for progressive disclosure and the information hierarchy.
 
 ### 3. Steering
 
@@ -56,18 +56,18 @@ How the skill shapes the agent's runtime behavior.
 - **Legwork** is the digging the agent does within a step.
 - **Post-completion steps** are the later steps that tempt the agent to rush.
 
-See [form-and-style.md](./form-and-style.md) for steering levers.
+See [`../fundamentals/form-and-style.md`](../fundamentals/form-and-style.md) for steering levers.
 
 ### 4. Pruning
 
 How the skill is kept lean and relevant.
 
-- **Single source of truth** — one authoritative place for each meaning. See [common-mistakes.md#duplication](./common-mistakes.md).
-- **No-op test** — does this line change behavior versus the default? See [form-and-style.md](./form-and-style.md).
-- **Relevance** — does this line still bear on what the skill does? See [form-and-style.md](./form-and-style.md).
-- **Sediment** and **duplication** are the failure modes pruning prevents. See [common-mistakes.md](./common-mistakes.md).
+- **Single source of truth** — one authoritative place for each meaning. See [`../fundamentals/common-mistakes.md#duplication`](../fundamentals/common-mistakes.md).
+- **No-op test** — does this line change behavior versus the default? See [`../fundamentals/form-and-style.md`](../fundamentals/form-and-style.md).
+- **Relevance** — does this line still bear on what the skill does? See [`../fundamentals/form-and-style.md`](../fundamentals/form-and-style.md).
+- **Sediment** and **duplication** are the failure modes pruning prevents. See [`../fundamentals/common-mistakes.md`](../fundamentals/common-mistakes.md).
 
-See [common-mistakes.md](./common-mistakes.md) for failure modes and cures.
+See [`../fundamentals/common-mistakes.md`](../fundamentals/common-mistakes.md) for failure modes and cures.
 
 ---
 
@@ -99,7 +99,7 @@ A skill should work alone and fit cleanly into a larger set. It should declare w
 
 A skill must be explicit about failure, ambiguity, assumptions, and dependencies. It should not silently skip problems or proceed on guesses.
 
-A skill must also be explicit about **tooling choices**: what tool fulfilled each capability, what alternatives were available, and why a degraded source was accepted. See [tooling-awareness.md](./tooling-awareness.md).
+A skill must also be explicit about **tooling choices**: what tool fulfilled each capability, what alternatives were available, and why a degraded source was accepted. See [`../fundamentals/tooling-awareness.md`](../fundamentals/tooling-awareness.md).
 
 ---
 
@@ -135,4 +135,4 @@ If any of these are true, the skill needs to be pruned, split, or removed.
 
 ## Research basis
 
-See [SOURCES.md](../SOURCES.md).
+See [`../reference/sources.md`](../reference/sources.md).

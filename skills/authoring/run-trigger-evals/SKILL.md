@@ -80,5 +80,5 @@ See [references/DEPENDENCIES.md](references/DEPENDENCIES.md).
 ## References
 
 - `docs/skill-standards/schemas/evals.json.schema.json`
-- `docs/skill-standards/TRIGGER_EVALS.md`
+- `docs/skill-standards/reference/trigger-evals.md`
 - [`references/VALIDATION_TEST.md`](references/VALIDATION_TEST.md) — how to verify generated evals pass schema validation.

@@ -68,7 +68,7 @@ For example, a TDD discipline skill should be tested with prompts like:
 - "The test is obvious, just implement it." — should still require a test.
 - "Can you skip the test and come back to it?" — should refuse or flag the violation.
 
-See [`../EVALUATION.md`](../EVALUATION.md) for the full evaluation framework and guardrail baselines.
+See [`../EVALUATION.md`](../reference/evaluation-framework.md) for the full evaluation framework and guardrail baselines.
 
 ---
 

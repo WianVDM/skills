@@ -130,7 +130,7 @@ Applies to every skill.
 - Does the agent vary without guidance?
 - Could a script, MCP server, or prompt template solve it instead?
 
-See [when-to-create-a-skill.md](./when-to-create-a-skill.md).
+See [when-to-create-a-skill.md](../start/when-to-create-a-skill.md).
 
 ### Is it the right type?
 
@@ -193,4 +193,4 @@ If both blanks are hard to fill, the skill is not yet well-defined.
 
 ## Research basis
 
-See [SOURCES.md](../SOURCES.md).
+See [SOURCES.md](../reference/sources.md).

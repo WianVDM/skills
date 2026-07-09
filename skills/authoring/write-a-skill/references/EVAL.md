@@ -2,8 +2,8 @@
 
 For the canonical trigger-eval methodology and the `evals/evals.json` schema, see:
 
-- `docs/skill-standards/TRIGGER_EVALS.md`
-- `docs/skill-standards/EVALUATION.md`
+- `docs/skill-standards/reference/trigger-evals.md`
+- `docs/skill-standards/reference/evaluation-framework.md`
 - `eval-format` skill (located via the detected skills directory)
 
 This file keeps only the `write-a-skill`-specific test cases.

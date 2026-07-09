@@ -24,7 +24,7 @@ Conductor.
 ## In scope
 
 - Load the target skill files (`SKILL.md`, `README.md`, references, subagents, scripts, assets).
-- Apply the review principles from `references/REVIEW_PRINCIPLES.md` (a fallback copy of `docs/skill-standards/REVIEW_PRINCIPLES.md`) before scoring the rubric.
+- Apply the review principles from `references/REVIEW_PRINCIPLES.md` (a fallback copy of `docs/skill-standards/reference/review-principles.md`) before scoring the rubric.
 - Run `audit-skill` to evaluate against the rubric.
 - Run `validate-skill-frontmatter` to check schema compliance.
 - Issue a verdict only after a full audit.
@@ -70,7 +70,7 @@ Both gates share the same comprehension and audit phase. The `update` gate adds 
    - Load `SKILL.md`, `README.md`, and all files in `references/`, `subagents/`, `scripts/`, and `assets/`.
    - **Completion criterion:** all skill files are loaded.
 2. **Comprehend the skill.**
-   - Apply the review principles from `references/REVIEW_PRINCIPLES.md` (a fallback copy of `docs/skill-standards/REVIEW_PRINCIPLES.md`).
+   - Apply the review principles from `references/REVIEW_PRINCIPLES.md` (a fallback copy of `docs/skill-standards/reference/review-principles.md`).
    - Answer the seven core questions and record the answers, including the tooling-awareness question.
    - **Completion criterion:** the seven core questions are answered, or the missing information is documented.
 3. **Produce an incomplete report if necessary.**
@@ -209,6 +209,6 @@ See [references/DEPENDENCIES.md](references/DEPENDENCIES.md).
 
 ## References
 
-- [Review principles](references/REVIEW_PRINCIPLES.md) — fallback copy of `docs/skill-standards/REVIEW_PRINCIPLES.md`.
+- [Review principles](references/REVIEW_PRINCIPLES.md) — fallback copy of `docs/skill-standards/reference/review-principles.md`.
 - `context-reports` skill — shared context-report conventions.
 - `write-a-skill` — conductor for creating, reviewing, and updating skills.

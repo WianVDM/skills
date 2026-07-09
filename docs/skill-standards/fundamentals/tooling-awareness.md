@@ -92,4 +92,4 @@ Design each capability step as "what outcome do I need?" first, then "which avai
 
 ## Research basis
 
-See [SOURCES.md](../SOURCES.md).
+See [SOURCES.md](../reference/sources.md).

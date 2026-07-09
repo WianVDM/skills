@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agentskills.io/schemas/skills.json",
   "title": "Skill Package Manifest",
-  "description": "Package manifest for a skill or skill collection. Sits around the portable core defined in FORMAT.md and does not change the core format.",
+  "description": "Package manifest for a skill or skill collection. Sits around the portable core defined in reference/format.md and does not change the core format.",
   "type": "object",
   "required": ["name", "version", "skills"],
   "properties": {
@@ -125,7 +125,7 @@
         "level": {
           "type": "string",
           "enum": ["unverified", "declared", "tested", "formal"],
-          "description": "Verification level. See GOVERNANCE.md."
+          "description": "Verification level. See reference/governance.md."
         },
         "evals": {
           "type": "string",

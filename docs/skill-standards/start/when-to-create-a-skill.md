@@ -34,7 +34,7 @@ If yes, design it as a global skill. It must be harness-agnostic and project-agn
 
 If no, a project-specific skill may be fine, but it should still follow the same structural standards.
 
-See [global-pluggable.md](../patterns/global-pluggable.md) for what pluggability requires.
+See [`patterns/global-pluggable.md`](../patterns/global-pluggable.md) for what pluggability requires.
 
 ### 5. Does this only make sense alongside other skills?
 
@@ -132,10 +132,10 @@ If you cannot fill in both blanks clearly, the skill is not well-defined enough.
 
 ## Related documents
 
-- [`types.md`](./types.md) — choosing the right skill type once you have decided a skill is the answer.
-- [`lifecycle.md`](./lifecycle.md) — the full skill lifecycle from decision to retirement.
-- [`common-mistakes.md`](./common-mistakes.md) — failure modes that often follow from choosing the wrong shape.
+- [`types.md`](../fundamentals/types.md) — choosing the right skill type once you have decided a skill is the answer.
+- [`lifecycle.md`](../fundamentals/lifecycle.md) — the full skill lifecycle from decision to retirement.
+- [`common-mistakes.md`](../fundamentals/common-mistakes.md) — failure modes that often follow from choosing the wrong shape.
 
 ## Research basis
 
-See [SOURCES.md](../SOURCES.md).
+See [`../reference/sources.md`](../reference/sources.md).

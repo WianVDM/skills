@@ -134,6 +134,6 @@ A skill does not have to be global to be good. But if you intend it to be global
 - The distinction between **project-specific** and **global** skills is our own framing, but it is supported by the research observation that skills are shared across projects and that portability requires explicit handling of assumptions.
 - The six properties of a truly global skill (harness-agnostic language, project-agnostic conventions, explicit dependencies, self-configuration, user preferences via config, fail closed) are our own synthesis, drawn from the research on cross-harness portability and pluggability.
 - The **pluggability checklist** is our own tool.
-- For the full portability and degradation model, including canonical install paths and plain-markdown export, see [`docs/PORTABILITY.md`](../../PORTABILITY.md).
+- For the full portability and degradation model, including canonical install paths and plain-markdown export, see [`portability.md`](portability.md).
 
-Many harness-specific portability details (exact trigger thresholds, rule-vs-skill precedence, file-scoping behavior) are **limited** and are documented in [docs/PORTABILITY.md](../../PORTABILITY.md) rather than here.
+Many harness-specific portability details (exact trigger thresholds, rule-vs-skill precedence, file-scoping behavior) are **limited** and are documented in [portability.md](portability.md) rather than here.

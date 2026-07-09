@@ -20,7 +20,7 @@ Before considering the skill complete or using it in a real run:
 
 - [ ] `config.yaml` exists next to `SKILL.md` and declares shared and skill-specific keys.
 - [ ] `requires_setup: true` is declared.
-- [ ] New shared keys are registered in `docs/skill-standards/CONFIG_KEYS.md`.
+- [ ] New shared keys are registered in `docs/skill-standards/reference/config-keys.md`.
 
 ## References
 

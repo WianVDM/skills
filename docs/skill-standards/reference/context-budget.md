@@ -151,12 +151,12 @@ The after version is shorter, front-loads the leading word, and lists distinct t
 
 ## Related documents
 
-- [`fundamentals/types.md`](./fundamentals/types.md) — choosing invocation mode and splitting rules.
-- [`fundamentals/common-mistakes.md`](./fundamentals/common-mistakes.md) — bloat, duplication, and premature completion.
-- [`fundamentals/structure.md`](./fundamentals/structure.md) — progressive disclosure and the information hierarchy.
-- [`FORMAT.md`](./FORMAT.md) — the `description` field and frontmatter schema.
-- [`patterns/building-block.md`](./patterns/building-block.md) — narrow, reusable skills that reduce duplication.
-- [`patterns/conductor.md`](./patterns/conductor.md) — composing skills without multiplying descriptions.
-- [`patterns/wrapper.md`](./patterns/wrapper.md) — user-invoked adaptation layer.
-- [`patterns/stateful.md`](./patterns/stateful.md) — surviving context compaction.
-- [`patterns/context-reports.md`](./patterns/context-reports.md) — resumable structured outputs.
+- [`fundamentals/types.md`](../fundamentals/types.md) — choosing invocation mode and splitting rules.
+- [`fundamentals/common-mistakes.md`](../fundamentals/common-mistakes.md) — bloat, duplication, and premature completion.
+- [`fundamentals/structure.md`](../fundamentals/structure.md) — progressive disclosure and the information hierarchy.
+- [`FORMAT.md`](./format.md) — the `description` field and frontmatter schema.
+- [`patterns/building-block.md`](../patterns/building-block.md) — narrow, reusable skills that reduce duplication.
+- [`patterns/conductor.md`](../patterns/conductor.md) — composing skills without multiplying descriptions.
+- [`patterns/wrapper.md`](../patterns/wrapper.md) — user-invoked adaptation layer.
+- [`patterns/stateful.md`](../patterns/stateful.md) — surviving context compaction.
+- [`patterns/context-reports.md`](../patterns/context-reports.md) — resumable structured outputs.

@@ -79,7 +79,7 @@ Examples:
 
 ## Research basis
 
-See [SOURCES.md](../SOURCES.md).
+See [SOURCES.md](../reference/sources.md).
 
 ## Security checklist
 

@@ -1,7 +1,6 @@
 # Pi-generated transient context
 .agents/
 .pi/
-AGENT.md
 
 # Local secrets
 .env

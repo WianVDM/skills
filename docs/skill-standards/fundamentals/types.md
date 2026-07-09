@@ -194,11 +194,11 @@ One-way consistency does not mean ignoring context. It means the skill makes the
 - [`../patterns/mode.md`](../patterns/mode.md) — transient behavior switches.
 - [`../patterns/conductor-implementer-split.md`](../patterns/conductor-implementer-split.md) — separating reasoning from execution.
 - [`./structure.md`](./structure.md) — invocation mode and `SKILL.md` structure.
-- [`./when-to-create-a-skill.md`](./when-to-create-a-skill.md) — when to create a skill instead of a script, MCP, or prompt template.
+- [`./when-to-create-a-skill.md`](../start/when-to-create-a-skill.md) — when to create a skill instead of a script, MCP, or prompt template.
 - [`./common-mistakes.md`](./common-mistakes.md) — splitting, bloat, and premature completion.
 
 ---
 
 ## Research basis
 
-See [SOURCES.md](../SOURCES.md).
+See [SOURCES.md](../reference/sources.md).

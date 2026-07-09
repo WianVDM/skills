@@ -1,4 +1,4 @@
-> This is a degraded fallback copy of `docs/skill-standards/REVIEW_PRINCIPLES.md`. Prefer the canonical doc if available.
+> This is a degraded fallback copy of `docs/skill-standards/reference/review-principles.md`. Prefer the canonical doc if available.
 
 # Review principles
 

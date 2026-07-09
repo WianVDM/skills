@@ -113,7 +113,7 @@ For the full phase list per gate, including the `decide` gate delegation to `dec
 
 ## Change branch
 
-**Why this branch exists:** Skills drift and accumulate bloat. The change branch audits an existing skill by applying the review principles from `docs/skill-standards/REVIEW_PRINCIPLES.md`, then produces a verdict-led report or incomplete report.
+**Why this branch exists:** Skills drift and accumulate bloat. The change branch audits an existing skill by applying the review principles from `docs/skill-standards/reference/review-principles.md`, then produces a verdict-led report or incomplete report.
 
 **Internal gates**
 

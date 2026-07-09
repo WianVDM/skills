@@ -232,7 +232,7 @@ This is model-relative: if you disagree whether a line is a no-op, settle it by 
 
 ## Research basis
 
-See [SOURCES.md](../SOURCES.md).
+See [SOURCES.md](../reference/sources.md).
 
 ## Explain the why
 

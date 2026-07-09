@@ -207,4 +207,4 @@ artifacts:
 
 - [`conductor.md`](./conductor.md) — the general conductor pattern.
 - [`building-block.md`](./building-block.md) — narrow capabilities the conductor can consume.
-- [`../EVALUATION.md`](../EVALUATION.md) — evaluating multi-agent and composition behavior.
+- [`../EVALUATION.md`](../reference/evaluation-framework.md) — evaluating multi-agent and composition behavior.

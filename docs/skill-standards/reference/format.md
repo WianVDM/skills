@@ -293,7 +293,7 @@ For harnesses that do not parse YAML frontmatter, a skill can be exported in pla
 - Identity and routing are provided by an external index (e.g., `skills.json`) or by the file path.
 - The body remains the primary guidance.
 
-This is the recommended degradation path for minimal harnesses like Aider. See [docs/PORTABILITY.md](../PORTABILITY.md) for the full degradation model.
+This is the recommended degradation path for minimal harnesses like Aider. See [patterns/portability.md](../patterns/portability.md) for the full degradation model.
 
 ---
 
