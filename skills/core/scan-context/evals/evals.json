@@ -1,0 +1,153 @@
+{
+  "version": "1",
+  "skill": "scan-context",
+  "tests": [
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Find related context reports for ticket OC-4644.",
+      "expected": "scan-context"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Scan the context directory for prior baselines and handoffs.",
+      "expected": "scan-context"
+    },
+    {
+      "id": "trigger-should-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Discover existing debriefs for this branch.",
+      "expected": "scan-context"
+    },
+    {
+      "id": "trigger-should-04",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "What prior work already exists for OC-4644?",
+      "expected": "scan-context"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Create a new baseline report for OC-4644.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Write a handoff document.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-03",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Update the context report for OC-4644.",
+      "expected": ""
+    },
+    {
+      "id": "behavior-01",
+      "type": "behavior",
+      "category": "exact-match",
+      "description": "Returns a High-relevance match when a report key matches the ticket_key exactly.",
+      "input": {
+        "context_dir": "test-context",
+        "ticket_key": "OC-4644",
+        "report_types": ["baseline"]
+      },
+      "expected": {
+        "status": "complete",
+        "reports": [
+          {
+            "path": "test-context/baseline/OC-4644.md",
+            "type": "baseline",
+            "ticket_key": "OC-4644",
+            "relevance": "High",
+            "matched_by": "ticket_key"
+          }
+        ]
+      }
+    },
+    {
+      "id": "behavior-02",
+      "type": "behavior",
+      "category": "branch-match",
+      "description": "Returns a Medium-relevance match when a report branch matches the input branch.",
+      "input": {
+        "context_dir": "test-context",
+        "branch": "feature/OC-4644",
+        "report_types": ["handoff"]
+      },
+      "expected": {
+        "status": "complete",
+        "reports": [
+          {
+            "type": "handoff",
+            "relevance": "Medium",
+            "matched_by": "branch"
+          }
+        ]
+      }
+    },
+    {
+      "id": "behavior-03",
+      "type": "behavior",
+      "category": "project-match",
+      "description": "Returns a Low-relevance match when a report key shares the project prefix.",
+      "input": {
+        "context_dir": "test-context",
+        "project": "OC",
+        "report_types": ["debrief"]
+      },
+      "expected": {
+        "status": "complete",
+        "reports": [
+          {
+            "type": "debrief",
+            "relevance": "Low",
+            "matched_by": "project"
+          }
+        ]
+      }
+    },
+    {
+      "id": "behavior-04",
+      "type": "behavior",
+      "category": "empty",
+      "description": "Returns empty status when no reports or context directory exist.",
+      "input": {
+        "context_dir": "test-context-missing",
+        "ticket_key": "OC-4644"
+      },
+      "expected": {
+        "status": "empty",
+        "reports": []
+      }
+    },
+    {
+      "id": "behavior-05",
+      "type": "behavior",
+      "category": "freshness",
+      "description": "Flags a report as stale when generated_at is older than the threshold.",
+      "input": {
+        "context_dir": "test-context",
+        "ticket_key": "OC-4644",
+        "artifact_freshness_hours": 1
+      },
+      "expected": {
+        "status": "complete",
+        "reports": [
+          {
+            "fresh": false
+          }
+        ]
+      }
+    }
+  ]
+}

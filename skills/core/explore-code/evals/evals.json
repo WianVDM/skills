@@ -1,0 +1,113 @@
+{
+  "skill": "explore-code",
+  "version": "1.0.0",
+  "evals": [
+    {
+      "id": "ec-trigger-01",
+      "type": "trigger",
+      "name": "Triggered by code-related question",
+      "description": "The skill should be invoked when the user asks a code-related question or ticket summary.",
+      "input": {
+        "ticket_summary": "Where is token refresh handled?",
+        "mentioned_files": [],
+        "task_type": "code"
+      },
+      "expected": {
+        "triggered": true,
+        "reason": "task_type is code"
+      }
+    },
+    {
+      "id": "ec-trigger-02",
+      "type": "trigger",
+      "name": "Skipped for process tickets",
+      "description": "The skill should not explore code for process-only tickets.",
+      "input": {
+        "ticket_summary": "Update quarterly planning doc",
+        "mentioned_files": [],
+        "task_type": "process"
+      },
+      "expected": {
+        "triggered": false,
+        "reason": "task_type is process"
+      }
+    },
+    {
+      "id": "ec-behavior-01",
+      "type": "behavior",
+      "name": "Returns complete with mentioned file",
+      "description": "Given a ticket summary and a file that exists, the script returns the file as High relevance.",
+      "input": {
+        "ticket_summary": "Auth guard race condition during token refresh",
+        "mentioned_files": ["src/app/guards/auth.guard.ts"],
+        "task_type": "code",
+        "max_files": 5
+      },
+      "expected": {
+        "status": "complete",
+        "relevant_files_count_min": 1,
+        "first_relevance": "High",
+        "missing_files": []
+      }
+    },
+    {
+      "id": "ec-behavior-02",
+      "type": "behavior",
+      "name": "Reports missing mentioned files",
+      "description": "If a mentioned file does not exist, it appears in missing_files and status is partial.",
+      "input": {
+        "ticket_summary": "Auth guard race condition",
+        "mentioned_files": ["src/app/guards/nonexistent.guard.ts"],
+        "task_type": "code"
+      },
+      "expected": {
+        "status": "partial",
+        "missing_files": ["src/app/guards/nonexistent.guard.ts"]
+      }
+    },
+    {
+      "id": "ec-behavior-03",
+      "type": "behavior",
+      "name": "Returns needs_input when summary is missing",
+      "description": "The script returns needs_input when no ticket_summary or question is provided.",
+      "input": {
+        "mentioned_files": [],
+        "task_type": "code"
+      },
+      "expected": {
+        "status": "needs_input"
+      }
+    },
+    {
+      "id": "ec-behavior-04",
+      "type": "behavior",
+      "name": "Respects max_files limit",
+      "description": "The script returns at most max_files relevant files.",
+      "input": {
+        "ticket_summary": "Authentication and billing validation",
+        "mentioned_files": [],
+        "task_type": "code",
+        "max_files": 2
+      },
+      "expected": {
+        "relevant_files_count_max": 2
+      }
+    },
+    {
+      "id": "ec-behavior-05",
+      "type": "behavior",
+      "name": "Respects process skip",
+      "description": "The script returns complete with empty results for process tickets.",
+      "input": {
+        "ticket_summary": "Update quarterly planning doc",
+        "mentioned_files": [],
+        "task_type": "process"
+      },
+      "expected": {
+        "status": "complete",
+        "relevant_files_count_max": 0,
+        "note": "process tickets skipped by default"
+      }
+    }
+  ]
+}

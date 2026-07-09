@@ -1,20 +1,15 @@
 #!/usr/bin/env python3
 """Extract a ticket/issue key from a branch name or arbitrary text.
 
-Matches keys in the form [A-Z][A-Z0-9]+-d+ (e.g., OC-4644, SHB-362).
-If multiple keys are found, prefers the first key in the branch (if provided),
-otherwise the first key in the text.
+Reads JSON from stdin:
+  {"branch": "feature/OC-4644-auth-guard", "text": "Some text OC-123"}
 
-Outputs JSON:
-    {"key": "OC-4644", "project": "OC", "source": "branch|text"}
+Writes JSON to stdout:
+  {"status": "found"|"not_found", "key": "OC-4644", "project": "OC", "source": "branch"|"text"}
 
-On failure:
-    {"error": "..."}
-
-The script is read-only, deterministic, and safe to run in any project.
+If no key is found, status is "not_found" and a reason is included.
 """
 
-import argparse
 import json
 import re
 import sys
@@ -22,13 +17,26 @@ import sys
 TICKET_RE = re.compile(r"[A-Z][A-Z0-9]+-\d+")
 
 
+def _help() -> str:
+    return """extract-ticket-key.py — extract ticket key from branch or text
+
+Input JSON (stdin):
+  {"branch": "feature/OC-4644-auth-guard", "text": "..."}
+
+Output JSON (stdout):
+  {"status": "found"|"not_found", "key": "OC-4644", "project": "OC", "source": "branch"|"text"}
+"""
+
+
 def _extract_keys(text: str) -> list:
     """Return all unique ticket keys found in text, in order of appearance."""
     return list(dict.fromkeys(TICKET_RE.findall(text)))
 
 
-def extract_ticket_key(branch: str = None, text: str = None) -> dict:
-    """Extract a ticket key from branch and/or text."""
+def _run(data: dict) -> dict:
+    branch = data.get("branch", "")
+    text = data.get("text", "")
+
     branch_keys = _extract_keys(branch) if branch else []
     text_keys = _extract_keys(text) if text else []
 
@@ -39,38 +47,45 @@ def extract_ticket_key(branch: str = None, text: str = None) -> dict:
         key = text_keys[0]
         source = "text"
     else:
-        return {"error": "no ticket key found in branch or text"}
+        return {
+            "status": "not_found",
+            "key": None,
+            "project": None,
+            "source": None,
+            "reason": "no ticket key found in branch or text",
+        }
 
     project = key.split("-", 1)[0]
-    return {"key": key, "project": project, "source": source}
-
-
-def main():
-    parser = argparse.ArgumentParser(
-        description="Extract a ticket/issue key from a branch name or arbitrary text."
-    )
-    parser.add_argument("--branch", help="Branch name to search for a ticket key.")
-    parser.add_argument("--text", help="Arbitrary text to search for a ticket key.")
-    args = parser.parse_args()
-
-    if not args.branch and not args.text:
-        print(
-            json.dumps({"error": "at least one of --branch or --text is required"}),
-            file=sys.stderr,
-        )
-        return 1
-
-    try:
-        result = extract_ticket_key(branch=args.branch, text=args.text)
-        if "error" in result:
-            print(json.dumps(result), file=sys.stderr)
-            return 1
-        print(json.dumps(result, indent=2))
-        return 0
-    except Exception as exc:  # pragma: no cover - safety net
-        print(json.dumps({"error": str(exc)}), file=sys.stderr)
-        return 1
+    return {
+        "status": "found",
+        "key": key,
+        "project": project,
+        "source": source,
+    }
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    if any(arg in ("-h", "--help") for arg in sys.argv[1:]):
+        print(_help())
+        sys.exit(0)
+
+    try:
+        data = json.load(sys.stdin)
+    except Exception as exc:
+        print(
+            json.dumps(
+                {
+                    "status": "not_found",
+                    "key": None,
+                    "project": None,
+                    "source": None,
+                    "reason": f"invalid JSON input: {exc}",
+                }
+            ),
+            file=sys.stderr,
+        )
+        sys.exit(2)
+
+    result = _run(data)
+    print(json.dumps(result, indent=2))
+    sys.exit(0 if result["status"] == "found" else 1)

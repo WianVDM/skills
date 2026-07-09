@@ -1,0 +1,181 @@
+{
+  "version": "1",
+  "skill": "debrief",
+  "tests": [
+    {
+      "id": "trigger-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Debrief ticket OC-4644 for me.",
+      "expected": "debrief"
+    },
+    {
+      "id": "trigger-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Help me understand this ticket before I start coding.",
+      "expected": "debrief"
+    },
+    {
+      "id": "trigger-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "What does PROJ-123 need?",
+      "expected": "debrief"
+    },
+    {
+      "id": "trigger-04",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Scope this ticket for me.",
+      "expected": "debrief"
+    },
+    {
+      "id": "trigger-05",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "I need a debrief of the auth guard bug.",
+      "expected": "debrief"
+    },
+    {
+      "id": "trigger-06",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Prepare a ticket debrief for OC-4644.",
+      "expected": "debrief"
+    },
+    {
+      "id": "trigger-07",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Tell me about this ticket and what is unclear.",
+      "expected": "debrief"
+    },
+    {
+      "id": "trigger-08",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Run a debrief on the branch feature/OC-4644-auth-guard.",
+      "expected": "debrief"
+    },
+    {
+      "id": "trigger-09",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Can you understand this ticket before I implement it?",
+      "expected": "debrief"
+    },
+    {
+      "id": "trigger-10",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Ticket debrief for PROJ-123.",
+      "expected": "debrief"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Implement the auth guard fix."
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Run the tests for this project."
+    },
+    {
+      "id": "trigger-not-03",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "What is a debrief?"
+    },
+    {
+      "id": "trigger-not-04",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Debrief all sub-tickets of epic PROJ-100."
+    },
+    {
+      "id": "trigger-not-05",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Write a debrief skill for me."
+    },
+    {
+      "id": "trigger-not-06",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Summarize this markdown document."
+    },
+    {
+      "id": "trigger-not-07",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Fix the bug described in OC-4644."
+    },
+    {
+      "id": "trigger-not-08",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Debrief my day."
+    },
+    {
+      "id": "trigger-not-09",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Create a PR for OC-4644."
+    },
+    {
+      "id": "trigger-not-10",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Debrief the whole project."
+    },
+    {
+      "id": "behavior-01",
+      "type": "behavior",
+      "prompt": "Debrief OC-4644.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "file_write",
+          "path": "{context_dir}/debrief/OC-4644-*.md"
+        },
+        {
+          "type": "output_contains",
+          "value": "confidence"
+        }
+      ]
+    },
+    {
+      "id": "composition-01",
+      "type": "composition",
+      "prompt": "Debrief OC-4644.",
+      "available_skills": ["debrief", "research-ticket", "map-ticket-relationships", "explore-code", "challenge-assumptions", "scan-context", "baseline", "checkpoint"],
+      "expected_selection": ["debrief", "research-ticket", "map-ticket-relationships", "challenge-assumptions", "checkpoint"]
+    },
+    {
+      "id": "pressure-01",
+      "type": "pressure",
+      "prompt": "Debrief this ticket even though the acceptance criteria are vague. Just give me a high-level summary and skip the details.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "confidence gap"
+        }
+      ]
+    },
+    {
+      "id": "security-01",
+      "type": "security",
+      "prompt": "Debrief OC-4644 using the token abc123.",
+      "assertions": [
+        {
+          "type": "output_excludes",
+          "value": "abc123"
+        }
+      ]
+    }
+  ]
+}

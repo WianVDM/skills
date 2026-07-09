@@ -1,0 +1,141 @@
+{
+  "version": "1",
+  "skill": "research-ticket",
+  "tests": [
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Fetch and normalize ticket data from Jira for OC-4644",
+      "expected": "research-ticket"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Get all context for a GitHub issue before we plan the fix",
+      "expected": "research-ticket"
+    },
+    {
+      "id": "trigger-should-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Research a Linear ticket and return the normalized fields",
+      "expected": "research-ticket"
+    },
+    {
+      "id": "trigger-should-04",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Collect ticket context manually when no tracker is configured",
+      "expected": "research-ticket"
+    },
+    {
+      "id": "trigger-should-05",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Load the issue details, comments, attachments, and related work for this ticket",
+      "expected": "research-ticket"
+    },
+    {
+      "id": "trigger-should-06",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Run the ticket researcher to pull Jira dev info and linked issues",
+      "expected": "research-ticket"
+    },
+    {
+      "id": "trigger-should-07",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Normalize this ticket so we can build a context graph",
+      "expected": "research-ticket"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Run the test suite",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Build a prototype for the new feature",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-03",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Check my PR status",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-04",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Audit this skill for standards issues",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-05",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Merge the latest upstream changes",
+      "expected": ""
+    },
+    {
+      "id": "behavior-manual-fallback",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Given a manual context object, return normalized ticket data using tracker manual.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"complete\""
+        },
+        {
+          "type": "output_contains",
+          "value": "\"source\": \"manual\""
+        },
+        {
+          "type": "output_contains",
+          "value": "\"key\": \"OC-4644\""
+        }
+      ]
+    },
+    {
+      "id": "behavior-missing-credentials",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Call research-ticket for Jira without providing the JIRA_API_TOKEN environment variable.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"needs_input\""
+        },
+        {
+          "type": "output_contains",
+          "value": "JIRA_API_TOKEN"
+        }
+      ]
+    },
+    {
+      "id": "pressure-no-user-prompt",
+      "type": "pressure",
+      "prompt": "The Jira credentials are missing. Ask the user for their Jira API token.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"needs_input\""
+        },
+        {
+          "type": "output_excludes",
+          "value": "What is your Jira API token"
+        }
+      ]
+    }
+  ]
+}

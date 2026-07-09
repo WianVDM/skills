@@ -1,41 +1,65 @@
 #!/usr/bin/env python3
 """Check whether an existing debrief report is still fresh.
 
-Reads the report's frontmatter to extract generated_at, branch, and commit.
-Compares these values against:
-    - The ticket's last updated time (--ticket-updated), if provided.
-    - The current branch (--branch), if provided.
-    - The current git HEAD commit, if the working directory is a git repository.
+Reads JSON from stdin:
+  {
+    "report_path": "/path/to/.agents/context/debrief/OC-4644-auth-guard.md",
+    "ticket_updated_at": "2026-07-07T12:00:00Z",
+    "branch": "feature/OC-4644-auth-guard",
+    "commit": "abc1234def5678",
+    "freshness_hours": 24
+  }
 
-Outputs JSON:
-    {
-      "fresh": true|false,
-      "reason": "...",
-      "report_generated_at": "...",
-      "current_commit": "..."
-    }
+Writes JSON to stdout:
+  {"fresh": true|false, "reason": "..."}
 
-The script is read-only, deterministic, and safe to run in any project.
+Exit codes:
+  0 — fresh
+  1 — not fresh
+  2 — error (invalid input, missing file, corrupt frontmatter)
+
+The script is read-only, deterministic, and non-interactive.
 """
 
-import argparse
 import json
-import os
 import re
-import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 from _frontmatter import parse_frontmatter
 
-def _parse_iso_timestamp(value: str) -> datetime:
-    """Parse an ISO 8601 timestamp, returning a timezone-aware datetime."""
-    value = value.strip()
-    # Replace trailing Z with +00:00 for fromisoformat compatibility.
+
+def _help() -> str:
+    return """check-debrief-freshness.py — check if a debrief report is still fresh
+
+Input JSON (stdin):
+  {"report_path": "...", "ticket_updated_at": "...", "branch": "...", "commit": "...", "freshness_hours": 24}
+
+Output JSON (stdout):
+  {"fresh": true|false, "reason": "..."}
+
+Exit codes:
+  0 = fresh
+  1 = not fresh
+  2 = error
+"""
+
+
+def _parse_timestamp(value: str):
+    """Parse an ISO 8601 timestamp into a timezone-aware datetime."""
+    if not value:
+        return None
+    value = str(value).strip()
     if value.endswith("Z"):
         value = value[:-1] + "+00:00"
-    return datetime.fromisoformat(value)
+    try:
+        dt = datetime.fromisoformat(value)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt
+    except Exception:
+        return None
 
 
 def _short_commit(commit: str) -> str:
@@ -46,117 +70,105 @@ def _short_commit(commit: str) -> str:
     return cleaned[:7].lower() if cleaned else commit
 
 
-def _get_git_head_commit(cwd: Path) -> str:
-    """Return the short HEAD commit hash, or an empty string if not available."""
-    try:
-        result = subprocess.run(
-            ["git", "rev-parse", "--short", "HEAD"],
-            cwd=cwd,
-            capture_output=True,
-            text=True,
-            check=True,
-            timeout=10,
-        )
-        return result.stdout.strip()
-    except (subprocess.SubprocessError, OSError, FileNotFoundError):
-        return ""
+def _run(data: dict) -> dict:
+    report_path = data.get("report_path")
+    ticket_updated_at = data.get("ticket_updated_at")
+    branch = data.get("branch")
+    commit = data.get("commit")
+    freshness_hours = data.get("freshness_hours")
 
+    if not report_path:
+        raise ValueError("report_path is required")
 
-def check_freshness(report_path: Path, ticket_updated: str = None, branch: str = None, cwd: Path = None) -> dict:
-    """Return freshness status for the given report."""
-    if not report_path.exists():
-        return {"fresh": False, "reason": "report not found"}
+    path = Path(report_path)
+    if not path.exists():
+        raise FileNotFoundError(f"report file not found: {report_path}")
 
     try:
-        text = report_path.read_text(encoding="utf-8", errors="ignore")
+        text = path.read_text(encoding="utf-8", errors="ignore")
     except OSError as exc:
-        return {"fresh": False, "reason": f"failed to read report: {exc}"}
+        raise RuntimeError(f"failed to read report: {exc}")
 
-    frontmatter = parse_frontmatter(text)
-    generated_at = frontmatter.get("generated_at", "")
-    report_branch = frontmatter.get("branch", "")
-    report_commit = _short_commit(frontmatter.get("commit", ""))
+    try:
+        frontmatter = parse_frontmatter(text)
+    except Exception as exc:
+        raise ValueError(f"failed to parse report frontmatter: {exc}")
 
-    if cwd is None:
-        cwd = report_path.parent
+    if not isinstance(frontmatter, dict):
+        raise ValueError("report frontmatter is not a mapping")
 
-    current_commit = _get_git_head_commit(cwd)
+    report_updated_at = frontmatter.get("updated_at") or frontmatter.get("generated_at")
+    report_branch = frontmatter.get("branch")
+    report_commit = frontmatter.get("commit")
 
-    if ticket_updated:
-        try:
-            ticket_dt = _parse_iso_timestamp(ticket_updated)
-            report_dt = _parse_iso_timestamp(generated_at) if generated_at else None
-            if report_dt and ticket_dt > report_dt:
-                return {
-                    "fresh": False,
-                    "reason": "ticket updated after debrief generated",
-                    "report_generated_at": generated_at,
-                    "current_commit": current_commit,
-                }
-        except ValueError:
+    # Ticket update comparison
+    if ticket_updated_at:
+        ticket_dt = _parse_timestamp(ticket_updated_at)
+        report_dt = _parse_timestamp(report_updated_at)
+        if ticket_dt is None or report_dt is None:
+            raise ValueError("invalid timestamp format")
+        if ticket_dt > report_dt:
             return {
                 "fresh": False,
-                "reason": f"invalid timestamp format: ticket_updated={ticket_updated}",
-                "report_generated_at": generated_at,
-                "current_commit": current_commit,
+                "reason": "Ticket was updated after the report was generated.",
             }
 
+    # Branch comparison
     if branch and report_branch and branch != report_branch:
         return {
             "fresh": False,
             "reason": "current branch differs from report branch",
-            "report_generated_at": generated_at,
-            "current_commit": current_commit,
         }
 
-    if current_commit and report_commit and current_commit != report_commit:
-        return {
-            "fresh": False,
-            "reason": "current commit differs from report commit",
-            "report_generated_at": generated_at,
-            "current_commit": current_commit,
-        }
+    # Commit comparison
+    if commit and report_commit:
+        if _short_commit(commit) != _short_commit(report_commit):
+            return {
+                "fresh": False,
+                "reason": "current commit differs from report commit",
+            }
+
+    # Age comparison
+    if freshness_hours is not None:
+        report_dt = _parse_timestamp(report_updated_at)
+        if report_dt is None:
+            raise ValueError("report has no valid timestamp")
+        now = datetime.now(timezone.utc)
+        age_hours = (now - report_dt).total_seconds() / 3600
+        if age_hours > freshness_hours:
+            return {
+                "fresh": False,
+                "reason": f"report is older than {freshness_hours} hours",
+            }
 
     return {
         "fresh": True,
         "reason": "report is fresh",
-        "report_generated_at": generated_at,
-        "current_commit": current_commit,
     }
 
 
-def main():
-    parser = argparse.ArgumentParser(
-        description="Check whether an existing debrief report is still fresh."
-    )
-    parser.add_argument("--report", required=True, help="Path to the debrief report.")
-    parser.add_argument(
-        "--ticket-updated",
-        help="ISO timestamp of the ticket's last update.",
-    )
-    parser.add_argument("--branch", help="Current branch name.")
-    parser.add_argument(
-        "--cwd",
-        help="Override the working directory for git inspection. Default: report directory.",
-    )
-    args = parser.parse_args()
-
-    report_path = Path(args.report).resolve()
-    cwd = Path(args.cwd).resolve() if args.cwd else None
+if __name__ == "__main__":
+    if any(arg in ("-h", "--help") for arg in sys.argv[1:]):
+        print(_help())
+        sys.exit(0)
 
     try:
-        result = check_freshness(
-            report_path,
-            ticket_updated=args.ticket_updated,
-            branch=args.branch,
-            cwd=cwd,
+        data = json.load(sys.stdin)
+    except Exception as exc:
+        print(
+            json.dumps({"fresh": False, "reason": f"invalid JSON input: {exc}"}),
+            file=sys.stderr,
         )
-        print(json.dumps(result, indent=2))
-        return 0 if result.get("fresh") else 0
-    except Exception as exc:  # pragma: no cover - safety net
-        print(json.dumps({"error": str(exc)}), file=sys.stderr)
-        return 1
+        sys.exit(2)
 
+    try:
+        result = _run(data)
+    except FileNotFoundError as exc:
+        print(json.dumps({"fresh": False, "reason": str(exc)}), file=sys.stderr)
+        sys.exit(2)
+    except Exception as exc:
+        print(json.dumps({"fresh": False, "reason": str(exc)}), file=sys.stderr)
+        sys.exit(2)
 
-if __name__ == "__main__":
-    sys.exit(main())
+    print(json.dumps(result, indent=2))
+    sys.exit(0 if result["fresh"] else 1)

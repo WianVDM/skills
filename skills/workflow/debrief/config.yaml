@@ -5,13 +5,34 @@ shared:
   - key: agents.config_dir
     required: true
     default: .agents/config
-  - key: issue_tracker
-    required: false
-    default: github
 
 skill:
-  - key: debrief.max_parallel_subagents
+  - key: debrief.confidence_threshold
     required: false
-    default: 3
+    default: 85
+  - key: debrief.green_threshold
+    required: false
+    default: 85
+  - key: debrief.yellow_threshold
+    required: false
+    default: 60
+  - key: debrief.baseline_mode
+    required: false
+    default: optional
+  - key: debrief.issue_tracker
+    required: false
+    default: auto
+  - key: debrief.max_resolution_loops
+    required: false
+    default: 2
+  - key: debrief.freshness_hours
+    required: false
+    default: 24
+  - key: debrief.explore_code_max_files
+    required: false
+    default: 20
+  - key: debrief.max_history_rows
+    required: false
+    default: 20
 
 requires_setup: false

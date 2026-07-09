@@ -1,0 +1,92 @@
+{
+  "version": "1",
+  "skill": "checkpoint",
+  "tests": [
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Save the current phase and focus so I can resume this later.",
+      "expected": "checkpoint"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Track progress across the debrief phases for ticket OC-4644.",
+      "expected": "checkpoint"
+    },
+    {
+      "id": "trigger-should-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Resume the long-running workflow from where we left off.",
+      "expected": "checkpoint"
+    },
+    {
+      "id": "trigger-should-04",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Update the checkpoint after the evidence-gathering step completes.",
+      "expected": "checkpoint"
+    },
+    {
+      "id": "trigger-should-05",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Validate the state file for the running conductor.",
+      "expected": "checkpoint"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Write a final debrief report for the ticket.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Research the details of OC-4644 from Jira.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-03",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Install the latest version of a Python package.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-04",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Run the test suite and report failures.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-05",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "What is the weather today?",
+      "expected": ""
+    },
+    {
+      "id": "behavior-01",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Create a checkpoint for owner debrief, key OC-4644, with phases [Bootstrap, Gather evidence, Build context graph], then update it to mark 'Gather evidence' complete and set focus to 'Build context graph', then resume and validate the state.",
+      "assertions": [
+        {
+          "type": "file_write",
+          "path": ".agents/context/debrief/OC-4644/state.md"
+        },
+        {
+          "type": "output_contains",
+          "value": "Build context graph"
+        }
+      ]
+    }
+  ]
+}

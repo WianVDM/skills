@@ -1,0 +1,114 @@
+{
+  "version": "1",
+  "skill": "challenge-assumptions",
+  "tests": [
+    {
+      "id": "ca-trigger-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "I have some assumptions about this ticket. Can you stress-test them against the evidence to avoid confirmation bias?"
+    },
+    {
+      "id": "ca-trigger-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Challenge these assumptions by looking for contradictions in the codebase and ticket comments."
+    },
+    {
+      "id": "ca-trigger-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "What evidence could disprove the assumptions we made during the debrief?"
+    },
+    {
+      "id": "ca-trigger-04",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "I want to avoid confirmation bias. Please challenge the assumptions formed from the ticket."
+    },
+    {
+      "id": "ca-trigger-05",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Search for disproof of the assumptions we just listed."
+    },
+    {
+      "id": "ca-trigger-06",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Form a list of assumptions from the ticket and evidence."
+    },
+    {
+      "id": "ca-trigger-07",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Calculate the overall confidence score for this ticket."
+    },
+    {
+      "id": "ca-trigger-08",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Can you ask the user to clarify these assumptions?"
+    },
+    {
+      "id": "ca-behavior-01",
+      "type": "behavior",
+      "name": "Challenges assumption with direct contradiction",
+      "description": "Given an assumption and evidence that contradicts it, the script marks the assumption as challenged.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "challenged"
+        }
+      ]
+    },
+    {
+      "id": "ca-behavior-02",
+      "type": "behavior",
+      "name": "Holds assumption when no contradiction exists",
+      "description": "Given an assumption with no contradicting evidence, the script marks it as holds.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "holds"
+        }
+      ]
+    },
+    {
+      "id": "ca-behavior-03",
+      "type": "behavior",
+      "name": "Returns needs_input when assumptions are missing",
+      "description": "When no assumptions are provided, the script returns status needs_input.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "needs_input"
+        }
+      ]
+    },
+    {
+      "id": "ca-behavior-04",
+      "type": "behavior",
+      "name": "Returns structured JSON envelope",
+      "description": "The script always returns a JSON object with status and assumptions keys.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_format",
+          "value": "json"
+        }
+      ]
+    },
+    {
+      "id": "ca-composition-01",
+      "type": "composition",
+      "name": "Consumes evidence from explore-code",
+      "description": "The skill should be selected when a conductor has assumptions and evidence from explore-code.",
+      "available_skills": ["challenge-assumptions", "explore-code", "research-ticket"],
+      "expected_selection": ["challenge-assumptions"]
+    }
+  ]
+}

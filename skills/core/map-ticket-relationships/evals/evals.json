@@ -1,0 +1,178 @@
+{
+  "version": "1",
+  "skill": "map-ticket-relationships",
+  "tests": [
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Map all the relationships around ticket OC-4644.",
+      "expected": "map-ticket-relationships"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "What is this ticket related to?",
+      "expected": "map-ticket-relationships"
+    },
+    {
+      "id": "trigger-should-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Find the parent, children, and linked tickets for this issue.",
+      "expected": "map-ticket-relationships"
+    },
+    {
+      "id": "trigger-should-04",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Show me the ticket dependency graph.",
+      "expected": "map-ticket-relationships"
+    },
+    {
+      "id": "trigger-should-05",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Which branches and PRs are linked to this ticket?",
+      "expected": "map-ticket-relationships"
+    },
+    {
+      "id": "trigger-should-06",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Trace the original feature for this bug ticket.",
+      "expected": "map-ticket-relationships"
+    },
+    {
+      "id": "trigger-should-07",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "What files are affected by this ticket?",
+      "expected": "map-ticket-relationships"
+    },
+    {
+      "id": "trigger-should-08",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Build a context graph for this issue.",
+      "expected": "map-ticket-relationships"
+    },
+    {
+      "id": "trigger-should-09",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Find duplicate tickets and blockers for OC-4644.",
+      "expected": "map-ticket-relationships"
+    },
+    {
+      "id": "trigger-should-10",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Anchor this ticket in its full tracker context.",
+      "expected": "map-ticket-relationships"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Create a new ticket in Jira.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Fetch the raw core fields for ticket OC-4644.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-03",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Search the codebase for auth guard logic.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-04",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Challenge the assumptions in this debrief.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-05",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Open a pull request for the auth guard fix.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-06",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Run the full debrief workflow.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-07",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Calculate confidence for this ticket.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-08",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Install a new skill into the project.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-09",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Post a review comment on GitHub.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-10",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Detect the project root and marker directory.",
+      "expected": ""
+    },
+    {
+      "id": "behavior-complete-01",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Map the relationships for ticket OC-4644 with parent OC-4000, linked OC-4500, and affected file src/app/guards/auth.guard.ts.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"parent\": \"OC-4000\""
+        },
+        {
+          "type": "output_contains",
+          "value": "\"linked\": [\"OC-4500\"]"
+        },
+        {
+          "type": "output_contains",
+          "value": "src/app/guards/auth.guard.ts"
+        }
+      ]
+    },
+    {
+      "id": "behavior-blocked-01",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Map relationships for ticket OC-4644 when no ticket data is provided.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"blocked\""
+        }
+      ]
+    }
+  ]
+}

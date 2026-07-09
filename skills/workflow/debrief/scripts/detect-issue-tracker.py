@@ -1,34 +1,19 @@
 #!/usr/bin/env python3
 """Detect available issue trackers for the current project.
 
-Inspects the project and environment to decide which issue trackers are
-viable: jira, github, linear, or manual.
+Reads JSON from stdin: {"cwd": "<path>"}
+Writes JSON to stdout:
+  {
+    "trackers": [
+      {"name": "jira", "available": true, "source": "mcp|env|config", "confidence": "high|medium|low", "detail": "..."},
+      ...
+    ]
+  }
 
-Checks performed:
-    - MCP server configurations (mcp.json or mcp.yaml) containing known tracker servers.
-    - Environment variables:
-        JIRA_URL + JIRA_USERNAME + JIRA_API_TOKEN
-        GITHUB_TOKEN
-        LINEAR_API_KEY
-
-Outputs JSON:
-    {
-      "trackers": [
-        {
-          "name": "jira|github|linear|manual",
-          "available": true|false,
-          "source": "mcp|env|config",
-          "confidence": "high|medium|low"
-        }
-      ]
-    }
-
-If no tracker is found, "manual" is still reported as available with low confidence.
-
-The script is read-only, deterministic, and safe to run in any project.
+The manual tracker is always reported as available with low confidence.
+The script is read-only, deterministic, and non-interactive.
 """
 
-import argparse
 import json
 import os
 import sys
@@ -66,8 +51,18 @@ ENV_VARS = {
 }
 
 
+def _help() -> str:
+    return """detect-issue-tracker.py — detect available issue trackers
+
+Input JSON (stdin):
+  {"cwd": "<working-directory>"}
+
+Output JSON (stdout):
+  {"trackers": [{"name": "...", "available": true|false, "source": "...", "confidence": "...", "detail": "..."}]}
+"""
+
+
 def _read_text(path: Path) -> str:
-    """Read text safely, returning an empty string on failure."""
     try:
         return path.read_text(encoding="utf-8", errors="ignore")
     except OSError:
@@ -75,7 +70,6 @@ def _read_text(path: Path) -> str:
 
 
 def _find_mcp_configs(cwd: Path) -> list:
-    """Return a list of absolute paths for existing MCP config files."""
     found = []
     for rel in MCP_PATHS:
         path = cwd / rel
@@ -85,7 +79,6 @@ def _find_mcp_configs(cwd: Path) -> list:
 
 
 def _detect_mcp_servers(cwd: Path) -> dict:
-    """Detect tracker names mentioned in MCP config files."""
     results = {name: [] for name in MCP_KEYWORDS}
     for config_path in _find_mcp_configs(cwd):
         text = _read_text(config_path).lower()
@@ -98,7 +91,6 @@ def _detect_mcp_servers(cwd: Path) -> dict:
 
 
 def _detect_env_vars() -> dict:
-    """Detect tracker availability from environment variables."""
     results = {name: [] for name in ENV_VARS}
     for tracker, var_groups in ENV_VARS.items():
         for group in var_groups:
@@ -107,12 +99,11 @@ def _detect_env_vars() -> dict:
     return results
 
 
-def detect_trackers(cwd: Path = None) -> list:
-    """Return a list of tracker result dicts."""
-    if cwd is None:
-        cwd = Path.cwd()
+def _run(data: dict) -> dict:
+    cwd = data.get("cwd", str(Path.cwd()))
+    cwd_path = Path(cwd).resolve()
 
-    mcp_results = _detect_mcp_servers(cwd)
+    mcp_results = _detect_mcp_servers(cwd_path)
     env_results = _detect_env_vars()
 
     trackers = []
@@ -149,7 +140,6 @@ def detect_trackers(cwd: Path = None) -> list:
             "detail": source_detail,
         })
 
-    # Manual fallback is always available with low confidence.
     trackers.append({
         "name": "manual",
         "available": True,
@@ -158,28 +148,31 @@ def detect_trackers(cwd: Path = None) -> list:
         "detail": "user-provided fallback",
     })
 
-    return trackers
-
-
-def main():
-    parser = argparse.ArgumentParser(
-        description="Detect available issue trackers for the current project."
-    )
-    parser.add_argument(
-        "--cwd",
-        help="Override the working directory to inspect. Default: current directory.",
-    )
-    args = parser.parse_args()
-
-    cwd = Path(args.cwd).resolve() if args.cwd else Path.cwd()
-    try:
-        trackers = detect_trackers(cwd)
-        print(json.dumps({"trackers": trackers}, indent=2))
-        return 0
-    except Exception as exc:  # pragma: no cover - safety net
-        print(json.dumps({"error": str(exc)}), file=sys.stderr)
-        return 1
+    return {"trackers": trackers}
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    if any(arg in ("-h", "--help") for arg in sys.argv[1:]):
+        print(_help())
+        sys.exit(0)
+
+    try:
+        data = json.load(sys.stdin)
+    except Exception as exc:
+        print(
+            json.dumps({"error": f"invalid JSON input: {exc}"}),
+            file=sys.stderr,
+        )
+        sys.exit(2)
+
+    try:
+        result = _run(data)
+    except Exception as exc:
+        print(
+            json.dumps({"error": str(exc)}),
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    print(json.dumps(result, indent=2))
+    sys.exit(0)
