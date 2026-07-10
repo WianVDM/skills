@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentskills.io/schemas/config-yaml.json",
+  "title": "Skill Config Declaration",
+  "description": "Schema for a skill-level config.yaml file that declares shared and skill-specific configuration keys and whether the skill requires setup.",
+  "type": "object",
+  "properties": {
+    "shared": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/configKey" },
+      "description": "Keys that should live in .agents/config/shared.yaml and be shared across skills."
+    },
+    "skill": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/configKey" },
+      "description": "Keys that should live in .agents/config/{skill-name}.yaml and are specific to this skill."
+    },
+    "requires_setup": {
+      "type": "boolean",
+      "description": "Signals that the skill needs skill-specific initialization after installation."
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "configKey": {
+      "type": "object",
+      "required": ["key"],
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Config key name, typically lowercase and dot-namespaced (e.g., agents.context_dir)."
+        },
+        "required": {
+          "type": "boolean",
+          "description": "Whether the skill cannot function without a value for this key."
+        },
+        "default": {
+          "description": "Default value used when the key is not provided."
+        },
+        "type": {
+          "type": "string",
+          "description": "Expected value type (e.g., string, boolean, integer, array, object)."
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "description": "Human-readable explanation of what the key controls."
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

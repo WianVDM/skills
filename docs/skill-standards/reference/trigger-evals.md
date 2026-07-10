@@ -290,25 +290,9 @@ Use this as a starting point for any model-invoked skill. Replace the bracketed 
 
 ---
 
-## Iteration tips
+## Iteration and common pitfalls
 
-- **Rewrite one variable at a time.** Change the leading word, the reach clause, or the trigger list separately so you know what helped.
-- **Front-load the domain.** The first few words of the description matter most.
-- **Use quotes for trigger phrases.** Phrases like `"review my UI"` can anchor the model better than prose.
-- **Avoid generic verbs.** "Help with" or "assist with" do not tell the agent when to load the skill.
-- **Add a reach clause** if other skills need to invoke this one: "Use when another skill needs to know the available skills."
-
----
-
-## Common pitfalls
-
-| Pitfall | Symptom | Fix |
-|---------|---------|-----|
-| Description is a title | Skill rarely fires | Rewrite as a when-to-use sentence. |
-| Description lists every feature | False positives | Collapse synonyms; keep one trigger per branch. |
-| Description is too long | Context budget waste | Trim to under 1024 chars; move detail to references. |
-| No should-not-trigger cases | Surprise false positives | Write near-misses before shipping. |
-| Testing only exact skill name | Routing fails in real use | Test realistic, unnamed prompts. |
+For description-writing guidance — leading words, trigger phrases, reach clauses, and common pitfalls — see [`FORMAT.md`](./format.md).
 
 ---
 

@@ -98,8 +98,6 @@ plan-and-implement/
 ---
 name: plan-and-implement
 version: 1.0.0
-metadata:
-  author: workflow-team
 invocation: user-invoked
 description: Plan a change and then delegate implementation to a focused worker. Use when a task requires judgment about approach before any files are changed.
 ---
@@ -184,6 +182,8 @@ artifacts:
 ## Blockers
 ...
 ```
+
+A JSON Schema for the worker return frontmatter is maintained at `schemas/worker-return-contract.schema.json`.
 
 ### Why it works
 

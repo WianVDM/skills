@@ -42,6 +42,8 @@ artifacts:
 ---
 ```
 
+A JSON Schema for context report frontmatter is maintained at `schemas/context-report.schema.json`.
+
 A skill must document:
 
 - What reports it produces.

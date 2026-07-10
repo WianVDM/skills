@@ -17,22 +17,7 @@ User-invoked skills pay **cognitive load** instead: the user must remember they 
 
 ## Description length
 
-Aim for **under 1024 characters** for every model-invoked description. Some harnesses impose shorter limits or penalize long descriptions in routing quality.
-
-### Make every word routing-relevant
-
-| Inefficient | Efficient |
-|-------------|-----------|
-| "This skill helps you review user interface code for accessibility, responsive design, and design system compliance in web applications." | "Review UI code for design-system compliance, accessibility, and responsive behavior. Use when asked to 'review my UI', 'check accessibility', or 'audit design'." |
-
-The efficient version front-loads the leading word (`Review UI`), names the domain, and lists triggers.
-
-### One trigger per distinct branch
-
-If two phrasings mean the same thing, collapse them:
-
-- Bad: `"review my UI", "review the UI", "review UI code"` — one branch, three synonyms.
-- Good: `"review my UI", "check accessibility", "audit design"` — three distinct branches.
+Aim for **under 1024 characters** for every model-invoked description. Some harnesses impose shorter limits or penalize long descriptions in routing quality. For the full description craft guidance — leading words, distinct triggers, and reach clauses — see [`FORMAT.md`](./format.md).
 
 ---
 
@@ -125,19 +110,7 @@ See `patterns/stateful.md` and `patterns/context-reports.md` for the stateful an
 
 ## Example: trimming a description
 
-Before:
-
-```yaml
-description: A skill that helps with reviewing user interfaces, including accessibility checks, design system compliance, and responsive design, for web projects using React or similar frameworks.
-```
-
-After:
-
-```yaml
-description: Review UI code for design-system compliance, accessibility, and responsive behavior. Use when asked to "review my UI", "check accessibility", "audit design", or "review UX".
-```
-
-The after version is shorter, front-loads the leading word, and lists distinct triggers.
+See [`FORMAT.md`](./format.md) for a full before-and-after example and the description craft checklist.
 
 ---
 

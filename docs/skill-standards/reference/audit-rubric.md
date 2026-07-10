@@ -18,7 +18,7 @@ This is the contract that `audit-skill` uses to evaluate any skill. Each check h
 | F04 | `description` lists distinct triggers, not synonyms. | Warning | Each trigger maps to a distinct branch or intent. |
 | F05 | `version` is valid SemVer if present, especially once shared or consumed. | Warning | Absent is acceptable for personal/local skills. If present, matches `MAJOR.MINOR.PATCH`. |
 | F06 | `invocation` is `model-invoked` or `user-invoked`. | Blocker | Declared and consistent with `disable-model-invocation`. |
-| F07 | `metadata` includes author and tags. | Warning | `author` and `tags` present. |
+| F07 | Frontmatter contains only load-bearing fields. | Warning | No `metadata`, `author`, or `tags` fields are present in frontmatter. |
 | F08 | Frontmatter validates against JSON schema. | Blocker | No schema errors. |
 
 ## Category: Type and shape

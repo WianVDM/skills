@@ -14,8 +14,6 @@ find-skills/
 ---
 name: find-skills
 version: 1.0.0
-metadata:
-  author: tooling-team
 invocation: model-invoked
 description: Discover available skills for the current project and return structured results. Use when a skill or conductor needs to know what skills are available, or when the user asks to find skills.
 ---

@@ -27,9 +27,6 @@ A harness that does not parse YAML frontmatter can fall back to the markdown bod
 ---
 name: review-ui
 version: 1.0.0
-metadata:
-  author: design-team
-  tags: [ui, accessibility, design-system]
 invocation: model-invoked
 ---
 
@@ -66,31 +63,24 @@ Review UI code for design-system compliance, accessibility, and responsive behav
 |-------|------|-------------|---------|
 | `name` | string | Required. Lowercase letters, digits, and hyphens only. Must match the directory name. Max 128 chars. | The stable identifier for the skill. |
 | `description` | string | Required. Min 1, max 1024 characters. | One-sentence routing surface. Tells the agent when to load the skill. |
+| `invocation` | string | Enum: `model-invoked`, `user-invoked`. Required. | Determines how the skill is reached and whether it pays context load or cognitive load. |
 
 ### Optional fields
 
 | Field | Type | Constraints | Purpose |
 |-------|------|-------------|---------|
 | `version` | string | Semantic version (`MAJOR.MINOR.PATCH[-prerelease][+build]`). | Version of the skill. Consider adding one once the skill is shared, consumed, or versioned. |
-| `metadata` | object | See `metadata` object below. | Author, tags, and other non-behavior metadata. |
-| `invocation` | string | Enum: `model-invoked`, `user-invoked`. | Determines how the skill is reached. |
 
 `version` is optional for personal, experimental, or local skills. Add it once a skill is shared, consumed, versioned, or otherwise needs a compatibility signal.
 
-#### `metadata` object
-
-| Key | Type | Constraints | Purpose |
-|-----|------|-------------|---------|
-| `author` | string | Max 256 chars. | Human or team responsible for the skill. |
-| `tags` | string[] | Unique. Each tag: lowercase, digits, hyphens; max 64 chars. | Keywords for cataloging and discovery. |
-
 ### Harness hints
 
-Harnesses may support additional frontmatter fields for their own tool scoping or loading behavior. These are **harness hints**, not part of the portable core. Examples:
+Harnesses may support additional frontmatter fields for their own tool scoping, loading behavior, or installation convenience. These are **harness hints**, not part of the portable core. Examples:
 
 - `allowed-tools` / `disallowed-tools` — tool scoping supported by some harnesses. Array of non-empty strings.
 - `disable-model-invocation: true` — equivalent to `invocation: user-invoked` in some harnesses. Boolean.
 - `globs` or `paths` — file scoping supported by some harnesses. Array of non-empty strings.
+- `depends` — skill names used by the Vercel `skills` CLI to install dependencies automatically. Array of non-empty strings. Not a portable dependency declaration; use `skills.json` for that.
 
 A portable skill should not rely on harness hints for its core behavior. If a hint is essential, the skill should degrade gracefully when the hint is ignored. When both `invocation` and `disable-model-invocation` are present, they must agree: `disable-model-invocation: true` is incompatible with `invocation: model-invoked`.
 
@@ -109,7 +99,7 @@ A JSON Schema for the portable frontmatter surface is maintained at `schemas/ski
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
-  "required": ["name", "description"],
+  "required": ["name", "description", "invocation"],
   "properties": {
     "name": {
       "type": "string",
@@ -126,17 +116,6 @@ A JSON Schema for the portable frontmatter surface is maintained at `schemas/ski
       "type": "string",
       "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*))?(?:\\+([a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*))?$"
     },
-    "metadata": {
-      "type": "object",
-      "properties": {
-        "author": { "type": "string", "maxLength": 256 },
-        "tags": {
-          "type": "array",
-          "items": { "type": "string", "pattern": "^[a-z0-9-]+$", "maxLength": 64 },
-          "uniqueItems": true
-        },
-      }
-    },
     "invocation": {
       "type": "string",
       "enum": ["model-invoked", "user-invoked"]
@@ -145,7 +124,8 @@ A JSON Schema for the portable frontmatter surface is maintained at `schemas/ski
     "disallowed-tools": { "type": "array", "items": { "type": "string", "minLength": 1 } },
     "disable-model-invocation": { "type": "boolean" },
     "globs": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-    "paths": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+    "paths": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "depends": { "type": "array", "items": { "type": "string", "minLength": 1 } }
   },
   "additionalProperties": true
 }
@@ -184,12 +164,14 @@ See `fundamentals/core/structure/` for trigger evals and description optimizatio
 
 ## The `invocation` field
 
-A skill is either **model-invoked** or **user-invoked**. The choice trades two loads:
+`invocation` is a **required** field. A skill is either **model-invoked** or **user-invoked**. The choice trades two loads:
 
 - **Model-invoked**: the description stays in the agent's context, so the skill can fire autonomously and other skills can reach it. This pays **context load** on every turn. A model-invoked skill is still reachable by the user typing its name.
 - **User-invoked**: the description is not kept in the agent's context for routing. Only the user can invoke it by name. This pays **cognitive load** — the user must remember it exists. No other skill can reach it.
 
 Choose model-invocation only when the agent or another skill must reach the skill on its own. If it only ever fires by hand, make it user-invoked and pay no context load.
+
+If a harness encounters a `SKILL.md` without an explicit `invocation`, it may fall back to a default (often model-invoked), but that behavior is harness-specific and not guaranteed by this standard. Always declare `invocation` explicitly for portability.
 
 When both `invocation` and `disable-model-invocation` are present, they must agree. `disable-model-invocation: true` is equivalent to `invocation: user-invoked`.
 
@@ -301,7 +283,7 @@ This is the recommended degradation path for minimal harnesses like Aider. See [
 
 - `SKILL.md` is the **only required file**; everything else is optional and must earn its place.
 - The **`description`** is the most important field; it is the context pointer that decides when the skill loads.
-- Choose **model-invoked** only when the agent or another skill must reach the skill on its own; otherwise prefer **user-invoked**.
+- `invocation` is a **required** field. Choose **model-invoked** only when the agent or another skill must reach the skill on its own; otherwise prefer **user-invoked**.
 - Keep the **body** focused on contract, scope, steps, and guidelines; push deep detail into `references/`.
 - Use **harness-agnostic and project-agnostic language** in the portable core.
 - Optional directories (`references/`, `subagents/`, `scripts/`, `assets/`) should be non-empty and reachable.

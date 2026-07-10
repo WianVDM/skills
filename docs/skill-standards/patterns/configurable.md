@@ -141,16 +141,22 @@ shared:
   - key: agents.context_dir
     required: true
     default: .agents/context
+    type: string
+    description: Directory where shared context reports live.
 
 skill:
   - key: my-skill.output_format
     required: false
     default: md
+    type: string
+    description: Format for the skill's output files.
 
 requires_setup: true
 ```
 
-- `shared` lists keys that should live in `.agents/config/shared.yaml` and be shared across skills.
+A JSON Schema for `config.yaml` is maintained at `schemas/config-yaml.schema.json`.
+
+- `shared` lists keys that should live in `.agents/config/shared.yaml` and be shared across skills. Each entry may include `key`, `required`, `default`, `type`, and `description`.
 - `skill` lists keys that should live in `.agents/config/{skill-name}.yaml`.
 - `requires_setup: true` signals that the skill needs skill-specific initialization after installation.
 

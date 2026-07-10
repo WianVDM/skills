@@ -158,19 +158,19 @@ Each skill should include a `references/DEPENDENCIES.md` file that lists its dep
 
 A `DEPENDENCIES.md` file should distinguish required, recommended, and optional dependencies explicitly. It should also list any consumed context reports, binaries, MCP servers, or environment variables.
 
-### `skills.json` `requirements.skills`
+### `skills.json` `skill_dependencies` and `requirements.skills`
 
-For packages, the `requirements.skills` array in `skills.json` is the machine-readable declaration. It is used for transitive closure, policy gates, and lock-file generation. See [`PACKAGE.md`](../../reference/package.md) for the full `requirements` schema.
+For packages, the structured `skill_dependencies` object in `skills.json` is the canonical machine-readable declaration of the skill dependency taxonomy. It maps each skill in the package to its `required`, `recommended`, and `optional` skill dependencies. Harnesses use it for transitive closure, policy gates, and lock-file generation.
 
-The Vercel `skills` CLI also uses a root `skills.json` for one-shot bundle installs: when `npx skills add owner/repo` sees `skills.json`, it installs every skill path listed in the `skills` array. Those paths must be relative, starting with `./` (e.g., `"./skills/authoring/write-a-skill"`).
+The flat `requirements.skills` array is a compatibility surface for harnesses or older tooling that only understand a single list of required skills. When both are present, `skill_dependencies` is authoritative; `requirements.skills` should contain the union of required dependencies (or all dependencies, depending on harness convention) and must not contradict `skill_dependencies`. If a harness only supports `requirements.skills`, treat the listed entries as required by default and document any recommended or optional exceptions in `references/DEPENDENCIES.md`.
 
-The `requirements.skills` array is currently **flat**. To encode the taxonomy, use a naming convention in `references/DEPENDENCIES.md` and separate `recommended_skills` / `optional_skills` fields only if the harness supports them. If the harness only supports `requirements.skills`, treat the listed entries as required by default and note exceptions in `references/DEPENDENCIES.md`. See [`PACKAGE.md`](../../reference/package.md) for the full schema.
+The Vercel `skills` CLI also uses a root `skills.json` for one-shot bundle installs: when `npx skills add owner/repo` sees `skills.json`, it installs every skill path listed in the `skills` array. Those paths must be relative, starting with `./` (e.g., `"./skills/authoring/write-a-skill"`). See [`PACKAGE.md`](../../reference/package.md) for the full schema.
 
-### `SKILL.md` frontmatter `depends`
+### `SKILL.md` frontmatter `depends` (harness hint)
 
 The Vercel `skills` CLI supports an optional `depends` field in `SKILL.md` frontmatter. When a user selects a skill for install, the CLI resolves and installs every dependency listed in `depends` first.
 
-Use `depends` for **required and recommended** skill dependencies that must be present for the skill to work well. Do not include optional dependencies in `depends`; surface them in `references/DEPENDENCIES.md` instead.
+`depends` is a **harness hint**, not a portable dependency declaration. The canonical dependency declaration is in `skills.json` (`requirements.skills` or `skill_dependencies`). Use `depends` only when a harness supports it and when it duplicates the required and recommended skill dependencies already declared in `skills.json` or `references/DEPENDENCIES.md`. Do not include optional dependencies in `depends`; surface them in `references/DEPENDENCIES.md` instead.
 
 Example:
 
@@ -178,6 +178,7 @@ Example:
 ---
 name: write-a-skill
 description: Design partner for creating, reviewing, and updating skills.
+invocation: model-invoked
 depends:
   - detect-project-context
   - decide-skill-shape
@@ -192,15 +193,14 @@ depends:
   - search-skills-registry
   - install-skill
   - run-trigger-evals
-metadata:
-  author: Wian van der Merwe
-  tags: [authoring, conductor, skill-design, standards]
 ---
 ```
 
-`depends` is a harness hint for the Vercel CLI. A skill must still declare its dependencies in `references/DEPENDENCIES.md` and should still run its own self-diagnostics in case `depends` is ignored or only partially satisfied.
+A skill must still declare its dependencies in `references/DEPENDENCIES.md` and run its own self-diagnostics in case `depends` is ignored or only partially satisfied.
 
-### Claude Code / Vercel plugin manifests
+### Harness-specific: Claude Code / Vercel plugin manifests
+
+The following manifest files are **harness-specific envelope** used by the Vercel `skills` CLI for installation grouping and interactive prompts. They are **not** part of the portable skill standard and should not be treated as canonical dependency declarations.
 
 For grouping in the Vercel `skills` CLI interactive prompts, declare a plugin manifest:
 
@@ -369,6 +369,8 @@ When a skill reports its state, it should include:
 - `better_tool_available`: a list of configured-but-unused tools that could improve a specific capability (optional but recommended for tool-aware skills).
 - `impact`: a brief explanation of how behavior changes.
 - `remediation`: the recommended next step for the user or harness.
+
+A JSON Schema for the self-diagnostics frontmatter is maintained at `schemas/self-diagnostics.schema.json`.
 
 For tool-aware skills, include `better_tool_available` when the skill is using a weaker source for a capability while a better tool is configured. For example, a PR-report skill using a `github-pr-adapter` while `github_get_pull_request_reviews` via MCP is available should report the better tool and offer to switch.
 

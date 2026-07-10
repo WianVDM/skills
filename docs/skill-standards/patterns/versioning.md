@@ -76,10 +76,10 @@ Example frontmatter:
 ---
 name: context-reports
 version: "2.1.0"
-metadata:
-  versioning: "Semantic-like: major for breaking schema changes, minor for new fields, patch for fixes."
 ---
 ```
+
+Document the versioning policy in `references/VERSIONING.md` or in the `SKILL.md` body.
 
 ---
 

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentskills.io/schemas/worker-return-contract.json",
+  "title": "Worker Return Contract",
+  "description": "Schema for the standard worker/subagent return report. Workers return YAML frontmatter and a markdown body so conductors can integrate findings consistently.",
+  "type": "object",
+  "required": ["status"],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["complete", "partial", "needs_input", "blocked"],
+      "description": "Overall state of the worker's task."
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Paths to files, reports, or other artifacts produced by the worker."
+    }
+  },
+  "additionalProperties": true
+}

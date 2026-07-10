@@ -26,7 +26,7 @@ A skill that says many true things but gives the agent no purchase point. Often 
 >
 > Better: "For each public behavior, write one test through the public interface. Stop when the user confirms the listed behaviors are covered."
 
-See [`../common-mistakes/weak-guidance.md`](../common-mistakes/weak-guidance.md) for guideline soup as a failure mode.
+See [`../common-mistakes/weak-guidance.md`](../common-mistakes/weak-guidance.md) for guideline soup as a failure mode and [`../form-and-style/completion-criteria.md`](../form-and-style/completion-criteria.md) for checkable completion criteria.
 
 ---
 

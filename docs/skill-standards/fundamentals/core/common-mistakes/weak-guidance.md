@@ -20,10 +20,6 @@ See [`../form-and-style/pruning.md`](../form-and-style/pruning.md) for the no-op
 
 A step ends with fuzzy language like "understand the problem" or "produce a plan." Vague criteria invite premature completion: the agent declares the step done because the criterion is impossible to falsify.
 
-**Cure**
-
-Rewrite every step to end with a checkable condition. Instead of "understand the ticket," use "the ticket key, summary, acceptance criteria, and current status are recorded in the ticket report."
-
 See [`../form-and-style/completion-criteria.md`](../form-and-style/completion-criteria.md) for how to write strong, checkable completion criteria.
 
 ---

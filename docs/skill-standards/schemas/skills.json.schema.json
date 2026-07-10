@@ -61,6 +61,84 @@
       },
       "description": "Mapping from local skill name to namespaced identifier."
     },
+    "bundles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "skills"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "Bundle name. Lowercase, hyphen-separated."
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024,
+            "description": "Human-readable purpose of the bundle."
+          },
+          "skills": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]+$",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "minItems": 1,
+            "uniqueItems": true,
+            "description": "Member skills of the bundle."
+          }
+        }
+      },
+      "description": "Named capability bundles. Each bundle groups related skills for installation convenience."
+    },
+    "skill_dependencies": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "required": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]+$",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "uniqueItems": true,
+            "description": "Skill dependencies that must be installed."
+          },
+          "recommended": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]+$",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "uniqueItems": true,
+            "description": "Skill dependencies that are installed by default but can be opted out."
+          },
+          "optional": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]+$",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "uniqueItems": true,
+            "description": "Skill dependencies that are surfaced but not installed automatically."
+          }
+        }
+      },
+      "description": "Structured skill dependency taxonomy per skill. Keys are skill names; values declare required, recommended, and optional skill dependencies."
+    },
     "requirements": {
       "type": "object",
       "additionalProperties": false,

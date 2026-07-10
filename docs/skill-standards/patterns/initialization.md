@@ -86,7 +86,7 @@ Initialization should use the same config location as the configurable pattern:
 └── {skill-name}.yaml          # skill-specific config + notes
 ```
 
-See [`configurable.md`](./configurable.md) for the config schema and notes convention.
+See [`configurable.md`](./configurable.md) for the config schema and notes convention. The `config.yaml` declaration format is formalized in `schemas/config-yaml.schema.json`.
 
 ---
 

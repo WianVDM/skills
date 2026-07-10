@@ -2,9 +2,9 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agentskills.io/schemas/skill-frontmatter.json",
   "title": "Skill Frontmatter",
-  "description": "YAML frontmatter schema for SKILL.md. The portable core of a skill is defined by this frontmatter and the markdown body.",
+  "description": "YAML frontmatter schema for SKILL.md. The portable core of a skill is defined by this frontmatter and the markdown body. All portable fields must influence routing, invocation, or runtime behavior.",
   "type": "object",
-  "required": ["name", "description"],
+  "required": ["name", "description", "invocation"],
   "properties": {
     "name": {
       "type": "string",
@@ -22,32 +22,12 @@
     "version": {
       "type": "string",
       "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*))?(?:\\+([a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*))?$",
-      "description": "Optional semantic version. Consider adding one once the skill is shared, consumed, or versioned."
-    },
-    "metadata": {
-      "type": "object",
-      "properties": {
-        "author": {
-          "type": "string",
-          "maxLength": 256,
-          "description": "Human or team responsible for the skill."
-        },
-        "tags": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "pattern": "^[a-z0-9-]+$",
-            "maxLength": 64
-          },
-          "uniqueItems": true
-        }
-      },
-      "additionalProperties": true
+      "description": "Optional semantic version. Add one once the skill is shared, consumed, or versioned."
     },
     "invocation": {
       "type": "string",
       "enum": ["model-invoked", "user-invoked"],
-      "description": "How the skill is reached. model-invoked skills are held in context for autonomous routing; user-invoked skills are only reachable by name."
+      "description": "How the skill is reached. model-invoked skills are held in context for autonomous routing; user-invoked skills are only reachable by name. Required because it determines whether the skill pays context load or cognitive load."
     },
     "allowed-tools": {
       "type": "array",
@@ -76,7 +56,7 @@
     "depends": {
       "type": "array",
       "items": { "type": "string", "minLength": 1 },
-      "description": "Harness hint: skill names that this skill depends on. The Vercel skills CLI installs these dependencies automatically."
+      "description": "Harness hint: skill names that this skill depends on. The Vercel skills CLI installs these dependencies automatically. Not a portable dependency declaration; use skills.json for that."
     }
   },
   "additionalProperties": true,

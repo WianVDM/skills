@@ -26,10 +26,6 @@ See [`../form-and-style/anti-patterns.md`](../form-and-style/anti-patterns.md) f
 
 Ending a step before it is genuinely done because the agent's attention slips toward being finished.
 
-**Cure**
-
-Sharpen the completion criterion first. Only if the criterion is irreducibly fuzzy and you actually observe the rush should you hide the later steps by splitting the skill.
-
 See [`../form-and-style/completion-criteria.md`](../form-and-style/completion-criteria.md) for how completion criteria and post-completion steps cause or prevent this.
 
 ---

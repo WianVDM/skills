@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentskills.io/schemas/self-diagnostics.json",
+  "title": "Self-Diagnostics Report",
+  "description": "Schema for a skill's self-diagnostics report describing its own readiness state: full, degraded, or blocked.",
+  "type": "object",
+  "required": ["status", "scope"],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["full", "degraded", "blocked"],
+      "description": "Overall readiness state of the skill."
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1,
+      "description": "What the check applies to: initialization or a specific method/branch (e.g., ui-browser)."
+    },
+    "missing": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "kind"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Name of the missing dependency."
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["required", "recommended", "optional"],
+            "description": "Dependency taxonomy kind."
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Missing dependencies and their kind."
+    },
+    "better_tool_available": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "capability"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Name of the configured-but-unused tool."
+          },
+          "capability": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Capability the tool could improve."
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Configured-but-unused tools that could improve a specific capability."
+    },
+    "impact": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Brief explanation of how behavior changes due to the reported state."
+    },
+    "remediation": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Recommended next step for the user or harness."
+    }
+  },
+  "additionalProperties": true
+}

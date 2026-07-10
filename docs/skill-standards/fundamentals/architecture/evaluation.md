@@ -55,13 +55,9 @@ For user-invoked skills, the description is primarily human-facing, but a clarit
 
 ### Tooling-awareness behavioral evals
 
-Test the skill's behavior with realistic scenarios, not just the presence of guidance. Add cases that exercise tooling awareness and degradation disclosure:
+Test the skill's behavior with realistic scenarios, not just the presence of guidance. Add cases that exercise tooling awareness and degradation disclosure.
 
-- A better tool is available alongside the skill's adapter. The with-skill output should use the better tool or disclose it.
-- A configured tool can fill a gap left by a failing adapter. The skill should offer to use it before accepting degraded data.
-- A degraded source is used. The skill should name the better tool and explain the impact.
-
-See [tooling-awareness.md](./tooling-awareness.md) for the capability-first approach to tool selection.
+See [`tooling-awareness.md`](./tooling-awareness.md) for the capability-first approach to tool selection and degradation disclosure.
 
 ---
 

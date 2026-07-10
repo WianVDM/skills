@@ -8,18 +8,7 @@ Tooling and shape mistakes are the class of mistakes where the skill uses the wr
 
 The skill treats its own built-in adapters, scripts, or preferred paths as the only way to fulfill a capability, ignoring better tools that are already configured or available.
 
-**Symptoms**
-
-- Reconstructing data from partial outputs instead of using a better tool.
-- Declaring a source "unavailable" when an MCP server or native tool could reach it.
-- Recording limitations and moving on without suggesting alternatives.
-- Marking a section complete while a better tool sits unused.
-
-**Cure**
-
-Design each capability step as "what outcome do I need?" first, then "which available tool gives the best result?" Route through the best tool and disclose the choice.
-
-See [`../../architecture/tooling-awareness.md`](../../architecture/tooling-awareness.md) for the capability-first alternative and [`../failure-recovery/diagnosing-ignored-skills.md`](../failure-recovery/diagnosing-ignored-skills.md) for the adapter tunnel vision symptom in failure recovery.
+See [`../../architecture/tooling-awareness.md`](../../architecture/tooling-awareness.md) for the capability-first approach to tool selection and [`../failure-recovery/diagnosing-ignored-skills.md`](../failure-recovery/diagnosing-ignored-skills.md) for diagnosing this symptom in failure recovery.
 
 ---
 

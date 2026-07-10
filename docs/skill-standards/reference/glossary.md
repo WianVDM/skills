@@ -270,9 +270,13 @@ The rule that a loaded skill cannot be modified during the session. Any modifica
 
 ## Package and portability
 
+### Portable core
+
+The parts of a skill that are guaranteed to work across harnesses: the `SKILL.md` YAML frontmatter and markdown body, plus the optional sibling directories defined in `FORMAT.md`. The portable core is the only required part of a skill; everything else is envelope.
+
 ### Package envelope
 
-The metadata around a skill or set of skills: `skills.json`, `skills.lock`, versioning, namespacing, dependencies.
+The metadata, dependency, and distribution layer that sits around the portable core: `skills.json`, `skills.lock`, versioning, namespacing, and dependency declarations. Required when a skill has consumers, dependencies, or distribution; optional for a lone `SKILL.md`.
 
 ### Namespacing
 
@@ -329,6 +333,10 @@ Testing dimensions for skills that involve coordination: communication correctne
 ### Harness
 
 An agent runtime that loads, invokes, and executes skills. Examples include Claude Code, Cursor, Codex, Aider, and Hermes. The portable core should work across any harness; harness-specific envelope details may vary.
+
+### Harness hint
+
+A frontmatter field or config value that a harness may use for its own loading, scoping, or installation behavior. Harness hints are not part of the portable core; a portable skill should not rely on them for its core behavior. Examples include `allowed-tools`, `depends`, `disable-model-invocation`, `globs`, and `paths`.
 
 ### Harness-specific envelope
 

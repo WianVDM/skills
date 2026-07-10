@@ -88,12 +88,24 @@ A single skill with no consumers and no dependencies can live as a lone `SKILL.m
 
 | Key | Type | Constraints | Purpose |
 |-----|------|-------------|---------|
-| `skills` | string[] | Unique. Non-empty strings. | Other skills this package expects to be available. |
+| `skills` | string[] | Unique. Non-empty strings. | Other skills this package expects to be available. Use `skill_dependencies` for the structured taxonomy; `requirements.skills` is the flat compatibility surface. |
 | `tools` | string[] | Unique. Non-empty strings. | Native tools the skills need. |
 | `mcp_servers` | object[] | Each object requires `name`. Optional `capabilities` array of unique strings. | MCP servers by name and capability. |
 | `binaries` | string[] | Unique. Non-empty strings. | External binaries the skills need. |
 | `environment_variables` | string[] | Unique. Non-empty strings. | Environment variables the skills reference. |
 | `sandbox_features` | string[] | Unique. Non-empty strings. | Sandbox capabilities required at runtime. |
+
+### Skill dependency taxonomy
+
+| Key | Type | Constraints | Purpose |
+|-------|------|-------------|---------|
+| `skill_dependencies` | object | Keys are skill names from `skills`. Values are objects with `required`, `recommended`, and `optional` arrays of skill names. | Structured declaration of skill dependencies per skill. |
+
+### Capability bundles
+
+| Key | Type | Constraints | Purpose |
+|-------|------|-------------|---------|
+| `bundles` | object[] | Each bundle has a `name`, optional `description`, and a `skills` array. | Named groups of skills that install together to enable a workflow. |
 
 Runtime tool scoping stays in `SKILL.md` frontmatter (e.g., `allowed-tools`). The `requirements` object is for dependency declaration and policy gates, not for runtime behavior.
 
@@ -129,6 +141,29 @@ These schemas enable tooling, validation, and forward compatibility. The schemas
     },
     "skills": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9-]+$" }, "minItems": 1, "uniqueItems": true },
     "namespaces": { "type": "object", "additionalProperties": { "type": "string", "pattern": "^[a-z0-9-]+:[a-z0-9-]+$" } },
+    "bundles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "skills"],
+        "properties": {
+          "name": { "type": "string", "pattern": "^[a-z0-9-]+$", "maxLength": 128 },
+          "description": { "type": "string", "maxLength": 1024 },
+          "skills": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9-]+$" }, "minItems": 1, "uniqueItems": true }
+        }
+      }
+    },
+    "skill_dependencies": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "required": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9-]+$" }, "uniqueItems": true },
+          "recommended": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9-]+$" }, "uniqueItems": true },
+          "optional": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9-]+$" }, "uniqueItems": true }
+        }
+      }
+    },
     "requirements": {
       "type": "object",
       "additionalProperties": false,
@@ -287,7 +322,7 @@ A skill must declare what it needs. Dependencies are not bad; hidden dependencie
 
 ### Skill dependencies
 
-Declare other skills in `requirements.skills`. The skill can be invoked by name or consumed through context reports. Consumers must handle missing dependencies gracefully.
+Declare skill dependencies in the structured `skill_dependencies` object, using `required`, `recommended`, and `optional` arrays per skill. The flat `requirements.skills` array is a compatibility surface for harnesses that only understand a single list. See `fundamentals/architecture/dependencies-and-bundling.md` for the dependency taxonomy and how `skill_dependencies` and `requirements.skills` relate.
 
 ### External tools and MCP servers
 

@@ -146,6 +146,8 @@ artifacts:
 - ...
 ```
 
+A JSON Schema for the worker return frontmatter is maintained at `schemas/worker-return-contract.schema.json`.
+
 A worker must not ask the user directly unless explicitly authorized. It returns `needs_input`, and the main skill owns the user interaction.
 
 ---
