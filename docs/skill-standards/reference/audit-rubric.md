@@ -8,7 +8,12 @@ This is the contract that `audit-skill` uses to evaluate any skill. Each check h
 - **Warning** — the skill works but is less reliable, less portable, or harder to maintain. Should be fixed before sharing.
 - **Suggestion** — an improvement that raises quality but is not required.
 
-## Category: Identity and frontmatter
+## Category: Extraction
+
+| ID | Check | Severity | Pass condition |
+|---|---|---|---|
+| X01 | Extraction is justified by reuse. | Warning | The skill is cross-cutting, has multiple current consumers, has a stable narrow interface, or solves a generic-domain problem. If it exists only to serve one other skill, it should be colocated. |
+
 
 | ID | Check | Severity | Pass condition |
 |---|---|---|---|

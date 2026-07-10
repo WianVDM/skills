@@ -53,10 +53,11 @@ Conductor.
      - Is this a repeated, judgment-shaped task or a narrow, deterministic transformation?
      - Should it fire autonomously, only when explicitly invoked, or always be active?
      - Does it coordinate multiple tools or skills, or is it a single focused capability?
+     - Does this capability belong inside an existing skill, or is extraction as a separate skill justified by reuse?
      - Is the output behavior, reference/configuration, or external tooling?
    - **Completion criterion:** classification answers are recorded.
 4. **Apply decision rules.**
-   - Use the decision table in [references/DECISION_RULES.md](references/DECISION_RULES.md).
+   - Use the decision table in [references/DECISION_RULES.md][decision-rules].
    - **Completion criterion:** a primary shape is recommended with rationale.
 5. **Present recommendation.**
    - Explain the primary recommendation, alternatives, and trade-offs.
@@ -91,7 +92,7 @@ A decision report with the following structure:
 
 ## Decision rules
 
-For the full decision table and worked examples, see [references/DECISION_RULES.md](references/DECISION_RULES.md). At a high level:
+For the full decision table and worked examples, see [references/DECISION_RULES.md][decision-rules]. At a high level:
 
 | Shape | When to choose |
 |---|---|
@@ -119,11 +120,15 @@ For the full decision table and worked examples, see [references/DECISION_RULES.
 
 `list-available-skills` is used for discovery during the alternatives step. It does not change the shape of the recommendation; it only surfaces existing options that might already cover the problem.
 
-See [references/DEPENDENCIES.md](references/DEPENDENCIES.md) for required tools and binaries.
+See [references/DEPENDENCIES.md][dependencies] for required tools and binaries.
 
 ## References
 
-- [Decision rules](references/DECISION_RULES.md)
-- [Worked examples](references/EXAMPLES.md)
+- [Decision rules][decision-rules]
+- [Worked examples][worked-examples]
 - `context-reports` skill — shared context-report conventions.
 - `write-a-skill` — conductor for creating, reviewing, and updating skills.
+
+[decision-rules]: references/DECISION_RULES.md
+[dependencies]: references/DEPENDENCIES.md
+[worked-examples]: references/EXAMPLES.md

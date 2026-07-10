@@ -35,13 +35,13 @@ Run `list-available-skills` and `search-skills-registry` to find existing skills
 
 **Completion criterion:** the alternatives report lists existing options and gives a clear recommendation: build new skill, reuse/extend existing skill, or use an alternative.
 
-#### 3. Decide shape
+#### 3. Decide shape and colocation
 
-**Why:** the shape of the solution determines every later decision.
+**Why:** the shape of the solution determines every later decision, and whether the capability should live inside an existing skill determines whether a new skill is warranted at all.
 
-Confirm with the user that a new skill is the right shape, not a script, MCP server, context file, or installed skill.
+Confirm with the user that a new skill is the right shape, not a script, MCP server, context file, or installed skill. Then apply the colocation principle: if the capability is only used by one existing skill, recommend colocating it inside that skill unless extraction is justified by reuse (cross-cutting concern, multiple current consumers, stable narrow interface, or generic-domain problem).
 
-**Completion criterion:** the user confirms the chosen shape is a new skill.
+**Completion criterion:** the user confirms the chosen shape is a new skill and that extraction is justified, or agrees to colocate the capability inside an existing skill.
 
 #### 4. Define identity
 
@@ -63,7 +63,7 @@ Write one core objective, explicit in-scope items, and explicit out-of-scope ite
 
 **Why:** applying the right patterns makes the skill portable, maintainable, and composable. Designing the capability-to-tool strategy up front prevents adapter tunnel vision.
 
-Apply the fundamentals from [references/FUNDAMENTALS.md](FUNDAMENTALS.md) and select Layer 2 patterns using [PATTERN_HINTS.md](PATTERN_HINTS.md). For each load-bearing capability, build a capability matrix (preferred tool, fallback tools, degraded-output disclosure, user-consent behavior) using the guidance in [PATTERN_HINTS.md](PATTERN_HINTS.md). For dependencies, decide:
+Apply the fundamentals from [references/FUNDAMENTALS.md][fundamentals] and select Layer 2 patterns using [PATTERN_HINTS.md][pattern-hints]. For each load-bearing capability, build a capability matrix (preferred tool, fallback tools, degraded-output disclosure, user-consent behavior) using the guidance in [PATTERN_HINTS.md][pattern-hints]. For dependencies, decide:
 
 - Which are **required** and must be checked at initialization.
 - Which are **recommended** or **optional** and can be evaluated **lazily** when the relevant method or branch is selected.
@@ -110,7 +110,7 @@ A compressed version of the full gate for minimal skills.
 
 1. **Clarify intent** (minimal) — capture problem, trigger, and success criteria.
 2. **Explore alternatives** (light) — check existing skills and simple alternatives.
-3. **Define identity** — name, description, invocation. Keep scope out of this step; it belongs in step 4.
+3. **Decide shape and colocation** — name, description, invocation; decide whether to colocate inside an existing skill or extract as a new reusable skill.
 4. **Define scope** — one objective, in-scope, out-of-scope.
 5. **Select patterns** — apply fundamentals.
 6. **Design capability-to-tool strategy** — for each load-bearing capability, note the preferred tool, fallback, and degraded-output disclosure.
@@ -125,7 +125,7 @@ For the full decide workflow, invoke the `decide-skill-shape` skill. It will:
 1. Capture the problem.
 2. Explore existing solutions using `list-available-skills` and `search-skills-registry`.
 3. Ask classification questions.
-4. Apply the decision rules from `decide-skill-shape/references/DECISION_RULES.md`.
+4. Apply the decision rules from [decide-skill-shape/references/DECISION_RULES.md][decision-rules].
 5. Present a recommendation with alternatives and trade-offs.
 6. Write a decision report to `{context}/decide-skill-shape/{key}-decision-report.md`.
 
@@ -135,7 +135,7 @@ For the full decide workflow, invoke the `decide-skill-shape` skill. It will:
 
 The `change` branch audits or updates an existing skill. **Understanding must come before scoring, but the verdict follows the full audit.**
 
-For both the `review` and `update` gates, invoke the `review-skill` conductor. It applies the review principles from `docs/skill-standards/reference/review-principles.md` (or the fallback copy in `review-skill/references/REVIEW_PRINCIPLES.md`). After a full audit, it produces a verdict-led report. If the core questions cannot be answered, it produces an incomplete report.
+For both the `review` and `update` gates, invoke the `review-skill` conductor. It applies the review principles from [docs/skill-standards/reference/review-principles.md][review-principles] (or the fallback copy in [review-skill/references/REVIEW_PRINCIPLES.md][review-principles-fallback]). After a full audit, it produces a verdict-led report. If the core questions cannot be answered, it produces an incomplete report.
 
 When reviewing a skill with multiple methods or branches, pay special attention to **tooling awareness** and **lazy dependency evaluation**: required dependencies should be checked eagerly, and recommended/optional dependencies should be evaluated lazily per path. The full dependency surface must still be declared in `references/DEPENDENCIES.md` and `skills.json`. When reviewing any skill, check whether it names capabilities before tools, discovers available tools across categories, and discloses degraded sources with user consent.
 
@@ -148,7 +148,13 @@ After the comprehension step is complete, the `review-skill` conductor runs the 
 5. Produce a structured, verdict-led audit report that incorporates the review principles.
 6. For the `update` gate, produce a remediation plan, confirm each change, apply approved changes, and run a final audit.
 
-`write-a-skill` delegates the `change` branch to `review-skill` and consumes the resulting comprehension brief, verdict-led audit report, incomplete report, or remediation plan.
+`write-a-skill` delegates the `change` branch to `review-skill` and consumes the resulting comprehension brief, verdict-led audit report, incomplete report, or remediation plan. When reviewing an existing skill, pay special attention to whether the skill is a separate skill only because it was extracted prematurely. Apply the **Contain** core question from the review principles: *"Should this capability be colocated inside an existing skill, or is extraction into a separate skill justified by reuse?"*
+
+[fundamentals]: FUNDAMENTALS.md
+[pattern-hints]: PATTERN_HINTS.md
+[decision-rules]: ../decide-skill-shape/references/DECISION_RULES.md
+[review-principles]: ../../../../docs/skill-standards/reference/review-principles.md
+[review-principles-fallback]: ../review-skill/references/REVIEW_PRINCIPLES.md
 
 ### Change branch — review gate (legacy inline detail)
 

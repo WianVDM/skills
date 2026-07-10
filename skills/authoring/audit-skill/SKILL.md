@@ -23,6 +23,7 @@ Building block.
 - Check for secrets, hardcoded paths, and harness-specific product references.
 - Verify dependency declarations and destructive-action confirmation.
 - Check scope clarity, type/shape consistency, and portability.
+- Check whether the skill is extracted as a separate skill only when reuse is justified.
 - Produce a structured report with blocker/warning/suggestion severity.
 - Provide a remediation plan for failed checks.
 
@@ -59,7 +60,7 @@ Building block.
 
 ## Rubric
 
-The full rubric is maintained in `docs/skill-standards/reference/audit-rubric.md`. It covers identity, type/shape, scope, structure, form/style, security, dependencies, portability, evaluation, governance, and **tooling awareness** (`TA-01`, `TA-02`).
+The full rubric is maintained in `docs/skill-standards/reference/audit-rubric.md`. It covers identity, type/shape, scope, structure, form/style, security, dependencies, portability, evaluation, governance, **tooling awareness** (`TA-01`, `TA-02`), and **extraction** (`X01`).
 
 ## Output format
 
@@ -72,7 +73,7 @@ See `docs/skill-standards/reference/audit-rubric.md` for the report schema.
 
 ## Dependencies
 
-See [references/DEPENDENCIES.md](references/DEPENDENCIES.md).
+See [references/DEPENDENCIES.md][dependencies].
 
 ## Known limitations
 
@@ -93,6 +94,7 @@ When the script reports `MANUAL` findings, use this checklist to complete the re
 8. **Harness agnosticism** — Are there any hardcoded harness commands or product references?
 9. **Confirmation gating** — Are destructive actions (writes, overwrites, deletes, installs) gated behind explicit approval?
 10. **Failure mode** — Does the skill fail closed when a required tool, binary, or capability is missing?
+11. **Extraction** — If this skill is a building block, is it cross-cutting, used by multiple skills, or solving a generic-domain problem? If it exists only to serve one other skill, should it be colocated?
 
 ## Validation
 
@@ -100,5 +102,8 @@ Negative tests have been verified: the script reports blockers for a deliberatel
 
 ## References
 
-- `docs/skill-standards/reference/audit-rubric.md` — canonical audit rubric
+- [Audit rubric][audit-rubric] — canonical audit rubric
 - `docs/skill-standards/schemas/skill-frontmatter.schema.json`
+
+[dependencies]: references/DEPENDENCIES.md
+[audit-rubric]: ../../../../docs/skill-standards/reference/audit-rubric.md

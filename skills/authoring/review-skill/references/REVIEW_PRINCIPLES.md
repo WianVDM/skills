@@ -15,6 +15,7 @@ Before scoring, answer:
 5. **Focus** — Does the phrasing produce the right result? Can leading words, negation pairs, or checkable completion criteria make it leaner?
 6. **Dependencies** — Are required dependencies checked eagerly and recommended/optional dependencies evaluated lazily when the skill has multiple methods or branches? Is the full dependency surface still declared?
 7. **Tooling awareness** — Does the skill name capabilities before tools? Does it detect available tools, prefer the best one, and disclose degraded sources?
+8. **Contain** — Should this capability be colocated inside an existing skill, or is extraction into a separate skill justified by reuse?
 
 ## Verdict
 

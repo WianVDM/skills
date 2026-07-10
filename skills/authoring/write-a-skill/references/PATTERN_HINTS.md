@@ -18,6 +18,7 @@ Use these decision rules to decide which Layer 2 architecture patterns apply to 
 | **Mode** | The user wants a transient behavior switch. | The behavior should be encoded persistently in the skill. |
 | **Conductor/implementer split** | The skill needs to separate reasoning from execution. | The skill is small enough to reason and execute inline. |
 | **Capability matrix** | The skill has multiple load-bearing capabilities and each may be fulfilled by more than one tool category. | The skill has only one happy path with one obvious tool. |
+| **Colocation vs extraction** | The capability should be extracted as a separate skill because it is cross-cutting, has multiple consumers, has a stable narrow interface, or solves a generic-domain problem. | The capability belongs inside the skill that owns it. |
 
 ## Default starting point
 

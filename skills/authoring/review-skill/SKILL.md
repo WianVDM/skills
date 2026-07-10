@@ -69,7 +69,7 @@ Both gates share the same comprehension and audit phase. The `update` gate adds 
 2. **Comprehend the skill.**
    - Apply the review principles from `references/REVIEW_PRINCIPLES.md` (a fallback copy of `docs/skill-standards/reference/review-principles.md`).
    - Answer the seven core questions and record the answers, including the tooling-awareness question.
-   - **Completion criterion:** the seven core questions are answered, or the missing information is documented.
+   - **Completion criterion:** the eight core questions are answered, or the missing information is documented.
 3. **Produce an incomplete report if necessary.**
    - If the core questions cannot be answered, write `{context}/skill-review/{skill-name}-incomplete.md` with open questions and stop.
    - **Completion criterion:** incomplete report exists and no verdict is issued.
@@ -114,6 +114,7 @@ Before scoring, answer and record the seven core questions from `references/REVI
 5. **Focus** — Does the phrasing produce the right result? Can leading words, negation pairs, or checkable completion criteria make it leaner?
 6. **Dependencies** — Are required dependencies checked eagerly and recommended/optional dependencies evaluated lazily when the skill has multiple methods or branches? Is the full dependency surface still declared?
 7. **Tooling awareness** — Does the skill name capabilities before tools? Does it detect available tools, prefer the best one, and disclose degraded sources?
+8. **Contain** — Should this capability be colocated inside an existing skill, or is extraction into a separate skill justified by reuse?
 
 If any question cannot be answered, produce an incomplete report instead of a verdict.
 
@@ -202,10 +203,13 @@ Use this format when the core questions cannot be answered. An incomplete report
 
 ## Dependencies
 
-See [references/DEPENDENCIES.md](references/DEPENDENCIES.md).
+See [references/DEPENDENCIES.md][dependencies].
 
 ## References
 
-- [Review principles](references/REVIEW_PRINCIPLES.md) — fallback copy of `docs/skill-standards/reference/review-principles.md`.
+- [Review principles][review-principles] — fallback copy of `docs/skill-standards/reference/review-principles.md`.
+
+[dependencies]: references/DEPENDENCIES.md
+[review-principles]: references/REVIEW_PRINCIPLES.md
 - `context-reports` skill — shared context-report conventions.
 - `write-a-skill` — conductor for creating, reviewing, and updating skills.

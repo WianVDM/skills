@@ -46,9 +46,9 @@ Help the user produce a skill that satisfies the skill fundamentals and applies 
 
 - **Invocation mode:** user-invoked. This is a meta-design conversation and should not stay loaded during normal work.
 - **Scope:** global. It must work in any project with any harness.
-- **Pluggability:** the skill detects the project layout and always confirms before writing files. See [references/PLUGGABILITY.md](references/PLUGGABILITY.md).
+- **Pluggability:** the skill detects the project layout and always confirms before writing files. See [references/PLUGGABILITY.md][pluggability].
 - **No hardcoded project paths:** paths are resolved through detection, configuration, or user confirmation.
-- **Self-contained:** the skill ships with condensed fundamentals in [references/FUNDAMENTALS.md](references/FUNDAMENTALS.md) and [references/PATTERN_HINTS.md](references/PATTERN_HINTS.md). It can optionally bootstrap the full standards from a public repository on first run.
+- **Self-contained:** the skill ships with condensed fundamentals in [references/FUNDAMENTALS.md][fundamentals] and [references/PATTERN_HINTS.md][pattern-hints]. It can optionally bootstrap the full standards from a public repository on first run.
 
 ## Branch entry
 
@@ -69,7 +69,7 @@ The conductor runs this 10-phase pipeline. Each phase has a completion criterion
 |---|---|---|
 | 1. **Clarify intent and choose gate** | Classify the top-level branch; resolve the internal gate; ask one question at a time if unclear. | Branch is one of {create, change}, gate is resolved, and user confirmed. |
 | 2. **Explore alternatives** | Use `list-available-skills` and `search-skills-registry` to see what exists. | Alternatives report exists; user knows whether to create, reuse, or install. |
-| 3. **Decide shape** | Decide whether the answer is a new skill, an existing skill, a script, an MCP server, or a context file. | User confirms the chosen shape. |
+| 3. **Decide shape and colocation** | Decide whether the answer is a new skill, an existing skill, a script, an MCP server, or a context file. Then apply the colocation principle: if the capability is only used by one existing skill, recommend colocating it unless extraction is justified by reuse. | User confirms the chosen shape and that extraction is justified, or agrees to colocate. |
 | 4. **Define identity** | Name, description, invocation. Version only if the user requires it or the skill will be shared/consumed. | Frontmatter skeleton exists and user confirmed. |
 | 5. **Define scope** | In-scope, out-of-scope, branches, assumptions. | Scope boundaries are explicit and defensible. |
 | 6. **Select patterns** | Apply fundamentals; suggest Layer 2 patterns. Decide if the skill is configurable and, if so, which shared and skill-specific keys it needs. | Pattern list and config declaration (if any) exist and user confirmed. |
@@ -90,6 +90,15 @@ Before drafting, confirm for every load-bearing capability:
 - [ ] If a degraded source is used, the skill tells the user what better option was available and gets explicit or recorded consent.
 - [ ] The full dependency surface is declared in `references/DEPENDENCIES.md` and `skills.json`.
 
+## Colocation and extraction checklist
+
+Before deciding a new skill is needed, confirm:
+
+- [ ] The capability is used by more than one skill, or is a cross-cutting concern, or has a stable narrow interface, or solves a generic-domain problem.
+- [ ] The capability is not being extracted only because it is "self-contained" or "might be useful someday."
+- [ ] If the capability is only used by one existing skill, the user has explicitly agreed that a separate skill is justified.
+- [ ] The skill's identity is framed around its own capability, not around another skill as its consumer.
+
 ## Subagent prompts
 
 Workers in `subagents/` are invoked by composing the canonical worker contract from the `worker-contract` skill with the `write-a-skill`-specific composition layer in `subagents/_TEMPLATE.md` and the role-specific instructions in the worker file. The template adds the common return format, forbidden actions, and default tool/scope boundaries used by this conductor; see `references/WORKER_CONTRACT.md` for the shared contract and addendum.
@@ -106,7 +115,7 @@ Workers in `subagents/` are invoked by composing the canonical worker contract f
 | **quick** | User wants a minimal skill from a brief description. | Compressed design workflow + draft. | A final review report exists in `{context}/skill-design/{skill-name}-design.md` and the user has explicitly approved, requested changes, or closed the branch. |
 | **decide** | User is unsure whether the answer should be a skill, script, MCP, context file, or existing skill. | Recommendation report; no files written. | A decision report exists and the user has confirmed or rejected the recommended next step, or asked for more options. |
 
-For the full phase list per gate, including the `decide` gate delegation to `decide-skill-shape`, see [references/BRANCH_WORKFLOWS.md](references/BRANCH_WORKFLOWS.md).
+For the full phase list per gate, including the `decide` gate delegation to `decide-skill-shape`, see [references/BRANCH_WORKFLOWS.md][branch-workflows].
 
 ## Change branch
 
@@ -119,7 +128,7 @@ For the full phase list per gate, including the `decide` gate delegation to `dec
 | **review** | User wants to audit an existing skill without changing it. | Verdict-led audit report, or incomplete report. | The audit report is complete, includes a verdict supported by findings, and references the rubric criteria by id. |
 | **update** | User wants to refine or polish an existing skill to follow the standards. | Verdict-led audit report → remediation plan → draft changes → confirm. | A verdict-led audit report exists, a remediation plan exists, and the user has approved or declined each proposed change. |
 
-For the full phase list per gate, including the `change` branch delegation to `review-skill`, see [references/BRANCH_WORKFLOWS.md](references/BRANCH_WORKFLOWS.md).
+For the full phase list per gate, including the `change` branch delegation to `review-skill`, see [references/BRANCH_WORKFLOWS.md][branch-workflows].
 
 ## Initialization
 
@@ -128,13 +137,13 @@ On first run in a project, execute the bootstrap routine:
 1. Detect project context with `detect-project-context` to locate the project root and the recommended config directory.
 2. Load config from `{recommended_config_dir}/write-a-skill.yaml` or create defaults.
 3. Validate required capabilities (file read, file write, search, script execution, network fetch if standards init is offered).
-4. **Run dependency self-diagnostics for required dependencies.** Check whether each **required** skill from [references/DEPENDENCIES.md](references/DEPENDENCIES.md) is installed and loadable. Report `full` or `blocked` for the required surface. If `blocked`, stop and explain how to install the missing required skills.
+4. **Run dependency self-diagnostics for required dependencies.** Check whether each **required** skill from [references/DEPENDENCIES.md][dependencies] is installed and loadable. Report `full` or `blocked` for the required surface. If `blocked`, stop and explain how to install the missing required skills.
 5. Recommended and optional skills are **not** checked eagerly. They are evaluated lazily when the phase that needs them runs (e.g., `list-available-skills` and `search-skills-registry` during the alternatives phase). If a recommended skill is missing at that point, explain the reduced capability for that phase and ask whether to proceed.
 6. Locate the canonical skill standards:
    - Read the `standards_path` value from the loaded config.
    - If `standards_path` is set and the directory exists, use it.
    - If `standards_path` is not set or the directory is missing, offer to fetch the official standards into the configured path.
-   - If the fetch fails or the user declines, fall back to embedded [references/FUNDAMENTALS.md](references/FUNDAMENTALS.md) and [references/PATTERN_HINTS.md](references/PATTERN_HINTS.md).
+   - If the fetch fails or the user declines, fall back to embedded [references/FUNDAMENTALS.md][fundamentals] and [references/PATTERN_HINTS.md][pattern-hints].
 7. Ask the user to confirm detected paths, default registry list, and standards source.
 8. Persist initial notes in the context directory.
 
@@ -220,7 +229,7 @@ The conductor must teach authors to design capability-first: identify the needed
 
 - **prototype** — only used when the user explicitly asks to prototype a UI variation before drafting a skill. Not on the main path.
 
-See [references/DEPENDENCIES.md](references/DEPENDENCIES.md) for the full classified dependency list, required capabilities, binaries, and consumed references.
+See [references/DEPENDENCIES.md][dependencies] for the full classified dependency list, required capabilities, binaries, and consumed references.
 
 The frontmatter of this skill also declares a `depends` field for Vercel CLI auto-installation.
 
@@ -228,11 +237,21 @@ Required capabilities: file read, file write, file edit, directory listing, scri
 
 ## References
 
-- [Fundamentals (condensed)](references/FUNDAMENTALS.md)
-- [Pattern hints (condensed)](references/PATTERN_HINTS.md)
-- [Pluggability and detection](references/PLUGGABILITY.md)
-- [Branch workflows](references/BRANCH_WORKFLOWS.md)
-- [Worker return contract](references/WORKER_CONTRACT.md)
-- [Integration test interfaces](references/INTEGRATION_TESTS.md)
-- [Composition test](references/COMPOSITION_TEST.md)
-- [State and artifact schemas](references/STATE_SCHEMA.md)
+- [Fundamentals (condensed)][fundamentals]
+- [Pattern hints (condensed)][pattern-hints]
+- [Pluggability and detection][pluggability]
+- [Branch workflows][branch-workflows]
+- [Worker return contract][worker-contract]
+- [Integration test interfaces][integration-tests]
+- [Composition test][composition-test]
+- [State and artifact schemas][state-schema]
+
+[fundamentals]: references/FUNDAMENTALS.md
+[pattern-hints]: references/PATTERN_HINTS.md
+[pluggability]: references/PLUGGABILITY.md
+[branch-workflows]: references/BRANCH_WORKFLOWS.md
+[dependencies]: references/DEPENDENCIES.md
+[worker-contract]: references/WORKER_CONTRACT.md
+[integration-tests]: references/INTEGRATION_TESTS.md
+[composition-test]: references/COMPOSITION_TEST.md
+[state-schema]: references/STATE_SCHEMA.md

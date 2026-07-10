@@ -62,7 +62,7 @@ A vocabulary building block provides shared language, reference, or conventions 
 **Examples**
 
 - `design-vocabulary` — shared terms for deep modules, seams, and public interfaces.
-- `config-pattern` — shared conventions for loading and validating project config (see [`configurable.md`](./configurable.md)).
+- `config-pattern` — shared conventions for loading and validating project config (see [configurable.md][configurable]).
 - `context-reports` — report schema and freshness rules.
 
 ---
@@ -95,7 +95,7 @@ Declare:
 
 Dependencies are not bad. Hidden dependencies are.
 
-The canonical human-readable place is `references/DEPENDENCIES.md`. The canonical machine-readable place is `skills.json` (`skill_dependencies` for the structured taxonomy, or `requirements.skills` for the flat compatibility surface). See [`../PACKAGE.md`](../reference/package.md) for the package-level dependency model.
+The canonical human-readable place is `references/DEPENDENCIES.md`. The canonical machine-readable place is `skills.json` (`skill_dependencies` for the structured taxonomy, or `requirements.skills` for the flat compatibility surface). See [PACKAGE.md][package] for the package-level dependency model.
 
 Example `references/DEPENDENCIES.md`:
 
@@ -176,6 +176,24 @@ Duplication is not just repeated text. It is repeated meaning. Two symptoms:
 
 ---
 
+## Colocation by default
+
+A capability should live inside the skill that owns it unless extraction is justified by reuse. This is the default starting point for every skill design decision.
+
+**Colocate when:**
+- The capability is only used by one skill.
+- The capability changes when the owning skill changes.
+- The capability is provider-specific or workflow-specific.
+- The capability does not need its own identity, version, or routing surface.
+
+**Extract when:**
+- The capability is cross-cutting (e.g., token resolution, context reports, worker contracts).
+- Two or more skills currently consume it.
+- It has a stable, narrow interface that changes more slowly than its consumers.
+- It solves a generic-domain problem rather than a workflow-specific problem.
+
+Extraction is not justified by "it might be useful someday" or "it is nice and self-contained." A skill that exists only to serve one other skill is usually a submodule pretending to be a building block.
+
 ## When not to reuse
 
 Not everything should be extracted. Avoid premature abstraction.
@@ -185,6 +203,7 @@ Do not extract a building block when:
 - The concept is only used in one skill.
 - The extraction would create indirection without reducing duplication.
 - The shared version would be so generic that it loses meaning.
+- The capability is tightly coupled to one consumer's contract or workflow.
 
 A skill that is standalone by nature should not be forced into a composition model.
 
@@ -240,6 +259,7 @@ Version-aware skills reduce hallucinations caused by the agent's training cutoff
 - [ ] Tool building blocks produce structured output that consumers can act on.
 - [ ] Consumers handle missing dependencies gracefully.
 - [ ] The skill does not force reuse where none exists.
+- [ ] The skill is extracted as a separate building block only when reuse is justified.
 
 ---
 
@@ -251,3 +271,6 @@ Version-aware skills reduce hallucinations caused by the agent's training cutoff
 - **One-way pattern consistency** is our own practice, but it is strongly supported by the research finding that inconsistent guidance leads to decision paralysis and unpredictable output.
 - **Framework-aware and version-aware skills** are our own framing of the broader research observation that the most useful skills are often tied to specific technologies and must stay current to remain reliable.
 - The separation of tool building blocks from presentation and workflow is our own design choice, aligned with the building block / conductor / wrapper taxonomy.
+
+[configurable]: ./configurable.md
+[package]: ../reference/package.md

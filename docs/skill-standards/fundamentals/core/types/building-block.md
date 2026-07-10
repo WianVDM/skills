@@ -23,6 +23,17 @@ A building block can be invoked by a human, by another skill, or by a conductor.
 
 ---
 
+## When to extract one
+
+A capability should only become a separate building-block skill when extraction is justified by reuse. Extraction is justified when:
+
+- The same capability is used by two or more skills today.
+- It is a cross-cutting concern (e.g., token resolution, context reports, worker contracts).
+- It has a stable, narrow interface that changes more slowly than its consumers.
+- It solves a generic-domain problem rather than a workflow-specific problem.
+
+Do not extract a capability just because it is self-contained or might be useful in the future. A skill that exists only to serve one other skill should be colocated.
+
 ## Characteristics
 
 - Usually **model-invoked** if other skills or conductors need to reach it.
@@ -38,10 +49,13 @@ A building block can be invoked by a human, by another skill, or by a conductor.
 
 Adding presentation logic, workflow phases, or heavy state management that belongs in a wrapper or conductor. A building block should stay narrow.
 
-See [`../common-mistakes/tooling-and-shape-mistakes.md`](../common-mistakes/tooling-and-shape-mistakes.md) for wrong type for the job.
+See [tooling and shape mistakes][tooling-mistakes] for wrong type for the job.
 
 ---
 
 ## Research basis
 
-See [`../../../reference/sources.md`](../../../reference/sources.md).
+See [sources.md][sources].
+
+[sources]: ../../../reference/sources.md
+[tooling-mistakes]: ../common-mistakes/tooling-and-shape-mistakes.md

@@ -50,10 +50,34 @@ The same meaning expressed in more than one place. It costs maintenance, tokens,
 
 Maintain a single source of truth. Extract shared reference into a building-block skill or shared reference file.
 
-See [`../form-and-style/pruning.md`](../form-and-style/pruning.md) for the discipline that prevents duplication.
+See [pruning.md][pruning] for the discipline that prevents duplication.
+
+---
+
+## Premature extraction
+
+Extracting a capability into a separate skill before it has multiple consumers is a form of bloat. It creates an extra identity, an extra dependency edge, and extra context load for a module that is still owned by one skill.
+
+**Symptoms**
+
+- The skill's description names another skill as its primary consumer (e.g., "for the pr-report conductor").
+- Only one skill depends on it.
+- The skill's interface is shaped by one consumer's contract rather than its own domain.
+- The justification for extraction is "it might be useful someday."
+
+**Cure**
+
+Colocate the capability inside the consuming skill. Extract it only when a second consumer appears or when the capability is genuinely cross-cutting.
+
+See the [building-block pattern][building-block] and the [architecture manifesto][architecture] for the extraction criteria.
 
 ---
 
 ## Research basis
 
-See [`../../../reference/sources.md`](../../../reference/sources.md).
+See [sources.md][sources].
+
+[sources]: ../../../reference/sources.md
+[building-block]: ../../../patterns/building-block.md
+[architecture]: ../../../../manifestos/architecture.md
+[pruning]: ../form-and-style/pruning.md

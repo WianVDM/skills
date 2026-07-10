@@ -39,6 +39,26 @@ Ask one question at a time when the answer shapes the recommendation. These four
 - If the task needs **external tools or real-time data**, lean toward an **MCP server**.
 - If the task is **reference or configuration**, lean toward a **context file**.
 - If the task is **always-on guidance or a persona**, lean toward a **mode**.
+- If the capability is **only used by one existing skill and is not cross-cutting**, lean toward **colocating** it inside that skill rather than extracting it.
+- If the capability is **cross-cutting, has multiple current consumers, has a stable narrow interface, or solves a generic-domain problem**, lean toward **extracting** it as a new building-block skill.
+
+## Colocation vs extraction
+
+Before recommending a new skill, check whether the capability should simply live inside an existing skill.
+
+**Colocate** when:
+- Only one skill would use the capability.
+- The capability is provider-specific or workflow-specific.
+- The capability changes when the owning skill changes.
+- The extraction would create a skill whose identity is framed around another skill as its consumer (e.g., "for the pr-report conductor").
+
+**Extract** when:
+- The capability is cross-cutting (e.g., token resolution, context reports, worker contracts).
+- Two or more skills currently consume it.
+- It has a stable, narrow interface that changes more slowly than its consumers.
+- It solves a generic-domain problem rather than a workflow-specific problem.
+
+A skill that exists only to serve one other skill is usually a submodule pretending to be a building block.
 
 ## Always present alternatives
 

@@ -126,6 +126,17 @@ Skills that participate in the library architecture adopt only the patterns they
 - **Context reports** — produce and consume structured reports with clear contracts and freshness rules.
 - **Versioning** — version bumping and migration paths when a skill is consumed by others.
 
+## Colocation by default
+
+A skill keeps its supporting modules — adapters, scripts, subagent prompts, and references — inside its own directory unless extraction is justified by reuse.
+
+- **Default: colocate.** Capabilities used by only one skill share the skill's lifecycle and do not need their own identity, version, or routing surface.
+- **Extract when reuse is justified:** the capability is cross-cutting, has two or more current consumers, has a stable narrow interface, or solves a generic-domain problem rather than a workflow-specific problem.
+
+This prevents premature extraction: a skill that exists only to serve one other skill is usually a submodule pretending to be a building block.
+
+See the [building-block pattern][building-block] and the [audit rubric][audit-rubric] for the extraction checklist and review gate.
+
 ## Composition and delegation
 
 A conductor may use any of the following:
@@ -168,10 +179,11 @@ The architecture defines well-known locations for cross-cutting concerns:
 
 Ask these questions in order:
 
-1. Does it do one narrow, well-bounded thing? → **Building block.**
-2. Does it coordinate other tools to reach a larger goal? → **Conductor.**
-3. Does it adapt another skill for a human? → **Wrapper.**
-4. Does it combine layers with a clear primary role? → **Multi-layer / hybrid.**
+1. Does it belong inside an existing skill, or is extraction justified by reuse? → **Colocate** unless it is cross-cutting, has multiple consumers, a stable interface, or a generic domain.
+2. Does it do one narrow, well-bounded thing? → **Building block.**
+3. Does it coordinate other tools to reach a larger goal? → **Conductor.**
+4. Does it adapt another skill for a human? → **Wrapper.**
+5. Does it combine layers with a clear primary role? → **Multi-layer / hybrid.**
 
 If the answer is unclear, the skill is not well-defined yet.
 
@@ -185,6 +197,7 @@ If the answer is unclear, the skill is not well-defined yet.
 - **Composition** uses skills, scripts, MCP servers, extensions, third-party tools, and subagents.
 - **State, config, reports, and notes** live in well-known `.agents/` locations.
 - If the shape is unclear, the skill is not well-defined yet.
+- **Colocate by default; extract only when reuse is justified.**
 
 ## Research basis
 
@@ -196,3 +209,6 @@ If the answer is unclear, the skill is not well-defined yet.
 - **Architecture fundamentals** — Tooling awareness, security, dependencies, and evaluation are synthesized from the research on tool selection, governance, and cross-harness skill quality.
 - **State and context conventions** — The `.agents/config` and `.agents/context` layout is our own convention, aligned with the research emphasis on context cost, memory, and structured handoffs.
 - **Limitations** — Exact trigger thresholds, rule-vs-skill precedence, and harness-specific envelope details are proprietary or rapidly changing, so they are documented as limitations rather than core architecture.
+
+[building-block]: ../skill-standards/patterns/building-block.md
+[audit-rubric]: ../skill-standards/reference/audit-rubric.md

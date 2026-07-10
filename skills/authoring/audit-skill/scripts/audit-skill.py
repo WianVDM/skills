@@ -604,6 +604,34 @@ def check_tooling_awareness(skill_dir: Path, body: str) -> list[dict]:
     return findings
 
 
+def check_extraction(skill_dir: Path, body: str) -> list[dict]:
+    """Check whether a separate skill is justified by reuse (X01)."""
+    findings = []
+    body_lower = body.lower()
+
+    # Heuristic signals that the skill may be a submodule of another skill.
+    consumer_patterns = [
+        r"for the\s+[\w-]+\s+conductor",
+        r"for the\s+[\w-]+\s+skill",
+        r"for\s+[\w-]+\s+only",
+        r"used by\s+[\w-]+",
+    ]
+    has_consumer_frame = any(re.search(pat, body_lower) for pat in consumer_patterns)
+
+    check = "Extraction is justified by reuse"
+    if has_consumer_frame:
+        findings.append(manual_finding(
+            "X01", "Extraction", "warning", check,
+            "The skill is framed as serving one specific consumer. Review whether it should be colocated inside that skill or made generic enough to justify a separate skill."
+        ))
+    else:
+        findings.append(manual_finding(
+            "X01", "Extraction", "warning", check,
+            "Review whether the skill is cross-cutting, has multiple current consumers, has a stable narrow interface, or solves a generic-domain problem. If it exists only to serve one other skill, colocate it."
+        ))
+    return findings
+
+
 def audit(skill_path: str) -> dict:
     skill_dir = Path(skill_path).expanduser().resolve()
     skill_md = find_skill_md(skill_dir)
@@ -639,6 +667,7 @@ def audit(skill_path: str) -> dict:
     findings.extend(check_portability(skill_dir if skill_dir.is_dir() else skill_dir.parent, body))
     findings.extend(check_evaluation(skill_dir if skill_dir.is_dir() else skill_dir.parent, fm))
     findings.extend(check_tooling_awareness(skill_dir if skill_dir.is_dir() else skill_dir.parent, body))
+    findings.extend(check_extraction(skill_dir if skill_dir.is_dir() else skill_dir.parent, body))
 
     counts = {"blockers": 0, "warnings": 0, "suggestions": 0, "manual": 0}
     remediation = []

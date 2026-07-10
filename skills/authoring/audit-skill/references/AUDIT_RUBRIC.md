@@ -65,3 +65,4 @@ A one-line explanation of each ID emitted by `audit-skill`:
 | E02 | Evaluation | Behavioral evals compare with-skill vs baseline. |
 | E03 | Evaluation | Discipline skills have pressure tests. |
 | E04 | Evaluation | Composition tests exist for composable skills. |
+| X01 | Extraction | Extraction is justified by reuse; the skill is not a submodule pretending to be a building block. |

@@ -29,6 +29,7 @@ A skill is not a script, MCP server, prompt template, rule, or application code.
 - **Evaluation.** Model-invoked skills need trigger evals (10 should-trigger, 10 should-not-trigger). Behavioral evals compare with-skill vs. baseline output. Composable skills need composition tests. Discipline skills need pressure tests.
 - **Portability.** The portable core is `SKILL.md` + optional siblings. Global skills detect the environment or ask the user. Degrade gracefully when the harness lacks a feature.
 - **Tooling awareness.** A skill reasons in capabilities, not adapters. It detects the tools that can fulfill each capability, selects the best available one, and discloses the choice. If it uses a degraded source, it tells the user what better option was available and gets consent.
+- **Colocation by default.** A capability should live inside the skill that owns it unless extraction is justified by reuse: cross-cutting concern, multiple current consumers, stable narrow interface, or generic-domain problem. Do not extract a skill simply because it is self-contained.
 
 ## Canonical source
 
