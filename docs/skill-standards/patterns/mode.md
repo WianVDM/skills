@@ -96,5 +96,5 @@ A skill can *recommend* planning mode, but it must not *depend* on it. If the ha
 
 ## Related documents
 
-- [`../fundamentals/types.md`](../fundamentals/types.md) — choosing the right skill type.
+- [`../fundamentals/core/types/`](../fundamentals/core/types/) — choosing the right skill type.
 - [`discipline-skill.md`](./discipline-skill.md) — prescriptive guidance that can act like a mode but is a skill.

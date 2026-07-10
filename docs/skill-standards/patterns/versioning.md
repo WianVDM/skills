@@ -162,7 +162,7 @@ Deprecation periods are a trade-off. Longer periods reduce consumer breakage; sh
 - [`initialization.md`](./initialization.md) — config schema migration.
 - [`building-block.md`](./building-block.md) — skills with consumers that need versioning.
 - [`conductor.md`](./conductor.md) — workflow versioning.
-- [`../fundamentals/lifecycle.md`](../fundamentals/lifecycle.md) — the full skill lifecycle including maintenance and retirement.
+- [`../fundamentals/core/lifecycle/`](../fundamentals/core/lifecycle/) — the full skill lifecycle including maintenance and retirement.
 
 ---
 

@@ -2,7 +2,7 @@
 
 The **conductor/implementer split** is a cross-cutting pattern that separates **reasoning and orchestration** from **execution**. A conductor skill decides what to do and delegates to an implementer worker or skill that does it.
 
-This pattern is a specialization of the conductor pattern. It is useful when the reasoning layer needs to stay clean and high-level while the execution layer needs to be focused and mechanical.
+This pattern is a **cross-cutting specialization** of the conductor pattern. It is useful when the reasoning layer needs to stay clean and high-level while the execution layer needs to be focused and mechanical.
 
 ---
 
@@ -207,4 +207,4 @@ artifacts:
 
 - [`conductor.md`](./conductor.md) — the general conductor pattern.
 - [`building-block.md`](./building-block.md) — narrow capabilities the conductor can consume.
-- [`../EVALUATION.md`](../reference/evaluation-framework.md) — evaluating multi-agent and composition behavior.
+- [`../reference/evaluation-framework.md`](../reference/evaluation-framework.md) — evaluating multi-agent and composition behavior.

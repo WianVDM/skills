@@ -178,7 +178,7 @@ description: Helps with UI reviews.
 
 Keep the description under 1024 characters when possible. Some harnesses impose context budgets on descriptions.
 
-See `fundamentals/structure.md` for trigger evals and description optimization.
+See `fundamentals/core/structure/` for trigger evals and description optimization.
 
 ---
 
@@ -211,7 +211,7 @@ The body can take one of three forms:
 2. **Guideline-heavy** — principles and rules for domain-shaped judgment.
 3. **Hybrid** — steps for the sequence and guidelines for the decisions inside each step.
 
-See `fundamentals/form-and-style.md` for choosing the right form and writing strong completion criteria.
+See `fundamentals/core/form-and-style/` for choosing the right form and writing strong completion criteria.
 
 ---
 

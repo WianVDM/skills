@@ -186,4 +186,4 @@ The following governance concerns are **limited** and are documented as such:
 
 - [`reference/package.md`](./package.md) — package envelope, versioning, dependencies.
 - [`reference/evaluation-framework.md`](./evaluation-framework.md) — evaluation framework and agent-authored skill tests.
-- [`fundamentals/security.md`](../fundamentals/security.md) — security fundamentals.
+- [`fundamentals/architecture/security.md`](../fundamentals/architecture/security.md) — security fundamentals.

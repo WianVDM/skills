@@ -2,6 +2,8 @@
 
 A skill can be built for one project or built to work across any project, user, and harness. The difference is not just portability — it is pluggability. A global skill must drop into an unknown environment and still behave correctly.
 
+> **Relationship to portability:** [`portability.md`](portability.md) defines the portability contract — the portable core, canonical install paths, and degradation rules. The **global / pluggable** pattern defines the behavior a skill must adopt to satisfy that contract: detect the environment, declare dependencies, avoid hardcoded paths, and fail closed.
+
 ---
 
 ## Project-specific skills

@@ -10,6 +10,8 @@ A portable skill standard is not "write once, run everywhere" in the naive sense
 
 This document specifies the portability model for skills in this library.
 
+> **Relationship to global / pluggable:** This file defines the **contract**. [`global-pluggable.md`](global-pluggable.md) defines the **skill behavior** needed to honor that contract — detecting the environment, declaring dependencies, and failing closed.
+
 ---
 
 ## The portable core

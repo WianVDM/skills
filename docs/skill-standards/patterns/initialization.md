@@ -184,7 +184,7 @@ Document the migration path in `references/VERSIONING.md` or `references/CONFIG_
 - Do not run arbitrary commands from project files without inspection.
 - Validate the source of any external data used during initialization.
 
-See [`../fundamentals/security.md`](../fundamentals/security.md) for the full security rules.
+See [`../fundamentals/architecture/security.md`](../fundamentals/architecture/security.md) for the full security rules.
 
 ---
 
@@ -217,4 +217,4 @@ See [`../fundamentals/security.md`](../fundamentals/security.md) for the full se
 - [`stateful.md`](./stateful.md) — state layout and checkpointing.
 - [`global-pluggable.md`](./global-pluggable.md) — pluggability requirements that drive initialization.
 - [`versioning.md`](./versioning.md) — schema migration and version policies.
-- [`../fundamentals/security.md`](../fundamentals/security.md) — security rules during initialization.
+- [`../fundamentals/architecture/security.md`](../fundamentals/architecture/security.md) — security rules during initialization.

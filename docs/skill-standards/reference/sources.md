@@ -56,15 +56,15 @@ The dependency taxonomy (required, recommended, optional) and transitive closure
 - `dependencies-and-bundling.md` references `PACKAGE.md` and `patterns/building-block.md` for the machine-readable dependency surfaces.
 - `tooling-awareness.md` is our own framework for capability-first tool selection, user-consented degradation, and the adapter tunnel vision failure mode.
 - `evaluation.md` draws the guardrail baseline and subjective-output hierarchy from the research evaluation framework.
-- `lifecycle.md` synthesizes standard software lifecycle stages with the research emphasis on evaluation and governance.
+- `lifecycle/` synthesizes standard software lifecycle stages with the research emphasis on evaluation and governance.
 - `security.md` draws the external-access and project-trust sections from research on MCP server governance, third-party tool risk, and audit requirements.
-- `structure.md` references the conventional layout observed across Claude Code, Cursor, Codex, and the agentskills.io ecosystem.
-- `types.md` references the cross-cutting patterns (discipline skill, context-file, mode, conductor/implementer split) documented as patterns rather than primary types.
-- `when-to-create-a-skill.md` frames the skill-vs-MCP distinction as: MCP exposes structured capabilities; skills decide how to use them.
-- `common-mistakes.md` and `failure-recovery.md` synthesize failure modes from skill-review experience and the research on context cost, routing reliability, and skill ecosystem quality.
-- `form-and-style.md` synthesizes the three forms (instruction-heavy, guideline-heavy, hybrid) from the research observation that agent behavior varies by whether the task has a clear sequence or many valid paths.
-- `what-is-a-skill.md` anchors the standards in the predictability root virtue and the four axes / five virtues framework.
-- `examples.md` uses illustrative examples drawn from the common patterns observed across the research and our own design practice.
+- `structure/` references the conventional layout observed across Claude Code, Cursor, Codex, and the agentskills.io ecosystem.
+- `types/` references the cross-cutting patterns (discipline skill, context-file, mode, conductor/implementer split) documented as patterns rather than primary types.
+- `when-to-create-a-skill/` frames the skill-vs-MCP distinction as: MCP exposes structured capabilities; skills decide how to use them.
+- `common-mistakes/` and `failure-recovery/` synthesize failure modes from skill-review experience and the research on context cost, routing reliability, and skill ecosystem quality.
+- `form-and-style/` synthesizes the three forms (instruction-heavy, guideline-heavy, hybrid) from the research observation that agent behavior varies by whether the task has a clear sequence or many valid paths.
+- `what-is-a-skill/README.md` anchors the standards in the predictability root virtue and the four axes / five virtues framework.
+- `examples/` uses illustrative examples drawn from the common patterns observed across the research and our own design practice.
 
 ## Related documents
 

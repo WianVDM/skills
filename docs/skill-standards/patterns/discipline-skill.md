@@ -157,4 +157,4 @@ When any of these appear, the skill must still produce evidence before continuin
 - The **discipline skill** concept is drawn from the research on obra/superpowers and other practitioner sources that emphasize **resistance to rationalization** as a key property of effective skills.
 - The research synthesis identifies **resistance to rationalization** as one of the sub-virtues converging on predictability.
 - **Anti-rationalization design**, **pressure testing**, and **guardrail baselines** are our own practices, derived from the research finding that discipline skills need to be tested against the failure pattern, not just the success pattern.
-- The **negation pair** and **explain-the-why** techniques are drawn from `fundamentals/form-and-style.md` and are supported by the research on LLM reasoning and generalization.
+- The **negation pair** and **explain-the-why** techniques are drawn from `fundamentals/core/form-and-style/` and are supported by the research on LLM reasoning and generalization.

@@ -324,7 +324,7 @@ A harness maps the portable requirements to its native configuration files (e.g.
 
 ### Environment variables
 
-If a skill needs credentials, declare the variable name in `requirements.environment_variables`. Never store the secret value in `SKILL.md`, `references/`, or config files. See `fundamentals/security.md`.
+If a skill needs credentials, declare the variable name in `requirements.environment_variables`. Never store the secret value in `SKILL.md`, `references/`, or config files. See `fundamentals/architecture/security.md`.
 
 ---
 
@@ -340,7 +340,7 @@ Confirm that a skill is the right solution. Ask:
 - Does the agent vary without guidance?
 - Could a script, MCP server, prompt template, or documentation change solve it instead?
 
-See `fundamentals/when-to-create-a-skill.md`.
+See `fundamentals/core/when-to-create-a-skill/`.
 
 ### 2. Design
 
@@ -380,7 +380,7 @@ Run the skill against representative prompts:
 - **Behavioral evals** — does the skill improve the agent's output compared to no skill?
 - **Edge cases** — missing config, missing context report, ambiguous input, user rejection.
 
-See `EVALUATION.md` and `fundamentals/evaluation.md`.
+See `EVALUATION.md` and `fundamentals/architecture/evaluation.md`.
 
 ### 6. Iterate
 

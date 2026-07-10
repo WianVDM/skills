@@ -112,5 +112,5 @@ This project uses TypeScript, React, and Vitest.
 
 ## Related documents
 
-- [`../fundamentals/types.md`](../fundamentals/types.md) — choosing the right skill type.
+- [`../fundamentals/core/types/`](../fundamentals/core/types/) — choosing the right skill type.
 - [`manifestos/architecture.md`](../../manifestos/architecture.md) — the full context stack.

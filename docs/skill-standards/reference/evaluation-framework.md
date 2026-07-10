@@ -263,7 +263,7 @@ The following evaluation concerns are **limited** and are documented as such:
 
 ## Related documents
 
-- [`fundamentals/evaluation.md`](../fundamentals/evaluation.md) — the fundamental evaluation checklists and review questions.
+- [`fundamentals/architecture/evaluation.md`](../fundamentals/architecture/evaluation.md) — the fundamental evaluation checklists and review questions.
 - [`PACKAGE.md`](./package.md) — formal `evals.json`, `skills.json`, and lock-file schemas.
 - [`GOVERNANCE.md`](./governance.md) — verification levels and agent-authored skills.
 - [`PORTABILITY.md`](../patterns/portability.md) — minimal-harness degradation and portable core.

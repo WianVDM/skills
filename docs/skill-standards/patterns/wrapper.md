@@ -71,7 +71,7 @@ If the wrapped skill can mutate state, the wrapper must:
 - Require explicit confirmation before proceeding.
 - Offer a dry-run or preview when possible.
 
-See [`../fundamentals/security.md`](../fundamentals/security.md) for destructive-action rules.
+See [`../fundamentals/architecture/security.md`](../fundamentals/architecture/security.md) for destructive-action rules.
 
 ### 3. Present results
 
@@ -169,5 +169,5 @@ The wrapper does not invoke other skills; it names them and explains when to use
 
 - [`building-block.md`](./building-block.md) — the layer a wrapper usually sits on top of.
 - [`conductor.md`](./conductor.md) — the layer a wrapper should not become.
-- [`../fundamentals/types.md`](../fundamentals/types.md) — choosing the right skill type.
-- [`../fundamentals/security.md`](../fundamentals/security.md) — destructive actions and confirmation.
+- [`../fundamentals/core/types/`](../fundamentals/core/types/) — choosing the right skill type.
+- [`../fundamentals/architecture/security.md`](../fundamentals/architecture/security.md) — destructive actions and confirmation.

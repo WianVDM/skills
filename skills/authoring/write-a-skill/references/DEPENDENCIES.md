@@ -4,7 +4,7 @@
 
 The canonical dependency manifest is [`../skills.json`](../skills.json). This document provides the human-readable explanation.
 
-This document follows the dependency taxonomy defined in `docs/skill-standards/fundamentals/dependencies-and-bundling.md`:
+This document follows the dependency taxonomy defined in `docs/skill-standards/fundamentals/architecture/dependencies-and-bundling.md`:
 
 - **Required** — the skill cannot function without this dependency.
 - **Recommended** — improves output or experience; the skill runs degraded if it is missing.

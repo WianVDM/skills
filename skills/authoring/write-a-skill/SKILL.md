@@ -181,7 +181,7 @@ Summarize completed work, pending work, current focus, and the recommended next 
 
 ## Dependencies
 
-`write-a-skill` delegates deterministic work to standalone building-block skills and uses subagents only for tightly coupled design judgment. The dependency taxonomy follows `docs/skill-standards/fundamentals/dependencies-and-bundling.md`:
+`write-a-skill` delegates deterministic work to standalone building-block skills and uses subagents only for tightly coupled design judgment. The dependency taxonomy follows `docs/skill-standards/fundamentals/architecture/dependencies-and-bundling.md`:
 
 - **Required** — the skill cannot function without this dependency.
 - **Recommended** — improves output or experience; the skill runs degraded if it is missing.

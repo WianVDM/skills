@@ -52,7 +52,7 @@ Do not split when:
 - The split would create a skill that is rarely used on its own.
 - The only reason is organization; use `references/` or headings instead.
 
-See `fundamentals/types.md` for the invocation-based splitting rule and the premature-completion problem.
+See `fundamentals/core/types/` for the invocation-based splitting rule and the premature-completion problem.
 
 ---
 
@@ -64,7 +64,7 @@ Merge skills when:
 - One skill is just a thin wrapper around the other.
 - Their descriptions are so similar that the model cannot reliably distinguish them.
 
-Merged skills can still use branches or references to keep the top-level clean. See `fundamentals/common-mistakes.md` for duplication and bloat guidance.
+Merged skills can still use branches or references to keep the top-level clean. See `fundamentals/core/common-mistakes/` for duplication and bloat guidance.
 
 ---
 
@@ -151,9 +151,9 @@ The after version is shorter, front-loads the leading word, and lists distinct t
 
 ## Related documents
 
-- [`fundamentals/types.md`](../fundamentals/types.md) — choosing invocation mode and splitting rules.
-- [`fundamentals/common-mistakes.md`](../fundamentals/common-mistakes.md) — bloat, duplication, and premature completion.
-- [`fundamentals/structure.md`](../fundamentals/structure.md) — progressive disclosure and the information hierarchy.
+- [`fundamentals/core/types/`](../fundamentals/core/types/) — choosing invocation mode and splitting rules.
+- [`fundamentals/core/common-mistakes/`](../fundamentals/core/common-mistakes/) — bloat, duplication, and premature completion.
+- [`fundamentals/core/structure/`](../fundamentals/core/structure/) — progressive disclosure and the information hierarchy.
 - [`FORMAT.md`](./format.md) — the `description` field and frontmatter schema.
 - [`patterns/building-block.md`](../patterns/building-block.md) — narrow, reusable skills that reduce duplication.
 - [`patterns/conductor.md`](../patterns/conductor.md) — composing skills without multiplying descriptions.

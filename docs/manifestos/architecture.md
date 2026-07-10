@@ -2,7 +2,7 @@
 
 ## At a glance
 
-This manifesto maps skills into a layered architecture: a portable core of `SKILL.md` plus sibling directories, a package envelope, and a trust layer. It defines the three skill layers (building block, conductor, wrapper) and the cross-cutting patterns that apply to any layer.
+This manifesto maps skills into a layered architecture: a portable core of `SKILL.md` plus sibling directories, a package envelope, and a trust layer. It defines the three primary skill layers (building block, conductor, wrapper), a hybrid category, and the cross-cutting patterns that apply to any layer.
 
 **Read this if:** you need to choose a skill shape, design a composition, or understand how skills sit in the agent context stack.
 
@@ -61,7 +61,7 @@ Skills that are shared, versioned, or have dependencies need a package envelope:
 
 A standalone single skill can be a package of one. A package of multiple skills is namespaced under its package name.
 
-## The three layers
+## The three primary layers (and one hybrid)
 
 ### Layer 1: Building block
 
@@ -92,14 +92,29 @@ A wrapper skill is a thin, user-facing layer that adapts a building block or con
 
 A wrapper is not a conductor. If it starts coordinating phases or maintaining state, it should be promoted to a conductor.
 
+### Multi-layer / hybrid
+
+A skill may participate in more than one layer, but its primary role should be clear. A multi-layer or hybrid skill combines layers around a single primary responsibility — for example, a conductor that also produces a reusable report, or a building block with a small internal workflow.
+
+If the shape is unclear, the skill is not well-defined yet.
+
 ## Cross-cutting patterns
 
-These patterns can appear in any of the three layers:
+These patterns can appear in any of the primary layers or in a hybrid skill:
 
 - **Discipline skill** — a prescriptive pattern that requires anti-rationalization design and pressure testing (e.g., test-driven development, verification-before-completion).
 - **Context-file pattern** — always-on guidance that is not a skill. It lives in the always-on layer of the context stack.
 - **Mode pattern** — a transient behavior switch (e.g., reasoning mode vs. execution mode).
-- **Conductor/implementer split** — a role separation where one skill reasons and delegates, and another executes. This is a specialization of the conductor pattern.
+- **Conductor/implementer split** — a role separation where one skill reasons and delegates, and another executes. This is a cross-cutting specialization of the conductor pattern.
+
+## Architecture fundamentals
+
+These concerns apply to any skill that participates in the architecture: skills that are shared, composed, distributed, portable, or otherwise used beyond a single local context. They are not universal core fundamentals, but they are required once a skill crosses the architecture boundary.
+
+- **Tooling awareness** — capability-first tool selection, discovery, and degradation disclosure.
+- **Security** — no secrets in files, confirm destructive actions, stay safe in untrusted projects.
+- **Dependencies and bundling** — declare required, recommended, and optional dependencies; handle transitive closure and lazy evaluation.
+- **Evaluation** — prove the skill improves behavior through trigger, behavior, composition, and pressure tests.
 
 ## Architecture-specific patterns
 
@@ -111,7 +126,6 @@ Skills that participate in the library architecture adopt only the patterns they
 - **Stateful** — persist state across invocations or context compaction.
 - **Context reports** — produce and consume structured reports with clear contracts and freshness rules.
 - **Versioning** — version bumping and migration paths when a skill is consumed by others.
-- **Security** — no secrets in files, confirm destructive actions, stay safe in untrusted projects.
 
 ## Composition and delegation
 
@@ -166,8 +180,9 @@ If the answer is unclear, the skill is not well-defined yet.
 
 - Skills are the **on-demand, reusable layer** in the agent context stack, between always-on context and tools.
 - The **portable core** is harness-agnostic; the **envelope** is harness-specific.
-- Choose a primary shape based on responsibility: **building block** (narrow capability), **conductor** (coordination), or **wrapper** (human-facing adaptation).
+- Choose a primary shape based on responsibility: **building block** (narrow capability), **conductor** (coordination), **wrapper** (human-facing adaptation), or **multi-layer / hybrid** when a clear primary role still exists.
 - **Cross-cutting patterns** (discipline, context-file, mode, conductor/implementer split) can appear in any layer.
+- **Architecture fundamentals** (tooling awareness, security, dependencies, evaluation) apply once a skill crosses the architecture boundary.
 - **Composition** uses skills, scripts, MCP servers, extensions, third-party tools, and subagents.
 - **State, config, reports, and notes** live in well-known `.agents/` locations.
 - If the shape is unclear, the skill is not well-defined yet.
@@ -179,5 +194,6 @@ If the answer is unclear, the skill is not well-defined yet.
 - **Package envelope** — Codex, Claude Code, Hermes, and the agentskills.io ecosystem all support package-level metadata, versioning, and dependency declaration. The standard's envelope is a design decision synthesized from these systems.
 - **Building block / conductor / wrapper** — This taxonomy is our own choice, but it is supported by the research on skill taxonomies and the need to separate narrow capabilities from coordination and presentation.
 - **Cross-cutting patterns** — Discipline skills, context files, modes, and the conductor/implementer split are drawn from obra/superpowers, Aider, and the broader practitioner literature.
+- **Architecture fundamentals** — Tooling awareness, security, dependencies, and evaluation are synthesized from the research on tool selection, governance, and cross-harness skill quality.
 - **State and context conventions** — The `.agents/config` and `.agents/context` layout is our own convention, aligned with the research emphasis on context cost, memory, and structured handoffs.
 - **Limitations** — Exact trigger thresholds, rule-vs-skill precedence, and harness-specific envelope details are proprietary or rapidly changing, so they are documented as limitations rather than core architecture.

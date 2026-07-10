@@ -332,6 +332,6 @@ Keep a human-readable summary in `references/EVAL.md` for reviewers who do not r
 ## Related documents
 
 - [`EVALUATION.md`](./evaluation-framework.md) — full evaluation framework, baselines, and composition tests.
-- [`fundamentals/evaluation.md`](../fundamentals/evaluation.md) — review checklists and fundamentals.
-- [`fundamentals/form-and-style.md`](../fundamentals/form-and-style.md) — leading words, completion criteria, and description craft.
+- [`fundamentals/architecture/evaluation.md`](../fundamentals/architecture/evaluation.md) — review checklists and fundamentals.
+- [`fundamentals/core/form-and-style/`](../fundamentals/core/form-and-style/) — leading words, completion criteria, and description craft.
 - [`FORMAT.md`](./format.md) — the `description` field and frontmatter schema.
