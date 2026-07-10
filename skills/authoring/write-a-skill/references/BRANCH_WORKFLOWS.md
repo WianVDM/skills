@@ -47,7 +47,7 @@ Confirm with the user that a new skill is the right shape, not a script, MCP ser
 
 **Why:** a confirmed identity is the contract that prevents scope creep and naming drift.
 
-Produce a frontmatter skeleton: name, description, invocation, author, tags. Add `version` only if the user requires it or the skill will be shared or consumed.
+Produce a frontmatter skeleton: name, description, invocation. Add `version` only if the user requires it or the skill will be shared or consumed. Add harness hints such as `depends` only if the target harness requires them.
 
 **Completion criterion:** the design draft contains an identity section and the user has confirmed it.
 
@@ -110,7 +110,7 @@ A compressed version of the full gate for minimal skills.
 
 1. **Clarify intent** (minimal) — capture problem, trigger, and success criteria.
 2. **Explore alternatives** (light) — check existing skills and simple alternatives.
-3. **Define identity** — name, description, invocation, scope.
+3. **Define identity** — name, description, invocation. Keep scope out of this step; it belongs in step 4.
 4. **Define scope** — one objective, in-scope, out-of-scope.
 5. **Select patterns** — apply fundamentals.
 6. **Design capability-to-tool strategy** — for each load-bearing capability, note the preferred tool, fallback, and degraded-output disclosure.

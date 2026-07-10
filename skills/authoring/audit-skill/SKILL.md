@@ -3,9 +3,7 @@ name: audit-skill
 description: Check a skill against the skill fundamentals and report blockers, warnings, and suggestions with a structured remediation plan.
 version: 1.0.1
 invocation: model-invoked
-metadata:
-  author: Wian van der Merwe
-  tags: [authoring, building-block, audit, fundamentals]
+
 ---
 
 # audit-skill
@@ -33,7 +31,6 @@ Building block.
 - Modifying the skill being audited.
 - Making value judgments about whether a skill is useful.
 - Running behavioral evaluations (use `run-trigger-evals` for that).
-- Full frontmatter schema validation (use `validate-skill-frontmatter` for that).
 
 ## When to use
 
@@ -79,7 +76,7 @@ See [references/DEPENDENCIES.md](references/DEPENDENCIES.md).
 
 ## Known limitations
 
-- The script performs deterministic checks (schema fields, files, links, secrets, hardcoded paths, dependency declarations, and confirmation wording). It cannot judge the quality of prose descriptions, scope clarity, or whether a completion criterion is truly observable. Those remain manual review items and appear as `MANUAL` in the findings table.
+- The script performs deterministic checks (schema validation, identity fields, files, links, secrets, hardcoded paths, dependency declarations, and confirmation wording). It cannot judge the quality of prose descriptions, scope clarity, or whether a completion criterion is truly observable. Those remain manual review items and appear as `MANUAL` in the findings table.
 - The audit is read-only and does not execute the skill, so runtime behavioral correctness is out of scope.
 
 ## Manual review checklist

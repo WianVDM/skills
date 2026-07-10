@@ -3,9 +3,6 @@ name: install-skill
 description: Install a skill from a local path or archive URL into the project or user scope.
 version: 1.0.1
 invocation: model-invoked
-metadata:
-  author: Wian van der Merwe
-  tags: [tooling, building-block, installation, skills]
 depends:
   - detect-project-context
 ---

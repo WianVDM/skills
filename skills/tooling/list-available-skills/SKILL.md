@@ -3,9 +3,6 @@ name: list-available-skills
 description: Discover skills already available in the project and user scope by scanning canonical skill directories.
 version: 1.0.1
 invocation: model-invoked
-metadata:
-  author: Wian van der Merwe
-  tags: [tooling, building-block, discovery, skills]
 depends:
   - parse-skill-frontmatter
 ---
@@ -26,7 +23,7 @@ Building block.
 - Scan native harness skill directories for compatibility.
 - Optionally scan the user-scope skill directory.
 - Read each `SKILL.md` and extract frontmatter fields.
-- Return a structured list with name, path, version, invocation, and tags.
+- Return a structured list with name, path, version, invocation, and depends.
 
 ## Out of scope
 
@@ -47,7 +44,7 @@ A conductor needs to know what skills already exist before recommending a new sk
    - **Completion criterion:** candidate directories are collected.
 3. **Scan for `SKILL.md` files.** Search one level deep inside each candidate directory.
    - **Completion criterion:** all discovered `SKILL.md` paths are recorded.
-4. **Parse frontmatter.** Extract `name`, `description`, `invocation`, and `metadata.tags`. Extract `version` if present.
+4. **Parse frontmatter.** Extract `name`, `description`, `invocation`, `version`, and `depends`.
    - **Completion criterion:** each discovered skill has a parsed record or an error entry.
 5. **Return structured report.** Emit JSON or human-readable output.
    - **Completion criterion:** the report is emitted in the requested format.
@@ -65,8 +62,7 @@ With `--json`:
       "name": "example-skill",
       "path": "skills/example-skill",
       "invocation": "model-invoked",
-      "version": "1.0.0",
-      "tags": ["example"]
+      "version": "1.0.0"
     }
   ],
   "errors": []

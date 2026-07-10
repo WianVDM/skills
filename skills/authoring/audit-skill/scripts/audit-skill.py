@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 from typing import Optional
@@ -178,23 +179,43 @@ def check_identities(skill_dir: Path, skill_md: Path, fm: dict) -> list[dict]:
     else:
         findings.append(pass_finding("F05", "Identity", "warning", check))
 
-    check = "`invocation` is `model-invoked` or `user-invoked`"
+    check = "`invocation` is `model-invoked` or `user-invoked` and consistent with `disable-model-invocation`"
     invocation = fm.get("invocation", "")
-    if invocation in ("model-invoked", "user-invoked"):
-        findings.append(pass_finding("F06", "Identity", "blocker", check))
-    else:
+    disable = fm.get("disable-model-invocation")
+    if invocation not in ("model-invoked", "user-invoked"):
         findings.append(fail_finding("F06", "Identity", "blocker", check, "Set `invocation` to `model-invoked` or `user-invoked`."))
-
-    metadata = fm.get("metadata", {})
-    author = metadata.get("author") if isinstance(metadata, dict) else None
-    tags = metadata.get("tags") if isinstance(metadata, dict) else None
-    check = "`metadata` includes author and tags"
-    if author and tags:
-        findings.append(pass_finding("F07", "Identity", "warning", check))
+    elif disable is True and invocation == "model-invoked":
+        findings.append(fail_finding("F06", "Identity", "blocker", check, "`disable-model-invocation: true` is incompatible with `invocation: model-invoked`. Change one of them."))
     else:
-        findings.append(fail_finding("F07", "Identity", "warning", check, "Add `metadata.author` and `metadata.tags` to the frontmatter."))
+        findings.append(pass_finding("F06", "Identity", "blocker", check))
 
-    findings.append(manual_finding("F08", "Identity", "blocker", "Frontmatter validates against JSON schema", "Run `validate-skill-frontmatter` for a full schema check."))
+    check = "Frontmatter contains only load-bearing fields"
+    drift_fields = []
+    for field in ("metadata", "author", "tags"):
+        if field in fm:
+            drift_fields.append(field)
+    if drift_fields:
+        findings.append(fail_finding("F07", "Identity", "warning", check, f"Remove non-load-bearing fields from frontmatter: {', '.join(drift_fields)}."))
+    else:
+        findings.append(pass_finding("F07", "Identity", "warning", check))
+
+    check = "Frontmatter validates against JSON schema"
+    validation = _run_schema_validation(skill_md)
+    if validation.get("valid"):
+        findings.append(pass_finding("F08", "Identity", "blocker", check))
+    else:
+        errors = validation.get("errors", [])
+        if errors:
+            parts = []
+            for e in errors[:3]:
+                if isinstance(e, dict):
+                    parts.append(f"line {e.get('line', '?')} {e.get('path', '')}: {e.get('message', '')}".strip())
+                else:
+                    parts.append(str(e))
+            recommendation = " ".join(parts)
+        else:
+            recommendation = "Schema validation failed or could not be confirmed."
+        findings.append(fail_finding("F08", "Identity", "blocker", check, recommendation))
 
     return findings
 
@@ -369,7 +390,7 @@ def check_dependencies(skill_dir: Path, body: str) -> list[dict]:
         ("D01", "blocker", "Required tools are declared", "List required tools in `skills.json` or `references/DEPENDENCIES.md`."),
         ("D02", "blocker", "Required binaries are declared", "List required binaries in `requirements.binaries`."),
         ("D03", "blocker", "Required MCP servers are declared", "List required MCP servers by name and capability."),
-        ("D04", "blocker", "Skill dependencies are declared", "List required skills in `requirements.skills`."),
+        ("D04", "blocker", "Skill dependencies are declared", "List required skills in `skill_dependencies` or `requirements.skills`."),
         ("D05", "warning", "Environment variables are declared", "List environment variables used by the skill."),
     ]:
         if fid in ("D01", "D02", "D03", "D04"):
@@ -392,6 +413,27 @@ def check_dependencies(skill_dir: Path, body: str) -> list[dict]:
     return findings
 
 
+def _run_schema_validation(skill_md: Path) -> dict:
+    """Invoke validate-skill-frontmatter directly and return its JSON report."""
+    repo_root = Path(__file__).resolve().parents[4]
+    script = repo_root / "skills" / "tooling" / "validate-skill-frontmatter" / "scripts" / "validate-skill-frontmatter.py"
+    schema = repo_root / "docs" / "skill-standards" / "schemas" / "skill-frontmatter.schema.json"
+    if not script.is_file() or not schema.is_file():
+        return {"valid": False, "errors": ["Validation tool or schema not found."]}
+    try:
+        result = subprocess.run(
+            [sys.executable, str(script), str(skill_md), "--schema", str(schema), "--json"],
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        if result.returncode == 2:
+            return {"valid": False, "errors": [result.stderr.strip() or "Missing validation dependencies."]}
+        return json.loads(result.stdout)
+    except Exception as e:
+        return {"valid": False, "errors": [str(e)]}
+
+
 def _discover_skill_names(skill_dir: Path) -> set[str]:
     """Return the set of skill directory names in the surrounding skills/ directory."""
     skills_root = None
@@ -402,6 +444,24 @@ def _discover_skill_names(skill_dir: Path) -> set[str]:
     if not skills_root:
         return set()
     return {d.name for d in skills_root.iterdir() if d.is_dir() and (d / "SKILL.md").is_file()}
+
+
+def _load_declared_skills(skill_dir: Path) -> set[str]:
+    """Return skill names declared in skills.json (skill_dependencies and requirements.skills)."""
+    declared: set[str] = set()
+    skills_json = skill_dir / "skills.json"
+    if not skills_json.is_file():
+        return declared
+    try:
+        data = json.loads(skills_json.read_text(encoding="utf-8"))
+        for skill_name, kinds in data.get("skill_dependencies", {}).items():
+            if isinstance(kinds, dict):
+                for kind in ("required", "recommended", "optional"):
+                    declared.update(kinds.get(kind, []))
+        declared.update(data.get("requirements", {}).get("skills", []))
+    except Exception:
+        pass
+    return declared
 
 
 def _referenced_skill_names(skill_dir: Path, files: list[Path]) -> set[str]:
@@ -429,19 +489,19 @@ def _referenced_skill_names(skill_dir: Path, files: list[Path]) -> set[str]:
 
 
 def check_dependency_references(skill_dir: Path, fm: dict, files: list[Path]) -> list[dict]:
-    """Check that runtime references to other skills are declared in `depends`."""
+    """Check that runtime references to other skills are declared in skills.json or depends."""
     findings = []
+    declared = _load_declared_skills(skill_dir)
     depends = fm.get("depends", []) or []
-    if not isinstance(depends, list):
-        depends = []
-    declared = set(depends)
+    if isinstance(depends, list):
+        declared.update(depends)
 
     referenced = _referenced_skill_names(skill_dir, files)
     missing = referenced - declared
 
-    check = "Runtime references to other skills are declared in `depends`"
+    check = "Runtime references to other skills are declared in `skills.json` or `depends`"
     if missing:
-        findings.append(fail_finding("D07", "Dependencies", "blocker", check, f"Add {sorted(missing)} to `depends` in `SKILL.md` frontmatter."))
+        findings.append(fail_finding("D07", "Dependencies", "blocker", check, f"Add {sorted(missing)} to `skill_dependencies`, `requirements.skills`, or `depends`."))
     else:
         findings.append(pass_finding("D07", "Dependencies", "blocker", check))
     return findings

@@ -3,9 +3,6 @@ name: decide-skill-shape
 description: Help decide whether a problem should be solved by a new skill, an existing skill, a script, an MCP server, a context file, or a mode. Use when the user is unsure what shape to build, or when a conductor needs a shape recommendation.
 version: 1.0.1
 invocation: model-invoked
-metadata:
-  author: Wian van der Merwe
-  tags: [authoring, building-block, design, decision]
 depends:
   - list-available-skills
 ---

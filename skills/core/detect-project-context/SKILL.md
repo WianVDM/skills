@@ -3,9 +3,7 @@ name: detect-project-context
 description: Detect the project root, harness, skill directories, config directories, and conventions for any workspace.
 version: 1.0.1
 invocation: model-invoked
-metadata:
-  author: Wian van der Merwe
-  tags: [core, building-block, project-detection, environment, pluggable]
+
 ---
 
 # detect-project-context

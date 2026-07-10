@@ -3,9 +3,7 @@ name: eval-format
 description: Provide the canonical schema and conventions for skill evaluation artifacts stored in evals/evals.json. Use when authoring, validating, or referencing trigger, behavior, composition, pressure, or security evals.
 version: 1.0.1
 invocation: model-invoked
-metadata:
-  author: Wian van der Merwe
-  tags: [core, building-block, evals, schema]
+
 ---
 
 # eval-format

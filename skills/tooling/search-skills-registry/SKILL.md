@@ -3,9 +3,6 @@ name: search-skills-registry
 description: Search configured skill registries for third-party skills that could cover a given need.
 version: 1.0.1
 invocation: model-invoked
-metadata:
-  author: Wian van der Merwe
-  tags: [tooling, building-block, discovery, registry]
 depends:
   - parse-skill-frontmatter
   - install-skill

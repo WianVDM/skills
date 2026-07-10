@@ -33,9 +33,7 @@ name: sample-composition-skill
 description: A temporary sample skill used to exercise the write-a-skill dependency surface.
 version: 1.0.0
 invocation: model-invoked
-metadata:
-  author: composition-test
-  tags: [test, sample]
+
 ---
 
 # sample-composition-skill
@@ -139,7 +137,7 @@ def main():
         data = json.loads(out)
         results.append({
             "step": "parse-skill-frontmatter",
-            "pass": rc == 0 and data.get("name") == SKILL_NAME and data.get("author") == "composition-test",
+            "pass": rc == 0 and data.get("name") == SKILL_NAME,
             "rc": rc,
             "error": err,
         })

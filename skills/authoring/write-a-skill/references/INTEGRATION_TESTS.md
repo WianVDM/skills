@@ -56,7 +56,7 @@ python skills/list-available-skills/scripts/list-available-skills.py --project-r
   "project_scope": [...],
   "user_scope": [...],
   "skills": [
-    {"name": "...", "path": "...", "invocation": "...", "version": "...", "tags": [...]}
+    {"name": "...", "path": "...", "invocation": "...", "version": "..."}
   ],
   "errors": [...]
 }
@@ -139,11 +139,7 @@ python skills/parse-skill-frontmatter/scripts/parse-skill-frontmatter.py skills/
   "description": "...",
   "version": "1.0.0",
   "invocation": "model-invoked",
-  "depends": [...],
-  "metadata": {
-    "author": "...",
-    "tags": [...]
-  }
+  "depends": [...]
 }
 ```
 

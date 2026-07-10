@@ -34,14 +34,14 @@
       "id": "trigger-should-05",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Pull out the description, version, and tags from this SKILL.md.",
+      "prompt": "Pull out the description, version, and invocation from this SKILL.md.",
       "expected": "parse-skill-frontmatter"
     },
     {
       "id": "trigger-should-06",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Show me the frontmatter metadata of this skill.",
+      "prompt": "Show me the frontmatter of this skill.",
       "expected": "parse-skill-frontmatter"
     },
     {
@@ -62,7 +62,7 @@
       "id": "trigger-should-09",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Read the frontmatter of this skill so I can use its metadata.",
+      "prompt": "Read the frontmatter of this skill so I can use its canonical fields.",
       "expected": "parse-skill-frontmatter"
     },
     {
@@ -139,7 +139,7 @@
       "id": "trigger-not-10",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Search the registry for this skill's metadata.",
+      "prompt": "Search the registry for this skill's frontmatter.",
       "expected": ""
     }
   ]

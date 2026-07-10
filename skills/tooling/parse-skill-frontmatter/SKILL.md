@@ -3,9 +3,7 @@ name: parse-skill-frontmatter
 description: Extract canonical frontmatter fields from a SKILL.md file.
 version: 1.0.1
 invocation: model-invoked
-metadata:
-  author: Wian van der Merwe
-  tags: [tooling, building-block, parsing, validation, frontmatter]
+
 ---
 
 # parse-skill-frontmatter
@@ -21,8 +19,8 @@ Building block.
 ## In scope
 
 - Parse a single `SKILL.md` file.
-- Extract `name`, `description`, `invocation`, `depends`, `metadata.author`, and `metadata.tags`.
-- Extract `version` if present; return it as `null` or omit it when absent.
+- Extract `name`, `description`, `version`, `invocation`, and `depends`.
+- Optionally extract harness hints: `allowed-tools`, `disallowed-tools`, `globs`, `paths`, `disable-model-invocation`.
 - Prefer PyYAML when available; fall back to a minimal regex parser.
 - Return JSON or human-readable output.
 
@@ -34,7 +32,7 @@ Building block.
 
 ## When to use
 
-Another skill or script needs to read skill metadata from a `SKILL.md` file.
+Another skill or script needs to read the canonical frontmatter fields from a `SKILL.md` file.
 
 ## Steps
 
@@ -57,13 +55,11 @@ With `--json`:
   "description": "An example skill.",
   "version": "1.0.0",
   "invocation": "model-invoked",
-  "depends": ["audit-skill", "validate-skill-frontmatter"],
-  "tags": ["example"],
-  "author": "Wian van der Merwe"
+  "depends": ["audit-skill", "validate-skill-frontmatter"]
 }
 ```
 
-`version` is omitted or returned as `null` when it is not present in the frontmatter. `depends` and `author` follow the same rule.
+`version` and `depends` are omitted or returned as `null` when they are not present in the frontmatter.
 
 ## Security
 

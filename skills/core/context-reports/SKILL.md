@@ -3,9 +3,7 @@ name: context-reports
 description: Provide the canonical vocabulary for shared context reports. Use when a skill produces or consumes context reports, defines report schemas, or needs freshness rules and missing-report handling.
 version: 1.0.1
 invocation: model-invoked
-metadata:
-  author: Wian van der Merwe
-  tags: [core, building-block, context-reports, shared]
+
 ---
 
 # context-reports

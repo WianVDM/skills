@@ -78,7 +78,6 @@ def build_record(skill_md: Path, data: dict) -> dict:
         "path": str(skill_dir),
         "invocation": data.get("invocation", "unknown"),
         "version": data.get("version"),
-        "tags": data.get("tags", []),
     }
 
 

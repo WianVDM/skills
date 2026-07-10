@@ -120,9 +120,6 @@ Why this recommendation was made.
 - description: {one sentence, front-loaded leading word, ≤ 1024 chars}
 - version: {4.0.0 or unset if personal}  # optional; add only if the skill is shared, consumed, or versioned
 - invocation: {model-invoked | user-invoked}
-- metadata:
-  - author: {name}
-  - tags: [tag1, tag2]
 
 ## Type
 - primary: {building block | conductor | wrapper | multi-layer}

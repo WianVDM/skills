@@ -1,6 +1,6 @@
 {
   "name": "write-a-skill",
-  "version": "4.7.0",
+  "version": "1.0.1",
   "description": "Skill-design conductor for creating, reviewing, and updating skills that follow the skill standards.",
   "compatibility": {
     "harnesses": ["pi"]
@@ -8,6 +8,30 @@
   "skills": ["write-a-skill"],
   "namespaces": {
     "write-a-skill": "write-a-skill:write-a-skill"
+  },
+  "skill_dependencies": {
+    "write-a-skill": {
+      "required": [
+        "detect-project-context",
+        "decide-skill-shape",
+        "audit-skill",
+        "validate-skill-frontmatter",
+        "review-skill",
+        "eval-format",
+        "worker-contract",
+        "context-reports",
+        "parse-skill-frontmatter"
+      ],
+      "recommended": [
+        "list-available-skills",
+        "search-skills-registry",
+        "install-skill",
+        "run-trigger-evals"
+      ],
+      "optional": [
+        "prototype"
+      ]
+    }
   },
   "requirements": {
     "skills": [

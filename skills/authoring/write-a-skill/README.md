@@ -75,7 +75,7 @@ This conductor delegates to the following building blocks:
 - `review-skill` — audit and remediate an existing skill.
 - `run-trigger-evals` — generate trigger evals for model-invoked skills.
 - `eval-format` — shared `evals/evals.json` schema and evaluation conventions.
-- `parse-skill-frontmatter` — read canonical metadata from a `SKILL.md` file.
+- `parse-skill-frontmatter` — extract canonical frontmatter fields from a `SKILL.md` file.
 - `worker-contract` — shared subagent return contract used when composing worker prompts.
 - `context-reports` — shared context-report conventions and schemas.
 

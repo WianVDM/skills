@@ -3,9 +3,7 @@ name: validate-skill-frontmatter
 description: Validate SKILL.md YAML frontmatter against the skill-frontmatter JSON schema with line-level error reporting.
 version: 1.0.1
 invocation: model-invoked
-metadata:
-  author: Wian van der Merwe
-  tags: [tooling, building-block, validation, schema, frontmatter]
+
 ---
 
 # validate-skill-frontmatter

@@ -3,9 +3,6 @@ name: write-a-skill
 description: Skill-design conductor for creating, reviewing, and updating skills that follow the skill standards.
 version: 1.0.1
 invocation: user-invoked
-metadata:
-  author: Wian van der Merwe
-  tags: [authoring, conductor, skill-design, standards]
 depends:
   - detect-project-context
   - decide-skill-shape
@@ -73,7 +70,7 @@ The conductor runs this 10-phase pipeline. Each phase has a completion criterion
 | 1. **Clarify intent and choose gate** | Classify the top-level branch; resolve the internal gate; ask one question at a time if unclear. | Branch is one of {create, change}, gate is resolved, and user confirmed. |
 | 2. **Explore alternatives** | Use `list-available-skills` and `search-skills-registry` to see what exists. | Alternatives report exists; user knows whether to create, reuse, or install. |
 | 3. **Decide shape** | Decide whether the answer is a new skill, an existing skill, a script, an MCP server, or a context file. | User confirms the chosen shape. |
-| 4. **Define identity** | Name, description, invocation, author, tags. Version only if the user requires it or the skill will be shared/consumed. | Frontmatter skeleton exists and user confirmed. |
+| 4. **Define identity** | Name, description, invocation. Version only if the user requires it or the skill will be shared/consumed. | Frontmatter skeleton exists and user confirmed. |
 | 5. **Define scope** | In-scope, out-of-scope, branches, assumptions. | Scope boundaries are explicit and defensible. |
 | 6. **Select patterns** | Apply fundamentals; suggest Layer 2 patterns. Decide if the skill is configurable and, if so, which shared and skill-specific keys it needs. | Pattern list and config declaration (if any) exist and user confirmed. |
 | 6b. **Design capability-to-tool strategy** | For each load-bearing capability, identify the preferred tool, fallback tools, and degraded-output disclosure. Document the selection rule and user-consent behavior. | A capability-to-tool mapping exists for every load-bearing capability; the user has confirmed or corrected the strategy. |

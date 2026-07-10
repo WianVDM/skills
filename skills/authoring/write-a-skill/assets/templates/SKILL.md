@@ -3,9 +3,6 @@ name: {name}
 description: {description}
 # version: {version}  # optional; add only if the skill is shared, consumed, or versioned
 invocation: {model-invoked | user-invoked}
-metadata:
-  author: {author}
-  tags: [{tags}]
 ---
 
 # {name}

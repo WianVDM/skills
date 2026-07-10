@@ -3,9 +3,6 @@ name: review-skill
 description: Audit an existing skill against the skill standards, apply the review principles, and produce a verdict-led report or remediation plan after explicit approval. Use when reviewing or updating a skill.
 version: 1.0.1
 invocation: model-invoked
-metadata:
-  author: Wian van der Merwe
-  tags: [authoring, conductor, audit, remediation]
 depends:
   - audit-skill
   - validate-skill-frontmatter
