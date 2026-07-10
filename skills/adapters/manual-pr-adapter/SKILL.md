@@ -1,7 +1,6 @@
 ---
 name: manual-pr-adapter
 description: Manual PR source adapter for pr-report. Collects PR metadata, changed files, and review feedback from user input, CSV, JSON, or markdown files.
-license: Proprietary
 invocation: model-invoked
 metadata:
   tags: [adapter, pr-source, manual, building-block]

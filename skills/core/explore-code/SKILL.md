@@ -2,12 +2,10 @@
 name: explore-code
 description: "Search the codebase for evidence related to a specific question, ticket, or ambiguity. Find mentioned files, similar patterns, relevant tests, ADRs, and docs. Use when a skill needs code context to resolve uncertainty."
 version: 1.0.0
-license: Proprietary
 invocation: model-invoked
 metadata:
   author: Wian van der Merwe
   tags: [codebase, exploration, evidence, building-block]
-  verification_level: declared
 allowed-tools:
   - bash
 ---

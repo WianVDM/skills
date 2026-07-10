@@ -318,10 +318,7 @@ Store the final eval set in `evals/evals.json` and reference it from `skills.jso
 
 ```json
 {
-  "verification": {
-    "level": "tested",
-    "evals": "evals/evals.json"
-  }
+  "evals": "evals/evals.json"
 }
 ```
 

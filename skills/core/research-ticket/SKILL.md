@@ -6,7 +6,6 @@ invocation: model-invoked
 metadata:
   author: Wian van der Merwe
   tags: [ticket, issue-tracker, research, building-block]
-license: Proprietary
 depends:
   - context-reports
   - worker-contract

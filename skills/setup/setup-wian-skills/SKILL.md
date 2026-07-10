@@ -3,7 +3,6 @@ name: setup-wian-skills
 description: Sync skills from github.com/WianVDM/skills, resolve shared configuration, and present the initialization checklist. Use when setting up or updating a workspace.
 version: 1.0.1
 invocation: user-invoked
-license: Proprietary
 metadata:
   author: Wian van der Merwe
   tags: [setup, conductor, bootstrap, sync, configuration, wian-skills]

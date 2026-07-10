@@ -1,8 +1,8 @@
-# Governance and Verification
+# Governance and Audit
 
 ## At a glance
 
-This document specifies **verification, approval, audit, and signing** for skills, with special attention to agent-authored skills. It covers staging, immutability in-session, dependency parity, cryptographic signatures, and security scanning.
+This document specifies **governance and audit** for skills, with special attention to agent-authored skills. It covers staging, immutability in-session, dependency parity, and security scanning.
 
 **Read this if:** you distribute skills, let agents write or modify skills, or need to meet trust and compliance requirements.
 
@@ -48,21 +48,6 @@ For small teams, this can be as simple as `skills pending` and `skills approve` 
 
 ---
 
-## Verification levels
-
-A skill carries a verification level that tells consumers how much trust they can place in it. The level is set at bootstrap and is immutable for the session. If a skill is modified, it must be re-verified.
-
-| Level | Meaning | Typical requirements |
-|-------|---------|----------------------|
-| `unverified` | Default. No review or evaluation. | human-in-the-loop (HITL) on every irreversible action. |
-| `declared` | The author claims it meets the standard. | Checklist review by a human or tool. |
-| `tested` | Evaluations pass. | Evaluation suite, security scan, adversarial pressure tests. |
-| `formal` | Machine-checkable proof. | Aspirational; not practical for most skills today. |
-
-The verification level is declared in `skills.json` or an audit ledger, not in `SKILL.md` frontmatter. It is a separate signal of evaluation rigor derived from evaluation, audit, and governance records.
-
----
-
 ## Audit events
 
 Every significant action on a skill should produce an audit event. The minimum event envelope is:
@@ -80,7 +65,6 @@ Every significant action on a skill should produce an audit event. The minimum e
 | `outcome` | Success, failure, blocked, etc. |
 | `rationale` | Why the decision was made. |
 | `trace_id` | Link to the execution trace. |
-| `verification_level` | Verification level of the skill at the time. |
 | `risk_tier` | Risk assessment of the skill or action. |
 
 Harnesses map their native traces into this envelope. For example:
@@ -96,7 +80,7 @@ Harnesses map their native traces into this envelope. For example:
 
 A skill that is loaded in a session is **immutable for that session**. If an agent tries to modify a loaded skill, the attempt is intercepted as an irreversible capability call, walked through human-in-the-loop approval, and audited with pre/post content hashes.
 
-If the modification is approved, it produces a new skill artifact that must be re-verified before the next session. Verification levels are bootstrap-only; they cannot be promoted mid-session.
+If the modification is approved, it produces a new skill artifact that must be re-evaluated before the next session.
 
 ---
 
@@ -105,14 +89,6 @@ If the modification is approved, it produces a new skill artifact that must be r
 Agent-authored skills have no exemption from dependency policy. They must declare all required skills, tools, MCP servers, binaries, and environment variables in `skills.json`. Policy gates must approve them before the skill is loaded or invoked.
 
 Undeclared dependencies are policy violations. This is especially important for MCP servers, which can leak data or execute actions outside the project.
-
----
-
-## Cryptographic signatures
-
-Before a skill is promoted beyond personal scope, a human reviewer or approved CI attestation pipeline should sign the approved manifest. The signature covers the manifest and content hashes.
-
-Signatures are **recommended but not sufficient**. They provide integrity, not trust. A signed skill still needs evaluation and review.
 
 ---
 
@@ -153,18 +129,15 @@ Security scanning is required for distributed skills and recommended for local s
 The following governance concerns are **limited** and are documented as such:
 
 - Exact harness-specific approval UIs and staging directories vary by vendor.
-- Cryptographic signing tooling maturity is not yet universal.
 - Runtime mutation interception is not uniformly available across harnesses.
-- Formal verification tooling is not practical for most skills today.
 
 ---
 
 ## Key takeaways
 
 - **Agent-authored skills** start in personal scope and require review before promotion to project, org, or public scope.
-- **Verification levels** (`unverified`, `declared`, `tested`, `formal`) are set at bootstrap and immutable for the session.
+- **Evaluation and audit** are the primary signals of trust for a skill.
 - A skill loaded in a session is **immutable in-session**; modification attempts are intercepted, approved, and audited.
-- **Signatures** are recommended but not sufficient; combine them with evaluation and review.
 - **Security scanning** is a separate audit dimension from functional evaluation.
 
 ## Research basis
@@ -174,9 +147,8 @@ The following governance concerns are **limited** and are documented as such:
 - **Claude Code** settings support attribution, OpenTelemetry, and managed plugin settings. https://code.claude.com/docs/en/skills
 - **Codex** provides a Compliance API and managed configuration. https://developers.openai.com/codex/guides/agents-md
 - **Agent Package Manager (APM)** and **Agent Skill Harbor** provide enterprise governance models that informed the small-team-to-enterprise scaling path.
-- **Verifiable Artifacts** (arXiv 2605.00424) frames verification levels, immutability, mutation interception, and signed manifests. https://arxiv.org/abs/2605.00424
+- **Verifiable Artifacts** (arXiv 2605.00424) frames governance, provenance, and verification levels as first-class concerns for enterprise skill libraries. We keep governance and audit; we do not require provenance or verification levels in skill metadata. https://arxiv.org/abs/2605.00424
 - The **foreground/background** distinction, **default personal scope**, and **post-approval staging** rules are our own design choices, synthesized from the research on agent authorship.
-- The **verification level mapping** (`unverified` → HITL, `declared` → checklist, `tested` → evals + security scan, `formal` → machine proof) is our own operationalization of the Verifiable Artifacts levels.
 - The **audit event schema** is our own minimum envelope, designed to be reconcilable with native harness traces.
 - The **security scanning as separate audit dimension** rule is drawn from the research evaluation framework.
 

@@ -1,7 +1,6 @@
 ---
 name: jira-adapter
 description: Issue-tracker source adapter for the pr-report conductor. Resolves Jira tickets and fetches ticket scope with acceptance criteria, returning the normalized issue-tracker shape.
-license: Proprietary
 invocation: model-invoked
 metadata:
   tags: [pr-report, adapter, issue-tracker-source, jira, building-block]

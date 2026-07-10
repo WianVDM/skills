@@ -1,7 +1,6 @@
 ---
 name: token-resolver
 description: Resolve secure tokens for adapters from environment variables, MCP config files, or a one-time user prompt. Return a reference without exposing the secret value.
-license: Proprietary
 invocation: model-invoked
 metadata:
   tags: [security, tokens, adapters, building-block]

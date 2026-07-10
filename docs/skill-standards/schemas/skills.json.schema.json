@@ -24,11 +24,6 @@
       "maxLength": 1024,
       "description": "Human-readable purpose of the package."
     },
-    "license": {
-      "type": "string",
-      "maxLength": 256,
-      "description": "License identifier, preferably an SPDX identifier."
-    },
     "compatibility": {
       "type": "object",
       "properties": {
@@ -118,22 +113,6 @@
           "description": "Sandbox capabilities required at runtime."
         }
       }
-    },
-    "verification": {
-      "type": "object",
-      "properties": {
-        "level": {
-          "type": "string",
-          "enum": ["unverified", "declared", "tested", "formal"],
-          "description": "Verification level. See reference/governance.md."
-        },
-        "evals": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Path to the evaluation artifact, typically evals/evals.json."
-        }
-      },
-      "additionalProperties": true
     }
   },
   "additionalProperties": true

@@ -2,7 +2,6 @@
 name: challenge-assumptions
 description: "Stress-test a list of assumptions by searching for disproof signals across provided evidence. Use when a skill needs to avoid confirmation bias."
 version: 1.0.0
-license: Proprietary
 invocation: model-invoked
 metadata:
   author: Wian van der Merwe

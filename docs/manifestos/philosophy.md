@@ -10,7 +10,7 @@ This manifesto defines the smallest set of fundamentals that make agent skills g
 
 To define the smallest set of fundamentals that make any agent skill great, and to document a modular architecture pattern that lets skills be composed from reusable building blocks, conductors, and wrappers. This standard is both a specification and a living library of skills built on those principles.
 
-A skill is a reusable unit of process guidance that is injected into an agent's context window to shape behavior predictably. It is not a prompt, not a script, not a plugin, and not a rule — though it can contain any of those things. The most useful framing is that a skill is a **delegation boundary**: it lets a human or team say "here is how this kind of work is done here," and then have that guidance travel with the agent across sessions, tasks, and (when portable) harnesses.
+A skill is a reusable unit of process guidance that is injected into an agent's context window to shape behavior predictably. It is not a script, not a manual, not a prompt, and not a configuration file — though it can contain any of those things. The most useful framing is that a skill is a **delegation boundary**: it lets a human or team say "here is how this kind of work is done here," and then have that guidance travel with the agent across sessions, tasks, and (when portable) harnesses.
 
 ## Core beliefs
 
@@ -32,8 +32,8 @@ A skill is a reusable unit of process guidance that is injected into an agent's 
 6. **Predictability is the root virtue.**
    A skill exists to wrangle determinism out of a stochastic system. The agent should follow the same *process* every time the skill runs. Output may vary, but behavior should not.
 
-7. **Trust is built through provenance, evaluation, and audit.**
-   If agents can write skills, then provenance, approval, and audit become first-class concerns. A skill without provenance metadata is not ready for distribution.
+7. **Trust is built through evaluation and audit.**
+   If agents can write skills, then evaluation and audit become first-class concerns. A skill is not ready for distribution until it has been evaluated and its changes audited.
 
 8. **Refinement is continuous.**
    Skills and standards are polished over time as we learn what works. We never keep a rule just because it was written down.
@@ -59,12 +59,12 @@ We start with the smallest possible fundamentals and the smallest possible archi
 
 ## Key takeaways
 
-- A skill is a **delegation boundary**, not a prompt, script, plugin, or rule.
+- A skill is a **delegation boundary**, not a script, manual, prompt, or configuration file.
 - The root virtue is **predictability**: the agent should follow the same *process* every time.
 - **Fundamentals are universal; architecture is opt-in**.
 - **Minimalism beats completeness**; every line must earn its place.
 - **Composition over monoliths**: complex behavior emerges from simple skills working together.
-- **Trust is built through provenance, evaluation, and audit**.
+- **Trust is built through evaluation and audit**.
 - **Refinement is continuous**; do not keep a rule just because it was written down.
 
 ## Research basis

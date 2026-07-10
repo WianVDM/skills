@@ -6,7 +6,7 @@ This document specifies the **package envelope** around the portable core: `skil
 
 **Read this if:** you are distributing a skill, adding dependencies, or managing a skill lifecycle.
 
-A skill is a reusable unit of process guidance. A **skill package** wraps one or more skills with metadata, dependencies, versioning, and verification so they can be discovered, installed, distributed, and trusted.
+A skill is a reusable unit of process guidance. A **skill package** wraps one or more skills with metadata, dependencies, and versioning so they can be discovered, installed, and distributed.
 
 This document specifies the package envelope and the lifecycle stages a skill moves through. The package layer sits around the portable core defined in `FORMAT.md`; it does not change the core format.
 
@@ -20,7 +20,6 @@ A single skill with no consumers and no dependencies can live as a lone `SKILL.m
 - The skill is consumed by other skills or conductors.
 - The skill is distributed beyond its origin project.
 - Multiple related skills are shipped together.
-- The skill needs verification or governance metadata.
 
 ---
 
@@ -33,7 +32,6 @@ A single skill with no consumers and no dependencies can live as a lone `SKILL.m
   "name": "ui-design-kit",
   "version": "2.1.0",
   "description": "Skills for reviewing and generating UI components against a design system.",
-  "license": "MIT",
   "compatibility": {
     "harnesses": ["claude-code", "cursor", "codex", "aider"],
     "min_aider_version": "0.75.0"
@@ -66,10 +64,6 @@ A single skill with no consumers and no dependencies can live as a lone `SKILL.m
     "environment_variables": [
       "DESIGN_SYSTEM_API_TOKEN"
     ]
-  },
-  "verification": {
-    "level": "tested",
-    "evals": "evals/evals.json"
   }
 }
 ```
@@ -87,10 +81,8 @@ A single skill with no consumers and no dependencies can live as a lone `SKILL.m
 | Field | Type | Constraints | Purpose |
 |-------|------|-------------|---------|
 | `description` | string | Max 1024 chars. | Human-readable purpose. |
-| `license` | string | Max 256 chars. Prefer SPDX identifier. | License identifier. |
 | `compatibility` | object | See `compatibility` object below. | Harness compatibility, minimum versions. |
 | `namespaces` | object | Keys: skill names. Values: namespaced identifiers (`package:skill`). | Mapping from skill name to namespaced identifier. |
-| `verification` | object | See `verification` object below. | Verification level and evaluation artifact path. |
 
 ### `requirements` object
 
@@ -103,16 +95,9 @@ A single skill with no consumers and no dependencies can live as a lone `SKILL.m
 | `environment_variables` | string[] | Unique. Non-empty strings. | Environment variables the skills reference. |
 | `sandbox_features` | string[] | Unique. Non-empty strings. | Sandbox capabilities required at runtime. |
 
-### `verification` object
-
-| Key | Type | Constraints | Purpose |
-|-----|------|-------------|---------|
-| `level` | string | Enum: `unverified`, `declared`, `tested`, `formal`. | Verification level. |
-| `evals` | string | Non-empty path. Typically `evals/evals.json`. | Path to the evaluation artifact. |
-
 Runtime tool scoping stays in `SKILL.md` frontmatter (e.g., `allowed-tools`). The `requirements` object is for dependency declaration and policy gates, not for runtime behavior.
 
-See `GOVERNANCE.md` for verification levels and governance rules.
+See `GOVERNANCE.md` for governance and audit rules.
 
 ## Formal package schemas
 
@@ -135,7 +120,6 @@ These schemas enable tooling, validation, and forward compatibility. The schemas
     "name": { "type": "string", "pattern": "^[a-z0-9-]+$", "maxLength": 128 },
     "version": { "type": "string", "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*))?(?:\\+([a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*))?$" },
     "description": { "type": "string", "maxLength": 1024 },
-    "license": { "type": "string", "maxLength": 256 },
     "compatibility": {
       "type": "object",
       "properties": {
@@ -159,14 +143,6 @@ These schemas enable tooling, validation, and forward compatibility. The schemas
         "environment_variables": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
         "sandbox_features": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
       }
-    },
-    "verification": {
-      "type": "object",
-      "properties": {
-        "level": { "type": "string", "enum": ["unverified", "declared", "tested", "formal"] },
-        "evals": { "type": "string", "minLength": 1 }
-      }
-    },
     }
   },
   "additionalProperties": true
@@ -394,7 +370,6 @@ Once the skill is stable, publish or install it. At publish time:
 - Document breaking changes and migration paths.
 - Add or update `README.md` for human maintainers.
 - Declare compatibility and dependencies in `skills.json`.
-- Record verification metadata.
 
 ### 8. Maintain
 
@@ -436,13 +411,9 @@ See [patterns/portability.md](../patterns/portability.md) for the full degradati
 
 ## Governance in the package layer
 
-The package layer is where governance metadata lives. For distributed skills, `skills.json` should include:
+Governance lives outside the package manifest. The `skills.json` file should declare only identity, versioning, compatibility, and dependencies so that policy gates and harnesses can reason about the package without loading its contents.
 
-- Verification level.
-- Required dependencies for policy gates.
-- License.
-
-For personal or local skills, these fields are recommended but not required. See `GOVERNANCE.md` for the full governance model.
+See `GOVERNANCE.md` for the governance and audit model.
 
 ---
 
@@ -454,7 +425,7 @@ For personal or local skills, these fields are recommended but not required. See
 - **Namespacing** (`package-name:skill-name`) prevents collisions when skills are shared.
 - Declare all **dependencies** (skills, tools, MCP servers, binaries, environment variables) so policy gates can validate them.
 - The **lifecycle** stages have clear entry and exit criteria: decide → design → draft → validate → test → iterate → publish → maintain → deprecate.
-- For distributed skills, add governance metadata: verification level and license.
+- Governance is handled outside the package manifest; keep `skills.json` focused on identity, versioning, compatibility, and dependencies.
 
 ## Research basis
 

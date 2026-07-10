@@ -2,7 +2,6 @@
   "name": "baseline",
   "version": "1.0.1",
   "description": "Capture a reproducible snapshot of the current state of a feature, module, route, API, or bug on a specified branch.",
-  "license": "MIT",
   "skills": ["baseline"],
   "namespaces": {
     "baseline": "baseline:baseline"
@@ -41,9 +40,5 @@
       "AUTH_USERNAME",
       "AUTH_PASSWORD"
     ]
-  },
-  "verification": {
-    "level": "declared",
-    "evals": "evals/evals.json"
   }
 }

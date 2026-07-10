@@ -105,12 +105,6 @@ This is the contract that `audit-skill` uses to evaluate any skill. Each check h
 | E03 | Discipline skills have pressure tests. | Warning | Pressure tests against documented failure pattern. |
 | E04 | Composition tests exist for composable skills. | Warning | Conductor/building block skills have composition tests. |
 
-## Category: Governance
-
-| ID | Check | Severity | Pass condition |
-|---|---|---|---|
-| G01 | License is declared if distributed. | Warning | `license` present in `skills.json` or frontmatter. |
-
 ## Output format
 
 `audit-skill` produces a structured report:

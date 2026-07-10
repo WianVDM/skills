@@ -125,6 +125,12 @@ Example `references/DEPENDENCIES.md`:
 
 ---
 
+## Composition over monoliths
+
+Complex behavior should emerge from simple skills composed together, not from one skill that does everything. A building block is the unit of that composition. When a skill grows past one narrow capability, extract a new building block rather than inflate the original.
+
+---
+
 ## Composition patterns
 
 ### Conductor consumes building blocks

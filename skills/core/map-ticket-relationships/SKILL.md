@@ -6,8 +6,6 @@ invocation: model-invoked
 metadata:
   author: Wian van der Merwe
   tags: [relationships, ticket-graph, dependencies, building-block]
-  verification_level: declared
-license: Proprietary
 depends:
   - context-reports
   - worker-contract

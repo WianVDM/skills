@@ -1,6 +1,8 @@
 # Iterate
 
-Improve the skill based on test results and real usage.
+## Refinement is continuous
+
+A skill is never finished; it is only current. Do not keep a rule, example, or step just because it was written down. Remove it if it no longer changes behavior. This is the active half of maintenance: iterating while the skill is alive.
 
 - Generalize from specific failures rather than overfitting to one prompt.
 - Remove instructions that do not change behavior.

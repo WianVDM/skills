@@ -217,7 +217,6 @@ This standard is versioned. When the format or package schema changes, skills ma
 | `version` inside `metadata` | `version` top-level | Move `version` out of `metadata`. |
 | `requires` / `consumes` in frontmatter | `requirements` in `skills.json` | Use the package-level dependency model. |
 | Harness hints as core fields | harness hints separated | Move `allowed-tools` and similar to harness hints. |
-| `verification` only `level` | `verification` includes `evals` path | Add `evals` pointer to the evaluation artifact. |
 
 ### Fallback strategy
 

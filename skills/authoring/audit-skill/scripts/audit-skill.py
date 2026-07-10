@@ -484,17 +484,6 @@ def check_evaluation(skill_dir: Path, fm: dict) -> list[dict]:
     return findings
 
 
-def check_governance(fm: dict) -> list[dict]:
-    findings = []
-    check = "License is declared if distributed"
-    if fm.get("license"):
-        findings.append(pass_finding("G01", "Governance", "warning", check))
-    else:
-        findings.append(manual_finding("G01", "Governance", "warning", check, "Add a `license` field if the skill is distributed."))
-
-    return findings
-
-
 def check_tooling_awareness(skill_dir: Path, body: str) -> list[dict]:
     """Check TA-01 and TA-02 from the tooling-awareness rubric."""
     findings = []
@@ -589,7 +578,6 @@ def audit(skill_path: str) -> dict:
     findings.extend(check_dependency_references(skill_dir if skill_dir.is_dir() else skill_dir.parent, fm, files))
     findings.extend(check_portability(skill_dir if skill_dir.is_dir() else skill_dir.parent, body))
     findings.extend(check_evaluation(skill_dir if skill_dir.is_dir() else skill_dir.parent, fm))
-    findings.extend(check_governance(fm))
     findings.extend(check_tooling_awareness(skill_dir if skill_dir.is_dir() else skill_dir.parent, body))
 
     counts = {"blockers": 0, "warnings": 0, "suggestions": 0, "manual": 0}

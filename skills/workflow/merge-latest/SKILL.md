@@ -2,7 +2,6 @@
 name: merge-latest
 description: Merge the latest upstream branch into the correct target branch safely. Understands branch relationships, fetches remote state, deeply investigates conflicts, and stops when uncertain. Use when the user says '/merge-latest', 'merge latest', 'merge upstream', or wants to sync a feature branch before opening a PR.
 argument-hint: "optional target branch, optional upstream branch, optional --stash"
-license: Proprietary
 metadata:
   tags: [workflow, conductor, git, branching]
   author: Wian van der Merwe

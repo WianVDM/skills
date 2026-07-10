@@ -6,7 +6,6 @@ invocation: model-invoked
 metadata:
   author: Wian van der Merwe
   tags: [ticket, debrief, research, confidence, conductor]
-  verification_level: declared
 depends:
   - checkpoint
   - research-ticket

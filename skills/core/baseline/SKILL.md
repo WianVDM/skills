@@ -8,7 +8,6 @@ metadata:
   version: "1.0.1"
   scope: global
 invocation: model-invoked
-license: MIT
 ---
 
 # baseline

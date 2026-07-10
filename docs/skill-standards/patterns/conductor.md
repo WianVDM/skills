@@ -24,6 +24,12 @@ Do not use a conductor when:
 
 ---
 
+## Composition over monoliths
+
+A conductor turns building blocks into workflows. It does not replace them. If a conductor starts doing the narrow work itself, it has become a monolith. Split the narrow work back into a building block and let the conductor orchestrate.
+
+---
+
 ## Core responsibilities
 
 A conductor is responsible for:

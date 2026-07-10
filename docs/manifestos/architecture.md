@@ -10,7 +10,7 @@ This manifesto maps skills into a layered architecture: a portable core of `SKIL
 
 The library organizes skills into layers. Each layer has a single consumer and a single responsibility. A skill may participate in one or more layers, but its primary role should be clear.
 
-The architecture is built on a **portable core**: a `SKILL.md` file with YAML frontmatter and a markdown body, plus optional sibling directories. Around this core sits a **package envelope** (`skills.json`, `skills.lock`, versioning, namespacing, dependencies) and a **trust layer** (provenance, evaluation, audit). The architecture is harness-agnostic: it can degrade gracefully for harnesses that only support a subset of the standard.
+The architecture is built on a **portable core**: a `SKILL.md` file with YAML frontmatter and a markdown body, plus optional sibling directories. Around this core sits a **package envelope** (`skills.json`, `skills.lock`, versioning, namespacing, dependencies) and a **trust layer** (evaluation and audit). The architecture is harness-agnostic: it can degrade gracefully for harnesses that only support a subset of the standard.
 
 ## The context stack
 
@@ -21,11 +21,10 @@ A consistent layered model emerges across agent harnesses. Skills are the on-dem
 | **Always-on context** | `AGENTS.md`, `CONVENTIONS.md`, `.cursorrules` | Project baseline, team conventions |
 | **Scoped rules** | `.claude/rules`, `.cursor/rules/*.mdc` | File-type or situation-specific guidance |
 | **Skills** | `SKILL.md` | Reusable, on-demand workflows and reference |
-| **Hooks** | `PreToolUse`, `PostToolUse`, `SessionStart` | Deterministic lifecycle enforcement |
 | **MCP / tools** | External servers, APIs | Capabilities the skill can call |
 | **Subagents / crews** | Isolated workers | Delegation and coordination |
 
-Skills are not the same as rules, context files, hooks, or MCP servers. A context file is always-on guidance; a rule is scoped guidance; a skill is a reusable, on-demand workflow. A hook enforces deterministic lifecycle events; an MCP server exposes a structured capability. A skill may invoke any of the lower layers, but it should not blur into them.
+Skills are not the same as rules, context files, or MCP servers. A context file is always-on guidance; a rule is scoped guidance; a skill is a reusable, on-demand workflow. An MCP server exposes a structured capability. A skill may invoke any of the lower layers, but it should not blur into them.
 
 ## The portable core
 
@@ -54,7 +53,7 @@ Everything beyond this core — exact tool scoping, MCP server wiring, sandbox m
 
 Skills that are shared, versioned, or have dependencies need a package envelope:
 
-- `skills.json` — package metadata, dependencies, harness compatibility, required tools, MCP servers, and verification level.
+- `skills.json` — package metadata, dependencies, harness compatibility, required tools, and MCP servers.
 - `skills.lock` — resolved dependency graph and content hashes.
 - Versioning and namespacing — so consumers can depend on a stable contract.
 - Dependency declarations — other skills, external tools, MCP servers, binaries, environment variables.
@@ -189,7 +188,7 @@ If the answer is unclear, the skill is not well-defined yet.
 
 ## Research basis
 
-- **Context stack** — The layered model of always-on context, scoped rules, skills, hooks, MCP, and subagents is drawn from comparing Claude Code, Cursor, Codex, Aider, and Hermes. See the rules-context-files-skills-boundary correlation in the research corpus.
+- **Context stack** — The layered model of always-on context, scoped rules, skills, MCP, and subagents is drawn from comparing Claude Code, Cursor, Codex, Aider, and Hermes. See the rules-context-files-skills-boundary correlation in the research corpus.
 - **Portable core** — Claude Code, Cursor, Codex, Aider, and Hermes all converge on a markdown skill file with a routing description and a body of guidance. The agentskills.io specification defines a minimal frontmatter surface. https://agentskills.io/specification
 - **Package envelope** — Codex, Claude Code, Hermes, and the agentskills.io ecosystem all support package-level metadata, versioning, and dependency declaration. The standard's envelope is a design decision synthesized from these systems.
 - **Building block / conductor / wrapper** — This taxonomy is our own choice, but it is supported by the research on skill taxonomies and the need to separate narrow capabilities from coordination and presentation.

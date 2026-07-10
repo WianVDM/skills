@@ -1,7 +1,6 @@
 ---
 name: github-actions-adapter
 description: CI source adapter for the pr-report conductor. Fetches GitHub Actions check runs and job-log summaries and returns the normalized ci-source shape.
-license: Proprietary
 invocation: model-invoked
 metadata:
   tags: [pr-report, adapter, ci-source, github-actions, building-block]

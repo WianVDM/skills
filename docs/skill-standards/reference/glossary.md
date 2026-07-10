@@ -258,10 +258,6 @@ A skill written or materially modified by an agent. Requires stricter governance
 
 The practice of writing agent-authored skills to a pending area for review before they are loaded or invoked.
 
-### Verification level
-
-A signal of evaluation rigor: `unverified`, `declared`, `tested`, or `formal`. Assigned through evaluation, audit, or governance records outside the skill (for example, `skills.json` or an audit ledger), not declared in `SKILL.md` frontmatter.
-
 ### Audit event
 
 A recorded action taken on a skill, such as create, modify, approve, reject, invoke, distribute, or retire.
@@ -368,7 +364,7 @@ The process by which a long-running agent session is summarized or truncated to 
 
 ### Trust layer
 
-The concerns that make a skill trustworthy for distribution: verification, evaluation, audit, and cryptographic signing. The trust layer sits around the portable core and package envelope.
+The concerns that make a skill trustworthy for distribution: evaluation and audit. The trust layer sits around the portable core and package envelope.
 
 ### Bootstrap routine
 

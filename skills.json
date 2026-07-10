@@ -2,7 +2,6 @@
   "name": "wian-skills",
   "version": "1.0.0",
   "description": "A collection of reusable agent skills for project setup, skill authoring, and workflow orchestration.",
-  "license": "Proprietary",
   "skills": [
     "./skills/authoring/audit-skill",
     "./skills/authoring/decide-skill-shape",
@@ -310,8 +309,5 @@
         "prototype"
       ]
     }
-  },
-  "verification": {
-    "level": "declared"
   }
 }

@@ -1,7 +1,6 @@
 ---
 name: github-pr-adapter
 description: GitHub PR source adapter for pr-report. Fetches PR metadata, changed files, reviews, and inline review threads via the GitHub API.
-license: Proprietary
 invocation: model-invoked
 metadata:
   tags: [adapter, pr-source, github, building-block]

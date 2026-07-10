@@ -1,7 +1,6 @@
 ---
 name: pr-adapter-contract
 description: Defines the normalized adapter interface contract for the pr-report conductor. Use when authoring or reviewing a pr-report adapter, implementing the adapter envelope, or mapping a new PR platform, CI system, static-analysis tool, issue tracker, or notification source into the pr-report shape.
-license: Proprietary
 invocation: model-invoked
 metadata:
   tags: [pr-report, adapter, contract, building-block]

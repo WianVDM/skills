@@ -1,7 +1,6 @@
 ---
 name: sonarcloud-adapter
 description: Static-analysis source adapter for the pr-report conductor. Fetches SonarCloud findings and returns the normalized static-analysis shape.
-license: Proprietary
 invocation: model-invoked
 metadata:
   tags: [pr-report, adapter, static-analysis-source, sonarcloud, building-block]

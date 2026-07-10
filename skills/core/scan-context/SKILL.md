@@ -2,7 +2,6 @@
 name: scan-context
 description: "Discover related context reports in a project's context directory by ticket key, project, branch, or report type. Use when a skill needs to find prior baselines, handoffs, debriefs, or other shared reports."
 version: 1.0.0
-license: Proprietary
 invocation: model-invoked
 metadata:
   author: Wian van der Merwe

@@ -65,4 +65,3 @@ A one-line explanation of each ID emitted by `audit-skill`:
 | E02 | Evaluation | Behavioral evals compare with-skill vs baseline. |
 | E03 | Evaluation | Discipline skills have pressure tests. |
 | E04 | Evaluation | Composition tests exist for composable skills. |
-| G01 | Governance | License is declared if distributed. |
