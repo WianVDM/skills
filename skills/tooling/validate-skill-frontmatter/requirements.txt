@@ -1,0 +1,7 @@
+# Required Python packages for validate-skill-frontmatter
+
+# PyYAML is required to parse SKILL.md YAML frontmatter.
+pyyaml>=6.0
+
+# jsonschema is required to validate frontmatter against the JSON schema.
+jsonschema>=4.0

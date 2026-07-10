@@ -143,7 +143,7 @@ def resolve_link(md_file: Path, link: str) -> bool:
     return target.exists()
 
 
-def check_identities(skill_dir: Path, skill_md: Path, fm: dict) -> list[dict]:
+def check_identities(skill_dir: Path, skill_md: Path, fm: dict, schema_path: Optional[str] = None) -> list[dict]:
     findings = []
     name = fm.get("name", "")
     expected_name = skill_dir.name if skill_dir.is_dir() else skill_dir.parent.name
@@ -200,9 +200,14 @@ def check_identities(skill_dir: Path, skill_md: Path, fm: dict) -> list[dict]:
         findings.append(pass_finding("F07", "Identity", "warning", check))
 
     check = "Frontmatter validates against JSON schema"
-    validation = _run_schema_validation(skill_md)
-    if validation.get("valid"):
+    validation = _run_schema_validation(skill_md, schema_path)
+    if validation.get("valid") is True:
         findings.append(pass_finding("F08", "Identity", "blocker", check))
+    elif validation.get("valid") is None:
+        findings.append(finding(
+            "F08", "Identity", "warning", check, "MANUAL",
+            "Schema not found; frontmatter validation was skipped. Provide a schema with --schema or ensure the skill-standards docs are available."
+        ))
     else:
         errors = validation.get("errors", [])
         if errors:
@@ -413,13 +418,32 @@ def check_dependencies(skill_dir: Path, body: str) -> list[dict]:
     return findings
 
 
-def _run_schema_validation(skill_md: Path) -> dict:
+def _find_schema_path(provided_schema: Optional[str]) -> Optional[Path]:
+    """Resolve the schema path from the CLI argument or a set of fallback locations."""
+    if provided_schema:
+        path = Path(provided_schema).expanduser().resolve()
+        if path.is_file():
+            return path
+    repo_root = Path(__file__).resolve().parents[4]
+    candidates = [
+        repo_root / "docs" / "skill-standards" / "schemas" / "skill-frontmatter.schema.json",
+        Path(__file__).resolve().parent.parent / "references" / "skill-frontmatter.schema.json",
+    ]
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+def _run_schema_validation(skill_md: Path, schema_path: Optional[str] = None) -> dict:
     """Invoke validate-skill-frontmatter directly and return its JSON report."""
     repo_root = Path(__file__).resolve().parents[4]
     script = repo_root / "skills" / "tooling" / "validate-skill-frontmatter" / "scripts" / "validate-skill-frontmatter.py"
-    schema = repo_root / "docs" / "skill-standards" / "schemas" / "skill-frontmatter.schema.json"
-    if not script.is_file() or not schema.is_file():
-        return {"valid": False, "errors": ["Validation tool or schema not found."]}
+    schema = _find_schema_path(schema_path)
+    if not script.is_file():
+        return {"valid": False, "errors": ["Validation tool not found."]}
+    if not schema:
+        return {"valid": None, "errors": ["Schema not found. Frontmatter validation was skipped. Provide a schema with --schema or ensure the skill-standards docs are available."]}
     try:
         result = subprocess.run(
             [sys.executable, str(script), str(skill_md), "--schema", str(schema), "--json"],
@@ -632,7 +656,136 @@ def check_extraction(skill_dir: Path, body: str) -> list[dict]:
     return findings
 
 
-def audit(skill_path: str) -> dict:
+def check_token_economy(skill_dir: Path, files: list[Path]) -> list[dict]:
+    """Check that every file and section is load-bearing (TE-01, TE-02)."""
+    findings = []
+    large_files = []
+    for f in files:
+        if f.suffix != ".md":
+            continue
+        try:
+            lines = f.read_text(encoding="utf-8", errors="replace").splitlines()
+            if len(lines) > 300:
+                large_files.append(f"{f.name} ({len(lines)} lines)")
+        except Exception:
+            continue
+
+    check = "Skill files are not disproportionately large"
+    if large_files:
+        findings.append(finding(
+            "TE-01", "Token economy", "warning", check, "MANUAL",
+            f"Review these large files for non-load-bearing sediment: {', '.join(large_files[:5])}."
+        ))
+    else:
+        findings.append(manual_finding(
+            "TE-01", "Token economy", "warning", check,
+            "Review whether every section, example, and reference is load-bearing and justified."
+        ))
+
+    # Check for published empty checkboxes.
+    checkbox_files = []
+    for f in files:
+        if f.suffix != ".md":
+            continue
+        try:
+            text = f.read_text(encoding="utf-8", errors="replace")
+            if "[ ]" in text:
+                checkbox_files.append(f.name)
+        except Exception:
+            continue
+    check = "No unfinished checklist items are published"
+    if checkbox_files:
+        findings.append(finding(
+            "TE-02", "Token economy", "warning", check, "MANUAL",
+            f"Empty checkboxes found in {', '.join(checkbox_files[:3])}. Convert to load-bearing confirmation items or remove them."
+        ))
+    else:
+        findings.append(pass_finding("TE-02", "Token economy", "warning", check))
+
+    return findings
+
+
+def check_pattern_compliance(skill_dir: Path, body: str) -> list[dict]:
+    """Check that the skill follows the relevant skill-standards patterns (PC-01, PC-02, PC-03)."""
+    findings = []
+    body_lower = body.lower()
+
+    has_branches = bool(re.search(r"(?i)(?:##\s*branch|\bbranch\b|\bmethod\b)", body))
+    lazy_signals = ["lazily", "lazy evaluation", "when the relevant", "per path", "when the specific", "only when"]
+    has_lazy = any(kw in body_lower for kw in lazy_signals)
+
+    check = "Lazy dependency evaluation is documented when the skill has branches or methods"
+    if not has_branches:
+        findings.append(na_finding("PC-01", "Pattern compliance", "warning", check))
+    elif has_lazy:
+        findings.append(pass_finding("PC-01", "Pattern compliance", "warning", check))
+    else:
+        findings.append(manual_finding(
+            "PC-01", "Pattern compliance", "warning", check,
+            "If the skill has multiple branches or methods, document the lazy dependency evaluation strategy."
+        ))
+
+    capability_signals = [
+        "capability", "preferred tool", "fallback tool", "degraded", "tooling awareness",
+        "capability-to-tool", "best available", "detect available",
+    ]
+    has_capability_strategy = any(kw in body_lower for kw in capability_signals)
+
+    check = "Capability-to-tool strategy is documented when the skill has multiple load-bearing capabilities"
+    if has_capability_strategy:
+        findings.append(pass_finding("PC-02", "Pattern compliance", "warning", check))
+    else:
+        findings.append(manual_finding(
+            "PC-02", "Pattern compliance", "warning", check,
+            "If the skill has multiple load-bearing capabilities, document the preferred tool, fallback tools, and degraded-output disclosure for each."
+        ))
+
+    check = "Context reports pattern is referenced when the skill produces shared artifacts"
+    has_context_reports = "context report" in body_lower or "context-reports" in body_lower
+    has_shared_artifact = any(kw in body_lower for kw in ["artifact", "artifacts", "shared", "consumed by"])
+    if has_shared_artifact and not has_context_reports:
+        findings.append(manual_finding(
+            "PC-03", "Pattern compliance", "warning", check,
+            "If the skill produces structured artifacts consumed by other skills, reference the context-reports pattern."
+        ))
+    else:
+        findings.append(pass_finding("PC-03", "Pattern compliance", "warning", check))
+
+    return findings
+
+
+def check_overlap(skill_dir: Path, fm: dict) -> list[dict]:
+    """Heuristic check for potential overlap with existing skills (OV-01)."""
+    findings = []
+    name = fm.get("name", "")
+    description = fm.get("description", "")
+    target_text = f"{name} {description}".lower()
+
+    existing = _discover_skill_names(skill_dir)
+    overlaps = []
+    for skill_name in existing:
+        if skill_name == name or len(skill_name) < 3:
+            continue
+        normalized = skill_name.replace("-", " ")
+        if normalized in target_text or skill_name in target_text:
+            overlaps.append(skill_name)
+
+    check = "Skill does not duplicate an existing building block"
+    if overlaps:
+        findings.append(finding(
+            "OV-01", "Overlap", "warning", check, "MANUAL",
+            f"Potential overlap with existing skills: {', '.join(overlaps[:5])}. Run detect-skill-overlap for a full analysis."
+        ))
+    else:
+        findings.append(manual_finding(
+            "OV-01", "Overlap", "warning", check,
+            "Review whether the skill duplicates an existing building block by running detect-skill-overlap."
+        ))
+
+    return findings
+
+
+def audit(skill_path: str, schema_path: Optional[str] = None) -> dict:
     skill_dir = Path(skill_path).expanduser().resolve()
     skill_md = find_skill_md(skill_dir)
 
@@ -656,7 +809,7 @@ def audit(skill_path: str) -> dict:
     files = collect_files(skill_dir if skill_dir.is_dir() else skill_dir.parent)
 
     findings = []
-    findings.extend(check_identities(skill_dir if skill_dir.is_dir() else skill_dir.parent, skill_md, fm))
+    findings.extend(check_identities(skill_dir if skill_dir.is_dir() else skill_dir.parent, skill_md, fm, schema_path))
     findings.extend(check_type_and_shape(skill_dir if skill_dir.is_dir() else skill_dir.parent, body))
     findings.extend(check_scope(body))
     findings.extend(check_structure(skill_dir if skill_dir.is_dir() else skill_dir.parent, skill_md, body, files))
@@ -668,6 +821,9 @@ def audit(skill_path: str) -> dict:
     findings.extend(check_evaluation(skill_dir if skill_dir.is_dir() else skill_dir.parent, fm))
     findings.extend(check_tooling_awareness(skill_dir if skill_dir.is_dir() else skill_dir.parent, body))
     findings.extend(check_extraction(skill_dir if skill_dir.is_dir() else skill_dir.parent, body))
+    findings.extend(check_token_economy(skill_dir if skill_dir.is_dir() else skill_dir.parent, files))
+    findings.extend(check_pattern_compliance(skill_dir if skill_dir.is_dir() else skill_dir.parent, body))
+    findings.extend(check_overlap(skill_dir if skill_dir.is_dir() else skill_dir.parent, fm))
 
     counts = {"blockers": 0, "warnings": 0, "suggestions": 0, "manual": 0}
     remediation = []
@@ -732,10 +888,11 @@ def main():
 
     parser = argparse.ArgumentParser(description="Audit a skill against the fundamentals.")
     parser.add_argument("skill_path", help="Path to the skill directory or SKILL.md file.")
+    parser.add_argument("--schema", help="Path to the skill-frontmatter JSON schema. Falls back to the repo docs or a bundled schema.")
     parser.add_argument("--json", action="store_true", help="Output JSON.")
     args = parser.parse_args()
 
-    report = audit(args.skill_path)
+    report = audit(args.skill_path, args.schema)
     if args.json:
         print(json.dumps(report, indent=2))
     else:

@@ -18,8 +18,9 @@ Use this skill when you want to:
 
 ## How to invoke
 
-Reference this skill when discussing skill design. The conductor will classify your intent into one of two top-level branches, then ask one gate question to choose the internal path:
+Reference this skill when discussing skill design. The conductor will classify your intent into one of the top-level branches, then ask one gate question to choose the internal path:
 
+- **initialize** — first-run configuration. Persists `write-a-skill.yaml` with project paths, standards source, and registry list. Runs automatically when no config exists or when the user asks to reconfigure.
 - **create** — for producing a new skill or deciding what shape to build. Internal gates:
   - **full** — complete design workflow for a new skill.
   - **quick** — compressed design workflow for a minimal skill.
@@ -54,7 +55,10 @@ write-a-skill/
 │   ├── clarify-scope.md
 │   ├── classify-skill-type.md
 │   ├── suggest-patterns.md
+│   ├── initialize.md                 # first-run configuration proposal
 │   └── draft-skill-md.md
+├── scripts/                          # deterministic helpers
+│   └── initialize-config.py          # writes write-a-skill.yaml after user approval
 └── assets/templates/                 # starter templates for new skills
     ├── SKILL.md
     ├── README.md

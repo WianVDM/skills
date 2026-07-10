@@ -1,6 +1,6 @@
 # State and context report schemas
 
-This reference defines the context-report artifacts used by `write-a-skill` to maintain working state. For the shared context-report conventions (directory layout, envelope, freshness rules, and missing-report handling), see the `context-reports` skill.
+This reference defines the `write-a-skill`-specific context-report artifacts. For the shared context-report conventions — directory layout, report envelope, freshness rules, and missing-report handling — see the `context-reports` skill.
 
 All artifacts are written as markdown so the session can survive compaction and be resumed.
 
@@ -10,34 +10,6 @@ All artifacts live under the detected context directory:
 
 - Design artifacts: `{context}/skill-design/{skill-name}-*.md`
 - Review artifacts: `{context}/skill-review/{skill-name}-*.md`
-
-## Common report envelope
-
-Every report should include a header and a small set of required sections.
-
-### Report header
-
-```yaml
----
-report: report-name                    # e.g., self-audit, audit, global-readiness
-skill: skill-name                       # the skill being reviewed/designed
-version: "1.0.0"                          # optional; version of the skill being reviewed/designed
-timestamp: ISO-8601                     # when the report was generated
-status: draft | final | stale | override
----
-```
-
-### Required sections
-
-Every report should contain:
-
-1. **Summary.** One-sentence verdict or recommendation.
-2. **Findings.** Structured observations, ratings, or check results.
-3. **Decisions made.** Any decisions captured during the work.
-4. **Open questions.** Questions still pending.
-5. **Blockers.** Issues that prevent progress.
-
-Specific report types may add additional sections below these.
 
 ## Report types
 
@@ -50,6 +22,8 @@ Specific report types may add additional sections below these.
 | Audit report | `{skill-name}-audit.md` | Review of an existing or drafted skill. |
 | Decision log | `{skill-name}-decisions.md` | Append-only record of decisions and rationale. |
 | Decision report | `{skill-name}-decision-report.md` | Output of the `decide` branch when the right shape is not a new skill. |
+
+For the shared report envelope (frontmatter and required sections), see the `context-reports` skill.
 
 ## Intent note
 
@@ -98,6 +72,9 @@ One sentence: this skill makes the agent more predictable at ______ by enforcing
 | Source | Name | Description | Trust | Install command |
 |---|---|---|---|---|
 | ... | ... | ... | ... | ... |
+
+## Overlap scan
+See `detect-skill-overlap` output.
 
 ## Recommendation
 {create new | reuse local | install from registry | use script/MCP/context file instead}

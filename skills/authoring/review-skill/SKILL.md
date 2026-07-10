@@ -6,6 +6,7 @@ invocation: model-invoked
 depends:
   - audit-skill
   - validate-skill-frontmatter
+  - detect-skill-overlap
 ---
 
 # review-skill
@@ -20,8 +21,11 @@ Conductor.
 
 ## In scope
 
-- Load the target skill files (`SKILL.md`, `README.md`, references, subagents, scripts, assets).
+- Load the target skill files (`SKILL.md`, `README.md`, references, subagents, scripts, assets) and the full dependency closure.
 - Apply the review principles from `references/REVIEW_PRINCIPLES.md` (a fallback copy of `docs/skill-standards/reference/review-principles.md`) before scoring the rubric.
+- Check token economy: every section, reference, and subagent must be justified.
+- Check pattern adherence: the skill must follow the relevant `skill-standards` patterns with no wiggle room.
+- Run `detect-skill-overlap` to identify duplication and extraction opportunities.
 - Run `audit-skill` to evaluate against the rubric.
 - Run `validate-skill-frontmatter` to check schema compliance.
 - Issue a verdict only after a full audit.
@@ -68,15 +72,19 @@ Both gates share the same comprehension and audit phase. The `update` gate adds 
    - **Completion criterion:** all skill files are loaded.
 2. **Comprehend the skill.**
    - Apply the review principles from `references/REVIEW_PRINCIPLES.md` (a fallback copy of `docs/skill-standards/reference/review-principles.md`).
-   - Answer the seven core questions and record the answers, including the tooling-awareness question.
-   - **Completion criterion:** the eight core questions are answered, or the missing information is documented.
-3. **Produce an incomplete report if necessary.**
+   - Answer the eleven core questions and record the answers.
+   - **Completion criterion:** the eleven core questions are answered, or the missing information is documented.
+3. **Run overlap detection.**
+   - Run `detect-skill-overlap` on the target skill.
+   - If the skill is unavailable, document the degraded review and warn the user that overlap detection is missing.
+   - **Completion criterion:** an overlap report exists or its absence is documented.
+4. **Produce an incomplete report if necessary.**
    - If the core questions cannot be answered, write `{context}/skill-review/{skill-name}-incomplete.md` with open questions and stop.
    - **Completion criterion:** incomplete report exists and no verdict is issued.
-4. **Run `audit-skill`.**
+5. **Run `audit-skill`.**
    - Evaluate the skill against the fundamentals rubric.
    - **Completion criterion:** audit report exists with findings and recommendations.
-5. **Run `validate-skill-frontmatter`.**
+6. **Run `validate-skill-frontmatter`.**
    - Check frontmatter schema compliance.
    - **Completion criterion:** validation result is captured.
 
@@ -105,7 +113,7 @@ Both gates share the same comprehension and audit phase. The `update` gate adds 
 
 ## Core question checklist
 
-Before scoring, answer and record the seven core questions from `references/REVIEW_PRINCIPLES.md`:
+Before scoring, answer and record the eleven core questions from `references/REVIEW_PRINCIPLES.md`:
 
 1. **Justify** — What single judgment does this skill make predictable? Would the agent be wrong without it?
 2. **Shape** — Is this a skill, or should it be a script, MCP server, context file, or extension of an existing skill?
@@ -115,12 +123,32 @@ Before scoring, answer and record the seven core questions from `references/REVI
 6. **Dependencies** — Are required dependencies checked eagerly and recommended/optional dependencies evaluated lazily when the skill has multiple methods or branches? Is the full dependency surface still declared?
 7. **Tooling awareness** — Does the skill name capabilities before tools? Does it detect available tools, prefer the best one, and disclose degraded sources?
 8. **Contain** — Should this capability be colocated inside an existing skill, or is extraction into a separate skill justified by reuse?
+9. **Token economy** — Is every token justified? What would break if this section, reference, subagent, or example were removed?
+10. **Pattern adherence** — Does the skill fully adhere to the relevant `skill-standards` patterns with no wiggle room?
+11. **Overlap / extraction** — Does this skill overlap with an existing building block? Could any part be adapted to work generically with any skill?
 
 If any question cannot be answered, produce an incomplete report instead of a verdict.
 
-## Output formats
+## Verdict guidance
 
 The verdict is always one of: **Keep**, **Prune**, **Reshape**, or **Remove**. No other verdict is valid.
+
+| Verdict | Use when |
+|---|---|
+| **Keep** | The skill is sound, focused, and adheres to the patterns. |
+| **Prune** | The skill is sound but contains unjustified tokens, sediment, or bloat; reduce token load before publishing. |
+| **Reshape** | The skill is valid but the wrong shape, scope, or pattern adherence; it may need to be split, merged, or retyped. |
+| **Remove** | The skill duplicates an existing building block or a non-skill solution is better. |
+
+Apply these rules when choosing a verdict:
+
+- If the audit shows unresolved blockers, the verdict is not **Keep**.
+- If **Token economy** is weak, lean toward **Prune**.
+- If **Pattern adherence** is missing or the **Shape** / **Scope** is wrong, lean toward **Reshape**.
+- If **Overlap / extraction** shows the skill duplicates an existing building block without adding distinct value, lean toward **Remove**.
+- If the skill contains a capability that should be extracted as a generic building block, lean toward **Reshape** (split the skill) unless the extraction itself is the recommended remediation.
+
+## Output formats
 
 ### Verdict-led audit report
 

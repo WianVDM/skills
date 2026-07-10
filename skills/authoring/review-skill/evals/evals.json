@@ -101,6 +101,36 @@
       "type": "trigger",
       "category": "should-not-trigger",
       "prompt": "Please do something related to audit existing skill but do not invoke review-skill."
+    },
+    {
+      "id": "should-not-trigger-06",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Check if this skill duplicates an existing building block."
+    },
+    {
+      "id": "should-not-trigger-07",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Run a token-economy review on this codebase."
+    },
+    {
+      "id": "should-not-trigger-08",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Validate the frontmatter of this SKILL.md."
+    },
+    {
+      "id": "should-not-trigger-09",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Decide whether this problem should be a skill or a script."
+    },
+    {
+      "id": "should-not-trigger-10",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Install a skill from the registry."
     }
   ]
 }

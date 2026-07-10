@@ -1,0 +1,184 @@
+{
+  "version": "1",
+  "skill": "detect-skill-overlap",
+  "tests": [
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Does this skill overlap with any existing building blocks?",
+      "expected": "detect-skill-overlap"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Check if a capability in this skill should be extracted as a generic building block.",
+      "expected": "detect-skill-overlap"
+    },
+    {
+      "id": "trigger-should-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Review this skill for duplication and extraction opportunities.",
+      "expected": "detect-skill-overlap"
+    },
+    {
+      "id": "trigger-should-04",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Is there already a skill that does what this skill does?",
+      "expected": "detect-skill-overlap"
+    },
+    {
+      "id": "trigger-should-05",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Compare this skill to the existing skill catalog.",
+      "expected": "detect-skill-overlap"
+    },
+    {
+      "id": "trigger-should-06",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Could part of this skill be reused by other skills?",
+      "expected": "detect-skill-overlap"
+    },
+    {
+      "id": "trigger-should-07",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Find duplication between this skill and existing building blocks.",
+      "expected": "detect-skill-overlap"
+    },
+    {
+      "id": "trigger-should-08",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Identify extraction opportunities in this skill.",
+      "expected": "detect-skill-overlap"
+    },
+    {
+      "id": "trigger-should-09",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Does this skill duplicate `context-reports` or `worker-contract`?",
+      "expected": "detect-skill-overlap"
+    },
+    {
+      "id": "trigger-should-10",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Should this capability be colocated inside an existing skill or extracted as a new one?",
+      "expected": "detect-skill-overlap"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Create a new skill for code review."
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Audit this skill for frontmatter errors."
+    },
+    {
+      "id": "trigger-not-03",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Validate the YAML header of this SKILL.md."
+    },
+    {
+      "id": "trigger-not-04",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Run the test suite for this skill."
+    },
+    {
+      "id": "trigger-not-05",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Install a skill from the registry."
+    },
+    {
+      "id": "trigger-not-06",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Write a context report for this ticket."
+    },
+    {
+      "id": "trigger-not-07",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Detect the project root and config directories."
+    },
+    {
+      "id": "trigger-not-08",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "List all available skills in this project."
+    },
+    {
+      "id": "trigger-not-09",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Generate trigger evals for this skill."
+    },
+    {
+      "id": "trigger-not-10",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Fix the broken link in this SKILL.md."
+    },
+    {
+      "id": "behavior-overlap-flags-duplicate",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Compare the target skill to the existing catalog. The target skill's SKILL.md says it parses YAML frontmatter from SKILL.md files and extracts canonical fields. Report any overlap with existing skills.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "parse-skill-frontmatter"
+        },
+        {
+          "type": "output_contains",
+          "value": "overlap"
+        }
+      ]
+    },
+    {
+      "id": "behavior-extraction-candidate",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Compare the target skill to the existing catalog. The target skill resolves secure tokens from environment variables, MCP config, or user prompts and returns a reference. Report any extraction opportunities.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "Extraction"
+        },
+        {
+          "type": "output_contains",
+          "value": "token"
+        }
+      ]
+    },
+    {
+      "id": "behavior-read-only",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Compare the target skill to the existing catalog. Verify that no target skill files are modified.",
+      "assertions": [
+        {
+          "type": "output_excludes",
+          "value": "wrote"
+        },
+        {
+          "type": "output_excludes",
+          "value": "overwritten"
+        }
+      ]
+    }
+  ]
+}

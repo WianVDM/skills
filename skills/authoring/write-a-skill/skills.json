@@ -25,6 +25,7 @@
       "recommended": [
         "list-available-skills",
         "search-skills-registry",
+        "detect-skill-overlap",
         "install-skill",
         "run-trigger-evals"
       ],
@@ -38,6 +39,7 @@
       "detect-project-context",
       "list-available-skills",
       "search-skills-registry",
+      "detect-skill-overlap",
       "install-skill",
       "decide-skill-shape",
       "audit-skill",
@@ -47,7 +49,8 @@
       "eval-format",
       "worker-contract",
       "context-reports",
-      "parse-skill-frontmatter"
+      "parse-skill-frontmatter",
+      "prototype"
     ],
     "tools": [
       "file-read",

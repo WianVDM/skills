@@ -104,6 +104,24 @@ def render_markdown(report: dict, skill_md: Path) -> str:
     return "\n".join(lines)
 
 
+def _resolve_schema_path(provided: str) -> Path | None:
+    """Resolve the schema path, falling back to the portable copy shipped with audit-skill."""
+    path = Path(provided).expanduser().resolve()
+    if path.is_file():
+        return path
+    script_dir = Path(__file__).resolve().parent
+    fallback = (
+        script_dir.parents[2]
+        / "authoring"
+        / "audit-skill"
+        / "references"
+        / "skill-frontmatter.schema.json"
+    )
+    if fallback.is_file():
+        return fallback
+    return None
+
+
 def main():
     check_dependencies()
 
@@ -112,19 +130,19 @@ def main():
     parser.add_argument(
         "--schema",
         default="docs/skill-standards/schemas/skill-frontmatter.schema.json",
-        help="Path to the skill-frontmatter JSON schema.",
+        help="Path to the skill-frontmatter JSON schema. Falls back to the shipped copy if not found.",
     )
     parser.add_argument("--json", action="store_true", help="Output JSON.")
     args = parser.parse_args()
 
     skill_md = Path(args.skill_md).expanduser().resolve()
-    schema_path = Path(args.schema).expanduser().resolve()
+    schema_path = _resolve_schema_path(args.schema)
 
     if not skill_md.is_file():
         print(f"ERROR: {skill_md} is not a file.", file=sys.stderr)
         sys.exit(1)
-    if not schema_path.is_file():
-        print(f"ERROR: Schema not found at {schema_path}.", file=sys.stderr)
+    if not schema_path:
+        print(f"ERROR: Schema not found at {args.schema} or in the shipped fallback.", file=sys.stderr)
         sys.exit(1)
 
     report = validate(skill_md, schema_path)

@@ -1,0 +1,6 @@
+# Optional Python packages for audit-skill
+
+# PyYAML is used by the validate-skill-frontmatter script that audit-skill invokes,
+# and by audit-skill's fallback YAML parser when available.
+# Install it for full frontmatter parsing support.
+pyyaml>=6.0

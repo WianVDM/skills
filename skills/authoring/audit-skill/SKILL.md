@@ -23,7 +23,10 @@ Building block.
 - Check for secrets, hardcoded paths, and harness-specific product references.
 - Verify dependency declarations and destructive-action confirmation.
 - Check scope clarity, type/shape consistency, and portability.
+- Check token economy: every section, reference, and subagent must be load-bearing and justified.
+- Check pattern compliance: the skill must follow the relevant `skill-standards` patterns.
 - Check whether the skill is extracted as a separate skill only when reuse is justified.
+- Detect duplication and extraction opportunities by running `detect-skill-overlap`.
 - Produce a structured report with blocker/warning/suggestion severity.
 - Provide a remediation plan for failed checks.
 
@@ -43,13 +46,15 @@ Building block.
 
 1. **Accept the skill path or `SKILL.md` content.**
    - **Completion criterion:** the target skill is identified and readable.
-2. **Run deterministic checks.** Use the script to validate schema, files, links, secrets, paths, and dependency declarations.
+2. **Run deterministic checks.** Use the script to validate schema, files, links, secrets, paths, dependency declarations, token economy, and pattern compliance.
    - **Completion criterion:** deterministic checks produce a raw findings table.
-3. **Run heuristic checks.** Review description quality, scope clarity, load-bearing minimalism, and completion criteria.
+3. **Run heuristic checks.** Review description quality, scope clarity, load-bearing minimalism, completion criteria, and pattern adherence.
    - **Completion criterion:** each rubric item is rated PASS, FAIL, or MANUAL.
-4. **Classify severity.** Map each finding to blocker, warning, or suggestion.
+4. **Run overlap detection.** Invoke `detect-skill-overlap` on the target skill and merge its findings into the report.
+   - **Completion criterion:** an overlap report exists and is merged.
+5. **Classify severity.** Map each finding to blocker, warning, or suggestion.
    - **Completion criterion:** findings are grouped by severity.
-5. **Produce the audit report.** Emit the summary, findings table, and remediation plan.
+6. **Produce the audit report.** Emit the summary, findings table, and remediation plan.
    - **Completion criterion:** the report is emitted in the requested format.
 
 ## Severity definitions
@@ -60,7 +65,7 @@ Building block.
 
 ## Rubric
 
-The full rubric is maintained in `docs/skill-standards/reference/audit-rubric.md`. It covers identity, type/shape, scope, structure, form/style, security, dependencies, portability, evaluation, governance, **tooling awareness** (`TA-01`, `TA-02`), and **extraction** (`X01`).
+The full rubric is maintained in `docs/skill-standards/reference/audit-rubric.md`. It covers identity, type/shape, scope, structure, form/style, security, dependencies, portability, evaluation, governance, **tooling awareness** (`TA-01`, `TA-02`), **extraction** (`X01`), **token economy** (`TE-01`, `TE-02`), **pattern compliance** (`PC-01`, `PC-02`, `PC-03`), and **overlap** (`OV-01`).
 
 ## Output format
 
@@ -95,6 +100,9 @@ When the script reports `MANUAL` findings, use this checklist to complete the re
 9. **Confirmation gating** — Are destructive actions (writes, overwrites, deletes, installs) gated behind explicit approval?
 10. **Failure mode** — Does the skill fail closed when a required tool, binary, or capability is missing?
 11. **Extraction** — If this skill is a building block, is it cross-cutting, used by multiple skills, or solving a generic-domain problem? If it exists only to serve one other skill, should it be colocated?
+12. **Token economy** — Is every section, reference, subagent, and example load-bearing and justified?
+13. **Pattern compliance** — Does the skill fully adhere to the relevant `skill-standards` patterns?
+14. **Overlap** — Has `detect-skill-overlap` been run, and have duplicate capabilities been addressed?
 
 ## Validation
 

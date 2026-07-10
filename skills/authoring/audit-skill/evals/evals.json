@@ -94,6 +94,36 @@
       "type": "trigger",
       "category": "should-not-trigger",
       "prompt": "Please do something related to check skill against but do not invoke audit-skill."
+    },
+    {
+      "id": "should-not-trigger-06",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Run a full design review of this skill and decide whether to extract a new building block."
+    },
+    {
+      "id": "should-not-trigger-07",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Write the SKILL.md file for a new code-review skill."
+    },
+    {
+      "id": "should-not-trigger-08",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "List all available skills in this project."
+    },
+    {
+      "id": "should-not-trigger-09",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Detect whether this skill overlaps with existing building blocks."
+    },
+    {
+      "id": "should-not-trigger-10",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Fetch the latest skill-standards docs from GitHub."
     }
   ]
 }

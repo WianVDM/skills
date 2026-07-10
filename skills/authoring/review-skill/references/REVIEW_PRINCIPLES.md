@@ -16,6 +16,9 @@ Before scoring, answer:
 6. **Dependencies** — Are required dependencies checked eagerly and recommended/optional dependencies evaluated lazily when the skill has multiple methods or branches? Is the full dependency surface still declared?
 7. **Tooling awareness** — Does the skill name capabilities before tools? Does it detect available tools, prefer the best one, and disclose degraded sources?
 8. **Contain** — Should this capability be colocated inside an existing skill, or is extraction into a separate skill justified by reuse?
+9. **Token economy** — Is every token justified? What would break if this section, reference, subagent, or example were removed?
+10. **Pattern adherence** — Does the skill fully adhere to the relevant `skill-standards` patterns with no wiggle room?
+11. **Overlap / extraction** — Does this skill overlap with an existing building block? Could any part be adapted to work generically with any skill?
 
 ## Verdict
 

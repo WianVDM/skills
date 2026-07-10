@@ -6,6 +6,10 @@
 - **validate-skill-frontmatter** — validate `SKILL.md` frontmatter against the JSON schema.
 - **context-reports** — shared context-report conventions and schemas.
 
+## Recommended skills
+
+- **detect-skill-overlap** — compare the target skill with the existing catalog to find duplication and extraction opportunities.
+
 ## Required tools and capabilities
 
 - **Read files** in the target skill directory and context directory.

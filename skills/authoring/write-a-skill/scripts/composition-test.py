@@ -12,9 +12,15 @@ Creates a temporary sample skill, then exercises:
   - audit-skill
   - run-trigger-evals
 
-The conductor skills (decide-skill-shape, review-skill) are model-invoked and
-produce context reports; this test documents where they fit in the full
-write-a-skill workflow but does not invoke them automatically.
+In addition, verifies that the model-invoked conductor dependencies exist
+and parse correctly:
+  - detect-skill-overlap
+  - decide-skill-shape
+  - review-skill
+
+The conductor skills themselves are model-invoked and produce context reports;
+this test documents where they fit in the full write-a-skill workflow but does
+not invoke them automatically.
 """
 
 from __future__ import annotations
@@ -91,9 +97,15 @@ def run(cmd: list[str], cwd: Path | None = None) -> tuple[int, str, str]:
     return proc.returncode, proc.stdout, proc.stderr
 
 
-def main():
+def skill_path(skills_dir: Path, *parts: str) -> Path:
+    return skills_dir.joinpath(*parts)
+
+
+def main() -> int:
     repo_root = Path(__file__).resolve().parents[4]
     skills_dir = repo_root / "skills"
+
+    results = []
 
     with tempfile.TemporaryDirectory(prefix="write-a-skill-composition-") as tmp:
         tmp_path = Path(tmp)
@@ -101,11 +113,9 @@ def main():
         sample_skill_dir.mkdir(parents=True)
         (sample_skill_dir / "SKILL.md").write_text(SAMPLE_SKILL_MD, encoding="utf-8")
 
-        results = []
-
         # 1. detect-project-context
         rc, out, err = run([
-            sys.executable, str(skills_dir / "core" / "detect-project-context" / "scripts" / "detect-project-context.py"),
+            sys.executable, str(skill_path(skills_dir, "core", "detect-project-context", "scripts", "detect-project-context.py")),
             "--start", str(repo_root), "--json",
         ])
         data = json.loads(out)
@@ -118,7 +128,7 @@ def main():
 
         # 2. list-available-skills (project scope only)
         rc, out, err = run([
-            sys.executable, str(skills_dir / "tooling" / "list-available-skills" / "scripts" / "list-available-skills.py"),
+            sys.executable, str(skill_path(skills_dir, "tooling", "list-available-skills", "scripts", "list-available-skills.py")),
             "--project-root", str(repo_root), "--exclude-user", "--json",
         ])
         data = json.loads(out)
@@ -131,7 +141,7 @@ def main():
 
         # 3. parse-skill-frontmatter
         rc, out, err = run([
-            sys.executable, str(skills_dir / "tooling" / "parse-skill-frontmatter" / "scripts" / "parse-skill-frontmatter.py"),
+            sys.executable, str(skill_path(skills_dir, "tooling", "parse-skill-frontmatter", "scripts", "parse-skill-frontmatter.py")),
             str(sample_skill_dir / "SKILL.md"), "--json",
         ])
         data = json.loads(out)
@@ -144,7 +154,7 @@ def main():
 
         # 4. validate-skill-frontmatter
         rc, out, err = run([
-            sys.executable, str(skills_dir / "tooling" / "validate-skill-frontmatter" / "scripts" / "validate-skill-frontmatter.py"),
+            sys.executable, str(skill_path(skills_dir, "tooling", "validate-skill-frontmatter", "scripts", "validate-skill-frontmatter.py")),
             str(sample_skill_dir / "SKILL.md"), "--json",
         ])
         data = json.loads(out)
@@ -157,7 +167,7 @@ def main():
 
         # 5. audit-skill
         rc, out, err = run([
-            sys.executable, str(skills_dir / "authoring" / "audit-skill" / "scripts" / "audit-skill.py"),
+            sys.executable, str(skill_path(skills_dir, "authoring", "audit-skill", "scripts", "audit-skill.py")),
             str(sample_skill_dir), "--json",
         ])
         data = json.loads(out)
@@ -173,7 +183,7 @@ def main():
 
         # 6. run-trigger-evals
         rc, out, err = run([
-            sys.executable, str(skills_dir / "authoring" / "run-trigger-evals" / "scripts" / "run-trigger-evals.py"),
+            sys.executable, str(skill_path(skills_dir, "authoring", "run-trigger-evals", "scripts", "run-trigger-evals.py")),
             str(sample_skill_dir), "--json",
         ])
         data = json.loads(out)
@@ -183,6 +193,65 @@ def main():
             "rc": rc,
             "error": err,
         })
+
+    # 7. detect-skill-overlap files exist and parse
+    overlap_md = skill_path(skills_dir, "authoring", "detect-skill-overlap", "SKILL.md")
+    overlap_evals = skill_path(skills_dir, "authoring", "detect-skill-overlap", "evals", "evals.json")
+    rc, out, err = run([
+        sys.executable, str(skill_path(skills_dir, "tooling", "parse-skill-frontmatter", "scripts", "parse-skill-frontmatter.py")),
+        str(overlap_md), "--json",
+    ])
+    data = json.loads(out)
+    overlap_evals_valid = False
+    if overlap_evals.is_file():
+        try:
+            json.loads(overlap_evals.read_text(encoding="utf-8"))
+            overlap_evals_valid = True
+        except Exception:
+            pass
+    results.append({
+        "step": "detect-skill-overlap-present",
+        "pass": overlap_md.is_file() and data.get("name") == "detect-skill-overlap" and overlap_evals_valid,
+        "rc": rc,
+        "error": err if not overlap_md.is_file() else "",
+    })
+
+    # 8. decide-skill-shape files exist and parse
+    decide_md = skill_path(skills_dir, "authoring", "decide-skill-shape", "SKILL.md")
+    rc, out, err = run([
+        sys.executable, str(skill_path(skills_dir, "tooling", "parse-skill-frontmatter", "scripts", "parse-skill-frontmatter.py")),
+        str(decide_md), "--json",
+    ])
+    data = json.loads(out)
+    results.append({
+        "step": "decide-skill-shape-present",
+        "pass": decide_md.is_file() and data.get("name") == "decide-skill-shape",
+        "rc": rc,
+        "error": err if not decide_md.is_file() else "",
+    })
+
+    # 9. review-skill files exist and parse
+    review_md = skill_path(skills_dir, "authoring", "review-skill", "SKILL.md")
+    rc, out, err = run([
+        sys.executable, str(skill_path(skills_dir, "tooling", "parse-skill-frontmatter", "scripts", "parse-skill-frontmatter.py")),
+        str(review_md), "--json",
+    ])
+    data = json.loads(out)
+    results.append({
+        "step": "review-skill-present",
+        "pass": review_md.is_file() and data.get("name") == "review-skill",
+        "rc": rc,
+        "error": err if not review_md.is_file() else "",
+    })
+
+    # 10. Portable schema fallback exists
+    shipped_schema = skill_path(skills_dir, "authoring", "audit-skill", "references", "skill-frontmatter.schema.json")
+    results.append({
+        "step": "shipped-schema-fallback",
+        "pass": shipped_schema.is_file(),
+        "rc": 0,
+        "error": "" if shipped_schema.is_file() else f"Missing {shipped_schema}",
+    })
 
     all_pass = all(r["pass"] for r in results)
 
@@ -196,8 +265,8 @@ def main():
     }
 
     print(json.dumps(report, indent=2))
-    sys.exit(0 if all_pass else 1)
+    return 0 if all_pass else 1
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

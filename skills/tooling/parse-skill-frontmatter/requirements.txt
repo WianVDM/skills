@@ -1,0 +1,6 @@
+# Optional Python packages for parse-skill-frontmatter
+
+# PyYAML enables full and correct YAML frontmatter parsing.
+# Without it, parse-skill-frontmatter falls back to a minimal standard-library parser
+# that handles simple key-value and list structures but may miss nested or quoted values.
+pyyaml>=6.0

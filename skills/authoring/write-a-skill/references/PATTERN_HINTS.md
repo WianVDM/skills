@@ -20,6 +20,17 @@ Use these decision rules to decide which Layer 2 architecture patterns apply to 
 | **Capability matrix** | The skill has multiple load-bearing capabilities and each may be fulfilled by more than one tool category. | The skill has only one happy path with one obvious tool. |
 | **Colocation vs extraction** | The capability should be extracted as a separate skill because it is cross-cutting, has multiple consumers, has a stable narrow interface, or solves a generic-domain problem. | The capability belongs inside the skill that owns it. |
 
+## Pattern adherence is not optional
+
+Patterns in this file and in the canonical `docs/skill-standards/patterns/` directory are load-bearing architecture decisions, not suggestions. When you select a pattern for a skill:
+
+1. Cite the canonical source document.
+2. Apply the pattern fully. A partial or "light" application is a deviation and must be recorded.
+3. If you deviate, justify it: explain what behavior would break or what cost would be imposed by following the pattern exactly.
+4. If the canonical docs are unavailable, use the degraded-mode warning template from [references/PLUGGABILITY.md](PLUGGABILITY.md) and fall back to this condensed guidance.
+
+Do not treat patterns as a menu of optional conveniences. Treat them as constraints that shape the skill correctly.
+
 ## Default starting point
 
 1. Start with a **building block** if the skill does one narrow thing.

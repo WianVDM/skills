@@ -41,5 +41,20 @@ The only hardcoded project-level values are the detection rules, the marker-dire
 
 - If the harness cannot spawn subagents, the conductor must run the same phases inline and ask the user the questions a worker would have returned.
 - If the harness cannot load `config.yaml`, the skill uses `detect-project-context` defaults and asks the user to confirm.
-- If the harness cannot fetch external standards, the skill falls back to the embedded `references/FUNDAMENTALS.md` and `references/PATTERN_HINTS.md`.
+- If the harness cannot fetch external standards, the skill falls back to the embedded `references/FUNDAMENTALS.md` and `references/PATTERN_HINTS.md` and must use the degraded-mode warning template below.
 - If the project context cannot be detected, the skill fails closed and explains what is missing.
+- If `standards_path` is configured but the directory is missing, the skill warns and falls back to embedded docs.
+
+## Degraded-mode warning template
+
+Whenever `write-a-skill` falls back to embedded guidance or skips a standards-backed check, present the warning using this exact template and record the user's choice in the decision log:
+
+> **Degraded mode:** The canonical skill-standards docs are not available at `{standards_path}`. Some checks will use the embedded fallback guidance in `references/FUNDAMENTALS.md` and `references/PATTERN_HINTS.md`, which may be older or less complete. You can fetch the latest standards from `github.com/wianvdm/skills` or set `standards_path` to a local copy.
+>
+> - **Better option:** Fetch or point to the canonical standards.
+> - **Current fallback:** Use embedded guidance.
+> - **Missing checks:** Pattern-to-canonical mapping, full rubric cross-references, and some overlap-detection heuristics may be reduced.
+>
+> Do you want to proceed with the fallback, fetch the standards, or stop?
+
+Use this template consistently across the `initialize`, `create`, and `change` branches. Never silently fall back without telling the user.

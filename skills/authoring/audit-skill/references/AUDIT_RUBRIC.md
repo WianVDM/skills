@@ -66,3 +66,9 @@ A one-line explanation of each ID emitted by `audit-skill`:
 | E03 | Evaluation | Discipline skills have pressure tests. |
 | E04 | Evaluation | Composition tests exist for composable skills. |
 | X01 | Extraction | Extraction is justified by reuse; the skill is not a submodule pretending to be a building block. |
+| TE-01 | Token economy | Skill files are not disproportionately large; every section is load-bearing. |
+| TE-02 | Token economy | No unfinished checklist items are published. |
+| PC-01 | Pattern compliance | Lazy dependency evaluation is documented when the skill has branches or methods. |
+| PC-02 | Pattern compliance | Capability-to-tool strategy is documented when the skill has multiple load-bearing capabilities. |
+| PC-03 | Pattern compliance | Context reports pattern is referenced when the skill produces shared artifacts. |
+| OV-01 | Overlap | Skill does not duplicate an existing building block. |

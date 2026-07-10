@@ -16,7 +16,13 @@ Use this skill when you need to:
 Invoke the skill by name, or run the script directly:
 
 ```bash
-python scripts/audit-skill.py skills/my-skill --json
+python skills/audit-skill/scripts/audit-skill.py skills/my-skill --json
+```
+
+To use a custom frontmatter schema or a bundled fallback:
+
+```bash
+python skills/audit-skill/scripts/audit-skill.py skills/my-skill --schema path/to/skill-frontmatter.schema.json --json
 ```
 
 ## Using this skill from a conductor
@@ -53,8 +59,9 @@ audit-skill/
 ## Key conventions
 
 - **Read-only:** the script does not modify the audited skill.
-- **Deterministic where possible:** schema, file, and link checks are automated.
-- **Heuristic checks marked manual:** quality judgments (e.g., description quality) are flagged for reviewer attention.
+- **Deterministic where possible:** schema, file, link, token-economy, and pattern checks are automated.
+- **Heuristic checks marked manual:** quality judgments (e.g., description quality, overlap detection) are flagged for reviewer attention.
+- **Overlap detection:** the script runs a deterministic pre-filter; `detect-skill-overlap` is used for the full judgment-based analysis.
 - **Rubric-aligned:** findings are labeled with the rubric IDs in `references/AUDIT_RUBRIC.md`.
 
 ## Maintenance notes

@@ -116,7 +116,7 @@ artifacts:
 - `src/app/services/auth.service.ts`
 
 ## Open questions
-- [ ] Should refresh happen in an interceptor or in the guard?
+- Should refresh happen in an interceptor or in the guard?
 
 ## References
 - `docs/adr/0003-auth-flow.md`
@@ -172,7 +172,7 @@ Auth guard race condition during token refresh.
 Yellow (65%) — root cause is clear, but fix approach is not yet validated.
 
 ## Open questions
-- [ ] Should refresh be moved to an interceptor? (blocking: yes)
+- Should refresh be moved to an interceptor? (blocking: yes)
 
 ## Skill log
 | # | Skill | Why | Finding | Confidence After |

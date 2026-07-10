@@ -1,12 +1,10 @@
 # Evaluation and testing
 
-For the canonical trigger-eval methodology and the `evals/evals.json` schema, see:
+This file keeps only the `write-a-skill`-specific test cases and scenarios. For the canonical methodology and the `evals/evals.json` schema, see:
 
-- `docs/skill-standards/reference/trigger-evals.md`
-- `docs/skill-standards/reference/evaluation-framework.md`
 - `eval-format` skill (located via the detected skills directory)
-
-This file keeps only the `write-a-skill`-specific test cases.
+- `docs/skill-standards/reference/evaluation-framework.md`
+- `docs/skill-standards/reference/trigger-evals.md`
 
 ## Trigger evals
 
@@ -42,6 +40,7 @@ This file keeps only the `write-a-skill`-specific test cases.
 
 These verify that the conductor classifies intent into the correct branch and gate:
 
+- **Initialize branch:** *"I haven't configured write-a-skill yet."* → expected branch `initialize`.
 - **Create branch, full gate:** *"I want to create a skill that helps me write ADRs."* → expected branch `create`, gate `full`.
 - **Create branch, quick gate:** *"Give me a minimal skill for daily standup notes."* → expected branch `create`, gate `quick`.
 - **Change branch, review gate:** *"Can you review my existing skill `triage`?"* → expected branch `change`, gate `review`.
@@ -59,6 +58,11 @@ These verify that the conductor classifies intent into the correct branch and ga
 8. **Update confirms changes.** Run the Change branch update gate and confirm that every proposed change is approved before application.
 9. **Branch workflow disclosure.** Verify that `SKILL.md` points to `references/BRANCH_WORKFLOWS.md` for detailed phase lists and stays under 300 lines.
 10. **Invocation declaration.** Verify that `SKILL.md` frontmatter contains `invocation: user-invoked`.
+11. **Initializer warns and persists config.** Run `write-a-skill` in a project without a `write-a-skill.yaml` config. Verify the conductor proposes paths, warns about missing canonical standards, and only writes `write-a-skill.yaml` after explicit approval.
+12. **Degraded mode is consistently disclosed.** Remove the canonical standards path and trigger the `create` branch. Verify the degraded-mode warning appears during pattern adherence, audit, and review phases, and that the user's choice is recorded in the decision log.
+13. **Audit/review catch token bloat.** Present a drafted skill with an unjustified reference section and verify that `audit-skill` or `review-skill` flags it as a token-economy warning or blocker.
+14. **Audit/review catch pattern violations.** Present a drafted skill that deviates from a Layer 2 pattern without rationale and verify that the audit/review flags the deviation.
+15. **Overlap detection flags a duplicate capability.** Present a design for a skill whose description overlaps with an existing building block (e.g., `parse-skill-frontmatter`) and verify that `detect-skill-overlap` flags the overlap before drafting proceeds.
 
 ## Tooling-awareness behavioral evals
 
@@ -71,25 +75,26 @@ These verify that the conductor classifies intent into the correct branch and ga
 
 These verify that the conductor composes building-block skills correctly and handles their outputs.
 
-1. **Create branch invokes the expected sequence.** Given a request to create a skill, verify the conductor calls `detect-project-context` → `list-available-skills` → `decide-skill-shape` (or resolves shape internally) → `audit-skill` → `validate-skill-frontmatter` before writing any file.
+1. **Create branch invokes the expected sequence.** Given a request to create a skill, verify the conductor calls `detect-project-context` → `list-available-skills` → `search-skills-registry` → `detect-skill-overlap` → `decide-skill-shape` (or resolves shape internally) → `audit-skill` → `validate-skill-frontmatter` before writing any file.
 2. **Change branch delegates to `review-skill`.** Given a request to review an existing skill, verify the conductor loads `review-skill` and does not attempt to run the audit inline.
 3. **Failure in a building block stops the workflow.** Verify that if `audit-skill` returns blockers, the conductor does not proceed to file writing without an explicit user override.
 4. **Dependency self-diagnostic gates startup.** Verify that if a required building-block skill is missing and the diagnostic reports `blocked`, the conductor stops and explains how to install the missing skill.
 5. **Config-driven standards path is honored.** Verify that when `write-a-skill.standards_path` is configured, the conductor checks that directory before falling back to embedded fundamentals.
+6. **Overlap detection gates shape decisions.** Verify that `detect-skill-overlap` is invoked during the alternatives phase and that its findings influence the colocation/extraction decision.
 
 ## Regression checklist
 
 After any change to this skill, run:
 
-- [ ] All 10 should-trigger queries lead to invoking `write-a-skill`.
-- [ ] All 10 should-not-trigger queries do not lead to invoking `write-a-skill`.
-- [ ] All four branch classification evals.
-- [ ] All 10 behavioral evals.
-- [ ] All 4 tooling-awareness behavioral evals.
-- [ ] A self-review of `write-a-skill` using its own Change branch review gate.
-- [ ] A self-update check of `write-a-skill` using its own Change branch update gate.
-- [ ] Verify all reference links in `SKILL.md` and `README.md` resolve.
-- [ ] Verify `detect-project-context` returns a valid result for the current project.
+- All 10 should-trigger queries lead to invoking `write-a-skill`.
+- All 10 should-not-trigger queries do not lead to invoking `write-a-skill`.
+- All five branch classification evals.
+- All 15 behavioral evals.
+- All 4 tooling-awareness behavioral evals.
+- A self-review of `write-a-skill` using its own Change branch review gate.
+- A self-update check of `write-a-skill` using its own Change branch update gate.
+- Verify all reference links in `SKILL.md` and `README.md` resolve.
+- Verify `detect-project-context` returns a valid result for the current project.
 
 ## Eval artifacts
 

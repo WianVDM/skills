@@ -29,6 +29,13 @@ invocation: {model-invoked | user-invoked}
 2. ...
    - **Completion criterion:** ...
 
+## Capability-to-tool strategy
+
+| Capability | Preferred tool | Fallback tool | Degraded disclosure |
+|---|---|---|---|
+| {first load-bearing capability} | {preferred tool} | {fallback tool(s)} | {what the user is told if the fallback is used} |
+| {second load-bearing capability} | {preferred tool} | {fallback tool(s)} | {what the user is told if the fallback is used} |
+
 ## Dependencies
 
 - ...

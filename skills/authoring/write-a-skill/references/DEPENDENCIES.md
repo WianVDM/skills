@@ -26,6 +26,7 @@ This document follows the dependency taxonomy defined in `docs/skill-standards/f
 
 - **list-available-skills** — discover skills already available in the project and user scope. Without it, the alternatives report is limited to what the conductor can find directly.
 - **search-skills-registry** — find third-party skills in configured registries. Without it, the skill cannot check whether a similar third-party skill already exists.
+- **detect-skill-overlap** — flag when a skill duplicates or could be extracted from an existing building block. Without it, the alternatives and colocation phases lack overlap analysis.
 - **install-skill** — install a skill from a local path or archive URL after confirmation. Without it, the conductor can draft files but cannot install skills on the user's behalf.
 - **run-trigger-evals** — generate `evals/evals.json` for model-invoked skills. Without it, the conductor can ask the user to write evals manually or skip them.
 
@@ -71,6 +72,10 @@ A drafted skill must not treat its own adapters as the only source for a capabil
 
 - None. This skill does not read environment variables directly.
 - If the user configures a network proxy or token for the optional standards fetch, the harness or underlying HTTP client handles it; the skill itself does not read those variables.
+
+## Shipped schema fallback
+
+`audit-skill` ships a portable copy of `skill-frontmatter.schema.json` in `audit-skill/references/`. `validate-skill-frontmatter` falls back to this copy when the canonical `docs/skill-standards/schemas/skill-frontmatter.schema.json` is unavailable. This lets `write-a-skill` and its dependencies run in workspaces that do not include the full standards wiki.
 
 ## Consumed references
 
