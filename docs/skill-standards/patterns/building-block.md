@@ -95,7 +95,7 @@ Declare:
 
 Dependencies are not bad. Hidden dependencies are.
 
-The canonical place is `references/DEPENDENCIES.md` or the `requirements` object in `skills.json`. See [`../PACKAGE.md`](../reference/package.md) for the package-level dependency model.
+The canonical human-readable place is `references/DEPENDENCIES.md`. The canonical machine-readable place is `skills.json` (`skill_dependencies` for the structured taxonomy, or `requirements.skills` for the flat compatibility surface). See [`../PACKAGE.md`](../reference/package.md) for the package-level dependency model.
 
 Example `references/DEPENDENCIES.md`:
 
@@ -226,7 +226,7 @@ Strategies:
 
 - **Fetch fresh rules** from a canonical URL before each use.
 - **Ship versioned guidance** inside the skill or package.
-- **Pin a version** in metadata and document the expected target.
+- **Pin a version** in frontmatter and document the expected target.
 
 Version-aware skills reduce hallucinations caused by the agent's training cutoff.
 

@@ -344,7 +344,7 @@ The parts of a skill implementation that are not part of the portable core: nati
 
 ### YAML frontmatter
 
-The metadata block at the top of `SKILL.md`, delimited by `---`, that declares identity, routing, metadata, and harness hints. Also called simply **frontmatter**.
+The YAML frontmatter block at the top of `SKILL.md`, delimited by `---`, that declares identity, routing, version, and harness hints. Also called simply **frontmatter**.
 
 ### Tool scoping
 

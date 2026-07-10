@@ -208,7 +208,7 @@ See [`../fundamentals/architecture/security.md`](../fundamentals/architecture/se
 - The initialization contract (explicit, idempotent, fail-closed, minimal, observant) is our own synthesis of safe setup practices.
 - The initialization steps (detect, create/migrate config, ask for preferences, validate capabilities, write notes, report readiness) are our own workflow.
 - The recommendation to implement initialization inline, via script, or as a subagent depending on complexity is our own practice.
-- The relationship between initialization, the **configurable** pattern, and the **stateful** pattern is documented in those respective files and in [manifestos/architecture.md](../../manifestos/architecture.md).
+- The relationship between initialization, the **configurable** pattern, and the **stateful** pattern is documented in those respective files and in [`../fundamentals/architecture/`](../fundamentals/architecture/).
 ---
 
 ## Related documents

@@ -77,7 +77,7 @@ This is the contract that `audit-skill` uses to evaluate any skill. Each check h
 | D01 | Required tools are declared. | Blocker | `skills.json` or `references/DEPENDENCIES.md` lists required tools. |
 | D02 | Required binaries are declared. | Blocker | Binaries declared in `requirements.binaries`. |
 | D03 | Required MCP servers are declared. | Blocker | MCP servers declared by name and capability. |
-| D04 | Skill dependencies are declared. | Blocker | Other skills required are listed in `requirements.skills`. |
+| D04 | Skill dependencies are declared. | Blocker | Other skills required are listed in `skill_dependencies` or `requirements.skills`. |
 | D05 | Environment variables are declared. | Warning | Variables used are listed in `requirements.environment_variables`. |
 | D06 | Lazy dependency evaluation is used when appropriate. | Warning | If the skill has multiple methods or branches, recommended/optional dependencies are evaluated lazily per path and not all checked at initialization. |
 

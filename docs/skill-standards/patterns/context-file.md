@@ -102,7 +102,7 @@ This project uses TypeScript, React, and Vitest.
 
 ## Research basis
 
-- The **context stack** (always-on context, scoped rules, skills, hooks, MCP, subagents) is drawn from the research across Claude Code, Cursor, Codex, Aider, and Hermes. See [manifestos/architecture.md](../../manifestos/architecture.md) for the full stack.
+- The **context stack** (always-on context, scoped rules, skills, hooks, MCP, subagents) is drawn from the research across Claude Code, Cursor, Codex, Aider, and Hermes. See [`../README.md`](../README.md) and [`../fundamentals/architecture/`](../fundamentals/architecture/) for the full stack.
 - The **context-file pattern** as a distinct layer from skills is supported by the research on rules, context files, and skills boundaries.
 - **Claude Code** explicitly distinguishes skills from `CLAUDE.md` and `.claude/rules`. **Cursor** provides `.cursorrules` and dynamic rules, with a `/migrate-to-skills` command that only migrates dynamic rules, not always-on rules. **Codex** uses `AGENTS.md` as a project-level context file.
 - The observation that **always-on behavior is lost** when a rule is migrated to a skill is drawn from the Cursor migration research.
@@ -113,4 +113,5 @@ This project uses TypeScript, React, and Vitest.
 ## Related documents
 
 - [`../fundamentals/core/types/`](../fundamentals/core/types/) — choosing the right skill type.
-- [`manifestos/architecture.md`](../../manifestos/architecture.md) — the full context stack.
+- [`../README.md`](../README.md) — the context stack and how skills fit into it.
+- [`../fundamentals/architecture/`](../fundamentals/architecture/) — architecture fundamentals for shared and composed skills.

@@ -10,6 +10,6 @@ See [`core/README.md`](./core/README.md) for the core topics and the suggested r
 
 ## `architecture/` — opt-in architecture fundamentals
 
-These matter when a skill is shared, composed, distributed, or otherwise participates in the architecture defined in [`manifestos/architecture.md`](../../manifestos/architecture.md). A standalone personal skill does not have to read them, but a skill that other skills consume or that runs across harnesses should.
+These matter when a skill is shared, composed, distributed, or otherwise participates in the architecture (portability, composition, trust). A standalone personal skill does not have to read them, but a skill that other skills consume or that runs across harnesses should.
 
 See [`architecture/README.md`](./architecture/README.md) for the architecture topics and the suggested reading order.

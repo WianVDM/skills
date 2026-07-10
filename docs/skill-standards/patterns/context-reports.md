@@ -78,23 +78,7 @@ Treat reports as potentially stale. A report from last week may not reflect the 
 
 ## Cross-skill consumption
 
-A skill should declare the reports it consumes. The canonical place is `references/DEPENDENCIES.md` or a `dependencies` section in `SKILL.md` frontmatter.
-
-Example:
-
-```yaml
----
-name: project-orchestration
-consumes:
-  - .agents/context/ticket-research/{key}.md
-  - .agents/context/state-capture/{key}-{branch}.md
-requires:
-  - ticket-research
-  - state-capture
----
-```
-
-A consuming skill must handle absence gracefully: fall back to an approved alternative, note the gap, or consult the user.
+A skill should declare the reports it produces and the reports from other skills it consumes. The canonical places are `references/DEPENDENCIES.md` for human readers and `skills.json` (`skill_dependencies` or `requirements.skills`) for harnesses. Report consumers must handle absence gracefully: fall back to an approved alternative, note the gap, or consult the user.
 
 ---
 
