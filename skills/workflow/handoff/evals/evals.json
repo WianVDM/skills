@@ -10,7 +10,7 @@
       "assertions": [
         {
           "type": "file_write",
-          "path": ".*/handoffs/unticketed/\\d{8}-\\d{6}-handoff\\.md"
+          "path": ".*/handoff/unticketed\\.md"
         },
         {
           "type": "output_contains",
@@ -26,11 +26,82 @@
       "assertions": [
         {
           "type": "file_write",
-          "path": ".*/handoffs/abc-123/handoff-001\\.md"
+          "path": ".*/handoff/abc-123\\.md"
         },
         {
           "type": "output_contains",
           "value": "abc-123"
+        }
+      ]
+    },
+    {
+      "id": "behavior-quick-handoff",
+      "type": "behavior",
+      "prompt": "Create a quick handoff for ticket ABC-123.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "file_write",
+          "path": ".*/handoff/abc-123\\.md"
+        },
+        {
+          "type": "output_contains",
+          "value": "abc-123"
+        }
+      ]
+    },
+    {
+      "id": "behavior-thorough-handoff",
+      "type": "behavior",
+      "prompt": "Create a thorough handoff for ticket ABC-123.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "file_write",
+          "path": ".*/handoff/abc-123\\.md"
+        },
+        {
+          "type": "output_contains",
+          "value": "abc-123"
+        }
+      ]
+    },
+    {
+      "id": "behavior-archive-old-handoff",
+      "type": "behavior",
+      "prompt": "Create two handoffs for ticket ABC-123. The first should be archived when the second is written.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "file_write",
+          "path": ".*/handoff/abc-123\\.md"
+        },
+        {
+          "type": "file_write",
+          "path": ".*/handoff/abc-123-\\d{8}-\\d{6}-archive\\.md"
+        }
+      ]
+    },
+    {
+      "id": "behavior-context-report-frontmatter",
+      "type": "behavior",
+      "prompt": "Create a handoff for ticket ABC-123 and make sure it follows the context-report format.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "file_contains",
+          "path": ".*/handoff/abc-123\\.md",
+          "value": "skill: handoff"
+        },
+        {
+          "type": "file_contains",
+          "path": ".*/handoff/abc-123\\.md",
+          "value": "generated_at:"
+        },
+        {
+          "type": "file_contains",
+          "path": ".*/handoff/abc-123\\.md",
+          "value": "summary:"
         }
       ]
     },
@@ -59,7 +130,7 @@
         },
         {
           "type": "regex_exclude",
-          "pattern": "handoff-001\\.md"
+          "pattern": "abc-123\\.md"
         }
       ]
     }

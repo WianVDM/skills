@@ -1,0 +1,28 @@
+shared:
+  - key: agents.context_dir
+    required: true
+    default: .agents/context
+    description: Directory for cross-skill context reports.
+  - key: agents.config_dir
+    required: true
+    default: .agents/config
+    description: Directory for skill configuration files.
+
+skill:
+  - key: handoff.default_level
+    required: false
+    default: standard
+    type: string
+    description: Default handoff level when the user does not specify one. Allowed values are quick, standard, and thorough.
+  - key: handoff.archive_old
+    required: false
+    default: true
+    type: boolean
+    description: Whether to archive an existing handoff file before writing a new one for the same key.
+  - key: handoff.include_chain
+    required: false
+    default: true
+    type: boolean
+    description: Whether to include a chain link to the previous handoff in the new handoff.
+
+requires_setup: true
