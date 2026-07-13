@@ -19,7 +19,7 @@ A skill should consider the full tool catalog, not only its own adapters:
 
 | Category | Examples |
 |---|---|
-| **Skill adapters** | `github-pr-adapter`, `sonarcloud-adapter`, `jira-adapter` |
+| **Provider-specific adapters** | GitHub PR adapter, SonarCloud adapter, Jira adapter |
 | **MCP tools / servers** | `github_get_pull_request_reviews`, SonarQube MCP, Jira MCP |
 | **Native binaries** | `gh`, `git`, `curl`, `jq` |
 | **Direct APIs** | Provider REST or GraphQL endpoints called directly |
@@ -47,7 +47,7 @@ For each capability, prefer the tool that:
 4. Provides **direct evidence** rather than inference or reconstruction.
 5. **Fits the skill's contract** without leaking implementation details.
 
-Skill adapters are one valid option in this hierarchy. They should win when they are genuinely the best source for a project, not simply because they exist.
+Provider-specific adapters are one valid option in this hierarchy. They should win when they are genuinely the best source for a project, not simply because they exist.
 
 ## Disclosure and user-consented degradation
 

@@ -6,7 +6,6 @@
 - `context-reports` — provides the canonical vocabulary and conventions for context reports.
 - `worker-contract` — provides the canonical subagent return contract.
 - `token-resolver` — resolves tokens from env vars, MCP config, or user input without leaking secrets.
-- `pr-adapter-contract` — defines the normalized adapter interface contract.
 
 ## Internal subagents
 
@@ -18,31 +17,21 @@ The following workers are defined inside `pr-report/subagents/` and are not sepa
 - `scope-checker` — compares feedback against ticket scope or PR intent.
 - `report-writer` — fills pending report sections.
 - `html-renderer` — renders the optional HTML dashboard.
+- `normalize-pr` — normalizes PR metadata, changed files, reviews, and threads.
+- `normalize-ci` — normalizes check runs and log summaries.
+- `normalize-static-analysis` — normalizes code-quality findings.
+- `normalize-issue-tracker` — normalizes ticket scope and acceptance criteria.
 
-## Adapter skills
+## Tool providers
 
-The conductor invokes adapter building blocks by name. At least one PR source adapter is required. All others are optional and loaded lazily.
+The conductor discovers the best available tool for each capability. Out-of-box providers include:
 
-### Built-in adapters
+- **PR source** — GitHub (via MCP or `gh` CLI), manual fallback.
+- **CI / build** — GitHub Actions (via MCP or `gh` CLI).
+- **Static analysis** — SonarCloud (via MCP or API).
+- **Issue tracker** — Jira (via MCP or API).
 
-- `github-pr-adapter` — PR metadata, files, reviews, and inline threads from GitHub.
-- `github-actions-adapter` — CI check runs and logs from GitHub Actions.
-- `sonarcloud-adapter` — static-analysis findings from SonarCloud.
-- `jira-adapter` — ticket scope and acceptance criteria from Jira.
-- `manual-pr-adapter` — fallback for unsupported tools or manual processes.
-- `context-report-adapter` — discovers related reports in the context directory.
-
-### Community / optional adapters
-
-- `gitlab-pr-adapter`, `gitlab-ci-adapter`
-- `gitea-pr-adapter`
-- `azure-devops-pr-adapter`, `azure-pipelines-adapter`
-- `bitbucket-pr-adapter`
-- `sonarqube-adapter`, `codeql-adapter`, `semgrep-adapter`
-- `linear-adapter`, `github-issues-adapter`
-- `teams-adapter`, `slack-adapter`
-
-See `references/ADAPTER_ARCHITECTURE.md` for the adapter interface and registry format.
+Community or future providers (GitLab, Bitbucket, Azure DevOps, SonarQube, CodeQL, Semgrep, Linear, GitHub Issues) may be added as direct tools or separate skills when they are needed by more than one consumer.
 
 ## Consumed context reports
 
@@ -59,8 +48,8 @@ Any matching report type may be consumed if it adds useful context. The skill ha
 - Read files in the project.
 - Write files to the detected context directory.
 - Execute scripts (Python 3.x) for deterministic helpers.
-- Access to the configured PR source adapter (GitHub, GitLab, Gitea, Azure DevOps, Bitbucket, or manual input).
-- Optional access to CI, static-analysis, issue-tracker, and notification adapters depending on configuration.
+- Access to at least one PR source tool (GitHub MCP/`gh`, or manual input).
+- Optional access to CI, static-analysis, and issue-tracker tools depending on configuration.
 
 ## Environment variables
 

@@ -11,37 +11,79 @@ shared:
 
 # Skill-specific keys are stored in .agents/config/pr-report.yaml.
 skill:
-  - key: pr-report.adapters.pr.source
+  - key: pr-report.tools.pr.provider
     required: true
     default: auto
-    description: PR source adapter to use (e.g., github-pr-adapter, gitlab-pr-adapter, manual-pr-adapter, auto).
-  - key: pr-report.adapters.ci.source
+    description: Preferred PR source. `auto` detects the best available tool; `github` uses GitHub MCP or CLI; `manual` asks the user.
+
+  - key: pr-report.tools.pr.repo
+    required: false
+    default: null
+    description: Default owner/repo for PR lookups. If null, detect from git remote.
+
+  - key: pr-report.tools.pr.endpoint
+    required: false
+    default: null
+    description: Optional direct API endpoint for PR metadata. Only used when the provider is set to `direct` and the user has confirmed the endpoint.
+
+  - key: pr-report.tools.ci.provider
     required: false
     default: auto
-    description: CI / build adapter to use (e.g., github-actions-adapter, azure-pipelines-adapter, none, auto).
-  - key: pr-report.adapters.static_analysis.source
+    description: Preferred CI/build source. `auto` detects; `github-actions` uses GitHub MCP or CLI; `none` skips CI.
+
+  - key: pr-report.tools.ci.endpoint
+    required: false
+    default: null
+    description: Optional direct API endpoint for CI/build status. Only used when the provider is set to `direct` and the user has confirmed the endpoint.
+
+  - key: pr-report.tools.static_analysis.provider
     required: false
     default: auto
-    description: Static-analysis adapter to use (e.g., sonarcloud-adapter, sonarqube-adapter, none, auto).
-  - key: pr-report.adapters.issue_tracker.source
+    description: Preferred static-analysis source. `auto` detects; `sonarcloud` uses SonarCloud API/MCP; `none` skips.
+
+  - key: pr-report.tools.static_analysis.endpoint
+    required: false
+    default: null
+    description: Optional direct API endpoint for static-analysis findings. Only used when the provider is set to `direct` and the user has confirmed the endpoint.
+
+  - key: pr-report.tools.issue_tracker.provider
     required: false
     default: auto
-    description: Issue tracker / scope adapter to use (e.g., jira-adapter, linear-adapter, github-issues-adapter, none, auto).
-  - key: pr-report.adapters.notification.sources
+    description: Preferred issue-tracker source. `auto` detects; `jira` uses Jira API/MCP; `none` skips.
+
+  - key: pr-report.tools.issue_tracker.endpoint
     required: false
-    default: []
-    description: List of notification-source adapters to query for additional feedback (e.g., teams-adapter, slack-adapter).
+    default: null
+    description: Optional direct API endpoint for issue tracker scope. Only used when the provider is set to `direct` and the user has confirmed the endpoint.
+
   - key: pr-report.tooling.preference
     required: false
     default: auto
-    description: Tool selection strategy per capability. `auto` selects the best available tool; `adapters` prefers skill adapters; `mcp` prefers MCP tools; `manual` always asks.
+    description: Tool selection strategy. `auto` selects best available; `mcp` prefers MCP tools; `cli` prefers native binaries; `manual` always asks.
+
   - key: pr-report.tooling.degraded_mode
     required: false
     default: ask
-    description: Behavior when only a degraded source is available. `ask` prompts the user; `accept` proceeds silently; `reject` skips the capability.
+    description: Behavior when only a degraded source is available. `ask` prompts; `accept` proceeds; `reject` skips.
+
   - key: pr-report.bots
     required: false
     default: {}
-    description: Bot/human reviewer username mappings and default source types/severities. See references/CONFIG_PATTERN.md.
+    description: Bot/human reviewer username mappings and default source types/severities.
+
+  - key: pr-report.scope_mode
+    required: false
+    default: lenient
+    description: How aggressively to flag scope drift. `strict` flags items not explicitly in acceptance criteria; `lenient` only flags clearly unrelated items.
+
+  - key: pr-report.task_list.enabled
+    required: false
+    default: true
+    description: Whether to include a generated task list at the end of the report.
+
+  - key: pr-report.test_mode
+    required: false
+    default: false
+    description: When true, load PR data from local fixtures instead of live tools. Useful for testing and demos.
 
 requires_setup: true

@@ -59,7 +59,7 @@ This document follows the dependency taxonomy defined in `docs/skill-standards/f
 
 | Category | Examples |
 |---|---|
-| **Skill adapters** | `github-pr-adapter`, `sonarcloud-adapter`, `jira-adapter` |
+| **Provider-specific adapters** | GitHub PR adapter, SonarCloud adapter, Jira adapter |
 | **MCP tools / servers** | `github_get_pull_request_reviews`, SonarQube MCP, Jira MCP |
 | **Native binaries** | `gh`, `git`, `curl`, `jq` |
 | **Direct APIs** | Provider REST or GraphQL endpoints |

@@ -61,7 +61,7 @@ Dependencies are not limited to other skills. A skill may depend on any of the f
 
 | Category | Examples |
 |---|---|
-| **Skill adapters** | `github-pr-adapter`, `sonarcloud-adapter`, `jira-adapter` |
+| **Provider-specific adapters** | GitHub PR adapter, SonarCloud adapter, Jira adapter |
 | **MCP tools / servers** | `github_get_pull_request_reviews`, SonarQube MCP, Jira MCP |
 | **Native binaries** | `gh`, `git`, `curl`, `jq` |
 | **Direct APIs** | Provider REST or GraphQL endpoints |
@@ -372,7 +372,7 @@ When a skill reports its state, it should include:
 
 A JSON Schema for the self-diagnostics frontmatter is maintained at `schemas/self-diagnostics.schema.json`.
 
-For tool-aware skills, include `better_tool_available` when the skill is using a weaker source for a capability while a better tool is configured. For example, a PR-report skill using a `github-pr-adapter` while `github_get_pull_request_reviews` via MCP is available should report the better tool and offer to switch.
+For tool-aware skills, include `better_tool_available` when the skill is using a weaker source for a capability while a better tool is configured. For example, a PR-report skill using a custom provider adapter while `github_get_pull_request_reviews` via MCP is available should report the better tool and offer to switch.
 
 Example — eager check at initialization:
 

@@ -38,13 +38,7 @@
     "./skills/workflow/to-prd",
     "./skills/workflow/triage",
     "./skills/workflow/verify-branch",
-    "./skills/core/token-resolver",
-    "./skills/core/pr-adapter-contract",
-    "./skills/adapters/github-actions-adapter",
-    "./skills/adapters/github-pr-adapter",
-    "./skills/adapters/jira-adapter",
-    "./skills/adapters/manual-pr-adapter",
-    "./skills/adapters/sonarcloud-adapter"
+    "./skills/core/token-resolver"
   ],
   "namespaces": {
     "audit-skill": "wian-skills:audit-skill",
@@ -82,13 +76,7 @@
     "worker-contract": "wian-skills:worker-contract",
     "write-a-skill": "wian-skills:write-a-skill",
     "zoom-out": "wian-skills:zoom-out",
-    "token-resolver": "wian-skills:token-resolver",
-    "pr-adapter-contract": "wian-skills:pr-adapter-contract",
-    "github-actions-adapter": "wian-skills:github-actions-adapter",
-    "github-pr-adapter": "wian-skills:github-pr-adapter",
-    "jira-adapter": "wian-skills:jira-adapter",
-    "manual-pr-adapter": "wian-skills:manual-pr-adapter",
-    "sonarcloud-adapter": "wian-skills:sonarcloud-adapter"
+    "token-resolver": "wian-skills:token-resolver"
   },
   "requirements": {
     "tools": [
@@ -113,7 +101,6 @@
         "detect-project-context",
         "eval-format",
         "token-resolver",
-        "pr-adapter-contract",
         "worker-contract"
       ]
     },
@@ -127,17 +114,6 @@
         "parse-skill-frontmatter",
         "search-skills-registry",
         "validate-skill-frontmatter"
-      ]
-    },
-    {
-      "name": "adapters",
-      "description": "Pluggable adapter building blocks consumed by workflow skills.",
-      "skills": [
-        "github-pr-adapter",
-        "github-actions-adapter",
-        "sonarcloud-adapter",
-        "jira-adapter",
-        "manual-pr-adapter"
       ]
     },
     {
@@ -259,16 +235,9 @@
         "detect-project-context",
         "context-reports",
         "worker-contract",
-        "token-resolver",
-        "pr-adapter-contract",
-        "manual-pr-adapter"
+        "token-resolver"
       ],
-      "recommended": [
-        "github-pr-adapter",
-        "github-actions-adapter",
-        "sonarcloud-adapter",
-        "jira-adapter"
-      ],
+      "recommended": [],
       "optional": [
         "baseline",
         "debrief"

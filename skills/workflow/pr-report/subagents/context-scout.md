@@ -1,10 +1,10 @@
 # Context Scout
 
-Follow the `worker-contract` return contract. Scans `.agents/context/` for reports matching the PR's ticket/issue key and ranks them by relevance.
+Follow the `worker-contract` return contract. Scans `{context_dir}` for reports matching the PR's ticket/issue key and ranks them by relevance.
 
 ## In scope
 
-- List files in `.agents/context/` and subdirectories.
+- List files in the detected `{context_dir}` and subdirectories.
 - Match files whose name or frontmatter `ticket`/`key` field contains the exact ticket key.
 - Read frontmatter to determine report type and summary.
 - Group files by relevance: high, medium, low.
@@ -18,6 +18,7 @@ Follow the `worker-contract` return contract. Scans `.agents/context/` for repor
 ## Inputs
 
 - Ticket/issue key (required)
+- Context directory path (required)
 - Optional PR number fallback
 
 ## Outputs

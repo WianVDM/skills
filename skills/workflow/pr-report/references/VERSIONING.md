@@ -1,12 +1,3 @@
----
-name: pr-report-versioning
-description: Versioning policy for the pr-report skill and its produced reports/state.
-metadata:
-  author: Wian van der Merwe
-  tags: [pr-report, versioning, schema]
-  version: "1.0.0"
----
-
 # Versioning
 
 `pr-report` is a workflow conductor that produces reports and state files consumed by other skills and by the user. This document defines how the skill is versioned and how report/state schema changes are handled.
@@ -15,7 +6,7 @@ metadata:
 
 | Concept | Location | Changes when |
 |---|---|---|
-| **Skill version** | `metadata.version` in `SKILL.md` | Orchestration, workflow, adapter contract, or triage behavior changes. |
+| **Skill version** | `version` in `SKILL.md` frontmatter | Orchestration, workflow, or triage behavior changes. |
 | **Report / state schema version** | `version` field in report and state frontmatter | Columns, sections, frontmatter fields, or delta classifications are added, removed, or renamed. |
 
 A single release may bump one, both, or neither.
@@ -31,13 +22,13 @@ A breaking change requires a major bump to the affected version:
 
 - Removing or renaming a report section or frontmatter field.
 - Changing the meaning of an existing field without renaming it.
-- Changing the adapter interface contract.
+- Changing the internal normalization model in a way that breaks subagent contracts.
 - Changing the return format of a subagent or building block consumed by other skills.
 
 Non-breaking changes include:
 
 - Adding new optional report sections or fields.
-- Adding new adapters or workflow steps that do not change existing output.
+- Adding new workflow steps or tool providers that do not change existing output.
 - Clarifying wording without changing behavior.
 
 ## Migration path
@@ -59,6 +50,23 @@ When the config schema changes:
 2. Map known old keys to new keys automatically when the intent is unambiguous.
 3. If an old key has no clear equivalent, report the conflict and ask the user.
 4. Persist the migrated config under the new schema and append a `decision` note recording the migration.
+
+### Old adapter-shaped config mapping
+
+| Old key | New key | Mapping rule |
+|---|---|---|
+| `adapters.pr.source: github-pr-adapter` | `pr-report.tools.pr.provider: github` | Map adapter name to provider name. |
+| `adapters.pr.source: manual-pr-adapter` | `pr-report.tools.pr.provider: manual` | Map to manual provider. |
+| `adapters.pr.source: auto` | `pr-report.tools.pr.provider: auto` | No change. |
+| `adapters.ci.source: github-actions-adapter` | `pr-report.tools.ci.provider: github-actions` | Map adapter name to provider name. |
+| `adapters.static_analysis.source: sonarcloud-adapter` | `pr-report.tools.static_analysis.provider: sonarcloud` | Map adapter name to provider name. |
+| `adapters.issue_tracker.source: jira-adapter` | `pr-report.tools.issue_tracker.provider: jira` | Map adapter name to provider name. |
+| `tooling.preference` | `pr-report.tooling.preference` | No change. |
+| `tooling.degraded_mode` | `pr-report.tooling.degraded_mode` | No change. |
+| `bots` | `pr-report.bots` | No change. |
+| `adapter_registry` | (none) | Remove. Adapter registry is obsolete. |
+
+On first run after the reshape, the conductor reads the existing config, maps known old keys to new keys automatically, removes obsolete keys like `adapter_registry`, and appends a migration note.
 
 ## Deprecation
 

@@ -4,10 +4,10 @@ Composition test for pr-report.
 
 Validates the conductor's wiring without needing a live PR:
 - SKILL.md frontmatter is valid.
-- config.yaml is parseable and declares the expected keys.
-- All references linked from SKILL.md exist.
-- Adapter registry entries point to existing skills.
-- evals/evals.json is valid.
+- config.yaml is parseable and declares the expected provider/tooling keys.
+- All internal markdown links in SKILL.md, references/*.md, and subagents/*.md resolve.
+- evals/evals.json is valid and includes at least one behavioral eval.
+- No legacy adapter names remain in the skill files.
 """
 
 from __future__ import annotations
@@ -18,93 +18,153 @@ import sys
 from pathlib import Path
 
 
-def run() -> dict:
-    results = []
-    skill_dir = Path(__file__).resolve().parent.parent
+SKILL_DIR = Path(__file__).resolve().parent.parent
+SKILL_MD = SKILL_DIR / "SKILL.md"
+CONFIG_YAML = SKILL_DIR / "config.yaml"
+REFERENCES_DIR = SKILL_DIR / "references"
+SUBAGENTS_DIR = SKILL_DIR / "subagents"
+EVALS_JSON = SKILL_DIR / "evals" / "evals.json"
 
-    # 1. Validate frontmatter schema
+ADAPTER_NAMES = {
+    "github-pr-adapter",
+    "github-actions-adapter",
+    "sonarcloud-adapter",
+    "jira-adapter",
+    "manual-pr-adapter",
+    "pr-adapter-contract",
+}
+
+REQUIRED_CONFIG_KEYS = {
+    "pr-report.tools.pr.provider",
+    "pr-report.tools.pr.repo",
+    "pr-report.tools.ci.provider",
+    "pr-report.tools.static_analysis.provider",
+    "pr-report.tools.issue_tracker.provider",
+    "pr-report.tooling.preference",
+    "pr-report.tooling.degraded_mode",
+    "pr-report.scope_mode",
+    "pr-report.task_list.enabled",
+    "pr-report.test_mode",
+}
+
+
+def validate_frontmatter() -> dict:
     try:
         import subprocess
         result = subprocess.run(
             [
                 sys.executable,
                 "skills/tooling/validate-skill-frontmatter/scripts/validate-skill-frontmatter.py",
-                str(skill_dir / "SKILL.md"),
+                str(SKILL_MD),
             ],
             capture_output=True,
             text=True,
             check=False,
         )
         if result.returncode == 0:
-            results.append({"check": "SKILL.md frontmatter validates", "status": "PASS"})
-        else:
-            results.append({"check": "SKILL.md frontmatter validates", "status": "FAIL", "detail": result.stdout})
+            return {"check": "SKILL.md frontmatter validates", "status": "PASS"}
+        return {"check": "SKILL.md frontmatter validates", "status": "FAIL", "detail": result.stdout}
     except Exception as e:
-        results.append({"check": "SKILL.md frontmatter validates", "status": "FAIL", "detail": str(e)})
+        return {"check": "SKILL.md frontmatter validates", "status": "FAIL", "detail": str(e)}
 
-    # 2. config.yaml is parseable and contains tooling keys
+
+def validate_config() -> dict:
     try:
         import yaml
-        config = yaml.safe_load((skill_dir / "config.yaml").read_text(encoding="utf-8"))
+        config = yaml.safe_load(CONFIG_YAML.read_text(encoding="utf-8"))
         assert config is not None
         keys = {item["key"] for item in config.get("skill", [])}
-        assert "pr-report.tooling.preference" in keys
-        assert "pr-report.tooling.degraded_mode" in keys
-        results.append({"check": "config.yaml declares tooling keys", "status": "PASS"})
-    except Exception as e:
-        results.append({"check": "config.yaml declares tooling keys", "status": "FAIL", "detail": str(e)})
-
-    # 3. All internal markdown links in SKILL.md resolve
-    try:
-        body = (skill_dir / "SKILL.md").read_text(encoding="utf-8")
-        links = re.findall(r"\[([^\]]+)\]\(([^)]+)\)", body)
-        broken = []
-        for label, target in links:
-            if target.startswith(("http://", "https://", "#")):
-                continue
-            target = target.split("#", 1)[0]
-            resolved = (skill_dir / target).resolve()
-            if not resolved.exists():
-                broken.append(f"{label} -> {target}")
-        if broken:
-            results.append({"check": "SKILL.md links resolve", "status": "FAIL", "detail": ", ".join(broken)})
-        else:
-            results.append({"check": "SKILL.md links resolve", "status": "PASS"})
-    except Exception as e:
-        results.append({"check": "SKILL.md links resolve", "status": "FAIL", "detail": str(e)})
-
-    # 4. Adapter registry entries point to existing skills
-    try:
-        registry = (skill_dir / "references" / "ADAPTER_REGISTRY.md").read_text(encoding="utf-8")
-        # Extract adapter names from the registry code block
-        names = re.findall(r"^\s+(\w[\w-]*-adapter):", registry, re.MULTILINE)
-        missing = []
-        for name in names:
-            candidate = Path("skills") / "adapters" / name
-            if not candidate.exists():
-                # Some adapters are community/optional and may not exist yet
-                continue
-            if not (candidate / "SKILL.md").exists():
-                missing.append(name)
+        missing = REQUIRED_CONFIG_KEYS - keys
         if missing:
-            results.append({"check": "Built-in adapter registry entries exist", "status": "FAIL", "detail": ", ".join(missing)})
-        else:
-            results.append({"check": "Built-in adapter registry entries exist", "status": "PASS"})
+            return {
+                "check": "config.yaml declares provider/tooling keys",
+                "status": "FAIL",
+                "detail": f"Missing keys: {', '.join(sorted(missing))}",
+            }
+        return {"check": "config.yaml declares provider/tooling keys", "status": "PASS"}
     except Exception as e:
-        results.append({"check": "Built-in adapter registry entries exist", "status": "FAIL", "detail": str(e)})
+        return {"check": "config.yaml declares provider/tooling keys", "status": "FAIL", "detail": str(e)}
 
-    # 5. evals/evals.json is valid JSON
+
+def extract_links(text: str) -> list[tuple[str, str]]:
+    return re.findall(r"\[([^\]]+)\]\(([^)]+)\)", text)
+
+
+def check_links(path: Path, text: str) -> list[str]:
+    broken = []
+    for label, target in extract_links(text):
+        if target.startswith(("http://", "https://", "mailto:", "#")):
+            continue
+        target = target.split("#", 1)[0]
+        resolved = (path.parent / target).resolve()
+        if not resolved.exists():
+            broken.append(f"{label} -> {target}")
+    return broken
+
+
+def validate_links() -> dict:
     try:
-        evals = json.loads((skill_dir / "evals" / "evals.json").read_text(encoding="utf-8"))
+        broken = []
+        broken.extend(check_links(SKILL_MD, SKILL_MD.read_text(encoding="utf-8")))
+        for ref in REFERENCES_DIR.glob("*.md"):
+            broken.extend(check_links(ref, ref.read_text(encoding="utf-8")))
+        for subagent in SUBAGENTS_DIR.glob("*.md"):
+            broken.extend(check_links(subagent, subagent.read_text(encoding="utf-8")))
+        if broken:
+            return {
+                "check": "All internal markdown links resolve",
+                "status": "FAIL",
+                "detail": "; ".join(broken[:20]),
+            }
+        return {"check": "All internal markdown links resolve", "status": "PASS"}
+    except Exception as e:
+        return {"check": "All internal markdown links resolve", "status": "FAIL", "detail": str(e)}
+
+
+def validate_evals() -> dict:
+    try:
+        evals = json.loads(EVALS_JSON.read_text(encoding="utf-8"))
         assert "tests" in evals
         assert len(evals["tests"]) > 0
-        # Check at least one behavioral eval exists
         behavioral = [t for t in evals["tests"] if t.get("type") == "behavioral"]
         assert len(behavioral) > 0
-        results.append({"check": "evals/evals.json includes behavioral evals", "status": "PASS"})
+        return {"check": "evals/evals.json includes behavioral evals", "status": "PASS"}
     except Exception as e:
-        results.append({"check": "evals/evals.json includes behavioral evals", "status": "FAIL", "detail": str(e)})
+        return {"check": "evals/evals.json includes behavioral evals", "status": "FAIL", "detail": str(e)}
 
+
+def validate_no_adapter_names() -> dict:
+    try:
+        found = []
+        migration_files = {
+            (REFERENCES_DIR / "VERSIONING.md").resolve(),
+            (REFERENCES_DIR / "WORKFLOW.md").resolve(),
+        }
+        for path in [SKILL_MD, CONFIG_YAML] + list(REFERENCES_DIR.glob("*.md")) + list(SUBAGENTS_DIR.glob("*.md")):
+            text = path.read_text(encoding="utf-8")
+            for name in ADAPTER_NAMES:
+                if name in text:
+                    if path.resolve() not in migration_files:
+                        found.append(f"{name} in {path.relative_to(SKILL_DIR)}")
+        if found:
+            return {
+                "check": "No adapter names remain in skill files",
+                "status": "FAIL",
+                "detail": "; ".join(found[:20]),
+            }
+        return {"check": "No adapter names remain in skill files", "status": "PASS"}
+    except Exception as e:
+        return {"check": "No adapter names remain in skill files", "status": "FAIL", "detail": str(e)}
+
+
+def run() -> dict:
+    results = [
+        validate_frontmatter(),
+        validate_config(),
+        validate_links(),
+        validate_evals(),
+        validate_no_adapter_names(),
+    ]
     overall = "PASS" if all(r["status"] == "PASS" for r in results) else "FAIL"
     return {"overall": overall, "results": results}
 

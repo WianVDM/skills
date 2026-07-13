@@ -11,10 +11,10 @@ python skills/workflow/pr-report/scripts/composition-test.py
 ## What it tests
 
 - `SKILL.md` frontmatter validates against the JSON schema.
-- `config.yaml` is parseable and declares the required tooling keys.
-- All internal markdown links in `SKILL.md` resolve.
-- Built-in adapter registry entries point to existing skill directories.
+- `config.yaml` is parseable and declares the expected tooling keys.
+- All internal markdown links in `SKILL.md`, `references/*.md`, and `subagents/*.md` resolve.
 - `evals/evals.json` is valid and includes at least one behavioral eval.
+- No adapter names remain in the skill files.
 
 ## What it does not test
 
@@ -31,7 +31,7 @@ python skills/workflow/pr-report/scripts/composition-test.py
 }
 ```
 
-The script exits with code `0` on success and `1` on failure.
+The script exits with code `0` on success and code `1` on failure.
 
 ## References
 

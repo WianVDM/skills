@@ -73,6 +73,27 @@
       "expected": "pr-report"
     },
     {
+      "id": "trigger-should-11",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "/pr-report ci",
+      "expected": "pr-report"
+    },
+    {
+      "id": "trigger-should-12",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "/pr-report reviews",
+      "expected": "pr-report"
+    },
+    {
+      "id": "trigger-should-13",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "/pr-report static-analysis",
+      "expected": "pr-report"
+    },
+    {
       "id": "trigger-not-01",
       "type": "trigger",
       "category": "should-not-trigger",
@@ -146,29 +167,106 @@
       "id": "behavioral-mcp-reviews-01",
       "type": "behavioral",
       "category": "tool-selection",
-      "prompt": "Given a GitHub PR and a configured GitHub MCP server, run /pr-report. The github-pr-adapter is also configured. Expect the report to include full top-level review bodies from the GitHub MCP tool, not reconstructed summaries from the adapter.",
+      "prompt": "Given a GitHub PR and a configured GitHub MCP server, run /pr-report. The gh CLI is also available. Expect the report to include full top-level review bodies from the GitHub MCP tool, not reconstructed summaries from the CLI.",
       "expected": "Top-level review bodies are fetched from the GitHub MCP tool when it is the best available source."
+    },
+    {
+      "id": "behavioral-gh-cli-fallback-01",
+      "type": "behavioral",
+      "category": "tool-selection",
+      "prompt": "Given a GitHub PR and no configured MCP server, run /pr-report. Expect the conductor to use the gh CLI or direct GitHub API as the best available tool.",
+      "expected": "The gh CLI or direct GitHub API is used when no MCP server is available."
+    },
+    {
+      "id": "behavioral-manual-fallback-01",
+      "type": "behavioral",
+      "category": "tool-selection",
+      "prompt": "Given no configured PR tool and no MCP server, run /pr-report. Expect the conductor to fall back to manual user input and still produce a report.",
+      "expected": "Manual user input is used as a fallback and a report is still produced."
     },
     {
       "id": "behavioral-sonar-fallback-01",
       "type": "behavioral",
       "category": "tool-selection",
-      "prompt": "Given a SonarCloud adapter failure and a configured SonarQube MCP server, run /pr-report. Expect the agent to offer to use the SonarQube MCP server before recording static analysis as unavailable.",
+      "prompt": "Given a SonarCloud API failure and a configured SonarQube MCP server, run /pr-report. Expect the agent to offer to use the SonarQube MCP server before recording static analysis as unavailable.",
       "expected": "The SonarQube MCP server is offered as a fallback before the capability is marked unavailable."
     },
     {
       "id": "behavioral-partial-retry-01",
       "type": "behavioral",
       "category": "tool-selection",
-      "prompt": "Given a partial result from the configured PR adapter and a better available tool (e.g., GitHub MCP), run /pr-report. Expect the agent to disclose the better tool and ask whether to retry before accepting the partial result.",
+      "prompt": "Given a partial result from the configured PR tool and a better available tool (e.g., GitHub MCP), run /pr-report. Expect the agent to disclose the better tool and ask whether to retry before accepting the partial result.",
       "expected": "The better tool is disclosed and the user is asked before degraded data is accepted."
+    },
+    {
+      "id": "behavioral-conflict-resolution-01",
+      "type": "behavioral",
+      "category": "tool-selection",
+      "prompt": "Given two available tools that return conflicting data for a blocking CI item, run /pr-report. Expect the conductor to record the conflict and ask the user which source to trust.",
+      "expected": "The conflict is recorded in the Data sources section and the user is consulted for a blocking item."
     },
     {
       "id": "behavioral-degradation-disclosure-01",
       "type": "behavioral",
       "category": "degradation-disclosure",
-      "prompt": "Given that only a degraded source is available for CI/build status and tooling.degraded_mode is ask, run /pr-report. Expect the report and chat summary to name the degraded tool, the better tool, the impact, and how to override.",
+      "prompt": "Given that only a degraded source is available for CI/build status and pr-report.tooling.degraded_mode is ask, run /pr-report. Expect the report and chat summary to name the degraded tool, the better tool, the impact, and how to override.",
       "expected": "Degradation is disclosed with degraded tool, better tool, impact, and override instruction."
+    },
+    {
+      "id": "behavioral-degradation-accept-01",
+      "type": "behavioral",
+      "category": "degradation-disclosure",
+      "prompt": "Given pr-report.tooling.degraded_mode is accept and a degraded source is used for static analysis, run /pr-report. Expect the report to still record the degraded source and the better alternative in the Data sources section.",
+      "expected": "The degraded source and better alternative are recorded even when accepted silently."
+    },
+    {
+      "id": "pressure-missing-tool-01",
+      "type": "behavioral",
+      "category": "pressure",
+      "prompt": "Given no available tool for CI/build status, run /pr-report. Expect the conductor to note the gap and continue without blocking on the missing capability.",
+      "expected": "The missing capability is noted in the Data sources section and the report continues."
+    },
+    {
+      "id": "pressure-connection-failure-01",
+      "type": "behavioral",
+      "category": "pressure",
+      "prompt": "Given a configured GitHub MCP server that fails to connect, run /pr-report. Expect the conductor to stop and consult the user about the connection failure.",
+      "expected": "The conductor stops and asks the user about the connection failure."
+    },
+    {
+      "id": "pressure-context-compaction-01",
+      "type": "behavioral",
+      "category": "pressure",
+      "prompt": "Given context compaction mid-run, run /pr-report. Expect the conductor to resume from the pending phase using the state file.",
+      "expected": "The conductor resumes from the first pending phase after reading the state file."
+    },
+    {
+      "id": "pressure-corrupted-state-01",
+      "type": "behavioral",
+      "category": "pressure",
+      "prompt": "Given a corrupted state file for the current PR, run /pr-report. Expect the conductor to archive the state and start fresh.",
+      "expected": "The corrupted state is archived and the conductor starts fresh."
+    },
+    {
+      "id": "pressure-tool-selection-override-01",
+      "type": "behavioral",
+      "category": "pressure",
+      "prompt": "Given pr-report.tooling.preference is cli and both an MCP server and gh CLI are available, run /pr-report. Expect the CLI to be preferred over the MCP server for PR metadata.",
+      "expected": "The user-configured tooling preference overrides automatic ranking."
+    },
+    {
+      "id": "behavioral-focused-mode-01",
+      "type": "behavioral",
+      "category": "focused-mode",
+      "prompt": "Given /pr-report ci, expect the conductor to collect only CI/build status and produce a focused report with the Data sources section and a short summary.",
+      "expected": "Only the CI/build capability is collected and reported."
+    },
+    {
+      "id": "behavioral-test-mode-01",
+      "type": "behavioral",
+      "category": "mock-mode",
+      "prompt": "Given pr-report.test_mode is true and local fixtures are present, run /pr-report. Expect the report to be generated from fixtures without live tokens.",
+      "expected": "The report is generated from local fixtures without calling live tools."
     }
   ]
 }

@@ -32,7 +32,7 @@ skill: my-new-skill
 
 | ID | Capability | Generic value | Likely consumers | Interface sketch |
 |---|---|---|---|---|
-| E-01 | Token resolution | Used by many adapters | github-pr-adapter, jira-adapter | Input: env var name; Output: token reference |
+| E-01 | Token resolution | Used by provider-specific adapters | GitHub PR adapter, Jira adapter | Input: env var name; Output: token reference |
 ```
 
 ## Dependencies

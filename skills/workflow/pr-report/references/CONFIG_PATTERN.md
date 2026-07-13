@@ -10,7 +10,7 @@ Config and notes live in the detected project configuration directory:
 {config_dir}/pr-report.yaml
 ```
 
-`{config_dir}` is discovered by the `detect-project-context` building block. The default is `{project-root}/.agents/config`, but the skill does not assume that path. See [Initialization](../SKILL.md#initialization) in `SKILL.md` for the detection routine.
+`{config_dir}` is discovered by the `detect-project-context` building block. The default is `{project-root}/.agents/config`, but the skill does not assume that path. See the `## Initialize` section in `SKILL.md` for the detection routine.
 
 Reports and state live in the detected project context directory:
 
@@ -22,44 +22,47 @@ Reports and state live in the detected project context directory:
 
 ## First-run flow
 
-See the `## Initialization` section in `SKILL.md` for the first-run sequence. The summary is:
+The initialization phase follows the lazy-loading pattern from the skill standards:
 
-1. Load existing config.
-2. Detect project context and environment.
-3. Ask only for missing values.
-4. Persist resolved config.
-5. Continue using the new config.
+1. Detect the environment, project type, git remote, and available tools.
+2. Propose sensible defaults for every value that can be inferred.
+3. Ask the user only for values that are ambiguous or impossible to detect.
+4. Validate required capabilities eagerly; validate recommended/optional capabilities only when the branch that needs them is selected.
+5. Offer a single "Use detected defaults" confirmation step instead of interrogating the user for every config key.
+6. Persist resolved config and continue.
 
-## Adapter and tool detection
+The conductor detects the repo from `git remote`, the issue tracker from the remote domain or existing config, and the preferred PR provider from the same signals. It only asks when there are multiple plausible remotes or when no remote exists.
 
-Provider detection is the default behavior. When an adapter setting is `auto`, the skill selects the best tool for the capability by inspecting, in order:
+## Tool and provider detection
 
-- Explicit per-capability tool preferences (`tooling.preference`).
-- The configured `adapters.{role}.source` value.
+Provider detection is the default behavior. When a tool provider is set to `auto`, the skill selects the best tool for the capability by inspecting, in order:
+
+- Explicit per-capability tool preferences (`pr-report.tools.{capability}.provider`).
+- The global `pr-report.tooling.preference` value.
 - Available MCP servers and tools.
 - Native binaries (`gh`, `git`, `curl`, etc.).
-- Direct APIs and environment variables.
+- Direct APIs and environment variables (only if explicitly configured and confirmed).
 - The git remote and project files such as CI configuration.
 
-The skill does not assume a specific harness, model, or tool. It uses the capability-to-tool mapping in `references/TOOL_SELECTION.md` and the adapter registry in `references/ADAPTER_ARCHITECTURE.md` to map `source` names to implementations.
+The skill does not assume a specific harness, model, or tool. It uses the capability-to-tool mapping in `references/TOOL_SELECTION.md`.
 
 ### Tooling preference and degraded mode
 
 Two config keys control tool selection behavior globally:
 
-- `tooling.preference` — `auto` selects the best available tool; `adapters` prefers skill adapters; `mcp` prefers MCP tools; `manual` always asks.
-- `tooling.degraded_mode` — `ask` prompts the user before accepting a degraded source; `accept` proceeds silently; `reject` skips the capability.
+- `pr-report.tooling.preference` — `auto` selects the best available tool; `mcp` prefers MCP tools; `cli` prefers native binaries; `manual` always asks.
+- `pr-report.tooling.degraded_mode` — `ask` prompts the user before accepting a degraded source; `accept` proceeds silently; `reject` skips the capability.
 
-When `tooling.preference` is set to anything other than `auto`, the conductor still detects all available tools, but it ranks the preferred category first unless that category cannot fulfill the capability. The final tool choice and any override are recorded in state.
+When `pr-report.tooling.preference` is set to anything other than `auto`, the conductor still detects all available tools, but it ranks the preferred category first unless that category cannot fulfill the capability. The final tool choice and any override are recorded in state.
 
-When `tooling.degraded_mode` is `ask` (the default), the conductor stops and asks the user whether to use a better tool, accept the degraded source, or skip the capability. The disclosure template is in `references/TOOL_SELECTION.md`.
+When `pr-report.tooling.degraded_mode` is `ask` (the default), the conductor stops and asks the user whether to use a better tool, accept the degraded source, or skip the capability. The disclosure template is in `references/TOOL_SELECTION.md`.
 
 ### Token resolution
 
-Adapters receive tokens through a shared `token-resolver` building block. Tokens are resolved in this order:
+Tools receive tokens through the shared `token-resolver` building block. Tokens are resolved in this order:
 
-1. Literal value in `adapters.{role}.config.token`.
-2. `${ENV_VAR}` reference in `adapters.{role}.config.token`.
+1. Literal value in `pr-report.tools.{capability}.config.token`.
+2. `${ENV_VAR}` reference in `pr-report.tools.{capability}.config.token`.
 3. Valid token extracted from configured MCP config.
 4. Ask the user once, then persist the env-var name or secure reference to config.
 
@@ -85,61 +88,52 @@ agents:
   config_dir: .agents/config
 
 # Skill-specific keys (stored in {config_dir}/pr-report.yaml)
-adapters:
-  pr:
-    source: github-pr-adapter      # auto | github-pr-adapter | gitlab-pr-adapter | manual-pr-adapter | ...
-    config:
-      repo: owner/repo
-      token: ${GITHUB_TOKEN}
-  ci:
-    source: github-actions-adapter # auto | github-actions-adapter | azure-pipelines-adapter | none | ...
-    config:
-      token: ${GITHUB_TOKEN}
-  static_analysis:
-    source: sonarcloud-adapter     # auto | sonarcloud-adapter | sonarqube-adapter | codeql-adapter | none | ...
-    config:
-      organization: my-org
-      project_key: my-org_repo
-      token: ${SONAR_TOKEN}
-  issue_tracker:
-    source: jira-adapter           # auto | jira-adapter | linear-adapter | github-issues-adapter | none | ...
-    config:
-      base_url: https://my-org.atlassian.net
-      token: ${JIRA_TOKEN}
-  notification:
-    sources: []                    # [teams-adapter, slack-adapter, ...]
-
-  # Tooling preference controls how capabilities are mapped to tools.
+pr-report:
+  tools:
+    pr:
+      provider: auto          # auto | github | manual | direct
+      repo: null            # default owner/repo; null means detect from git remote
+      endpoint: null        # direct API endpoint; only used with provider: direct
+    ci:
+      provider: auto          # auto | github-actions | none | direct
+      endpoint: null
+    static_analysis:
+      provider: auto          # auto | sonarcloud | none | direct
+      endpoint: null
+    issue_tracker:
+      provider: auto          # auto | jira | none | direct
+      endpoint: null
   tooling:
-    preference: auto              # auto | adapters | mcp | manual
-    degraded_mode: ask            # ask | accept | reject
-
-bots:
-  sonarqube:
-    usernames: [sonarqubecloud]
-    source_type: static_analysis
-    default_severity: required
-  coderabbit:
-    usernames: [coderabbitai, coderabbit[bot]]
-    source_type: automated_reviewer
-    default_severity: recommended
-  tate:
-    usernames: [T876]
-    source_type: hybrid_reviewer
-    default_severity: required_to_resolve
+    preference: auto          # auto | mcp | cli | manual
+    degraded_mode: ask        # ask | accept | reject
+  scope_mode: lenient         # strict | lenient
+  task_list:
+    enabled: true
+  test_mode: false
+  bots:
+    sonarqube:
+      usernames: [sonarqubecloud]
+      source_type: static_analysis
+      default_severity: required
+    coderabbit:
+      usernames: [coderabbitai, coderabbit[bot]]
+      source_type: automated_reviewer
+      default_severity: recommended
+    tate:
+      usernames: [T876]
+      source_type: hybrid_reviewer
+      default_severity: required_to_resolve
 
 notes: []
 ```
-
-See `references/ADAPTER_ARCHITECTURE.md` for the adapter interface and registry format.
 
 ## Self-updates
 
 The skill may append to `notes` and update non-secret fields in place:
 
 - Detected project context directory and source.
-- Adapter URLs and organizations discovered from MCP config.
-- Adapter availability/unavailability observations.
+- Provider URLs and organizations discovered from MCP config.
+- Tool availability/unavailability observations.
 - User preference explanations.
 
 Rules:
@@ -151,9 +145,9 @@ Rules:
 
 ## User consultation
 
-When an adapter cannot be resolved or its token is missing, explain what was already tried and present options:
+When a tool cannot be resolved or its token is missing, explain what was already tried and present options:
 
 1. Paste a token.
 2. Provide an environment variable name.
-3. Say `skip` to skip this adapter this run.
-4. Say `disable` to turn off this adapter permanently.
+3. Say `skip` to skip this capability this run.
+4. Say `disable` to turn off this capability permanently.

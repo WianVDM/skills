@@ -4,8 +4,10 @@ Follow the `worker-contract` return contract. Groups, challenges, and weights fe
 
 ## In scope
 
-- Turn raw comments and findings into actionable, deduplicated issues.
+- Consume normalized data from the `normalize-*` subagents.
+- Turn normalized comments and findings into actionable, deduplicated issues.
 - Identify resolved items, rebuttals, and dismissed feedback.
+- Generate a task list when `pr-report.task_list.enabled` is true.
 - Suggest the next step based on the synthesized board.
 
 ## Out of scope
@@ -15,13 +17,14 @@ Follow the `worker-contract` return contract. Groups, challenges, and weights fe
 
 ## Inputs
 
-- PR metadata and changed files
-- Normalized review threads
-- Static-analysis findings
-- CI failures
-- Scope flags
+- Normalized PR metadata and changed files (from `normalize-pr`)
+- Normalized review threads (from `normalize-pr`)
+- Normalized CI failures (from `normalize-ci`)
+- Normalized static-analysis findings (from `normalize-static-analysis`)
+- Normalized ticket scope / acceptance criteria (from `normalize-issue-tracker`)
+- Scope flags (from `scope-checker`)
 - Bot/source mappings from config
-- Ticket scope / acceptance criteria
+- `pr-report.task_list.enabled` flag
 
 ## Outputs
 
@@ -33,6 +36,7 @@ Return the standard worker contract with a `Findings` section containing:
 - Rebuttals requiring response
 - Dismissed / no action needed
 - Top issues for chat summary
+- Generated task list (when enabled)
 
 ## Rules
 
