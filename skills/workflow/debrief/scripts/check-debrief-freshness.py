@@ -4,11 +4,18 @@
 Reads JSON from stdin:
   {
     "report_path": "/path/to/.agents/context/debrief/OC-4644-auth-guard.md",
+    "report_frontmatter": {          # optional; conductor should provide this from parse-skill-frontmatter
+      "updated_at": "2026-07-07T12:00:00Z",
+      "branch": "feature/OC-4644-auth-guard",
+      "commit": "abc1234def5678"
+    },
     "ticket_updated_at": "2026-07-07T12:00:00Z",
     "branch": "feature/OC-4644-auth-guard",
     "commit": "abc1234def5678",
     "freshness_hours": 24
   }
+
+If `report_frontmatter` is omitted, the script reads the report file and parses the frontmatter with PyYAML.
 
 Writes JSON to stdout:
   {"fresh": true|false, "reason": "..."}
@@ -27,14 +34,17 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from _frontmatter import parse_frontmatter
+try:
+    import yaml
+except ImportError:  # pragma: no cover - PyYAML is a normal dependency
+    yaml = None
 
 
 def _help() -> str:
     return """check-debrief-freshness.py — check if a debrief report is still fresh
 
 Input JSON (stdin):
-  {"report_path": "...", "ticket_updated_at": "...", "branch": "...", "commit": "...", "freshness_hours": 24}
+  {"report_path": "...", "report_frontmatter": {...}, "ticket_updated_at": "...", "branch": "...", "commit": "...", "freshness_hours": 24}
 
 Output JSON (stdout):
   {"fresh": true|false, "reason": "..."}
@@ -84,15 +94,23 @@ def _run(data: dict) -> dict:
     if not path.exists():
         raise FileNotFoundError(f"report file not found: {report_path}")
 
-    try:
-        text = path.read_text(encoding="utf-8", errors="ignore")
-    except OSError as exc:
-        raise RuntimeError(f"failed to read report: {exc}")
-
-    try:
-        frontmatter = parse_frontmatter(text)
-    except Exception as exc:
-        raise ValueError(f"failed to parse report frontmatter: {exc}")
+    frontmatter = data.get("report_frontmatter")
+    if frontmatter is None:
+        if yaml is None:
+            raise RuntimeError("PyYAML is not installed and report_frontmatter was not provided")
+        try:
+            text = path.read_text(encoding="utf-8", errors="ignore")
+        except OSError as exc:
+            raise RuntimeError(f"failed to read report: {exc}")
+        if not text.startswith("---"):
+            raise ValueError("report has no frontmatter")
+        end = text.find("---", 3)
+        if end == -1:
+            raise ValueError("report frontmatter is missing closing marker")
+        try:
+            frontmatter = yaml.safe_load(text[3:end]) or {}
+        except Exception as exc:
+            raise ValueError(f"failed to parse report frontmatter: {exc}")
 
     if not isinstance(frontmatter, dict):
         raise ValueError("report frontmatter is not a mapping")

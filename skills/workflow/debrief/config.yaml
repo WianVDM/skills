@@ -47,4 +47,4 @@ skill:
     required: false
     default: 5
 
-requires_setup: false
+requires_setup: true

@@ -3,7 +3,7 @@
 
 Reads JSON from stdin: {"cwd": "<path>", "config_dir": "<path>"}
   - cwd is required; it is the working directory for the project.
-  - config_dir is optional; when provided, it overrides detected paths.
+  - config_dir is required; the conductor must provide it from detect-project-context.
 
 Writes JSON to stdout:
   {
@@ -19,8 +19,6 @@ The script is read-only, deterministic, and non-interactive.
 
 import json
 import os
-import subprocess
-import sys
 from pathlib import Path
 from typing import Optional
 
@@ -41,13 +39,15 @@ def _help() -> str:
     return """detect-issue-tracker.py — detect available issue trackers
 
 Input JSON (stdin):
-  {"cwd": "<working-directory>", "config_dir": "<optional-config-directory>"}
+  {"cwd": "<working-directory>", "config_dir": "<config-directory>"}
+
+  - cwd is required; it is the working directory for the project.
+  - config_dir is required; the conductor must provide it from detect-project-context.
 
 Output JSON (stdout):
   {"trackers": [{"name": "...", "available": true|false, "source": "...", "confidence": "...", "detail": "..."}]}
 
-The optional config_dir is used to locate MCP config files (mcp.json / mcp.yaml).
-When omitted, the script discovers the config directory via detect-project-context.
+The config_dir is used to locate MCP config files (mcp.json / mcp.yaml).
 """
 
 
@@ -58,80 +58,31 @@ def _read_text(path: Path) -> str:
         return ""
 
 
-def _detect_config_dirs(cwd: Path) -> list[Path]:
-    """Discover candidate config directories using detect-project-context.
+def _find_mcp_configs(config_dir: Optional[Path] = None) -> list[Path]:
+    """Find MCP config files under the provided config directory.
 
-    Falls back to the current working directory if detection is unavailable.
+    The caller is responsible for discovering the project config directory
+    (e.g. via detect-project-context) and passing it as config_dir.
     """
-    detect_script = (
-        Path(__file__).resolve().parents[3]
-        / "core"
-        / "detect-project-context"
-        / "scripts"
-        / "detect-project-context.py"
-    )
-    if not detect_script.is_file():
-        return [cwd]
+    if config_dir is None or not config_dir.exists():
+        return []
 
-    try:
-        result = subprocess.run(
-            [
-                sys.executable,
-                str(detect_script),
-                "--start",
-                str(cwd),
-                "--json",
-            ],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        if result.returncode == 0:
-            data = json.loads(result.stdout)
-            dirs = []
-            for key in ("recommended_config_dir", "config_dir_candidates"):
-                value = data.get(key)
-                if not value:
-                    continue
-                if isinstance(value, list):
-                    dirs.extend(value)
-                else:
-                    dirs.append(value)
-            if dirs:
-                return [Path(d) for d in dirs]
-    except Exception:
-        pass
-
-    return [cwd]
-
-
-def _find_mcp_configs(cwd: Path, config_dir: Optional[Path] = None) -> list[Path]:
-    """Find MCP config files without hardcoding harness-specific paths.
-
-    Searches the caller-supplied config directory, or the directories
-    discovered by detect-project-context, for mcp.json / mcp.yaml files.
-    """
-    search_roots = [config_dir] if config_dir else _detect_config_dirs(cwd)
     found = set()
-
-    for root in search_roots:
-        if not root.exists():
+    # Search the config directory and its parent (e.g., .agents/config and .agents).
+    for directory in (config_dir, config_dir.parent):
+        if not directory.exists():
             continue
-        # Search the config directory and its parent (e.g., .agents/config and .agents).
-        for directory in (root, root.parent):
-            if not directory.exists():
-                continue
-            for name in ("mcp.json", "mcp.yaml", "mcp.yml"):
-                candidate = directory / name
-                if candidate.is_file():
-                    found.add(candidate.resolve())
+        for name in ("mcp.json", "mcp.yaml", "mcp.yml"):
+            candidate = directory / name
+            if candidate.is_file():
+                found.add(candidate.resolve())
 
     return sorted(found)
 
 
-def _detect_mcp_servers(cwd: Path, config_dir: Optional[Path] = None) -> dict:
+def _detect_mcp_servers(config_dir: Optional[Path] = None) -> dict:
     results = {name: [] for name in MCP_KEYWORDS}
-    for config_path in _find_mcp_configs(cwd, config_dir):
+    for config_path in _find_mcp_configs(config_dir):
         text = _read_text(config_path).lower()
         for tracker, keywords in MCP_KEYWORDS.items():
             for keyword in keywords:
@@ -151,12 +102,12 @@ def _detect_env_vars() -> dict:
 
 
 def _run(data: dict) -> dict:
-    cwd = data.get("cwd", str(Path.cwd()))
-    cwd_path = Path(cwd).resolve()
     config_dir = data.get("config_dir")
-    config_dir_path = Path(config_dir).resolve() if config_dir else None
+    if not config_dir:
+        return {"error": "config_dir is required; the conductor must provide it from detect-project-context"}
+    config_dir_path = Path(config_dir).resolve()
 
-    mcp_results = _detect_mcp_servers(cwd_path, config_dir_path)
+    mcp_results = _detect_mcp_servers(config_dir_path)
     env_results = _detect_env_vars()
 
     trackers = []
@@ -205,6 +156,8 @@ def _run(data: dict) -> dict:
 
 
 if __name__ == "__main__":
+    import sys
+
     if any(arg in ("-h", "--help") for arg in sys.argv[1:]):
         print(_help())
         sys.exit(0)

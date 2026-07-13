@@ -4,16 +4,19 @@
 
 - `checkpoint` — maintains phase state and resume state.
 - `research-ticket` — fetches and normalizes ticket data.
-- `map-ticket-relationships` — enriches raw tracker references into a relationship graph.
-- `explore-code` — searches the codebase for evidence when the ticket is code-related.
 - `challenge-assumptions` — stress-tests assumptions for confirmation bias.
-- `scan-context` — discovers related context reports.
 - `context-reports` — shared conventions for report schemas and freshness.
 - `worker-contract` — shared subagent return format and scope boundaries.
+- `detect-project-context` — locates the project root, skills dir, context dir, and config dir.
+- `parse-skill-frontmatter` — extracts frontmatter from reports and context files.
+- `token-resolver` — resolves tracker tokens and other secrets without exposing them.
 
 ## Recommended skills
 
-- `baseline` — captures ground-truth evidence for verifiable tickets. Used only when `detect-verifiable-state` returns `verifiable: true` and `baseline_mode` is not `skip`. Without it, the conductor reports degraded baseline capability.
+- `map-ticket-relationships` — enriches raw tracker references into a relationship graph. Evaluated lazily in Phase 1.
+- `explore-code` — searches the codebase for evidence when the ticket is code-related. Evaluated lazily in Phase 1.
+- `scan-context` — discovers related context reports. Evaluated lazily in Phase 1.
+- `baseline` — captures ground-truth evidence for verifiable tickets. Evaluated lazily in Phase 1 when `detect-verifiable-state` returns `verifiable: true` and `baseline_mode != skip`. Without it, the conductor reports degraded baseline capability.
 
 ## Required tools
 
@@ -43,15 +46,14 @@ Variables are referenced by name in `debrief.yaml`, not hardcoded. The exact var
 
 ## Required scripts
 
+- `initialize` — detect the environment, create or migrate `{config_dir}/debrief.yaml`, and report readiness.
 - `load-skill-config` — load and merge project config.
-- `detect-issue-tracker` — detect available issue trackers.
+- `detect-issue-tracker` — detect available issue trackers; the conductor must provide `config_dir` from `detect-project-context`.
 - `extract-ticket-key` — resolve ticket key from input or branch.
 - `get-git-state` — detect current branch, commit, and remote.
-- `resolve-tracker-credentials` — resolve env-var credentials.
 - `detect-verifiable-state` — decide whether `baseline` is relevant.
 - `calculate-confidence` — calculate confidence score from assumptions and contradictions.
-- `check-debrief-freshness` — decide whether to reuse an existing report.
-- `_frontmatter` — shared frontmatter parser.
+- `check-debrief-freshness` — decide whether to reuse an existing report; the conductor may provide pre-parsed frontmatter from `parse-skill-frontmatter`.
 
 ## Recommended scripts
 
@@ -67,6 +69,7 @@ Variables are referenced by name in `debrief.yaml`, not hardcoded. The exact var
 | Capability | Preferred tool | Fallback | Selection rule | Degradation disclosure |
 |---|---|---|---|---|
 | Ticket data fetching | Tracker MCP server via `mcp` | REST API via `bash` + env vars | Use `detect-issue-tracker` to find the best available tracker adapter; prefer MCP if configured. | Tell the user when MCP is unavailable and REST is used. |
+| Credential resolution | `token-resolver` skill | Manual env-var lookup by conductor | Always use `token-resolver` unless it is unavailable, in which case the conductor looks up env vars directly. | Tell the user that credential resolution is degraded. |
 | Relationship mapping | `map-ticket-relationships` skill | Inline analysis by conductor | Always use the skill unless it is unavailable, in which case the conductor performs minimal inline mapping. | Note degraded relationship depth. |
 | Codebase evidence | Harness search tools (`ffgrep`, `fffind`, `read`) | `bash` + `rg` | Use harness tools first; fall back to `bash`/`rg` only if harness search is insufficient. | Tell the user when `rg` fallback is used. |
 | State / resume | `checkpoint` skill | None | Required. If missing, fail closed. | Block. |

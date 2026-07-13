@@ -1,11 +1,7 @@
 ---
 name: debrief
 description: "Debrief a ticket before implementation. Use when the user asks to 'understand a ticket', 'debrief a ticket', 'scope this ticket', or 'what does this ticket need'."
-version: 1.0.0
 invocation: model-invoked
-metadata:
-  author: Wian van der Merwe
-  tags: [ticket, debrief, research, confidence, conductor]
 depends:
   - checkpoint
   - research-ticket
@@ -16,6 +12,9 @@ depends:
   - context-reports
   - worker-contract
   - detect-project-context
+  - baseline
+  - parse-skill-frontmatter
+  - token-resolver
 ---
 
 # debrief
@@ -43,10 +42,37 @@ Produce a structured, confidence-rated understanding of **one ticket** before im
 - **Decide execution order.** It produces understanding, not a task sequence.
 - **Ask the user questions** except when a required input is missing or confidence is Red.
 
+## Initialization
+
+`debrief` is a global, configurable skill. Before it can debrief a ticket, it must detect the project environment and ensure the project-level config file exists.
+
+**When initialization runs:**
+
+- On first run in a project, when `{config_dir}/debrief.yaml` is missing.
+- When the user asks to reconfigure the skill.
+- When the existing config is missing required keys or uses an older schema.
+
+**What initialization does:**
+
+1. Detect project context (`detect-project-context`).
+2. Load the skill-level defaults from `config.yaml`.
+3. Check for `{config_dir}/debrief.yaml`.
+4. If the file is missing, propose the default config to the user.
+5. If the file exists but uses an older schema, migrate it to the current schema.
+6. Ask the user for any required values that cannot be detected or defaulted.
+7. Validate required capabilities.
+8. Write the config and initial notes only after explicit approval.
+9. Report readiness.
+
+**Idempotency:** running initialization twice must not overwrite user edits or create duplicate files. If the config is already present and current, the skill reports that it is initialized and proceeds.
+
+**Implementation:** the initialization phase is implemented by `scripts/initialize.py`. The conductor invokes it with the detected `marker_dir` and only passes `--approve` after the user confirms.
+
 ## Branches
 
 | Branch | Trigger | Outcome |
 |---|---|---|
+| **initialize** | No project config exists, the config is incomplete, or the user asks to reconfigure. | Detect the environment, create or migrate config, validate required capabilities, and report readiness. |
 | **new** | No existing state for this ticket, or the user explicitly asks for a fresh debrief. | Run the full 5-phase workflow. |
 | **resume** | A `checkpoint` state file exists for this ticket and is fresh. | Resume from the last completed phase. |
 | **manual** | The tracker is `manual` or credentials are missing. | Ask the user for ticket context and continue. |
@@ -58,18 +84,19 @@ Each phase ends by updating `checkpoint` state. The conductor always records the
 
 ### Phase 0 — Bootstrap and resume
 
-**Completion criterion:** Project context is detected, config is loaded, the ticket key is resolved, tracker credentials are resolved, and `checkpoint` state is created or resumed.
+**Completion criterion:** Project context is detected, initialization is complete, config is loaded, the ticket key is resolved, tracker credentials are resolved, and `checkpoint` state is created or resumed.
 
 Steps:
 
 1. Detect project context (`detect-project-context`).
-2. Load config (`load-skill-config`) with the defaults from `references/CONFIG_PATTERN.md`.
-3. Detect the issue tracker (`detect-issue-tracker`) if `issue_tracker: auto`; otherwise validate the configured tracker.
+2. Run initialization if needed. If `{config_dir}/debrief.yaml` is missing or incomplete, invoke `scripts/initialize.py` and ask the user for approval before writing. Then load config (`load-skill-config`) with the defaults from `references/CONFIG_PATTERN.md`.
+3. Detect the issue tracker (`detect-issue-tracker`) if `issue_tracker: auto`; pass `config_dir` from `detect-project-context` as input. If `issue_tracker` is not `auto`, validate the configured tracker.
 4. Extract the ticket key (`extract-ticket-key`) from user input, branch, or previous state.
 5. Get git state (`get-git-state`) if needed.
-6. Resolve tracker credentials (`resolve-tracker-credentials`).
+6. Resolve tracker credentials (`token-resolver`). The conductor builds a `token_config` from the tracker block in `debrief.yaml` (e.g. `env_var`, `mcp_config_sources`, `mcp_server_key`) and invokes `token-resolver`. If the token is missing and prompting is not authorized, report `blocked` and stop.
 7. Create or resume checkpoint (`checkpoint`) at `{context_dir}/debrief/{key}/state.md`.
-8. If any required capability is missing, report `blocked` and stop.
+8. Check whether an existing debrief report is fresh (`check-debrief-freshness`). If a report exists, parse its frontmatter with `parse-skill-frontmatter` and pass it to the script. If the report is fresh and the user has not asked for a fresh debrief, enter the `resume` branch.
+9. If any required capability is missing, report `blocked` and stop.
 
 ### Phase 1 — Gather evidence
 
@@ -147,12 +174,24 @@ See `references/CONFIG_PATTERN.md` for the `debrief.yaml` schema and defaults.
 - `subagents/form-assumptions.md` — turns ambiguities into explicit assumptions.
 - `subagents/synthesis-writer.md` — writes the final debrief report from evidence and state.
 
-## Lazy-loading gates
+## Lazy dependency evaluation
 
-- `baseline` is only loaded when `detect-verifiable-state` returns `verifiable: true` and `baseline_mode != skip`.
-- `explore-code` is only loaded when the task type is `code`/`ui` or a code-related ambiguity exists.
-- `scan-context` is only loaded when the conductor wants to discover related reports.
-- `map-ticket-relationships` is only loaded when the tracker provides relationship data or the user asks for it.
+Required dependencies are validated eagerly during initialization and Phase 0. Recommended and optional dependencies are evaluated lazily, only when the branch or method that needs them is selected.
+
+| Dependency | Category | Evaluation | Loading trigger |
+|---|---|---|---|
+| `checkpoint` | Required | Eager | Always loaded before any workflow phase. |
+| `research-ticket` | Required | Eager | Always loaded in Phase 1. |
+| `challenge-assumptions` | Required | Eager | Always loaded in Phase 2. |
+| `context-reports` | Required | Eager | Used for report schemas and freshness conventions in every phase. |
+| `worker-contract` | Required | Eager | Subagents use this contract in every phase that delegates work. |
+| `detect-project-context` | Required | Eager | Used during initialization and Phase 0. |
+| `map-ticket-relationships` | Recommended | Lazy | Loaded in Phase 1 when the tracker provides relationship data or the user asks for it. If missing, the conductor performs minimal inline mapping and records the degraded depth. |
+| `explore-code` | Recommended | Lazy | Loaded in Phase 1 when the task type is `code`/`ui` or a code-related ambiguity exists. If missing, the conductor skips code exploration and records the gap. |
+| `scan-context` | Recommended | Lazy | Loaded in Phase 1 when the conductor wants to discover related reports. If missing, the conductor proceeds without prior context and notes the gap. |
+| `baseline` | Recommended | Lazy | Loaded in Phase 1 only when `detect-verifiable-state` returns `verifiable: true` and `baseline_mode != skip`. If missing, the conductor asks the user to describe observable state and records the response. |
+
+**Degradation disclosure:** when a recommended dependency is missing and the conductor uses a fallback, it tells the user which skill was unavailable, what fallback is being used, and records the choice in `checkpoint`.
 
 ## Security
 

@@ -41,6 +41,7 @@ debrief/
 - Reports are written to `{context_dir}/debrief/{key}-{slug}.md`.
 - State is maintained by `checkpoint` at `{context_dir}/debrief/{key}/state.md`.
 - `baseline` is a recommended dependency; it is only used when the ticket is verifiable.
+- The skill must be initialized in a project before its first run: `scripts/initialize.py` creates `{config_dir}/debrief.yaml` from defaults after user approval.
 
 ## Adapting the skill
 

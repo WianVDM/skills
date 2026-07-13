@@ -197,7 +197,20 @@
   ],
   "skill_dependencies": {
     "debrief": {
+      "required": [
+        "checkpoint",
+        "research-ticket",
+        "challenge-assumptions",
+        "context-reports",
+        "worker-contract",
+        "detect-project-context",
+        "parse-skill-frontmatter",
+        "token-resolver"
+      ],
       "recommended": [
+        "map-ticket-relationships",
+        "explore-code",
+        "scan-context",
         "baseline"
       ]
     },
