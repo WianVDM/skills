@@ -24,6 +24,7 @@ The conductor provides:
 1. Propose a `config_dir` default. Prefer the provided `config_dir`. If confidence is low, present the fallback `{project_root}/config/` and ask the user to choose.
 2. Propose a `context_dir` default. Prefer the provided `context_dir`. If confidence is low, present the fallback `{project_root}/context/` and ask the user to choose.
 3. Propose a `standards_path` default. Check, in order:
+   - `{marker}/docs/skill-standards/`
    - `{project_root}/docs/skill-standards/`
    - `{project_root}/.agents/docs/skill-standards/`
    - `{config_dir}/skill-standards/`
@@ -31,7 +32,7 @@ The conductor provides:
    - `found`: the directory exists and contains a known marker such as `README.md` or `fundamentals/`.
    - `missing`: the directory does not exist.
    - `incomplete`: the directory exists but is missing expected files.
-5. If standards are missing or incomplete, propose fetching only the `docs/skill-standards/` directory from `github.com/wianvdm/skills` into the proposed `standards_path`.
+5. If standards are missing or incomplete, propose fetching only the canonical skill standards directory from [`skills`](https://github.com/wianvdm/skills) into the proposed `standards_path`.
 6. Propose a default registry list:
    - `github.com/wianvdm/skills` (official registry)
    - Any additional registries known to the project
@@ -39,7 +40,7 @@ The conductor provides:
 
 ## Return format
 
-```yaml
+````yaml
 ---
 status: complete | partial | needs_input | blocked
 artifacts: []
@@ -64,12 +65,14 @@ context_dir: "..."
 standards_path: "..."
 registries:
   - "..."
-```
+````
 
 ## Decisions made
+
 - Decision: ... | Rationale: ...
 
 ## Questions for the user
+
 - Ask the user to confirm or correct the proposed config directory.
 - Ask the user to confirm or correct the proposed context directory.
 - Ask the user to confirm or correct the proposed standards path.
@@ -77,5 +80,9 @@ registries:
 - Ask the user to confirm or correct the default registry list.
 
 ## Blockers
+
 - External blocker preventing progress, if any.
+
+```
+
 ```

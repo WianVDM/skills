@@ -29,7 +29,7 @@ Invoke the `subagents/initialize` worker with the detected project context. It r
 
 - `config_dir`: where to write `write-a-skill.yaml`.
 - `context_dir`: where context reports are written.
-- `standards_path`: path to the canonical `docs/skill-standards/` directory.
+- `standards_path`: path to the canonical skill standards directory.
 - `registries`: list of skill registries to search.
 
 **Completion criterion:** a config proposal exists and the worker has reported standards availability (`found`, `missing`, or `incomplete`).
@@ -37,7 +37,7 @@ Invoke the `subagents/initialize` worker with the detected project context. It r
 ### 3. Resolve standards source
 
 - If `standards_path` points to an existing directory with expected files, use it.
-- If the directory is missing or incomplete, offer to fetch only the `docs/skill-standards/` directory from `github.com/wianvdm/skills`.
+- If the directory is missing or incomplete, offer to fetch only the canonical skill standards directory from `github.com/wianvdm/skills`.
 - If the user declines or the fetch fails, use the degraded-mode warning template from [PLUGGABILITY.md][pluggability] and fall back to embedded fundamentals and pattern hints.
 
 **Completion criterion:** the standards source is confirmed by the user and the degraded-mode warning (if any) is recorded.
@@ -200,9 +200,9 @@ For the full decide workflow, invoke the `decide-skill-shape` skill. It will:
 
 ## Change branch
 
-The `change` branch audits or updates an existing skill. **Understanding must come before scoring, but the verdict follows the full audit.**
+The `change` branch audits or updates an existing skill. **Understanding must come before scoring, but the verdict follows the full audit.** The conductor delegates coordination to `subagents/change-branch.md`, which resolves `standards_path`, loads the target skill, and invokes `review-skill`.
 
-For both the `review` and `update` gates, invoke the `review-skill` conductor. It applies the review principles from [docs/skill-standards/reference/review-principles.md][review-principles] (or the fallback copy in [review-skill/references/REVIEW_PRINCIPLES.md][review-principles-fallback]). After a full audit, it produces a verdict-led report. If the core questions cannot be answered, it produces an incomplete report.
+For both the `review` and `update` gates, invoke the `review-skill` conductor. It applies the review principles from `{standards_path}/reference/review-principles.md` (or the fallback copy in `review-skill/references/REVIEW_PRINCIPLES.md`). After a full audit, it produces a verdict-led report. If the core questions cannot be answered, it produces an incomplete report.
 
 When reviewing a skill with multiple methods or branches, pay special attention to **tooling awareness** and **lazy dependency evaluation**: required dependencies should be checked eagerly, and recommended/optional dependencies should be evaluated lazily per path. The full dependency surface must still be declared in `references/DEPENDENCIES.md` and `skills.json`. When reviewing any skill, check whether it names capabilities before tools, discovers available tools across categories, and discloses degraded sources with user consent. Also check whether the skill overlaps with existing building blocks by invoking `detect-skill-overlap` during comprehension; if the skill is mostly a duplicate or contains a generic capability that should be extracted, record that in the verdict.
 
@@ -215,30 +215,11 @@ After the comprehension step is complete, the `review-skill` conductor runs the 
 5. Produce a structured, verdict-led audit report that incorporates the review principles.
 6. For the `update` gate, produce a remediation plan, confirm each change, apply approved changes, and run a final audit.
 
-`write-a-skill` delegates the `change` branch to `review-skill` and consumes the resulting comprehension brief, verdict-led audit report, incomplete report, or remediation plan. When reviewing an existing skill, pay special attention to whether the skill is a separate skill only because it was extracted prematurely. Apply the **Contain** core question from the review principles: *"Should this capability be colocated inside an existing skill, or is extraction into a separate skill justified by reuse?"*
+`write-a-skill` delegates the `change` branch to `review-skill` through `subagents/change-branch.md` and consumes the resulting comprehension brief, verdict-led audit report, incomplete report, or remediation plan. When reviewing an existing skill, pay special attention to whether the skill is a separate skill only because it was extracted prematurely. Apply the **Contain** core question from the review principles: *"Should this capability be colocated inside an existing skill, or is extraction into a separate skill justified by reuse?"*
 
 [fundamentals]: FUNDAMENTALS.md
 [pattern-hints]: PATTERN_HINTS.md
 [decision-rules]: ../decide-skill-shape/references/DECISION_RULES.md
-[review-principles]: ../../../../docs/skill-standards/reference/review-principles.md
 [review-principles-fallback]: ../review-skill/references/REVIEW_PRINCIPLES.md
+[change-branch-subagent]: ../subagents/change-branch.md
 
-### Change branch — review gate (legacy inline detail)
-
-1. **Read the skill** — load all files.
-2. **Comprehend the skill** — apply the review principles from `docs/skill-standards/reference/review-principles.md`.
-3. **Produce an incomplete report** if the core questions cannot be answered.
-4. **Run `audit-skill`** — evaluate against the rubric, informed by the comprehension step.
-5. **Run `validate-skill-frontmatter`** — check schema compliance.
-6. **Produce a verdict-led report** — lead with a verdict, then findings and optional update path.
-
-### Change branch — update gate (legacy inline detail)
-
-1. **Read the skill** — load `SKILL.md`, `README.md`, references, subagents, scripts, and assets.
-2. **Comprehend the skill** — apply the review principles from `docs/skill-standards/reference/review-principles.md`.
-3. **Produce an incomplete report** if the core questions cannot be answered.
-4. **Run `audit-skill`** — evaluate against the rubric, informed by the comprehension step.
-5. **Run `validate-skill-frontmatter`** — check schema compliance.
-6. **Produce remediation plan** — list concrete changes with effort estimates and rationale.
-7. **Confirm before applying** — present the plan; apply changes only after explicit approval.
-8. **Run final audit** — close the loop.

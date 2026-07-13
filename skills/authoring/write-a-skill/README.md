@@ -56,7 +56,8 @@ write-a-skill/
 │   ├── classify-skill-type.md
 │   ├── suggest-patterns.md
 │   ├── initialize.md                 # first-run configuration proposal
-│   └── draft-skill-md.md
+│   ├── draft-skill-md.md
+│   └── change-branch.md              # change branch coordinator; resolves standards path and invokes review-skill
 ├── scripts/                          # deterministic helpers
 │   └── initialize-config.py          # writes write-a-skill.yaml after user approval
 └── assets/templates/                 # starter templates for new skills
@@ -83,7 +84,7 @@ This conductor delegates to the following building blocks:
 - `worker-contract` — shared subagent return contract used when composing worker prompts.
 - `context-reports` — shared context-report conventions and schemas.
 
-See `references/DEPENDENCIES.md` for the full declaration.
+See [DEPENDENCIES.md](references/DEPENDENCIES.md) for the full declaration.
 
 ## Key conventions
 
@@ -93,7 +94,7 @@ See `references/DEPENDENCIES.md` for the full declaration.
 - **Global by default:** every design is checked for what blocks it from being a global skill.
 - **Scripts-first:** repeatable, deterministic logic is pushed into isolated building-block skills.
 - **Fundamentals over guidelines:** the audit rubric in `audit-skill` is the canonical standard; remaining guide files add domain-specific advice only.
-- **Self-contained:** ships with condensed fundamentals so it works in any workspace, even without `docs/skill-standards/`.
+- **Self-contained:** ships with condensed fundamentals so it works in any workspace, even without the canonical skill standards directory.
 
 ## Governance
 

@@ -1,0 +1,84 @@
+{
+  "version": "1",
+  "skill": "write-a-skill",
+  "tests": [
+    {
+      "id": "behavior-change-branch-review-delegates-to-review-skill",
+      "type": "behavior",
+      "prompt": "Review the detect-project-context skill and tell me if it follows the standards.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "review-skill"
+        },
+        {
+          "type": "output_contains",
+          "value": "Verdict"
+        },
+        {
+          "type": "output_contains",
+          "value": "detect-project-context"
+        },
+        {
+          "type": "output_excludes",
+          "value": "I will perform the audit inline"
+        }
+      ]
+    },
+    {
+      "id": "behavior-change-branch-update-produces-remediation-plan",
+      "type": "behavior",
+      "prompt": "Update the detect-project-context skill to align it with the latest skill standards.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "review-skill"
+        },
+        {
+          "type": "output_contains",
+          "value": "remediation plan"
+        },
+        {
+          "type": "output_contains",
+          "value": "detect-project-context"
+        }
+      ]
+    },
+    {
+      "id": "behavior-standards-path-detected-from-marker",
+      "type": "behavior",
+      "setup": "The project has a `.agents` marker directory and the skill standards live at `.agents/docs/skill-standards/`. No `docs/skill-standards/` directory exists at the project root.",
+      "prompt": "Initialize write-a-skill for this project.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": ".agents/docs/skill-standards"
+        },
+        {
+          "type": "output_excludes",
+          "value": "docs/skill-standards/"
+        }
+      ]
+    },
+    {
+      "id": "behavior-standards-path-degraded-warning",
+      "type": "behavior",
+      "setup": "The project has no local skill standards directory and no network access to fetch them.",
+      "prompt": "Initialize write-a-skill for this project.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "degraded"
+        },
+        {
+          "type": "output_contains",
+          "value": "embedded"
+        }
+      ]
+    }
+  ]
+}

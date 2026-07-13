@@ -1,7 +1,6 @@
 ---
 name: write-a-skill
 description: Design, review, and update skills that follow the skill standards. Coordinates creation, audit, remediation, and first-run initialization.
-version: 1.0.1
 invocation: user-invoked
 depends:
   - detect-project-context
@@ -18,7 +17,6 @@ depends:
   - detect-skill-overlap
   - install-skill
   - run-trigger-evals
-  - prototype
 ---
 
 # write-a-skill
@@ -112,6 +110,16 @@ Before deciding a new skill is needed, the conductor must confirm:
 
 Workers in `subagents/` are invoked by composing the canonical worker contract from the `worker-contract` skill with the `write-a-skill`-specific composition layer in `subagents/_TEMPLATE.md` and the role-specific instructions in the worker file. The template adds the common return format, forbidden actions, and default tool/scope boundaries used by this conductor; see `references/WORKER_CONTRACT.md` for the shared contract and addendum.
 
+Workers:
+
+- [classify-intent.md](subagents/classify-intent.md) — classify the user's request into a top-level branch.
+- [clarify-scope.md](subagents/clarify-scope.md) — clarify the skill's scope.
+- [classify-skill-type.md](subagents/classify-skill-type.md) — clas sify the skill type.
+- [suggest-patterns.md](subagents/suggest-patterns.md) — suggest patterns.
+- [initialize.md](subagents/initialize.md) — first-run configuration proposal.
+- [draft-skill-md.md](subagents/draft-skill-md.md) — draft the `SKILL.md` file.
+- [change-branch.md](subagents/change-branch.md) — coordinate the `change` branch by resolving `standards_path` and invoking `review-skill`.
+
 ## Create branch
 
 **Why this branch exists:** building the wrong skill is expensive, and a structured design process prevents scope creep, hidden assumptions, and bloated drafts before any files are written. The branch also handles the "what should I build?" question.
@@ -128,7 +136,7 @@ For the full phase list per gate, including the `decide` gate delegation to `dec
 
 ## Change branch
 
-**Why this branch exists:** Skills drift and accumulate bloat. The change branch audits an existing skill by applying the review principles from `docs/skill-standards/reference/review-principles.md`, then produces a verdict-led report or incomplete report.
+**Why this branch exists:** Skills drift and accumulate bloat. The change branch audits an existing skill by applying the review principles from `{standards_path}/reference/review-principles.md`, then produces a verdict-led report or incomplete report. The conductor invokes `review-skill` as a subagent through [subagents](subagents/change-branch.md); it does not perform inline reviews.
 
 **Internal gates**
 
@@ -136,6 +144,23 @@ For the full phase list per gate, including the `decide` gate delegation to `dec
 | ---------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | **review** | User wants to audit an existing skill without changing it.                | Verdict-led audit report, or incomplete report.                        | The audit report is complete, includes a verdict supported by findings, and references the rubric criteria by id.         |
 | **update** | User wants to refine or polish an existing skill to follow the standards. | Verdict-led audit report → remediation plan → draft changes → confirm. | A verdict-led audit report exists, a remediation plan exists, and the user has approved or declined each proposed change. |
+
+### Change branch workflow
+
+The conductor invokes `subagents/change-branch.md` to coordinate the following pipeline. Each phase ends with a completion criterion.
+
+| Phase                                    | What happens                                                                 | Completion criterion                                                             |
+| ---------------------------------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| 1. **Resolve standards path**            | Load `standards_path` from config or detect it from project-context markers. | `standards_path` is resolved and recorded as canonical, degraded, or missing.    |
+| 2. **Load target skill**                 | Read `SKILL.md`, `README.md`, references, subagents, scripts, and assets.    | All target skill files are loaded.                                               |
+| 3. **Classify gate**                     | Map user intent to `review` or `update`.                                     | Gate is one of {review, update} and user confirmed.                              |
+| 4. **Invoke `review-skill`**             | Delegate to `review-skill` with the target skill and `standards_path`.       | `review-skill` returns a comprehension brief, audit report, or remediation plan. |
+| 5. **Produce incomplete report**         | If core questions cannot be answered, stop and record open questions.        | Incomplete report exists; no verdict is issued.                                  |
+| 6. **Run `audit-skill`**                 | Evaluate the target skill against the fundamentals rubric.                   | Audit report exists with findings.                                               |
+| 7. **Run `validate-skill-frontmatter`**  | Check frontmatter schema compliance.                                         | Validation result is captured.                                                   |
+| 8. **Produce verdict-led report**        | Lead with a verdict, then findings and recommendations.                      | For `review`, the audit report is complete.                                      |
+| 9. **Produce remediation plan (update)** | List concrete changes with rationale and effort.                             | For `update`, a remediation plan exists.                                         |
+| 10. **Confirm and apply (update)**       | Present the plan; apply approved changes; run final audit.                   | Approved changes applied; final audit report exists.                             |
 
 For the full phase list per gate, including the `change` branch delegation to `review-skill`, see [references/BRANCH_WORKFLOWS.md][branch-workflows].
 
@@ -148,10 +173,10 @@ On first run in a project, or when the user asks to reconfigure, execute the `in
 3. Invoke `subagents/initialize.md` to propose:
    - `config_dir`: where to write `write-a-skill.yaml`.
    - `context_dir`: where context reports are written.
-   - `standards_path`: path to the canonical `docs/skill-standards/` directory.
+   - `standards_path`: path to the canonical skill standards directory.
    - `registries`: list of skill registries to search.
 4. Report whether the canonical standards are found locally, missing, or need fetching.
-5. If standards are missing, offer to fetch only the `docs/skill-standards/` directory from `github.com/wianvdm/skills`. Every fetch must be explicitly confirmed by the user.
+5. If standards are missing, offer to fetch only the canonical skill standards directory from [skills](https://github.com/wianvdm/skills). Every fetch must be explicitly confirmed by the user.
 6. If the user declines or the fetch fails, warn with the degraded-mode template from [references/PLUGGABILITY.md][pluggability] and fall back to embedded [references/FUNDAMENTALS.md][fundamentals] and [references/PATTERN_HINTS.md][pattern-hints].
 7. Ask the user to confirm detected paths, default registry list, and standards source.
 8. Only after explicit approval, run `scripts/initialize-config.py` to write `write-a-skill.yaml`.
@@ -206,53 +231,15 @@ Summarize completed work, pending work, current focus, and the recommended next 
 
 ## Dependencies
 
-`write-a-skill` delegates deterministic work to standalone building-block skills and uses subagents only for tightly coupled design judgment. The dependency taxonomy follows `docs/skill-standards/fundamentals/architecture/dependencies-and-bundling.md`:
+`write-a-skill` delegates deterministic work to standalone building-block skills and uses subagents only for tightly coupled design judgment. The dependency taxonomy follows `{standards_path}/fundamentals/architecture/dependencies-and-bundling.md`:
 
 - **Required** — the skill cannot function without this dependency.
 - **Recommended** — improves output or experience; the skill runs degraded if it is missing.
 - **Optional** — only needed for a side branch or advanced feature.
 
-Dependencies are not limited to other skills. The skills drafted by this conductor may depend on any of the following tool categories:
-
-| Category                | Examples                                                   |
-| ----------------------- | ---------------------------------------------------------- |
-| **Provider-specific adapters** | GitHub PR adapter, SonarCloud adapter, Jira adapter |
-| **MCP tools / servers** | `github_get_pull_request_reviews`, SonarQube MCP, Jira MCP |
-| **Native binaries**     | `gh`, `git`, `curl`, `jq`                                  |
-| **Direct APIs**         | Provider REST or GraphQL endpoints                         |
-| **Harness tools**       | Built-in browser, file system, search, shell               |
-| **Manual fallback**     | User input, CSV, markdown files                            |
-
-The conductor must teach authors to design capability-first: identify the needed outcome, discover available tools across categories, select the best one, and disclose the choice.
-
-### Required skills
-
-- **detect-project-context** — project root, skills dir, context dir, and config dir detection.
-- **decide-skill-shape** — recommend whether a problem should be a new skill, script, MCP, context file, or mode.
-- **audit-skill** — evaluate a skill against the fundamentals rubric.
-- **validate-skill-frontmatter** — validate `SKILL.md` frontmatter against the JSON schema.
-- **review-skill** — audit an existing skill and optionally apply remediation changes.
-- **eval-format** — shared `evals/evals.json` schema and evaluation conventions.
-- **worker-contract** — shared subagent return contract, forbidden actions, and scope boundaries used when composing worker prompts.
-- **context-reports** — shared context-report conventions, schema, freshness rules, and missing-report handling.
-- **parse-skill-frontmatter** — extract canonical frontmatter fields from a `SKILL.md` file (used by several building blocks above).
-
-### Recommended skills
-
-- **list-available-skills** — discover skills already available in the project and user scope. Without it, the alternatives report is limited to what the conductor can find directly.
-- **search-skills-registry** — find third-party skills in configured registries. Without it, the skill cannot check whether a similar third-party skill already exists.
-- **install-skill** — install a skill from a local path or archive URL after confirmation. Without it, the conductor can draft files but cannot install skills on the user's behalf.
-- **run-trigger-evals** — generate `evals/evals.json` for model-invoked skills. Without it, the conductor can ask the user to write evals manually or skip them.
-
-### Optional skills
-
-- **prototype** — only used when the user explicitly asks to prototype a UI variation before drafting a skill. Not on the main path.
-
 See [references/DEPENDENCIES.md][dependencies] for the full classified dependency list, required capabilities, binaries, and consumed references.
 
-The frontmatter of this skill also declares a `depends` field for Vercel CLI auto-installation.
-
-Required capabilities: file read, file write, file edit, directory listing, script execution, and search. Required binary: Python 3.x for bundled scripts.
+The frontmatter of this skill also declares a `depends` field for harness auto-installation.
 
 ## Security
 

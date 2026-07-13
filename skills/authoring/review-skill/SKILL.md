@@ -111,6 +111,14 @@ Both gates share the same comprehension and audit phase. The `update` gate adds 
    - Close the loop and capture the result.
    - **Completion criterion:** final audit report exists.
 
+## Skepticism
+
+A reviewer is a skeptic by default. Every token, section, reference, subagent, and example is presumed guilty until proven load-bearing. The burden of justification is on the skill, not the reviewer.
+
+Do not record token economy, pattern adherence, or overlap issues as **Suggestion**. They are **Warning** by default. Escalate them to **Blocker** when they threaten portability, shape, scope, or when the removed token would reveal a deeper issue (overlap, scope drift, or missing dependency).
+
+Only issues that are genuinely optional (e.g., wording polish, optional formatting) may be recorded as **Suggestion**.
+
 ## Core question checklist
 
 Before scoring, answer and record the eleven core questions from `references/REVIEW_PRINCIPLES.md`:
@@ -143,10 +151,10 @@ The verdict is always one of: **Keep**, **Prune**, **Reshape**, or **Remove**. N
 Apply these rules when choosing a verdict:
 
 - If the audit shows unresolved blockers, the verdict is not **Keep**.
-- If **Token economy** is weak, lean toward **Prune**.
-- If **Pattern adherence** is missing or the **Shape** / **Scope** is wrong, lean toward **Reshape**.
-- If **Overlap / extraction** shows the skill duplicates an existing building block without adding distinct value, lean toward **Remove**.
-- If the skill contains a capability that should be extracted as a generic building block, lean toward **Reshape** (split the skill) unless the extraction itself is the recommended remediation.
+- If **Token economy** is weak, the verdict is **Prune**. The only exception is when the only fix is a change in shape or scope, in which case the verdict is **Reshape**.
+- If **Pattern adherence** is missing or the **Shape** / **Scope** is wrong, the verdict is **Reshape**.
+- If **Overlap / extraction** shows the skill duplicates an existing building block without adding distinct value, the verdict is **Remove**.
+- If the skill contains a capability that should be extracted as a generic building block, the verdict is **Reshape** (split the skill) unless the extraction itself is the recommended remediation.
 
 ## Output formats
 

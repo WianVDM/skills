@@ -68,7 +68,7 @@ def main() -> int:
     parser.add_argument(
         "--standards-path",
         default="",
-        help="Path to the canonical docs/skill-standards/ directory.",
+        help="Path to the canonical skill standards directory, typically ending in skill-standards/.",
     )
     parser.add_argument(
         "--registries",

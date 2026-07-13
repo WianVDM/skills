@@ -20,6 +20,15 @@ Before scoring, answer:
 10. **Pattern adherence** — Does the skill fully adhere to the relevant `skill-standards` patterns with no wiggle room?
 11. **Overlap / extraction** — Does this skill overlap with an existing building block? Could any part be adapted to work generically with any skill?
 
+## Severity posture
+
+A reviewer starts from the assumption that every token is guilty until proven load-bearing. The skill author, not the reviewer, carries the burden of justification.
+
+- **Token economy** issues are not suggestions. An unjustified section, reference, subagent, or example is a **Warning** by default and a **Blocker** if it hides scope drift or overlap.
+- **Pattern adherence** issues are not suggestions. A skill that negotiates a required pattern is a **Warning** by default and a **Blocker** if the deviation changes behavior or portability.
+- **Overlap / extraction** issues are not suggestions. Unjustified duplication is a **Warning** by default and a **Blocker** if the capability clearly belongs in a shared building block.
+- Only issues that are genuinely optional (e.g., wording polish, optional formatting) may be recorded as **Suggestion**.
+
 ## Verdict
 
 After a full audit, lead the report with one verdict:

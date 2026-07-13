@@ -63,6 +63,15 @@ Building block.
 - **Warning** — the skill works but is less reliable, less portable, or harder to maintain. Should be fixed before sharing.
 - **Suggestion** — an improvement that raises quality but is not required.
 
+## Severity posture
+
+The auditor starts from the assumption that every token is guilty until proven load-bearing. The burden of justification is on the skill, not the auditor.
+
+- **Token economy** issues are not suggestions. An unjustified section, reference, subagent, or example is a **Warning** by default and a **Blocker** if it hides scope drift, overlap, or a portability failure.
+- **Pattern compliance** issues are not suggestions. A skill that negotiates a required pattern is a **Warning** by default and a **Blocker** if the deviation changes behavior or portability.
+- **Overlap / extraction** issues are not suggestions. Unjustified duplication is a **Warning** by default and a **Blocker** if the capability clearly belongs in a shared building block.
+- Only issues that are genuinely optional (e.g., wording polish, optional formatting) may be recorded as **Suggestion**.
+
 ## Rubric
 
 The full rubric is maintained in `docs/skill-standards/reference/audit-rubric.md`. It covers identity, type/shape, scope, structure, form/style, security, dependencies, portability, evaluation, governance, **tooling awareness** (`TA-01`, `TA-02`), **extraction** (`X01`), **token economy** (`TE-01`, `TE-02`), **pattern compliance** (`PC-01`, `PC-02`, `PC-03`), and **overlap** (`OV-01`).
