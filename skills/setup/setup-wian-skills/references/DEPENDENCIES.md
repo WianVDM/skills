@@ -4,7 +4,6 @@
 
 - `detect-project-context` — locate the project root and recommended config directory.
 - `list-available-skills` — discover installed skills in the target scope.
-- `install-skill` — copy approved skills into the target scope.
 - `validate-skill-frontmatter` — validate the frontmatter of every installed skill after sync.
 
 ## Required tools
@@ -13,8 +12,8 @@
 
 ## Required binaries
 
-- `git` (preferred) or `curl` (fallback) — fetch the source package.
-- `diff` — detect local modifications.
+- `npx` or `npm` — invoke the Vercel skills CLI.
+- `node` — the Node.js runtime required by `npx`/`npm`.
 
 ## Required environment variables
 

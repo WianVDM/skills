@@ -88,7 +88,9 @@
     ],
     "binaries": [
       "git",
-      "python3"
+      "python3",
+      "npx",
+      "node"
     ]
   },
   "bundles": [
@@ -247,7 +249,6 @@
       "required": [
         "detect-project-context",
         "list-available-skills",
-        "install-skill",
         "validate-skill-frontmatter"
       ]
     },
