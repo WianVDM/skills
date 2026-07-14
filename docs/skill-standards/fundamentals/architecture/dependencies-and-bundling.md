@@ -164,7 +164,7 @@ For packages, the structured `skill_dependencies` object in `skills.json` is the
 
 The flat `requirements.skills` array is a compatibility surface for harnesses or older tooling that only understand a single list of required skills. When both are present, `skill_dependencies` is authoritative; `requirements.skills` should contain the union of required dependencies (or all dependencies, depending on harness convention) and must not contradict `skill_dependencies`. If a harness only supports `requirements.skills`, treat the listed entries as required by default and document any recommended or optional exceptions in `references/DEPENDENCIES.md`.
 
-The Vercel `skills` CLI also uses a root `skills.json` for one-shot bundle installs: when `npx skills add owner/repo` sees `skills.json`, it installs every skill path listed in the `skills` array. Those paths must be relative, starting with `./` (e.g., `"./skills/authoring/write-a-skill"`). See [`PACKAGE.md`](../../reference/package.md) for the full schema.
+The Vercel `skills` CLI also uses a root `skills.json` for one-shot bundle installs: when `npx skills add owner/repo` sees `skills.json`, it installs every skill path listed in the `skills` array. Those paths must be relative, starting with `./` (e.g., `"./skills/main/authoring/write-a-skill"`). See [`PACKAGE.md`](../../reference/package.md) for the full schema.
 
 ### `SKILL.md` frontmatter `depends` (harness hint)
 
@@ -218,17 +218,17 @@ Example `.claude-plugin/marketplace.json`:
     {
       "name": "Skill authoring",
       "skills": [
-        "./skills/authoring/write-a-skill",
-        "./skills/authoring/audit-skill",
-        "./skills/tooling/validate-skill-frontmatter"
+        "./skills/main/authoring/write-a-skill",
+        "./skills/blocks/authoring/audit-skill",
+        "./skills/blocks/authoring/validate-skill-frontmatter"
       ]
     },
     {
       "name": "Core tooling",
       "skills": [
-        "./skills/core/detect-project-context",
-        "./skills/tooling/list-available-skills",
-        "./skills/tooling/install-skill"
+        "./skills/blocks/project/detect-project-context",
+        "./skills/blocks/registry/list-available-skills",
+        "./skills/blocks/registry/install-skill"
       ]
     }
   ]
@@ -300,7 +300,7 @@ Optional:
 - prototype (for UI or workflow prototyping before drafting)
 ```
 
-Other bundles in this repo include **workflow** (orchestrate, plan, issue tracking), **core** (detection, shared contracts, reports), and **tooling** (discovery, install, validation). Bundle members are repo-specific; the important property is that each bundle respects the dependency taxonomy and does not duplicate skills.
+Other bundles in this repo include **main** (user-facing workflow, product, engineering, and mode skills) and **blocks** (authoring utilities, project helpers, registry tools, and token handling). Bundle members are repo-specific; the important property is that each bundle respects the dependency taxonomy and does not duplicate skills.
 
 ### Bundle design principles
 

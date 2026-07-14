@@ -1,54 +1,64 @@
 {
   "name": "wian-skills",
   "version": "1.0.0",
-  "description": "A collection of reusable agent skills for project setup, skill authoring, and workflow orchestration.",
+  "description": "A collection of reusable agent skills, split into user-facing main skills and internal building blocks.",
   "skills": [
-    "./skills/authoring/audit-skill",
-    "./skills/authoring/decide-skill-shape",
-    "./skills/authoring/review-skill",
-    "./skills/authoring/run-trigger-evals",
-    "./skills/authoring/write-a-skill",
-    "./skills/core/baseline",
-    "./skills/core/context-reports",
-    "./skills/core/detect-project-context",
-    "./skills/core/eval-format",
-    "./skills/core/worker-contract",
-    "./skills/engineering/diagnose",
-    "./skills/engineering/improve-codebase-architecture",
-    "./skills/engineering/prototype",
-    "./skills/engineering/tdd",
-    "./skills/modes/grill-me",
-    "./skills/modes/grill-with-docs",
-    "./skills/modes/zoom-out",
-    "./skills/setup/setup-matt-pocock-skills",
-    "./skills/setup/setup-wian-skills",
-    "./skills/tooling/find-skills",
-    "./skills/tooling/install-skill",
-    "./skills/tooling/list-available-skills",
-    "./skills/tooling/parse-skill-frontmatter",
-    "./skills/tooling/search-skills-registry",
-    "./skills/tooling/validate-skill-frontmatter",
-    "./skills/workflow/debrief",
-    "./skills/workflow/handoff",
-    "./skills/workflow/merge-latest",
-    "./skills/workflow/orchestrate",
-    "./skills/workflow/plan-next",
-    "./skills/workflow/pr-report",
-    "./skills/workflow/to-issues",
-    "./skills/workflow/to-prd",
-    "./skills/workflow/triage",
-    "./skills/workflow/verify-branch",
-    "./skills/core/token-resolver"
+    "./skills/main/workflow/debrief",
+    "./skills/main/workflow/handoff",
+    "./skills/main/workflow/merge-latest",
+    "./skills/main/workflow/orchestrate",
+    "./skills/main/workflow/plan-next",
+    "./skills/main/workflow/pr-report",
+    "./skills/main/workflow/verify-branch",
+    "./skills/main/product/to-issues",
+    "./skills/main/product/to-prd",
+    "./skills/main/product/triage",
+    "./skills/main/engineering/baseline",
+    "./skills/main/engineering/diagnose",
+    "./skills/main/engineering/improve-codebase-architecture",
+    "./skills/main/engineering/prototype",
+    "./skills/main/engineering/tdd",
+    "./skills/main/modes/grill-me",
+    "./skills/main/modes/grill-with-docs",
+    "./skills/main/modes/zoom-out",
+    "./skills/main/authoring/write-a-skill",
+    "./skills/blocks/authoring/audit-skill",
+    "./skills/blocks/authoring/decide-skill-shape",
+    "./skills/blocks/authoring/detect-skill-overlap",
+    "./skills/blocks/authoring/eval-format",
+    "./skills/blocks/authoring/parse-skill-frontmatter",
+    "./skills/blocks/authoring/review-skill",
+    "./skills/blocks/authoring/run-trigger-evals",
+    "./skills/blocks/authoring/validate-skill-frontmatter",
+    "./skills/blocks/project/challenge-assumptions",
+    "./skills/blocks/project/checkpoint",
+    "./skills/blocks/project/context-reports",
+    "./skills/blocks/project/detect-project-context",
+    "./skills/blocks/project/explore-code",
+    "./skills/blocks/project/map-ticket-relationships",
+    "./skills/blocks/project/research-ticket",
+    "./skills/blocks/project/scan-context",
+    "./skills/blocks/project/worker-contract",
+    "./skills/blocks/registry/find-skills",
+    "./skills/blocks/registry/install-skill",
+    "./skills/blocks/registry/list-available-skills",
+    "./skills/blocks/registry/search-skills-registry",
+    "./skills/blocks/tokens/token-resolver",
+    "./skills/setup/setup-wian-skills"
   ],
   "namespaces": {
     "audit-skill": "wian-skills:audit-skill",
     "baseline": "wian-skills:baseline",
+    "challenge-assumptions": "wian-skills:challenge-assumptions",
+    "checkpoint": "wian-skills:checkpoint",
     "context-reports": "wian-skills:context-reports",
     "debrief": "wian-skills:debrief",
     "decide-skill-shape": "wian-skills:decide-skill-shape",
     "detect-project-context": "wian-skills:detect-project-context",
+    "detect-skill-overlap": "wian-skills:detect-skill-overlap",
     "diagnose": "wian-skills:diagnose",
     "eval-format": "wian-skills:eval-format",
+    "explore-code": "wian-skills:explore-code",
     "find-skills": "wian-skills:find-skills",
     "grill-me": "wian-skills:grill-me",
     "grill-with-docs": "wian-skills:grill-with-docs",
@@ -56,27 +66,29 @@
     "improve-codebase-architecture": "wian-skills:improve-codebase-architecture",
     "install-skill": "wian-skills:install-skill",
     "list-available-skills": "wian-skills:list-available-skills",
+    "map-ticket-relationships": "wian-skills:map-ticket-relationships",
     "merge-latest": "wian-skills:merge-latest",
     "orchestrate": "wian-skills:orchestrate",
     "parse-skill-frontmatter": "wian-skills:parse-skill-frontmatter",
     "plan-next": "wian-skills:plan-next",
     "pr-report": "wian-skills:pr-report",
     "prototype": "wian-skills:prototype",
+    "research-ticket": "wian-skills:research-ticket",
     "review-skill": "wian-skills:review-skill",
     "run-trigger-evals": "wian-skills:run-trigger-evals",
+    "scan-context": "wian-skills:scan-context",
     "search-skills-registry": "wian-skills:search-skills-registry",
-    "setup-matt-pocock-skills": "wian-skills:setup-matt-pocock-skills",
     "setup-wian-skills": "wian-skills:setup-wian-skills",
     "tdd": "wian-skills:tdd",
     "to-issues": "wian-skills:to-issues",
     "to-prd": "wian-skills:to-prd",
+    "token-resolver": "wian-skills:token-resolver",
     "triage": "wian-skills:triage",
     "validate-skill-frontmatter": "wian-skills:validate-skill-frontmatter",
     "verify-branch": "wian-skills:verify-branch",
     "worker-contract": "wian-skills:worker-contract",
     "write-a-skill": "wian-skills:write-a-skill",
-    "zoom-out": "wian-skills:zoom-out",
-    "token-resolver": "wian-skills:token-resolver"
+    "zoom-out": "wian-skills:zoom-out"
   },
   "requirements": {
     "tools": [
@@ -95,80 +107,62 @@
   },
   "bundles": [
     {
-      "name": "core",
-      "description": "Shared building blocks that many other skills depend on.",
+      "name": "main",
+      "description": "User-facing skills invoked directly to run workflows, build products, engineer solutions, or enter interaction modes.",
       "skills": [
         "baseline",
-        "context-reports",
-        "detect-project-context",
-        "eval-format",
-        "token-resolver",
-        "worker-contract"
-      ]
-    },
-    {
-      "name": "tooling",
-      "description": "Skill discovery, installation, parsing, and validation tools.",
-      "skills": [
-        "find-skills",
-        "install-skill",
-        "list-available-skills",
-        "parse-skill-frontmatter",
-        "search-skills-registry",
-        "validate-skill-frontmatter"
-      ]
-    },
-    {
-      "name": "authoring",
-      "description": "Design, draft, audit, and validate new skills.",
-      "skills": [
-        "audit-skill",
-        "decide-skill-shape",
-        "review-skill",
-        "run-trigger-evals",
-        "write-a-skill"
-      ]
-    },
-    {
-      "name": "workflow",
-      "description": "Project lifecycle, coordination, and delivery workflows.",
-      "skills": [
         "debrief",
+        "diagnose",
+        "grill-me",
+        "grill-with-docs",
         "handoff",
+        "improve-codebase-architecture",
         "merge-latest",
         "orchestrate",
         "plan-next",
         "pr-report",
+        "prototype",
+        "tdd",
         "to-issues",
         "to-prd",
         "triage",
-        "verify-branch"
-      ]
-    },
-    {
-      "name": "engineering",
-      "description": "Code quality, architecture, debugging, and development discipline.",
-      "skills": [
-        "diagnose",
-        "improve-codebase-architecture",
-        "prototype",
-        "tdd"
-      ]
-    },
-    {
-      "name": "modes",
-      "description": "Communication styles and interaction modes.",
-      "skills": [
-        "grill-me",
-        "grill-with-docs",
+        "verify-branch",
+        "write-a-skill",
         "zoom-out"
+      ]
+    },
+    {
+      "name": "blocks",
+      "description": "Shared building blocks and fillers that are mostly composed into other skills.",
+      "skills": [
+        "audit-skill",
+        "challenge-assumptions",
+        "checkpoint",
+        "context-reports",
+        "decide-skill-shape",
+        "detect-project-context",
+        "detect-skill-overlap",
+        "eval-format",
+        "explore-code",
+        "find-skills",
+        "install-skill",
+        "list-available-skills",
+        "map-ticket-relationships",
+        "parse-skill-frontmatter",
+        "research-ticket",
+        "review-skill",
+        "run-trigger-evals",
+        "scan-context",
+        "search-skills-registry",
+        "token-resolver",
+        "validate-skill-frontmatter",
+        "worker-contract"
       ]
     },
     {
       "name": "setup",
       "description": "Bootstrap and sync skills into a workspace.",
       "skills": [
-        "setup-matt-pocock-skills",
         "setup-wian-skills"
       ]
     }
@@ -253,19 +247,13 @@
       ]
     },
     "to-issues": {
-      "recommended": [
-        "setup-matt-pocock-skills"
-      ]
+      "recommended": []
     },
     "to-prd": {
-      "recommended": [
-        "setup-matt-pocock-skills"
-      ]
+      "recommended": []
     },
     "triage": {
-      "recommended": [
-        "setup-matt-pocock-skills"
-      ],
+      "recommended": [],
       "optional": [
         "grill-with-docs"
       ]

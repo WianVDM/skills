@@ -1,8 +1,6 @@
 ---
 name: to-issues
 description: Break a plan, spec, or PRD into independently-grabbable issues on the project issue tracker using tracer-bullet vertical slices. Use when user wants to convert a plan into issues, create implementation tickets, or break down work into issues.
-depends:
-  - setup-matt-pocock-skills
 metadata:
   tags: [workflow, conductor, issues, planning]
 ---
@@ -10,8 +8,6 @@ metadata:
 # To Issues
 
 Break a plan into independently-grabbable issues using vertical slices (tracer bullets).
-
-The issue tracker and triage label vocabulary should have been provided to you — run `/setup-matt-pocock-skills` if not.
 
 ## Process
 
