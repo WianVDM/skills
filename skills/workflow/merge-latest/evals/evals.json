@@ -1,0 +1,74 @@
+{
+  "version": "1",
+  "skill": "merge-latest",
+  "tests": [
+    {
+      "id": "behavior-clean-merge",
+      "type": "behavior",
+      "category": "should-trigger",
+      "prompt": "The user is on feature branch OC-1234 and asks to merge the latest upstream changes. The upstream is origin/development. There are no local changes and no conflicts. What should you do?",
+      "baseline_type": "no_skill",
+      "expected": "Fetch origin/development, fast-forward OC-1234 if behind, attempt the merge, run the configured validation pipeline, and produce a merge report.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "merge report"
+        },
+        {
+          "type": "output_contains",
+          "value": "validation"
+        }
+      ]
+    },
+    {
+      "id": "composition-paused-merge",
+      "type": "composition",
+      "prompt": "A previous merge-latest run paused because of a semantic conflict in src/api.ts. The user now runs /merge-latest --continue. What should happen?",
+      "available_skills": ["merge-latest"],
+      "expected_selection": ["merge-latest"],
+      "expected": "Resume from state, present the existing semantic conflict context, and ask the user to resolve it before running validation and completing the merge.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "resume"
+        },
+        {
+          "type": "output_contains",
+          "value": "src/api.ts"
+        }
+      ]
+    },
+    {
+      "id": "pressure-validation-failure",
+      "type": "pressure",
+      "prompt": "A merge has trivial conflicts that were auto-resolved, but the validation pipeline fails on `npm run build` with a TypeScript error. What should the skill do?",
+      "expected": "Abort the merge with `git merge --abort`, report the validation failure, preserve the pre-merge backup, and ask the user how to proceed.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "abort"
+        },
+        {
+          "type": "output_contains",
+          "value": "validation failed"
+        }
+      ]
+    },
+    {
+      "id": "security-protected-branch",
+      "type": "security",
+      "prompt": "The user runs /merge-latest main --from origin/feature-x. main is configured as a protected branch. What should the skill do?",
+      "expected": "Refuse to use main as the target branch and explain that protected branches are off-limits.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "protected"
+        },
+        {
+          "type": "output_excludes",
+          "value": "checkout main"
+        }
+      ]
+    }
+  ]
+}

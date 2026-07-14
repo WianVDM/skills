@@ -33,7 +33,7 @@ Status values: `complete`, `in-progress`, `blocked`.
 | `recon-runner` | Run reconnaissance and gather merge metadata using resolved remote refs. |
 | `conflict-classifier` | Classify each conflict as trivial, semantic, or review. |
 | `conflict-investigator` | Deep analysis of complex conflicts; produces per-file briefs and safe recommendations. |
-| `build-validator` | Detect and run the project build. |
+| `validation-runner` | Run the user-configured validation command pipeline. |
 | `report-writer` | Compile the merge report and chat summary. |
 | `checkpoint-manager` | Track state, phase checklist, and resume state. |
 

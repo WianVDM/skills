@@ -1,5 +1,7 @@
 # Reports and Context
 
+`merge-latest` produces structured merge reports and state files that follow the context-reports conventions. See the `context-reports` skill for the shared context-report schema and freshness rules.
+
 ## Produced reports
 
 ### Merge report
@@ -8,7 +10,7 @@
 .agents/context/merge-latest/{target}-merge-report.md
 ```
 
-Full record of the merge attempt: result, commits, files, conflicts, resolutions, build output, next steps.
+Full record of the merge attempt: result, commits, files, conflicts, resolutions, validation output, and next steps.
 
 ### State file
 
@@ -16,7 +18,7 @@ Full record of the merge attempt: result, commits, files, conflicts, resolutions
 .agents/context/merge-latest/{target}/state.md
 ```
 
-Working memory: branch inference, phase checklist, conflict status, resolutions, build result, decisions.
+Working memory: branch inference, phase checklist, conflict status, resolutions, validation result, decisions.
 
 ### Backup
 

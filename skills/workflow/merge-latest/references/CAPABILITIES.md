@@ -10,7 +10,7 @@ The skill requires a git repository. Verify:
 - `git` command is available.
 - The repository has at least one remote.
 
-If git is unavailable, consult the user.
+If git is unavailable, stop and explain.
 
 ## Remote detection
 
@@ -21,21 +21,32 @@ If git is unavailable, consult the user.
    - If multiple remotes exist and none is `origin`, ask the user and persist the choice.
 3. Verify the remote has refs for the target and upstream branches. If a remote tracking ref is missing, stop and ask.
 
+## Authentication and private remotes
+
+If the remote is private or requires authentication:
+
+1. Prefer SSH keys or configured credential helpers.
+2. If `git fetch` fails with an authentication error, stop and explain the failure.
+3. Do not ask the user for credentials directly inside the skill.
+4. Direct the user to configure git authentication (SSH key, credential helper, or environment token) and retry.
+
+For GitHub private repositories, the `GITHUB_TOKEN` environment variable may be used by some harnesses or adapters, but the skill itself does not read secrets.
+
+## Working tree state
+
+Distinguish between modified tracked files and untracked files before deciding whether to proceed:
+
+- **Modified tracked files**: can conflict with a checkout or merge. Stop unless stashing is approved.
+- **Untracked files**: do not affect git checkout or merge operations. Warn the user and allow continuing.
+- **Staged changes**: treated as modified tracked files.
+
+## Binary files
+
+Binary files are detected by `git diff --numstat` showing no line counts, or by file extension/magic number heuristics. Binary file conflicts are always classified as `review` and surfaced to the user. They are never auto-resolved.
+
 ## Build system detection
 
-Inspect project files to determine the build command:
-
-| Project file | Build command candidate |
-|--------------|-------------------------|
-| `package.json` with `scripts.build` | `npm run build` / `yarn build` / `pnpm build` |
-| `Makefile` | `make` |
-| `build.gradle` | `./gradlew build` |
-| `pom.xml` | `mvn compile` or `mvn test-compile` |
-| `pyproject.toml` | configured build task |
-| `Cargo.toml` | `cargo build` |
-| `go.mod` | `go build ./...` |
-
-If multiple candidates exist, prefer the one matching the most common pattern or ask the user.
+The validation pipeline auto-detection inspects project files to identify candidate commands. See [VALIDATION.md](VALIDATION.md) for the full detection rules.
 
 ## Ticket adapter detection
 
@@ -58,7 +69,7 @@ The bundled scripts require Node.js. Verify:
 - `node` command is available.
 - `npm` is available (for diagnostics if scripts fail).
 
-If Node.js is unavailable, consult the user: install Node, provide alternative scripts, or skip script-based helpers.
+If Node.js is unavailable, stop and explain.
 
 Scripts used by this skill:
 

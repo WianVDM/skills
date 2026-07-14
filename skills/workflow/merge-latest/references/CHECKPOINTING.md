@@ -9,7 +9,7 @@ Checkpointing is always used, but it is especially important when:
 - Conflict count exceeds the deep analysis threshold.
 - The merge spans many files.
 - Semantic conflicts require user input.
-- The build validation is long-running.
+- The merge validation is long-running.
 
 ## Phases
 
@@ -23,7 +23,7 @@ Checkpointing is always used, but it is especially important when:
 | 6 | Conflict classification | Each conflict classified |
 | 7 | Deep analysis (if triggered) | Analyst findings in report |
 | 8 | Trivial resolution | Safe resolutions applied |
-| 9 | Build validation | Build result recorded |
+| 9 | Merge validation | Validation result recorded |
 | 10 | Report | Final report written |
 
 ## State file

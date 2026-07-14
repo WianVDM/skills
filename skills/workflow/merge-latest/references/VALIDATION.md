@@ -1,63 +1,80 @@
-# Validation
+# Merge Validation Pipeline
 
-Before considering the skill complete:
+`merge-latest` validates a merge by running a user-configured pipeline of commands. The pipeline is detected from project files on first run and confirmed with the user before being persisted.
 
-## Frontmatter
+## Why a pipeline
 
-- [ ] `name` matches directory name.
-- [ ] `description` is under 1024 characters and includes triggers.
-- [ ] `license` and `metadata` are present.
+A single "build" command is often not enough to guarantee a safe merge. A TypeScript project, for example, may need to run type checking, linting, the build, and tests. A Java project may need compilation and tests. The skill detects candidate commands and lets the user choose which ones are required.
 
-## SKILL.md
+## Config schema
 
-- [ ] Declares skill type (workflow).
-- [ ] Focuses on intent and workflow, not exact commands.
-- [ ] Lists out-of-scope behavior.
-- [ ] Links to all reference files.
-- [ ] Documents argument forms and conflict rules.
-- [ ] Documents fetch and checkout behavior.
+```yaml
+validation:
+  mode: auto               # auto | custom
+  commands:
+    - name: type-check
+      command: npm run type-check
+    - name: build
+      command: npm run build
+    - name: test
+      command: npm run test
+```
 
-## References
+- `mode: auto` — detect candidate commands from project files on first run and confirm with the user.
+- `mode: custom` — use the user-provided list exactly; no auto-detection.
+- `commands` — ordered list of commands to run. Each must succeed for the merge to complete.
 
-- [ ] All linked reference files exist.
-- [ ] `CONFIG_PATTERN.md` documents config + notes and new schema fields.
-- [ ] `CAPABILITIES.md` documents VCS, remote, ticket adapter, and script detection.
-- [ ] `CONTEXT_REPORTS.md` documents output locations.
-- [ ] `SUBAGENTS.md` documents delegation.
-- [ ] `BRANCH_INFERENCE.md` documents the new inference algorithm.
-- [ ] `CONFLICT_ANALYSIS.md` documents the investigation workflow.
-- [ ] `BUILD_SYSTEMS.md` documents build detection.
-- [ ] `MERGE_VS_REBASE.md` documents rebase rules.
-- [ ] `CHECKPOINTING.md` documents state and resume.
-- [ ] `TICKET_ADAPTERS.md` documents adapter examples.
+## First-run detection
 
-## Scripts
+When `validation.commands` is not yet configured, the skill inspects the project and proposes candidate commands:
 
-- [ ] `scripts/parse-args.js` parses all supported forms and emits errors correctly.
-- [ ] `scripts/infer-base.js` scores candidates and outputs JSON.
-- [ ] `scripts/conflict-brief.js` extracts versions and context and outputs JSON.
-- [ ] `scripts/recon.js` uses resolved remote refs and outputs JSON.
-- [ ] `scripts/resolve-trivial.js` only resolves truly one-sided or non-overlapping additions.
-- [ ] `scripts/report.js` generates the report and chat summary.
-- [ ] All scripts exit non-zero on error.
+| Project file | Candidate commands |
+|---|---|
+| `package.json` with matching scripts | `npm run build`, `npm run test`, `npm run lint`, `npm run type-check` |
+| `yarn.lock` present | `yarn build`, `yarn test`, `yarn lint`, `yarn type-check` |
+| `pnpm-lock.yaml` present | `pnpm build`, `pnpm test`, `pnpm lint`, `pnpm type-check` |
+| `Makefile` | `make`, `make test`, `make lint` |
+| `build.gradle` | `./gradlew build`, `./gradlew test` |
+| `pom.xml` | `mvn test`, `mvn compile` |
+| `pyproject.toml` | detected test/build task |
+| `Cargo.toml` | `cargo build`, `cargo test` |
+| `go.mod` | `go build ./...`, `go test ./...` |
 
-## Subagents
+Only commands that actually exist in the project files are proposed. For example, if `package.json` has no `test` script, `npm run test` is not suggested.
 
-- [ ] Each subagent has a narrow scope.
-- [ ] Each uses the standard worker return format.
-- [ ] Workers do not modify the working tree unless explicitly instructed.
-- [ ] `latest-fetcher.md` handles fetch and fast-forward rules.
-- [ ] `branch-researcher.md` requires high confidence.
-- [ ] `conflict-investigator.md` only auto-resolves when confidence and downstream risk are low.
-- [ ] `conflict-classifier.md` feeds into the investigator and classifies review files.
+## First-run confirmation flow
 
-## Scenarios to walk through
+1. Present the detected candidate commands with short descriptions.
+2. Let the user enable, disable, reorder, or edit each command.
+3. Persist the final list under `validation.commands`.
+4. Set `validation.mode: auto`.
 
-1. Clean merge with inferred base branch.
-2. Merge with trivial conflicts only.
-3. Merge with semantic conflict requiring user input.
-4. Merge that fails build and aborts.
-5. Large merge triggering conflict investigation.
-6. Review-file conflict (lockfile/generated) surfaced to user.
-7. Context compaction mid-merge.
-8. `/merge-latest SHB-317` while on `oc-3626` with semantic conflict pause.
+On later runs, the skill uses the persisted list. If project files change and new candidate commands appear, the skill surfaces them and asks whether to update the saved list.
+
+## Custom mode
+
+If the user sets `validation.mode: custom`, the skill stops auto-detecting and uses the `validation.commands` list exactly. The skill does not modify the list unless the user explicitly edits it.
+
+## Execution rules
+
+1. Run each command in `validation.commands` in order.
+2. Capture the output of each command.
+3. If any command exits non-zero, abort the merge.
+4. If all commands succeed, record the results in the merge report.
+
+## Failure handling
+
+If a validation command fails:
+
+1. Capture the failing output.
+2. Run `git merge --abort` (or `git rebase --abort` if rebasing).
+3. Report the result as `aborted`.
+4. Ask the user how to proceed.
+
+## Timeout
+
+A long-running validation command can hang the merge. The skill should use a configurable timeout (default: 10 minutes) and abort if a command exceeds it. The timeout is stored as `validation.timeout_seconds` in config.
+
+## Default behavior for existing users
+
+For users who have an existing `build_command` or `custom_build_command` in config, migrate it to a single-item `validation.commands` list on first run and ask the user to confirm or add more commands.

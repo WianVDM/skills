@@ -93,7 +93,7 @@ Run in order before any merge attempt:
 13. Resolve trivial conflicts with `scripts/resolve-trivial.js`.
 14. Pause on semantic conflicts for user input.
 15. Surface review-file conflicts to the user.
-16. Run build validation.
+16. Run merge validation.
 17. Write report and chat summary.
 18. Update state.
 
