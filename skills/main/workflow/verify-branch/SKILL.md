@@ -1,6 +1,7 @@
 ---
 name: verify-branch
 description: Compare the current branch to the repository's default branch and verify that changed code will pass CI gates. Acts as a gatekeeper — it runs configured tests, audits, and standards checks, then delivers an unfiltered PASS or FAIL verdict. Reports only; does not fix. Use when the user says 'verify branch', 'check my PR', 'are there tests for this', or before completing implementation.
+invocation: user-invoked
 metadata:
   tags: [workflow, building-block, git, ci, quality]
   author: Wian van der Merwe

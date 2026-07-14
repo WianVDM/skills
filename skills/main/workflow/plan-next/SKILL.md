@@ -1,6 +1,7 @@
 ---
 name: plan-next
 description: Analyze context, discover available skills, build deep skill capability profiles, and create a phased action plan with explicit dependencies. Evaluates skills not only on direct relevance but on how they ensure the plan is correct and prevent missed complexity. Interactively refines with the user before finalizing. Use when the user wants to know what to do next, which skills to run, how to address findings, or says 'plan-next', 'what should I do', 'recommend skills', or 'create a plan'.
+invocation: user-invoked
 metadata:
   tags: [workflow, conductor, planning, discovery]
   author: Wian van der Merwe
