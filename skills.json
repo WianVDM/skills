@@ -196,7 +196,8 @@
     },
     "handoff": {
       "recommended": [
-        "detect-project-context"
+        "detect-project-context",
+        "context-reports"
       ]
     },
     "install-skill": {
@@ -224,6 +225,12 @@
       "required": [
         "audit-skill",
         "validate-skill-frontmatter"
+      ]
+    },
+    "merge-latest": {
+      "recommended": [
+        "context-reports",
+        "checkpoint"
       ]
     },
     "pr-report": {
@@ -273,6 +280,7 @@
       "recommended": [
         "list-available-skills",
         "search-skills-registry",
+        "detect-skill-overlap",
         "install-skill",
         "run-trigger-evals"
       ],

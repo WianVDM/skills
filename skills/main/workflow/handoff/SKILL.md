@@ -2,6 +2,9 @@
 name: handoff
 description: "Write a session handoff snapshot in multiple passes, from high-level overview to detailed context, so a fresh session can continue."
 invocation: user-invoked
+depends:
+  - detect-project-context
+  - context-reports
 ---
 
 # handoff
