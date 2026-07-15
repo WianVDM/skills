@@ -1,4 +1,4 @@
-# Config declaration for evidence-store
+# Config declaration for chainlog
 
 # This block does not require project-level config. It accepts the context_dir
 # as input on each invocation.

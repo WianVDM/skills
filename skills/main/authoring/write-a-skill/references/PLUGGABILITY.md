@@ -37,6 +37,16 @@ Because this skill is global, it must not:
 
 The only hardcoded project-level values are the detection rules, the marker-directory list above, and the skill's own config filename (which the harness uses to locate this skill's configuration). All other paths and conventions must come from detection, configuration, or user confirmation.
 
+## Standards path resolution
+
+`write-a-skill` must never hardcode a relative path to `docs/skill-standards` or any other project convention that is not a declared dependency. The canonical rules for resolving the skill-standards path are defined in the `standards-path` fundamental.
+
+Use the shared resolver instead of reimplementing the resolution order:
+
+- `skills/blocks/project/detect-project-context/scripts/resolve-standards-path.py`
+
+The resolver returns the `standards_path`, its source, and whether the result is degraded. If the path is missing, the skill must use the degraded-mode warning template below and ask the user to fetch, configure, or proceed with the fallback.
+
 ## Degradation
 
 - If the harness cannot spawn subagents, the conductor must run the same phases inline and ask the user the questions a worker would have returned.

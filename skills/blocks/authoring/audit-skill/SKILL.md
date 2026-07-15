@@ -74,11 +74,11 @@ The auditor starts from the assumption that every token is guilty until proven l
 
 ## Rubric
 
-The full rubric is maintained in `docs/skill-standards/reference/audit-rubric.md`. It covers identity, type/shape, scope, structure, form/style, security, dependencies, portability, evaluation, governance, **tooling awareness** (`TA-01`, `TA-02`), **extraction** (`X01`), **token economy** (`TE-01`, `TE-02`), **pattern compliance** (`PC-01`, `PC-02`, `PC-03`), and **overlap** (`OV-01`).
+The full rubric is maintained in the [audit rubric]({audit_rubric_path}). It covers identity, type/shape, scope, structure, form/style, security, dependencies, **portability** (`P01`–`P-04`), evaluation, governance, **tooling awareness** (`TA-01`, `TA-02`), **extraction** (`X01`), **token economy** (`TE-01`, `TE-02`), **pattern compliance** (`PC-01`, `PC-02`, `PC-03`), **overlap** (`OV-01`), and **chainlog** (`CL-01`–`CL-04`).
 
 ## Output format
 
-See `docs/skill-standards/reference/audit-rubric.md` for the report schema.
+See the [audit rubric]({audit_rubric_path}) for the report schema.
 
 ## Security
 
@@ -112,15 +112,18 @@ When the script reports `MANUAL` findings, use this checklist to complete the re
 12. **Token economy** — Is every section, reference, subagent, and example load-bearing and justified?
 13. **Pattern compliance** — Does the skill fully adhere to the relevant `skill-standards` patterns?
 14. **Overlap** — Has `detect-skill-overlap` been run, and have duplicate capabilities been addressed?
+15. **Chainlog classification** — Does the skill correctly classify itself as producer, consumer, both, or neither in `references/chainlog.md`? Does the classification match the actual workflow?
+16. **Chainlog integration** — If the skill is a producer/consumer/both, does it depend on `chainlog` and document the produced/consumed capabilities in `references/chainlog.md`?
+17. **Chainlog freshness** — If the skill is a consumer or `both`, does it check freshness before reusing observations?
+18. **Chainlog secrets** — Does the skill store secret values anywhere in the chainlog envelope or payload?
 
 ## Validation
 
-Negative tests have been verified: the script reports blockers for a deliberately broken skill containing a missing internal link (`ST04`), an undeclared runtime reference to another skill (`D06`), and a hardcoded project path (`P01`).
+Negative tests have been verified: the script reports blockers for a deliberately broken skill containing a missing internal link (`ST04`), an undeclared runtime reference to another skill (`D06`), a hardcoded project path (`P01`), and a hardcoded external standards path (`P-04`).
 
 ## References
 
-- [Audit rubric][audit-rubric] — canonical audit rubric
-- `docs/skill-standards/schemas/skill-frontmatter.schema.json`
+- [Audit rubric]({audit_rubric_path}) — canonical audit rubric (fallback copy in `references/AUDIT_RUBRIC.md`)
+- [skill-frontmatter schema]({skill_frontmatter_schema_path})
 
 [dependencies]: references/DEPENDENCIES.md
-[audit-rubric]: ../../../../docs/skill-standards/reference/audit-rubric.md

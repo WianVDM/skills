@@ -22,7 +22,7 @@ None.
 ## Consumed artifacts
 
 - Context report files (markdown with frontmatter).
-- Evidence-store entries (JSON/dict).
+- Chainlog observations (JSON/dict).
 
 ## Produced artifacts
 

@@ -36,9 +36,10 @@ USER_CANDIDATES = [
 def parse_frontmatter(skill_md: Path) -> dict:
     """Load the shared frontmatter parser lazily and parse a SKILL.md file."""
     parser_path = (
-        Path(__file__).resolve().parents[4]
+        Path(__file__).resolve().parents[5]
         / "skills"
-        / "tooling"
+        / "blocks"
+        / "authoring"
         / "parse-skill-frontmatter"
         / "scripts"
         / "parse-skill-frontmatter.py"
@@ -56,18 +57,10 @@ def discover_skills(root: Path, candidates: list[str]) -> list[Path]:
         cand = (root / rel).expanduser().resolve()
         if not cand.is_dir():
             continue
-        # First pass: look for SKILL.md directly under the candidate (flat install layout).
-        for entry in cand.iterdir():
-            if entry.is_dir() and (entry / "SKILL.md").is_file():
-                found.append(entry / "SKILL.md")
-        # Second pass: also support categorized source layouts like skills/{category}/{skill}/.
-        for category in cand.iterdir():
-            if category.is_dir():
-                for entry in category.iterdir():
-                    if entry.is_dir() and (entry / "SKILL.md").is_file():
-                        skill_md = entry / "SKILL.md"
-                        if skill_md not in found:
-                            found.append(skill_md)
+        # Search recursively for SKILL.md files, supporting flat, categorized,
+        # and multi-level source layouts like skills/{category}/{subcategory}/{skill}/.
+        for skill_md in cand.rglob("SKILL.md"):
+            found.append(skill_md)
     return found
 
 

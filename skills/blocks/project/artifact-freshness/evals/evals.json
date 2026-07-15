@@ -13,7 +13,7 @@
       "id": "trigger-should-02",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Check whether the evidence store entry is stale.",
+      "prompt": "Check whether the chainlog observation is stale.",
       "expected": "artifact-freshness"
     },
     {

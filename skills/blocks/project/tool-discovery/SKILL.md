@@ -38,7 +38,7 @@ A conductor skill needs to know which tool to use for a capability before it cal
 
 - Invoking the discovered tools.
 - Resolving tokens (delegate to `token-resolver`).
-- Storing tool output as evidence (consumers do that via `evidence-store`).
+- Storing tool output as observations (consumers do that via `chainlog`).
 - Deciding whether cached results are fresh (use `artifact-freshness` if caching).
 
 ## Core contract

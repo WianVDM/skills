@@ -17,6 +17,8 @@ depends:
   - detect-skill-overlap
   - install-skill
   - run-trigger-evals
+  - chainlog
+  - artifact-freshness
 ---
 
 # write-a-skill
@@ -51,6 +53,7 @@ Conductor. `write-a-skill` coordinates multiple building-block skills and subage
 - **Invocation mode:** user-invoked. This is a meta-design conversation and should not stay loaded during normal work.
 - **Scope:** global. It must work in any project with any harness.
 - **Pluggability:** the skill detects the project layout and always confirms before writing files. See [references/PLUGGABILITY.md][pluggability].
+- **Standards path:** the skill resolves canonical standards through configuration, project-context detection, or user consent. See the `standards-path` fundamental and the shared resolver.
 - **No hardcoded project paths:** paths are resolved through detection, configuration, or user confirmation.
 - **Self-contained:** the skill ships with condensed fundamentals in [references/FUNDAMENTALS.md][fundamentals] and [references/PATTERN_HINTS.md][pattern-hints]. It can optionally bootstrap the full standards from a public repository on first run.
 
@@ -72,16 +75,16 @@ The conductor runs this pipeline. Each phase has a completion criterion and a de
 
 | Phase                                      | What happens                                                                                                                                                                                                                                | Completion criterion                                                                                                     |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| 1. **Clarify intent and choose gate**      | Classify the top-level branch; resolve the internal gate; ask one question at a time if unclear.                                                                                                                                            | Branch is one of {create, change, initialize}, gate is resolved, and user confirmed.                                     |
-| 2. **Explore alternatives**                | Use `list-available-skills`, `search-skills-registry`, and `detect-skill-overlap` to see what exists and flag overlap with existing skills. Run `detect-skill-overlap` against the target directory or a JSON draft and write the structured overlap findings to `{context}/skill-design/{skill-name}-overlap-findings.md`. | Alternatives report exists; overlap findings report exists; user knows whether to create, reuse, or install. |
+| 1. **Clarify intent and choose gate**      | Classify the top-level branch; resolve the internal gate; ask one question at a time if unclear. Ask the chainlog classification question: does this skill collect or consume observable data? If yes, invoke `check-chainlog-needs` to recommend producer, consumer, both, or neither. | Branch is one of {create, change, initialize}, gate is resolved, chainlog classification is recorded, and user confirmed.                                     |
+| 2. **Explore alternatives**                | Use `list-available-skills`, `search-skills-registry`, and `detect-skill-overlap` to see what exists and flag overlap with existing skills. Run `detect-skill-overlap` against the target directory or a JSON draft and write the structured overlap findings to `{context}/skill-design/{skill-name}-overlap-findings.md`. Also check whether the proposed skill duplicates a `chainlog` capability; if so, recommend reuse over private storage. | Alternatives report exists; overlap findings report exists; chainlog overlap is noted; user knows whether to create, reuse, or install. |
 | 3. **Decide shape and colocation**         | Decide whether the answer is a new skill, an existing skill, a script, an MCP server, or a context file. Then apply the colocation principle and invoke `detect-skill-overlap` to flag extraction opportunities or unjustified duplication. Use the overlap findings report to present the user with three options: **reuse** the existing skill, **colocate** the capability in the new skill, or **extract** a shared building block. | User confirms the chosen shape and the reuse/colocate/extract decision for each significant overlap; extraction candidates have interface sketches. |
 | 4. **Define identity**                     | Name, description, invocation. Version only if the user requires it or the skill will be shared/consumed.                                                                                                                                   | Frontmatter skeleton exists and user confirmed.                                                                          |
 | 5. **Define scope**                        | In-scope, out-of-scope, branches, assumptions.                                                                                                                                                                                              | Scope boundaries are explicit and defensible.                                                                            |
-| 6. **Select patterns**                     | Apply fundamentals; suggest Layer 2 patterns. Decide if the skill is configurable and, if so, which shared and skill-specific keys it needs.                                                                                                | Pattern list and config declaration (if any) exist and user confirmed.                                                   |
-| 6a. **Pattern adherence**                  | Compare the chosen patterns against the canonical skill-standards docs; flag deviations before drafting.                                                                                                                                    | Pattern list is explicitly mapped to canonical pattern documents; deviations are recorded with rationale.                |
-| 6b. **Design capability-to-tool strategy** | For each load-bearing capability, identify the preferred tool, fallback tools, and degraded-output disclosure. Document the selection rule and user-consent behavior.                                                                       | A capability-to-tool mapping exists for every load-bearing capability; the user has confirmed or corrected the strategy. |
+| 6. **Select patterns**                     | Apply fundamentals; suggest Layer 2 patterns. Decide if the skill is configurable and, if so, which shared and skill-specific keys it needs. If the chainlog classification is not `neither`, confirm the work item types, produced/consumed capabilities, and storage adapter strategy. | Pattern list and config declaration (if any) exist; chainlog pattern details are confirmed; user confirmed. |
+| 6a. **Pattern adherence**                  | Compare the chosen patterns against the canonical skill-standards docs; flag deviations before drafting. Include `chainlog` in the pattern adherence check when the classification is not `neither`. | Pattern list is explicitly mapped to canonical pattern documents; chainlog deviations are recorded; deviations are recorded with rationale. |
+| 6b. **Design capability-to-tool strategy** | For each load-bearing capability, identify the preferred tool, fallback tools, and degraded-output disclosure. For each capability that feeds the chainlog, also identify the storage adapter. Document the selection rule and user-consent behavior. | A capability-to-tool mapping exists for every load-bearing capability; chainlog storage adapter is selected; the user has confirmed or corrected the strategy. |
 | 7. **Token justification**                 | Defend every proposed section, reference, subagent, and script; remove or merge unjustified items.                                                                                                                                          | Every artifact in the draft has a stated purpose; the user has confirmed the minimal set.                                |
-| 8. **Draft artifacts**                     | Generate `SKILL.md`, optional `README.md`, `references/`, `subagents/`, `scripts/`, `assets/`, and `config.yaml` if the skill is configurable.                                                                                              | Draft files exist and are linked correctly.                                                                              |
+| 8. **Draft artifacts**                     | Generate `SKILL.md`, optional `README.md`, `references/`, `subagents/`, `scripts/`, `assets/`, and `config.yaml` if the skill is configurable. If the chainlog classification is not `neither`, copy the appropriate `references/chainlog-template-{producer,consumer,both,neither}.md` to `references/chainlog.md` and fill the placeholders. | Draft files exist and are linked correctly; `references/chainlog.md` exists if applicable. |
 | 9. **Audit and validate**                  | Run `audit-skill` and `validate-skill-frontmatter`. Re-run `detect-skill-overlap` if the skill's capabilities changed during drafting and update the overlap findings report.                                                                                                                                 | Audit report exists with no blocking failures.                                                                           |
 | 10. **Generate evals**                     | Run `run-trigger-evals` for model-invoked skills.                                                                                                                                                                                           | `evals/evals.json` exists or user declined.                                                                              |
 | 11. **Confirm and write**                  | Present the full plan; write files only after explicit approval.                                                                                                                                                                            | User approved; files written; decision log updated.                                                                      |
@@ -96,6 +99,15 @@ This checklist is load-bearing. The conductor must confirm each applicable item 
 - **Documented selection.** The preferred tool, fallback tools, and selection rule are documented.
 - **Degraded disclosure.** If a degraded source is used, the skill tells the user what better option was available and gets explicit or recorded consent.
 - **Dependency surface.** The full dependency surface is declared in `references/DEPENDENCIES.md` and `skills.json`.
+- **Chainlog classification.** The skill is classified as producer, consumer, both, or neither. If it is not `neither`, the classification is recorded in `references/chainlog.md`.
+- **Chainlog producer check.** If producer or both, the skill appends every load-bearing tool result to `chainlog` before synthesizing a view.
+- **Chainlog consumer check.** If consumer or both, the skill queries `chainlog` for reusable observations before invoking tools.
+- **Chainlog freshness.** If consumer or both, the skill uses `artifact-freshness` to judge whether observations are still usable.
+- **Chainlog schema.** If producer or both, the skill documents which capability contract defines the payload schema for each observation.
+- **Chainlog identity.** If producer or both, the skill normalizes the `work_item_key` before appending or querying.
+- **Chainlog storage adapter.** If producer or both, the default file adapter is confirmed and any richer adapter is discovered via `tool-discovery`.
+- **Chainlog report linkage.** If the skill generates a view, it links the view back to the observations it was built from.
+- **Chainlog secrets.** No secret values are stored in chainlog observations.
 
 ## Colocation and extraction checklist
 
@@ -116,6 +128,7 @@ Workers:
 - [clarify-scope.md](subagents/clarify-scope.md) — clarify the skill's scope.
 - [classify-skill-type.md](subagents/classify-skill-type.md) — clas sify the skill type.
 - [suggest-patterns.md](subagents/suggest-patterns.md) — suggest patterns.
+- [check-chainlog-needs.md](subagents/check-chainlog-needs.md) — evaluate whether the skill should produce, consume, or both chainlog observations.
 - [initialize.md](subagents/initialize.md) — first-run configuration proposal.
 - [draft-skill-md.md](subagents/draft-skill-md.md) — draft the `SKILL.md` file.
 - [change-branch.md](subagents/change-branch.md) — coordinate the `change` branch by resolving `standards_path` and invoking `review-skill`.
@@ -191,6 +204,7 @@ Every branch that reads canonical standards must check `standards_path` before u
 
 - If `standards_path` points to an existing directory, use it.
 - If the directory is missing or the value is unset, use the degraded-mode template from [references/PLUGGABILITY.md][pluggability] to warn the user that some checks are unavailable.
+- Prefer the shared resolver `skills/blocks/project/detect-project-context/scripts/resolve-standards-path.py` instead of reimplementing the resolution order.
 - Record the user's choice in the decision log.
 - Never silently fall back to embedded docs without telling the user.
 

@@ -1,6 +1,6 @@
 # Interface
 
-`evidence-store` exposes one script: `scripts/evidence-store.py`.
+`chainlog` exposes one script: `scripts/chainlog.py`.
 
 ## Input
 
@@ -15,35 +15,35 @@ JSON on stdin with an `operation` field.
 
 ### `append`
 
-Append an evidence entry.
+Append an observation entry.
 
 ```json
 {
   "operation": "append",
   "context_dir": ".agents/context",
   "entry": {
-    "evidence_id": "...",
+    "observation_id": "...",
     "work_item_type": "pr",
     "work_item_key": "42@owner-repo",
     "capability": "pr-source",
-    "source": "github-mcp",
+    "source": "pr-adapter",
     "source_version": "1.0.0",
     "schema_version": "1.0.0",
     "collected_at": "2026-07-14T10:00:00Z",
     "branch": "feature/OC-1234",
     "commit": "abc1234",
     "confidence": "high",
-    "producing_skill": "pr-report",
+    "producing_skill": "example-skill",
     "payload": "..."
   }
 }
 ```
 
-Required entry fields: `work_item_type`, `work_item_key`, `capability`, `source`. If `evidence_id` or `collected_at` are omitted, they are generated automatically.
+Required entry fields: `work_item_type`, `work_item_key`, `capability`, `source`. If `observation_id` or `collected_at` are omitted, they are generated automatically.
 
 ### `query_latest`
 
-Return the latest evidence entry per capability, or for one capability if specified.
+Return the latest observation entry per capability, or for one capability if specified.
 
 ```json
 {
@@ -57,7 +57,7 @@ Return the latest evidence entry per capability, or for one capability if specif
 
 ### `query_all`
 
-Return all evidence entries for a work item, optionally filtered by capability.
+Return all observation entries for a work item, optionally filtered by capability.
 
 ```json
 {
@@ -86,7 +86,7 @@ Return entries collected after a given timestamp.
 
 ### `exists`
 
-Check whether a work item has any evidence.
+Check whether a work item has any observations.
 
 ```json
 {
@@ -121,8 +121,8 @@ All operations return JSON to stdout.
 ```json
 {
   "status": "appended",
-  "evidence_id": "...",
-  "path": ".agents/context/evidence/pr/42@owner-repo.timeline.md"
+  "observation_id": "...",
+  "path": ".agents/context/chainlog/pr/42@owner-repo.chain.md"
 }
 ```
 
@@ -161,24 +161,24 @@ All operations return JSON to stdout.
 }
 ```
 
-## Evidence envelope
+## Observation envelope
 
 Every entry has frontmatter and a body:
 
 ```yaml
 ---
-evidence_id: <uuid>
+observation_id: <uuid>
 work_item_type: ticket | pr | branch | commit
 work_item_key: OC-1234
 capability: pr-source
-source: github-mcp
+source: pr-adapter
 source_version: 1.0.0
 schema_version: 1.0.0
 collected_at: 2026-07-14T10:00:00Z
 branch: feature/OC-1234
 commit: abc1234
 confidence: high
-producing_skill: pr-report
+producing_skill: example-skill
 ---
 
 ## Payload

@@ -12,7 +12,8 @@ depends:
   - identity-resolver
   - tool-discovery
   - artifact-freshness
-  - evidence-store
+  - chainlog
+  - artifact-freshness
   - git-worktree-inspector
   - scope-checker
   - pr-adapter-contract
@@ -70,7 +71,7 @@ Accept a PR identifier, resolve the PR, discover the best available tools, colle
 1. **Initialize** — detect project context, load or create `{config_dir}/pr-review.yaml`, discover required capabilities, record state. **Completion:** config exists, every required capability has at least one detected tool.
 2. **Resolve PR** — invoke `identity-resolver` to get `pr_number`, `repo`, `branch`, `base`, `ticket_key`, `url`. If `needs_input`, ask the user. Check prior reports with `artifact-freshness`. **Completion:** identity recorded in state.
 3. **Discover tools** — for each capability (PR source, reviews, changed files, CI, issue tracker, checkout, posting), invoke `tool-discovery` and record the preferred tool. **Completion:** preferred tools recorded for every capability.
-4. **Collect context** — invoke the preferred tool for each capability and store output in `evidence-store`. Fall back when needed and disclose degradation. **Completion:** every capability has evidence or a documented skip/degradation.
+4. **Collect context** — invoke the preferred tool for each capability and store output in `chainlog`. Fall back when needed and disclose degradation. **Completion:** every capability has an observation or a documented skip/degradation.
 5. **Checkout and inspect** — invoke `git-worktree-inspector` to check out the branch and list changed files. Read the files and run targeted checks scoped to changed files. **Completion:** worktree inspected, check results recorded, unintended changes reset.
 6. **Synthesize review** — compare changes against ticket scope and project conventions; use `scope-checker` to flag scope drift. Avoid duplicating existing comments. Generate a top-level summary, required/optional inline comments, and confidence. **Completion:** draft review items recorded in state.
 7. **Draft review** — write the review draft to `{context_dir}/pr-review/{key}/{key}-review-draft.md` with event, body, and inline comments. **Completion:** report exists and is marked complete.

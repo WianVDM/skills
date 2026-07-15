@@ -124,6 +124,54 @@
       "type": "trigger",
       "category": "should-not-trigger",
       "prompt": "Fetch the latest skill-standards docs from GitHub."
+    },
+    {
+      "id": "AUD-CL-001",
+      "type": "behavior",
+      "prompt": "Audit a skill whose SKILL.md describes collecting pull request metadata and CI status from tools and synthesizing a report, but whose references/DEPENDENCIES.md does not mention chainlog and there is no references/chainlog.md. What findings do you report?",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "CL-01"
+        }
+      ]
+    },
+    {
+      "id": "AUD-CL-002",
+      "type": "behavior",
+      "prompt": "Audit a skill whose references/chainlog.md classifies it as a consumer of chainlog observations, but references/DEPENDENCIES.md does not mention artifact-freshness. What findings do you report?",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "CL-02"
+        }
+      ]
+    },
+    {
+      "id": "AUD-CL-003",
+      "type": "behavior",
+      "prompt": "Audit a skill whose references/chainlog.md contains a sample observation payload that includes a literal API key value. What findings do you report?",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "CL-03"
+        }
+      ]
+    },
+    {
+      "id": "AUD-CL-004",
+      "type": "behavior",
+      "prompt": "Audit a skill whose references/chainlog.md classifies it as neither, but whose SKILL.md workflow describes querying chainlog and appending new observations for a work item. What findings do you report?",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "CL-04"
+        }
+      ]
     }
   ]
 }

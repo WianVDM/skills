@@ -10,13 +10,13 @@ Either CLI flags or a JSON object on stdin. CLI flags override stdin values.
 
 ```bash
 python check-freshness.py --report <path> [options]
-python check-freshness.py --evidence <json> [options]
+python check-freshness.py --observation <json> [options]
 ```
 
 | Flag | Description |
 |---|---|
 | `--report` | Path to the markdown report to check. |
-| `--evidence` | JSON string with an evidence entry. |
+| `--observation` | JSON string with a chainlog observation entry. |
 | `--branch` | Current branch. Auto-detected from git if omitted. |
 | `--commit` | Current commit. Auto-detected from git if omitted. |
 | `--source-updated-at` | Timestamp when the underlying source was last updated. |
@@ -29,10 +29,10 @@ python check-freshness.py --evidence <json> [options]
 
 ```json
 {
-  "mode": "report" | "evidence",
+  "mode": "report" | "observation",
   "report_path": "/path/to/report.md",
   "report_frontmatter": { ... },  // optional; used instead of reading the file
-  "evidence": { ... },
+  "observation": { ... },
   ...
 }
 ```
@@ -78,9 +78,9 @@ The script recognizes these frontmatter fields (case-insensitive keys):
 | `artifact_source_updated_at` | `artifact_source_updated_at`, `source_updated_at`, `ticket_updated_at` |
 | `artifact_schema_version` | `artifact_schema_version`, `schema_version`, `schema` |
 
-## Evidence entry fields
+## Chainlog observation fields
 
-Evidence entries are checked against these fields:
+Chainlog observations are checked against these fields:
 
 | Canonical field | Aliases |
 |---|---|
@@ -98,8 +98,8 @@ Check a report:
 python check-freshness.py --report .agents/context/debrief/OC-1234.md --json
 ```
 
-Check an evidence entry:
+Check a chainlog observation:
 
 ```bash
-python check-freshness.py --evidence '{"collected_at": "2026-07-14T10:00:00Z", "commit": "abc1234"}' --commit abc1234 --json
+python check-freshness.py --observation '{"collected_at": "2026-07-14T10:00:00Z", "commit": "abc1234"}' --commit abc1234 --json
 ```

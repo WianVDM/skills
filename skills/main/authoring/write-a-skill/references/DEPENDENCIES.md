@@ -4,7 +4,7 @@
 
 The canonical dependency manifest is [`../skills.json`](../skills.json). This document provides the human-readable explanation.
 
-This document follows the dependency taxonomy defined in `docs/skill-standards/fundamentals/architecture/dependencies-and-bundling.md`:
+This document follows the dependency taxonomy defined in the [dependencies and bundling fundamental]({dependencies_and_bundling_path}):
 
 - **Required** — the skill cannot function without this dependency.
 - **Recommended** — improves output or experience; the skill runs degraded if it is missing.
@@ -21,6 +21,8 @@ This document follows the dependency taxonomy defined in `docs/skill-standards/f
 - **worker-contract** — shared subagent return contract, forbidden actions, and scope boundaries used when composing worker prompts.
 - **context-reports** — shared context-report conventions, schema, freshness rules, and missing-report handling.
 - **parse-skill-frontmatter** — extract canonical frontmatter fields from a `SKILL.md` file (used by several building blocks above).
+- **chainlog** — shared append-only observation ledger. `write-a-skill` uses it to classify skills and generate chainlog declarations.
+- **artifact-freshness** — judge whether chainlog observations are still usable. Required for consumer and both classifications.
 
 ## Recommended skills
 
@@ -75,7 +77,7 @@ A drafted skill must not treat its own adapters as the only source for a capabil
 
 ## Shipped schema fallback
 
-`audit-skill` ships a portable copy of `skill-frontmatter.schema.json` in `audit-skill/references/`. `validate-skill-frontmatter` falls back to this copy when the canonical `docs/skill-standards/schemas/skill-frontmatter.schema.json` is unavailable. This lets `write-a-skill` and its dependencies run in workspaces that do not include the full standards wiki.
+`audit-skill` ships a portable copy of `skill-frontmatter.schema.json` in `audit-skill/references/`. `validate-skill-frontmatter` falls back to this copy when the canonical [skill-frontmatter schema]({skill_frontmatter_schema_path}) is unavailable. This lets `write-a-skill` and its dependencies run in workspaces that do not include the full standards wiki.
 
 ## Consumed references
 

@@ -10,7 +10,7 @@
 - `identity-resolver` — work-item identity resolution.
 - `tool-discovery` — discovers and ranks available tools.
 - `artifact-freshness` — checks whether prior reports are safe to reuse.
-- `evidence-store` — stores per-capability tool output.
+- `chainlog` — stores per-capability tool output.
 - `git-worktree-inspector` — safe local checkout without switching the user's branch.
 - `scope-checker` — challenges proposed comments against scope.
 - `pr-adapter-contract` — normalized adapter interface.

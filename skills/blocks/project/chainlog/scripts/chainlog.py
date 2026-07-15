@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""evidence-store.py
+"""chainlog.py
 
-Append-only storage for evidence collected by tools.
+Append-only storage for observations collected by tools.
 
 Operations:
-  append        Add a new evidence entry to a work-item timeline.
+  append        Add a new observation entry to a work-item chain.
   query_latest  Return the latest entry per capability (or for one capability).
   query_all     Return all entries for a work item, optionally filtered by capability.
   query_since   Return entries collected after a given timestamp.
-  exists        Check whether a work item has any evidence.
+  exists        Check whether a work item has any observations.
   mark_stale    Record that a capability is stale.
 
 Input JSON on stdin:
@@ -31,7 +31,7 @@ from typing import Any
 import yaml
 
 
-# Required frontmatter fields for an evidence entry.
+# Required frontmatter fields for an observation entry.
 REQUIRED_ENTRY_FIELDS = [
     "work_item_type",
     "work_item_key",
@@ -41,7 +41,7 @@ REQUIRED_ENTRY_FIELDS = [
 
 
 def _help() -> str:
-    return """evidence-store.py — append-only storage for tool evidence
+    return """chainlog.py — append-only storage for tool observations
 
 Input JSON (stdin):
   {"operation": "append", "context_dir": "...", "entry": {...}}
@@ -77,9 +77,9 @@ def _slugify(value: str) -> str:
     return re.sub(r'[\\/:*?"<>|]', "_", value)
 
 
-def _timeline_path(context_dir: Path, work_item_type: str, work_item_key: str) -> Path:
-    """Return the timeline file path for a work item."""
-    return context_dir / "evidence" / work_item_type / f"{_slugify(work_item_key)}.timeline.md"
+def _chain_path(context_dir: Path, work_item_type: str, work_item_key: str) -> Path:
+    """Return the chain file path for a work item."""
+    return context_dir / "chainlog" / work_item_type / f"{_slugify(work_item_key)}.chain.md"
 
 
 def _coerce_value(value: Any) -> Any:
@@ -106,8 +106,8 @@ def _parse_frontmatter(text: str) -> dict:
     return {str(k): _coerce_value(v) for k, v in data.items()}
 
 
-def _parse_timeline(text: str) -> list[dict]:
-    """Parse a timeline file into a list of entries with frontmatter and body."""
+def _parse_chain(text: str) -> list[dict]:
+    """Parse a chain file into a list of entries with frontmatter and body."""
     if not text.strip():
         return []
 
@@ -131,7 +131,7 @@ def _parse_timeline(text: str) -> list[dict]:
 
 
 def _render_entry(entry: dict) -> str:
-    """Render an evidence entry as markdown text."""
+    """Render an observation entry as markdown text."""
     frontmatter = dict(entry.get("frontmatter", {}))
     body = entry.get("body", "")
     fm_text = yaml.dump(frontmatter, default_flow_style=False, sort_keys=False, allow_unicode=True)
@@ -139,7 +139,7 @@ def _render_entry(entry: dict) -> str:
 
 
 def _validate_entry(entry: dict) -> list[str]:
-    """Validate required evidence entry fields."""
+    """Validate required observation entry fields."""
     errors = []
     for field in REQUIRED_ENTRY_FIELDS:
         if field not in entry or entry[field] is None or entry[field] == "":
@@ -156,32 +156,32 @@ def _entry_to_output(entry: dict) -> dict:
 
 
 def _do_append(context_dir: Path, entry: dict) -> dict:
-    """Append an evidence entry to the work-item timeline."""
+    """Append an observation entry to the work-item chain."""
     errors = _validate_entry(entry)
     if errors:
         return {"status": "error", "errors": errors}
 
     work_item_type = entry["work_item_type"]
     work_item_key = entry["work_item_key"]
-    timeline_path = _timeline_path(context_dir, work_item_type, work_item_key)
-    timeline_path.parent.mkdir(parents=True, exist_ok=True)
+    chain_path = _chain_path(context_dir, work_item_type, work_item_key)
+    chain_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # Ensure evidence_id and collected_at are present.
-    if "evidence_id" not in entry or not entry["evidence_id"]:
-        entry["evidence_id"] = str(uuid.uuid4())
+    # Ensure observation_id and collected_at are present.
+    if "observation_id" not in entry or not entry["observation_id"]:
+        entry["observation_id"] = str(uuid.uuid4())
     if "collected_at" not in entry or not entry["collected_at"]:
         entry["collected_at"] = _format_timestamp(datetime.datetime.now(datetime.timezone.utc))
 
     rendered = _render_entry({"frontmatter": entry, "body": entry.get("payload", "")})
 
     # Append to file.
-    with timeline_path.open("a", encoding="utf-8") as f:
+    with chain_path.open("a", encoding="utf-8") as f:
         f.write(rendered)
 
     return {
         "status": "appended",
-        "evidence_id": entry["evidence_id"],
-        "path": str(timeline_path),
+        "observation_id": entry["observation_id"],
+        "path": str(chain_path),
     }
 
 
@@ -192,17 +192,17 @@ def _do_query(
     capability: str | None,
     since: str | None,
 ) -> dict:
-    """Query evidence entries for a work item."""
-    timeline_path = _timeline_path(context_dir, work_item_type, work_item_key)
-    if not timeline_path.exists():
+    """Query observation entries for a work item."""
+    chain_path = _chain_path(context_dir, work_item_type, work_item_key)
+    if not chain_path.exists():
         return {
             "status": "not_found",
             "entries": [],
             "count": 0,
         }
 
-    text = timeline_path.read_text(encoding="utf-8", errors="ignore")
-    entries = _parse_timeline(text)
+    text = chain_path.read_text(encoding="utf-8", errors="ignore")
+    entries = _parse_chain(text)
 
     if capability:
         entries = [e for e in entries if e["frontmatter"].get("capability") == capability]
@@ -237,7 +237,7 @@ def _do_query_latest(
     work_item_key: str,
     capability: str | None,
 ) -> dict:
-    """Return the latest evidence entry per capability for a work item."""
+    """Return the latest observation entry per capability for a work item."""
     result = _do_query(context_dir, work_item_type, work_item_key, None, None)
     if result["status"] != "found":
         return result
@@ -283,17 +283,17 @@ def _do_query_latest(
 
 
 def _do_exists(context_dir: Path, work_item_type: str, work_item_key: str) -> dict:
-    """Check whether a work item has any evidence."""
-    timeline_path = _timeline_path(context_dir, work_item_type, work_item_key)
-    if not timeline_path.exists():
-        return {"status": "found", "exists": False, "path": str(timeline_path)}
+    """Check whether a work item has any observations."""
+    chain_path = _chain_path(context_dir, work_item_type, work_item_key)
+    if not chain_path.exists():
+        return {"status": "found", "exists": False, "path": str(chain_path)}
 
-    text = timeline_path.read_text(encoding="utf-8", errors="ignore")
-    entries = _parse_timeline(text)
+    text = chain_path.read_text(encoding="utf-8", errors="ignore")
+    entries = _parse_chain(text)
     return {
         "status": "found",
         "exists": len(entries) > 0,
-        "path": str(timeline_path),
+        "path": str(chain_path),
         "count": len(entries),
     }
 
@@ -307,7 +307,7 @@ def _do_mark_stale(
 ) -> dict:
     """Record a staleness marker for a capability."""
     entry = {
-        "evidence_id": str(uuid.uuid4()),
+        "observation_id": str(uuid.uuid4()),
         "work_item_type": work_item_type,
         "work_item_key": work_item_key,
         "capability": capability,

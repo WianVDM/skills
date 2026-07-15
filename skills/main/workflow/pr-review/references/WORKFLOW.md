@@ -28,7 +28,7 @@ Detailed step sequence and resume rules for `pr-review`.
 ## Phase 4: Collect context
 
 1. For each capability, invoke the preferred tool.
-2. Store the tool output in `evidence-store` under identity `{work_item_type}/{work_item_key}` (e.g., `pr/42@owner-repo`).
+2. Store the tool output in `chainlog` under identity `{work_item_type}/{work_item_key}` (e.g., `pr/42@owner-repo`).
 3. If the preferred tool returns partial or no data and a better-ranked tool exists, fall back.
 4. Disclose any degraded source and record it in state.
 5. Collect:

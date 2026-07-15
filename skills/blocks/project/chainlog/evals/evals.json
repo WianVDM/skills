@@ -1,76 +1,76 @@
 {
   "version": "1",
-  "skill": "evidence-store",
+  "skill": "chainlog",
   "tests": [
     {
       "id": "trigger-should-01",
       "type": "trigger",
       "category": "should-trigger",
       "prompt": "Store the output of this tool run so I can reuse it later.",
-      "expected": "evidence-store"
+      "expected": "chainlog"
     },
     {
       "id": "trigger-should-02",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Append this PR data to the evidence timeline for OC-1234.",
-      "expected": "evidence-store"
+      "prompt": "Append this PR data to the chainlog for OC-1234.",
+      "expected": "chainlog"
     },
     {
       "id": "trigger-should-03",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "What evidence do we already have for ticket OC-5678?",
-      "expected": "evidence-store"
+      "prompt": "What observations do we already have for ticket OC-5678?",
+      "expected": "chainlog"
     },
     {
       "id": "trigger-should-04",
       "type": "trigger",
       "category": "should-trigger",
       "prompt": "Get the latest CI results I collected for this pull request.",
-      "expected": "evidence-store"
+      "expected": "chainlog"
     },
     {
       "id": "trigger-should-05",
       "type": "trigger",
       "category": "should-trigger",
       "prompt": "Mark the previous static analysis findings as stale.",
-      "expected": "evidence-store"
+      "expected": "chainlog"
     },
     {
       "id": "trigger-should-06",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Has anyone gathered evidence for branch feature/auth?",
-      "expected": "evidence-store"
+      "prompt": "Has anyone gathered observations for branch feature/auth?",
+      "expected": "chainlog"
     },
     {
       "id": "trigger-should-07",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Save these findings as append-only evidence.",
-      "expected": "evidence-store"
+      "prompt": "Save these findings as append-only observations.",
+      "expected": "chainlog"
     },
     {
       "id": "trigger-should-08",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Show me all evidence collected since yesterday for this commit.",
-      "expected": "evidence-store"
+      "prompt": "Show me all observations collected since yesterday for this commit.",
+      "expected": "chainlog"
     },
     {
       "id": "trigger-should-09",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "I need to query the latest evidence per capability for this work item.",
-      "expected": "evidence-store"
+      "prompt": "I need to query the latest observation per capability for this work item.",
+      "expected": "chainlog"
     },
     {
       "id": "trigger-should-10",
       "type": "trigger",
       "category": "should-trigger",
       "prompt": "Record that the issue-tracker data is out of date.",
-      "expected": "evidence-store"
+      "expected": "chainlog"
     },
     {
       "id": "trigger-not-01",
@@ -146,7 +146,7 @@
       "id": "behavior-append-01",
       "type": "behavior",
       "baseline_type": "no_skill",
-      "prompt": "Append an evidence entry for work item type pr, key 42@owner-repo, capability pr-source, source github-mcp, with payload 'PR opened' and verify it is appended successfully.",
+      "prompt": "Append an observation entry for work item type pr, key 42@owner-repo, capability pr-source, source github-mcp, with payload 'PR opened' and verify it is appended successfully.",
       "assertions": [
         {
           "type": "output_contains",
@@ -158,7 +158,7 @@
       "id": "behavior-query-latest-01",
       "type": "behavior",
       "baseline_type": "no_skill",
-      "prompt": "Append two evidence entries for the same PR with different collected_at timestamps, then query_latest for capability pr-source and verify the latest entry is returned.",
+      "prompt": "Append two observation entries for the same PR with different collected_at timestamps, then query_latest for capability pr-source and verify the latest entry is returned.",
       "assertions": [
         {
           "type": "output_contains",
@@ -170,7 +170,7 @@
       "id": "behavior-query-all-01",
       "type": "behavior",
       "baseline_type": "no_skill",
-      "prompt": "Append two evidence entries for the same PR with different capabilities, then query_all and verify both entries are returned.",
+      "prompt": "Append two observation entries for the same PR with different capabilities, then query_all and verify both entries are returned.",
       "assertions": [
         {
           "type": "output_contains",
@@ -182,7 +182,7 @@
       "id": "behavior-query-since-01",
       "type": "behavior",
       "baseline_type": "no_skill",
-      "prompt": "Append one old evidence entry and one recent evidence entry, then query_since the recent timestamp and verify only the recent entry is returned.",
+      "prompt": "Append one old observation entry and one recent observation entry, then query_since the recent timestamp and verify only the recent entry is returned.",
       "assertions": [
         {
           "type": "output_contains",
@@ -194,7 +194,7 @@
       "id": "behavior-exists-01",
       "type": "behavior",
       "baseline_type": "no_skill",
-      "prompt": "Append an evidence entry for a PR, then check exists for that PR and verify it returns true.",
+      "prompt": "Append an observation entry for a PR, then check exists for that PR and verify it returns true.",
       "assertions": [
         {
           "type": "output_contains",
@@ -206,7 +206,7 @@
       "id": "behavior-mark-stale-01",
       "type": "behavior",
       "baseline_type": "no_skill",
-      "prompt": "Append an evidence entry for a PR capability, then mark_stale that capability and verify the staleness marker is appended.",
+      "prompt": "Append an observation entry for a PR capability, then mark_stale that capability and verify the staleness marker is appended.",
       "assertions": [
         {
           "type": "output_contains",

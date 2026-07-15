@@ -1,10 +1,10 @@
 # artifact-freshness
 
-Check whether a context report or evidence-store entry is fresh enough to reuse.
+Check whether a context report or chainlog entry is fresh enough to reuse.
 
 ## What it does
 
-`artifact-freshness` centralizes the decision of whether an artifact is stale. It reads report frontmatter or accepts evidence entries directly, checks multiple dimensions, and returns a structured result with a reason.
+`artifact-freshness` centralizes the decision of whether an artifact is stale. It reads report frontmatter or accepts chainlog observations directly, checks multiple dimensions, and returns a structured result with a reason.
 
 ## Directory layout
 
@@ -33,7 +33,7 @@ artifact-freshness/
 
 - New freshness dimensions are needed.
 - The report frontmatter format evolves.
-- The evidence-store entry format changes.
+- The chainlog entry format changes.
 
 ## Shared building blocks
 

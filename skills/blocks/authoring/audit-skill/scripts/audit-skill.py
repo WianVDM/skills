@@ -134,8 +134,16 @@ def find_markdown_links(text: str) -> list[str]:
     return re.findall(r"\[([^\]]+)\]\(([^)]+)\)", text)
 
 
+def find_markdown_reference_links(text: str) -> list[tuple[str, str]]:
+    """Find reference-style markdown link definitions: [label]: url."""
+    return re.findall(r"^\[([^\]]+)\]:\s+([^\s]+)", text, re.MULTILINE)
+
+
 def resolve_link(md_file: Path, link: str) -> bool:
     if link.startswith("http://") or link.startswith("https://") or link.startswith("#"):
+        return True
+    if "{" in link and "}" in link:
+        # Template placeholder; not resolvable at rest.
         return True
     # Strip URL fragment before checking file existence
     link = link.split("#", 1)[0]
@@ -531,7 +539,7 @@ def check_dependency_references(skill_dir: Path, fm: dict, files: list[Path]) ->
     return findings
 
 
-def check_portability(skill_dir: Path, body: str) -> list[dict]:
+def check_portability(skill_dir: Path, body: str, files: list[Path], fm: dict) -> list[dict]:
     findings = []
     check = "No hardcoded project-specific paths"
     has_hardcoded = any(p.search(body) for p in HARDCODED_PATH_PATTERNS)
@@ -542,7 +550,98 @@ def check_portability(skill_dir: Path, body: str) -> list[dict]:
 
     findings.append(manual_finding("P02", "Portability", "warning", "Global/pluggable skills detect environment", "Global skills should use `detect-project-context` or equivalent."))
     findings.append(manual_finding("P03", "Portability", "suggestion", "Degradation behavior is documented", "Document what happens when a feature is unsupported by the harness."))
+    findings.extend(_check_external_references(skill_dir, files, fm))
     return findings
+
+
+def _check_external_references(skill_dir: Path, files: list[Path], fm: dict) -> list[dict]:
+    """Check P-04: external references are not hardcoded relative paths."""
+    findings = []
+    check = "External references are resolved through declared dependencies or configured paths"
+
+    declared_skills = _load_declared_skills(skill_dir)
+    depends = fm.get("depends", []) or []
+    if isinstance(depends, list):
+        declared_skills.update(depends)
+
+    # Patterns that indicate a hardcoded reference to standards docs or project conventions.
+    standards_path_patterns = [
+        re.compile(r"docs/skill-standards"),
+        re.compile(r"\.agents/docs/skill-standards"),
+        re.compile(r"\.pi/docs/skill-standards"),
+        re.compile(r"agents/docs/skill-standards"),
+    ]
+
+    violations = []
+    for f in files:
+        if f.suffix != ".md":
+            continue
+        try:
+            text = f.read_text(encoding="utf-8", errors="replace")
+        except Exception:
+            continue
+
+        # Collect both inline and reference-style link targets.
+        link_targets: list[str] = []
+        for _, target in find_markdown_links(text):
+            link_targets.append(target)
+        for _, target in find_markdown_reference_links(text):
+            link_targets.append(target)
+
+        for target in link_targets:
+            # Skip links that are intentionally unresolved placeholders or external/fragments.
+            if target.startswith("http://") or target.startswith("https://") or target.startswith("#"):
+                continue
+            if "{" in target and "}" in target:
+                continue
+
+            # Hardcoded standards path.
+            if any(pat.search(target) for pat in standards_path_patterns):
+                violations.append(f"{f.name}: -> `{target}`")
+                continue
+
+            # Resolve the link and see if it points outside the skill directory.
+            resolved_target = (f.parent / target.split("#", 1)[0]).resolve()
+            try:
+                resolved_skill = skill_dir.resolve()
+                if resolved_skill in resolved_target.parents or resolved_target == resolved_skill:
+                    # Link stays inside the skill directory.
+                    continue
+            except Exception:
+                pass
+
+            # If it points to a sibling skill directory, check whether it is declared.
+            sibling_skill = _detect_sibling_skill(resolved_target, skill_dir)
+            if sibling_skill and sibling_skill not in declared_skills:
+                violations.append(f"{f.name}: -> `{target}` (undeclared skill `{sibling_skill}`)")
+
+    if violations:
+        findings.append(finding(
+            "P-04", "Portability", "warning", check, "FAIL",
+            "Use the configured `standards_path` or declared dependencies for external references. Replace hardcoded relative paths with placeholder tokens or resolution logic. Violations: " + "; ".join(violations[:5])
+        ))
+    else:
+        findings.append(manual_finding(
+            "P-04", "Portability", "warning", check,
+            "Review that any external references use declared dependencies, configured paths, or placeholder tokens rather than hardcoded relative paths."
+        ))
+    return findings
+
+
+def _detect_sibling_skill(target: Path, skill_dir: Path) -> Optional[str]:
+    """If target is inside a sibling skill directory, return that skill's name."""
+    try:
+        target_skill = target
+        while target_skill != target_skill.parent:
+            if (target_skill / "SKILL.md").is_file() and target_skill != skill_dir:
+                # Check that this skill is under the same skills/ root.
+                skills_root = skill_dir.parent
+                if skills_root in target_skill.parents:
+                    return target_skill.name
+            target_skill = target_skill.parent
+    except Exception:
+        pass
+    return None
 
 
 def check_evaluation(skill_dir: Path, fm: dict) -> list[dict]:
@@ -754,6 +853,122 @@ def check_pattern_compliance(skill_dir: Path, body: str) -> list[dict]:
     return findings
 
 
+def check_chainlog(skill_dir: Path, body: str, files: list[Path]) -> list[dict]:
+    """Check chainlog classification and integration rules (CL-01 to CL-04)."""
+    findings = []
+    chainlog_md = skill_dir / "references" / "chainlog.md"
+    has_chainlog_md = chainlog_md.is_file()
+    body_lower = body.lower()
+    skill_name = skill_dir.name
+
+    # The chainlog building block implements the pattern; it does not consume or produce
+    # chainlog observations for its own work, so it is exempt from CL-01 and CL-04.
+    is_chainlog_skill = skill_name == "chainlog"
+
+    # Clear signals that a skill uses chainlog directly.
+    chainlog_usage_signals = [
+        "chainlog/append", "chainlog/query", "chainlog/mark_stale",
+        "append to chainlog", "query chainlog", "query the chainlog",
+        "mark.*stale.*chainlog",
+        "evidence-store/append", "evidence-store/query",
+    ]
+    clearly_uses_chainlog = any(re.search(sig, body_lower) for sig in chainlog_usage_signals)
+
+    # Broader signals that the skill may touch observable data.
+    observable_signals = [
+        "observation", "evidence-store", "collect", "gather", "query", "append",
+        "report", "review", "debrief", "tool output", "latest per capability",
+    ]
+    may_touch_observable = any(sig in body_lower for sig in observable_signals)
+
+    # CL-01 — classification and dependency declaration
+    check = "Skill touching observable data declares a chainlog classification"
+    if is_chainlog_skill or has_chainlog_md:
+        findings.append(pass_finding("CL-01", "Chainlog", "blocker", check))
+    elif clearly_uses_chainlog:
+        findings.append(fail_finding(
+            "CL-01", "Chainlog", "blocker", check,
+            "The skill appears to use chainlog directly. Create `references/chainlog.md` with a producer/consumer/both/neither classification and declare the `chainlog` dependency."
+        ))
+    elif may_touch_observable:
+        findings.append(manual_finding(
+            "CL-01", "Chainlog", "blocker", check,
+            "The skill may collect or consume observable data. Review whether it should declare a chainlog classification in `references/chainlog.md`."
+        ))
+    else:
+        findings.append(na_finding("CL-01", "Chainlog", "blocker", check))
+
+    classification: Optional[str] = None
+    if has_chainlog_md:
+        try:
+            chainlog_text = chainlog_md.read_text(encoding="utf-8", errors="replace").lower()
+            if "is a **producer and consumer**" in chainlog_text or "classification: both" in chainlog_text:
+                classification = "both"
+            elif "is a **producer**" in chainlog_text or "classification: producer" in chainlog_text:
+                classification = "producer"
+            elif "is a **consumer**" in chainlog_text or "classification: consumer" in chainlog_text:
+                classification = "consumer"
+            elif "is **neither**" in chainlog_text or "classification: neither" in chainlog_text:
+                classification = "neither"
+        except Exception:
+            pass
+
+    # CL-02 — freshness documentation for consumers
+    check = "Consumer/both skills check observation freshness before reuse"
+    if classification in ("consumer", "both"):
+        has_artifact_freshness = "artifact-freshness" in body_lower
+        if has_artifact_freshness:
+            findings.append(pass_finding("CL-02", "Chainlog", "warning", check))
+        else:
+            findings.append(fail_finding(
+                "CL-02", "Chainlog", "warning", check,
+                "Consumer and both skills must declare `artifact-freshness` as a dependency and document how they check observation freshness."
+            ))
+    else:
+        findings.append(na_finding("CL-02", "Chainlog", "warning", check))
+
+    # CL-03 — no secrets in observations
+    check = "Observations do not contain secret values"
+    secrets_in_observation = []
+    for f in files:
+        if f.name != "chainlog.md" and f.suffix != ".py":
+            continue
+        try:
+            text = f.read_text(encoding="utf-8", errors="replace")
+        except Exception:
+            continue
+        # Look for secret-like values inside observation/entry examples or payloads.
+        if any(pat.search(text) for pat in SECRET_PATTERNS):
+            secrets_in_observation.append(str(f))
+    if secrets_in_observation:
+        findings.append(fail_finding(
+            "CL-03", "Chainlog", "blocker", check,
+            f"Remove potential secret values from observation examples or payloads in: {', '.join(secrets_in_observation[:3])}."
+        ))
+    else:
+        findings.append(pass_finding("CL-03", "Chainlog", "blocker", check))
+
+    # CL-04 — neither classification matches behavior
+    check = "Skill classified as neither does not collect or consume observable data"
+    if classification == "neither":
+        if clearly_uses_chainlog:
+            findings.append(fail_finding(
+                "CL-04", "Chainlog", "blocker", check,
+                "The skill is classified as `neither` but appears to use chainlog. Reclassify as producer, consumer, or both."
+            ))
+        elif may_touch_observable and not is_chainlog_skill:
+            findings.append(manual_finding(
+                "CL-04", "Chainlog", "blocker", check,
+                "The skill is classified as `neither` but may touch observable data. Confirm the classification matches the workflow."
+            ))
+        else:
+            findings.append(pass_finding("CL-04", "Chainlog", "blocker", check))
+    else:
+        findings.append(na_finding("CL-04", "Chainlog", "blocker", check))
+
+    return findings
+
+
 def check_overlap(skill_dir: Path, fm: dict) -> list[dict]:
     """Heuristic check for potential overlap with existing skills (OV-01)."""
     findings = []
@@ -817,12 +1032,13 @@ def audit(skill_path: str, schema_path: Optional[str] = None) -> dict:
     findings.extend(check_security(skill_dir if skill_dir.is_dir() else skill_dir.parent, files))
     findings.extend(check_dependencies(skill_dir if skill_dir.is_dir() else skill_dir.parent, body))
     findings.extend(check_dependency_references(skill_dir if skill_dir.is_dir() else skill_dir.parent, fm, files))
-    findings.extend(check_portability(skill_dir if skill_dir.is_dir() else skill_dir.parent, body))
+    findings.extend(check_portability(skill_dir if skill_dir.is_dir() else skill_dir.parent, body, files, fm))
     findings.extend(check_evaluation(skill_dir if skill_dir.is_dir() else skill_dir.parent, fm))
     findings.extend(check_tooling_awareness(skill_dir if skill_dir.is_dir() else skill_dir.parent, body))
     findings.extend(check_extraction(skill_dir if skill_dir.is_dir() else skill_dir.parent, body))
     findings.extend(check_token_economy(skill_dir if skill_dir.is_dir() else skill_dir.parent, files))
     findings.extend(check_pattern_compliance(skill_dir if skill_dir.is_dir() else skill_dir.parent, body))
+    findings.extend(check_chainlog(skill_dir if skill_dir.is_dir() else skill_dir.parent, body, files))
     findings.extend(check_overlap(skill_dir if skill_dir.is_dir() else skill_dir.parent, fm))
 
     counts = {"blockers": 0, "warnings": 0, "suggestions": 0, "manual": 0}

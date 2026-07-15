@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """check-freshness.py
 
-Check whether a context report or evidence-store entry is fresh enough to reuse.
+Check whether a context report or chainlog observation is fresh enough to reuse.
 
 Supports two modes:
   --report <path>     Read a markdown report and check its frontmatter.
-  --evidence <json>   Check a provided evidence entry directly.
+  --observation <json>  Check a provided chainlog observation directly.
 
 Accepts JSON on stdin as an alternative to CLI flags. CLI flags override stdin.
 
@@ -51,7 +51,7 @@ REPORT_KEY_ALIASES = {
     "artifact_schema_version": ["artifact_schema_version", "schema_version", "schema"],
 }
 
-EVIDENCE_KEY_ALIASES = {
+OBSERVATION_KEY_ALIASES = {
     "artifact_branch": ["branch", "artifact_branch"],
     "artifact_commit": ["commit", "artifact_commit"],
     "artifact_generated_at": ["collected_at", "generated_at", "updated_at", "created_at"],
@@ -61,11 +61,11 @@ EVIDENCE_KEY_ALIASES = {
 
 
 def _help() -> str:
-    return """check-freshness.py — check whether an artifact is fresh
+    return """check-freshness.py — check whether a context report or chainlog observation is fresh
 
 CLI:
   check-freshness.py --report <path> [--branch <branch>] [--commit <commit>] [--cwd <cwd>] [--json]
-  check-freshness.py --evidence <json> [--branch <branch>] [--commit <commit>] [--cwd <cwd>] [--json]
+  check-freshness.py --observation <json> [--branch <branch>] [--commit <commit>] [--cwd <cwd>] [--json]
 
 Stdin JSON:
   {"mode": "report", "report_path": "...", "branch": "...", "commit": "...", "source_updated_at": "...", "freshness_hours": 24, "schema_version": "...", "cwd": "..."}
@@ -179,9 +179,9 @@ def _extract_value(data: dict, aliases: list[str]) -> Any:
     return None
 
 
-def _extract_artifact_metadata(mode: str, report_path: Path | None, evidence: dict | None, report_frontmatter: dict | None = None) -> dict:
-    """Extract canonical artifact fields from a report or evidence entry."""
-    aliases = REPORT_KEY_ALIASES if mode == "report" else EVIDENCE_KEY_ALIASES
+def _extract_artifact_metadata(mode: str, report_path: Path | None, observation: dict | None, report_frontmatter: dict | None = None) -> dict:
+    """Extract canonical artifact fields from a report or chainlog observation entry."""
+    aliases = REPORT_KEY_ALIASES if mode == "report" else OBSERVATION_KEY_ALIASES
     raw: dict = {}
 
     if mode == "report":
@@ -194,10 +194,10 @@ def _extract_artifact_metadata(mode: str, report_path: Path | None, evidence: di
             raise FileNotFoundError(f"report file not found: {report_path}")
         else:
             raise ValueError("report_path or report_frontmatter is required for report mode")
-    elif mode == "evidence":
-        if not isinstance(evidence, dict):
-            raise ValueError("evidence must be a dict")
-        raw = {str(k).lower(): _coerce_frontmatter_value(v) for k, v in evidence.items()}
+    elif mode == "observation":
+        if not isinstance(observation, dict):
+            raise ValueError("observation must be a dict")
+        raw = {str(k).lower(): _coerce_frontmatter_value(v) for k, v in observation.items()}
     else:
         raise ValueError(f"unknown mode: {mode}")
 
@@ -226,7 +226,7 @@ def _check_dimension(
 def _check_freshness(data: dict) -> dict:
     mode = data.get("mode", "report")
     report_path = Path(data["report_path"]).resolve() if data.get("report_path") else None
-    evidence = data.get("evidence")
+    observation = data.get("observation")
     report_frontmatter = data.get("report_frontmatter")
     cwd = Path(data.get("cwd", ".")).resolve()
 
@@ -237,7 +237,7 @@ def _check_freshness(data: dict) -> dict:
     schema_version = data.get("schema_version")
 
     try:
-        artifact = _extract_artifact_metadata(mode, report_path, evidence, report_frontmatter)
+        artifact = _extract_artifact_metadata(mode, report_path, observation, report_frontmatter)
     except Exception as exc:
         return {
             "fresh": False,
@@ -434,10 +434,10 @@ def _check_freshness(data: dict) -> dict:
 
 def _main() -> int:
     parser = argparse.ArgumentParser(
-        description="Check whether a context report or evidence entry is fresh.",
+        description="Check whether a context report or chainlog observation is fresh.",
     )
     parser.add_argument("--report", help="Path to the markdown report to check.")
-    parser.add_argument("--evidence", help="JSON string with an evidence entry.")
+    parser.add_argument("--observation", help="JSON string with a chainlog observation entry.")
     parser.add_argument("--branch", help="Current branch.")
     parser.add_argument("--commit", help="Current commit.")
     parser.add_argument("--source-updated-at", help="Timestamp when the source was last updated.")
@@ -458,12 +458,12 @@ def _main() -> int:
     if args.report:
         data["mode"] = "report"
         data["report_path"] = args.report
-    elif args.evidence:
-        data["mode"] = "evidence"
+    elif args.observation:
+        data["mode"] = "observation"
         try:
-            data["evidence"] = json.loads(args.evidence)
+            data["observation"] = json.loads(args.observation)
         except json.JSONDecodeError as exc:
-            print(json.dumps({"fresh": False, "reason": f"invalid --evidence JSON: {exc}", "dimensions": {}}), file=sys.stderr)
+            print(json.dumps({"fresh": False, "reason": f"invalid --observation JSON: {exc}", "dimensions": {}}), file=sys.stderr)
             return 1
     if args.branch:
         data["branch"] = args.branch
@@ -479,7 +479,7 @@ def _main() -> int:
         data["cwd"] = args.cwd
 
     if not data.get("mode"):
-        print(json.dumps({"fresh": False, "reason": "either --report or --evidence is required", "dimensions": {}}), file=sys.stderr)
+        print(json.dumps({"fresh": False, "reason": "either --report or --observation is required", "dimensions": {}}), file=sys.stderr)
         return 1
 
     try:

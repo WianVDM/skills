@@ -102,7 +102,7 @@ def skill_path(skills_dir: Path, *parts: str) -> Path:
 
 
 def main() -> int:
-    repo_root = Path(__file__).resolve().parents[4]
+    repo_root = Path(__file__).resolve().parents[5]
     skills_dir = repo_root / "skills"
 
     results = []
@@ -115,7 +115,7 @@ def main() -> int:
 
         # 1. detect-project-context
         rc, out, err = run([
-            sys.executable, str(skill_path(skills_dir, "core", "detect-project-context", "scripts", "detect-project-context.py")),
+            sys.executable, str(skill_path(skills_dir, "blocks", "project", "detect-project-context", "scripts", "detect-project-context.py")),
             "--start", str(repo_root), "--json",
         ])
         data = json.loads(out)
@@ -128,7 +128,7 @@ def main() -> int:
 
         # 2. list-available-skills (project scope only)
         rc, out, err = run([
-            sys.executable, str(skill_path(skills_dir, "tooling", "list-available-skills", "scripts", "list-available-skills.py")),
+            sys.executable, str(skill_path(skills_dir, "blocks", "registry", "list-available-skills", "scripts", "list-available-skills.py")),
             "--project-root", str(repo_root), "--exclude-user", "--json",
         ])
         data = json.loads(out)
@@ -141,7 +141,7 @@ def main() -> int:
 
         # 3. parse-skill-frontmatter
         rc, out, err = run([
-            sys.executable, str(skill_path(skills_dir, "tooling", "parse-skill-frontmatter", "scripts", "parse-skill-frontmatter.py")),
+            sys.executable, str(skill_path(skills_dir, "blocks", "authoring", "parse-skill-frontmatter", "scripts", "parse-skill-frontmatter.py")),
             str(sample_skill_dir / "SKILL.md"), "--json",
         ])
         data = json.loads(out)
@@ -154,7 +154,7 @@ def main() -> int:
 
         # 4. validate-skill-frontmatter
         rc, out, err = run([
-            sys.executable, str(skill_path(skills_dir, "tooling", "validate-skill-frontmatter", "scripts", "validate-skill-frontmatter.py")),
+            sys.executable, str(skill_path(skills_dir, "blocks", "authoring", "validate-skill-frontmatter", "scripts", "validate-skill-frontmatter.py")),
             str(sample_skill_dir / "SKILL.md"), "--json",
         ])
         data = json.loads(out)
@@ -167,7 +167,7 @@ def main() -> int:
 
         # 5. audit-skill
         rc, out, err = run([
-            sys.executable, str(skill_path(skills_dir, "authoring", "audit-skill", "scripts", "audit-skill.py")),
+            sys.executable, str(skill_path(skills_dir, "blocks", "authoring", "audit-skill", "scripts", "audit-skill.py")),
             str(sample_skill_dir), "--json",
         ])
         data = json.loads(out)
@@ -183,7 +183,7 @@ def main() -> int:
 
         # 6. run-trigger-evals
         rc, out, err = run([
-            sys.executable, str(skill_path(skills_dir, "authoring", "run-trigger-evals", "scripts", "run-trigger-evals.py")),
+            sys.executable, str(skill_path(skills_dir, "blocks", "authoring", "run-trigger-evals", "scripts", "run-trigger-evals.py")),
             str(sample_skill_dir), "--json",
         ])
         data = json.loads(out)
@@ -195,10 +195,10 @@ def main() -> int:
         })
 
     # 7. detect-skill-overlap files exist and parse
-    overlap_md = skill_path(skills_dir, "authoring", "detect-skill-overlap", "SKILL.md")
-    overlap_evals = skill_path(skills_dir, "authoring", "detect-skill-overlap", "evals", "evals.json")
+    overlap_md = skill_path(skills_dir, "blocks", "authoring", "detect-skill-overlap", "SKILL.md")
+    overlap_evals = skill_path(skills_dir, "blocks", "authoring", "detect-skill-overlap", "evals", "evals.json")
     rc, out, err = run([
-        sys.executable, str(skill_path(skills_dir, "tooling", "parse-skill-frontmatter", "scripts", "parse-skill-frontmatter.py")),
+        sys.executable, str(skill_path(skills_dir, "blocks", "authoring", "parse-skill-frontmatter", "scripts", "parse-skill-frontmatter.py")),
         str(overlap_md), "--json",
     ])
     data = json.loads(out)
@@ -217,9 +217,9 @@ def main() -> int:
     })
 
     # 8. decide-skill-shape files exist and parse
-    decide_md = skill_path(skills_dir, "authoring", "decide-skill-shape", "SKILL.md")
+    decide_md = skill_path(skills_dir, "blocks", "authoring", "decide-skill-shape", "SKILL.md")
     rc, out, err = run([
-        sys.executable, str(skill_path(skills_dir, "tooling", "parse-skill-frontmatter", "scripts", "parse-skill-frontmatter.py")),
+        sys.executable, str(skill_path(skills_dir, "blocks", "authoring", "parse-skill-frontmatter", "scripts", "parse-skill-frontmatter.py")),
         str(decide_md), "--json",
     ])
     data = json.loads(out)
@@ -231,9 +231,9 @@ def main() -> int:
     })
 
     # 9. review-skill files exist and parse
-    review_md = skill_path(skills_dir, "authoring", "review-skill", "SKILL.md")
+    review_md = skill_path(skills_dir, "blocks", "authoring", "review-skill", "SKILL.md")
     rc, out, err = run([
-        sys.executable, str(skill_path(skills_dir, "tooling", "parse-skill-frontmatter", "scripts", "parse-skill-frontmatter.py")),
+        sys.executable, str(skill_path(skills_dir, "blocks", "authoring", "parse-skill-frontmatter", "scripts", "parse-skill-frontmatter.py")),
         str(review_md), "--json",
     ])
     data = json.loads(out)
@@ -245,13 +245,126 @@ def main() -> int:
     })
 
     # 10. Portable schema fallback exists
-    shipped_schema = skill_path(skills_dir, "authoring", "audit-skill", "references", "skill-frontmatter.schema.json")
+    shipped_schema = skill_path(skills_dir, "blocks", "authoring", "audit-skill", "references", "skill-frontmatter.schema.json")
     results.append({
         "step": "shipped-schema-fallback",
         "pass": shipped_schema.is_file(),
         "rc": 0,
         "error": "" if shipped_schema.is_file() else f"Missing {shipped_schema}",
     })
+
+    # 11. chainlog building block exists and parses
+    chainlog_md = skill_path(skills_dir, "blocks", "project", "chainlog", "SKILL.md")
+    rc, out, err = run([
+        sys.executable, str(skill_path(skills_dir, "blocks", "authoring", "parse-skill-frontmatter", "scripts", "parse-skill-frontmatter.py")),
+        str(chainlog_md), "--json",
+    ])
+    data = json.loads(out)
+    results.append({
+        "step": "chainlog-present",
+        "pass": chainlog_md.is_file() and data.get("name") == "chainlog",
+        "rc": rc,
+        "error": err if not chainlog_md.is_file() else "",
+    })
+
+    # 12. check-chainlog-needs subagent exists
+    check_chainlog_md = skill_path(skills_dir, "main", "authoring", "write-a-skill", "subagents", "check-chainlog-needs.md")
+    results.append({
+        "step": "check-chainlog-needs-present",
+        "pass": check_chainlog_md.is_file(),
+        "rc": 0,
+        "error": "" if check_chainlog_md.is_file() else f"Missing {check_chainlog_md}",
+    })
+
+    # 13. chainlog templates exist
+    templates = [
+        "chainlog-template-producer.md",
+        "chainlog-template-consumer.md",
+        "chainlog-template-both.md",
+        "chainlog-template-neither.md",
+    ]
+    template_dir = skill_path(skills_dir, "main", "authoring", "write-a-skill", "references")
+    all_templates_present = all((template_dir / t).is_file() for t in templates)
+    results.append({
+        "step": "chainlog-templates-present",
+        "pass": all_templates_present,
+        "rc": 0,
+        "error": "" if all_templates_present else "Missing one or more chainlog templates.",
+    })
+
+    # 14. audit-skill reports chainlog findings on a chainlog-using fixture
+    with tempfile.TemporaryDirectory(prefix="write-a-skill-chainlog-") as tmp:
+        fixture_dir = Path(tmp) / "chainlog-consumer-fixture"
+        fixture_dir.mkdir()
+        fixture_skill_md = """---
+name: chainlog-consumer-fixture
+description: A fixture skill that consumes chainlog observations without declaring artifact-freshness.
+version: 1.0.0
+invocation: model-invoked
+---
+
+# chainlog-consumer-fixture
+
+## Purpose
+
+Fixture for testing chainlog audit rules.
+
+## Type
+
+Building block.
+
+## In scope
+
+- Query chainlog for the latest observation per capability.
+- Synthesize a pass/fail decision.
+
+## Out of scope
+
+- Collecting new data from tools.
+
+## References
+
+- [Chainlog](references/chainlog.md)
+"""
+        chainlog_decl = """# chainlog-consumer-fixture chainlog declaration
+
+## Classification
+
+`chainlog-consumer-fixture` is a **consumer** of chainlog observations.
+
+Rationale: The skill reads prior observations from the chainlog and makes a decision.
+
+## Consumed capabilities
+
+| Capability | Purpose | Freshness rule | Query point |
+| ---------- | ------- | -------------- | ----------- |
+| pr-source | Evaluate the current PR state | New commit or CI run | Before deciding |
+"""
+        (fixture_dir / "SKILL.md").write_text(fixture_skill_md, encoding="utf-8")
+        (fixture_dir / "references").mkdir()
+        (fixture_dir / "references" / "chainlog.md").write_text(chainlog_decl, encoding="utf-8")
+
+        rc, out, err = run([
+            sys.executable, str(skill_path(skills_dir, "blocks", "authoring", "audit-skill", "scripts", "audit-skill.py")),
+            str(fixture_dir), "--json",
+        ])
+        try:
+            data = json.loads(out)
+            findings = {f["id"]: f for f in data.get("findings", [])}
+            cl02 = findings.get("CL-02", {})
+            results.append({
+                "step": "audit-chainlog-consumer-finds-cl-02",
+                "pass": rc == 0 and cl02.get("result") == "FAIL" and cl02.get("id") == "CL-02",
+                "rc": rc,
+                "error": err,
+            })
+        except Exception as exc:
+            results.append({
+                "step": "audit-chainlog-consumer-finds-cl-02",
+                "pass": False,
+                "rc": rc,
+                "error": f"{err}; parse error: {exc}",
+            })
 
     all_pass = all(r["pass"] for r in results)
 

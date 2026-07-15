@@ -12,7 +12,7 @@
 
 ## Recommended
 
-- `artifact-freshness` — consumers use this block to determine whether evidence is still usable.
+- `artifact-freshness` — consumers use this block to determine whether observations are still usable.
 
 ## Optional
 
@@ -24,8 +24,8 @@ None beyond Python and PyYAML.
 
 ## Consumed references
 
-- `{context_dir}/evidence/{work_item_type}/{work_item_key_slug}.timeline.md` — read and appended by `evidence-store.py`.
+- `{context_dir}/chainlog/{work_item_type}/{work_item_key_slug}.chain.md` — read and appended by `chainlog.py`.
 
 ## Produced artifacts
 
-- `{context_dir}/evidence/{work_item_type}/{work_item_key_slug}.timeline.md` — append-only evidence timeline for each work item.
+- `{context_dir}/chainlog/{work_item_type}/{work_item_key_slug}.chain.md` — append-only observation chain for each work item.

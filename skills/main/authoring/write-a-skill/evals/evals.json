@@ -114,6 +114,74 @@
           "value": "overlap-findings"
         }
       ]
+    },
+    {
+      "id": "WAS-CL-001",
+      "type": "behavior",
+      "prompt": "I want a skill that gathers ticket data from the issue tracker and codebase and writes a debrief report. Walk me through the design process.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "chainlog"
+        },
+        {
+          "type": "output_contains",
+          "value": "artifact-freshness"
+        },
+        {
+          "type": "output_contains",
+          "value": "both"
+        }
+      ]
+    },
+    {
+      "id": "WAS-CL-002",
+      "type": "behavior",
+      "prompt": "I want a minimal skill that reformats user input into a markdown checklist. Walk me through the design process.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "neither"
+        },
+        {
+          "type": "output_excludes",
+          "value": "chainlog"
+        }
+      ]
+    },
+    {
+      "id": "WAS-CL-003",
+      "type": "behavior",
+      "prompt": "I want a skill that validates whether prior research about a ticket is still consistent with the current codebase. Walk me through the design process.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "consumer"
+        },
+        {
+          "type": "output_contains",
+          "value": "artifact-freshness"
+        }
+      ]
+    },
+    {
+      "id": "WAS-CL-004",
+      "type": "behavior",
+      "prompt": "I want a skill that stores PR metadata in a private JSON file so other skills can reuse it. Walk me through the design process.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "overlap"
+        },
+        {
+          "type": "output_contains",
+          "value": "chainlog"
+        }
+      ]
     }
   ]
 }
