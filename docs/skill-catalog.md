@@ -65,7 +65,8 @@ Build an actionable understanding of a pull request. Gather PR metadata, review 
 - **Invocation:** `model-invoked`
 - **Location:** `../skills/main/workflow/pr-report/`
 - **Dependencies:**
-  - **Required:** detect-project-context, context-reports, worker-contract, token-resolver
+  - **Required:** detect-project-context, initialize-skill, artifact-freshness, context-reports, worker-contract, token-resolver, tool-discovery, identity-resolver, pr-adapter-contract
+  - **Recommended:** github-pr-adapter, github-actions-adapter, sonarcloud-adapter, jira-adapter, manual-pr-adapter
   - **Optional:** baseline, debrief
 - **Details:** [pr-report/SKILL.md](../skills/main/workflow/pr-report/SKILL.md)
 
@@ -193,7 +194,7 @@ Design, review, and update skills that follow the skill standards. Coordinates c
 - **Location:** `../skills/main/authoring/write-a-skill/`
 - **Dependencies:**
   - **Required:** detect-project-context, decide-skill-shape, audit-skill, validate-skill-frontmatter, review-skill, eval-format, worker-contract, context-reports, parse-skill-frontmatter
-  - **Recommended:** list-available-skills, search-skills-registry, detect-skill-overlap, install-skill, run-trigger-evals, index-skill-capabilities
+  - **Recommended:** list-available-skills, search-skills-registry, detect-skill-overlap, install-skill, run-trigger-evals, index-skill-capabilities, chainlog, artifact-freshness
   - **Optional:** prototype
 - **Details:** [write-a-skill/SKILL.md](../skills/main/authoring/write-a-skill/SKILL.md)
 
@@ -286,6 +287,24 @@ Validate SKILL.md YAML frontmatter against the skill-frontmatter JSON schema wit
 
 ### Project
 
+#### `artifact-freshness`
+
+Check whether a context report or chainlog entry is fresh enough to reuse. Evaluates branch, commit, source timestamp, schema version, and age dimensions and returns a structured reason for any staleness.
+
+- **Invocation:** `model-invoked`
+- **Location:** `../skills/blocks/project/artifact-freshness/`
+- **Dependencies:** None.
+- **Details:** [artifact-freshness/SKILL.md](../skills/blocks/project/artifact-freshness/SKILL.md)
+
+#### `chainlog`
+
+Append-only storage for observations collected by tools. Lets skills reuse prior work, build reports as views over observations, and check freshness per capability rather than per report.
+
+- **Invocation:** `model-invoked`
+- **Location:** `../skills/blocks/project/chainlog/`
+- **Dependencies:** None.
+- **Details:** [chainlog/SKILL.md](../skills/blocks/project/chainlog/SKILL.md)
+
 #### `challenge-assumptions`
 
 Stress-test a list of assumptions by searching for disproof signals across provided evidence. Use when a skill needs to avoid confirmation bias.
@@ -331,6 +350,69 @@ Search the codebase for evidence related to a specific question, ticket, or ambi
 - **Dependencies:** None.
 - **Details:** [explore-code/SKILL.md](../skills/blocks/project/explore-code/SKILL.md)
 
+#### `git-worktree-inspector`
+
+Check out a branch or commit in a git worktree, inspect changed files, run scoped checks, and clean up without disturbing the user's current branch.
+
+- **Invocation:** `model-invoked`
+- **Location:** `../skills/blocks/project/git-worktree-inspector/`
+- **Dependencies:** None.
+- **Details:** [git-worktree-inspector/SKILL.md](../skills/blocks/project/git-worktree-inspector/SKILL.md)
+
+#### `github-actions-adapter`
+
+CI source adapter that fetches GitHub Actions check runs and job-log summaries and returns the normalized ci-source shape.
+
+- **Invocation:** `model-invoked`
+- **Location:** `../skills/blocks/project/github-actions-adapter/`
+- **Dependencies:** None.
+- **Details:** [github-actions-adapter/SKILL.md](../skills/blocks/project/github-actions-adapter/SKILL.md)
+
+#### `github-pr-adapter`
+
+GitHub PR source adapter that fetches PR metadata, changed files, reviews, and inline review threads via the GitHub API and returns the normalized pr-source shape.
+
+- **Invocation:** `model-invoked`
+- **Location:** `../skills/blocks/project/github-pr-adapter/`
+- **Dependencies:** None.
+- **Details:** [github-pr-adapter/SKILL.md](../skills/blocks/project/github-pr-adapter/SKILL.md)
+
+#### `identity-resolver`
+
+Resolve a work item from user input. Given a number, URL, branch, ticket key, or arbitrary text, returns a normalized identity with type, key, repo, branch, base, commit, url, and project.
+
+- **Invocation:** `model-invoked`
+- **Location:** `../skills/blocks/project/identity-resolver/`
+- **Dependencies:** None.
+- **Details:** [identity-resolver/SKILL.md](../skills/blocks/project/identity-resolver/SKILL.md)
+
+#### `initialize-skill`
+
+First-run config initializer for any skill. Detects the project environment, loads skill-level defaults, merges them with existing project config, handles schema migration, proposes the result to the user, and persists it only after explicit approval.
+
+- **Invocation:** `model-invoked`
+- **Location:** `../skills/blocks/project/initialize-skill/`
+- **Dependencies:** None.
+- **Details:** [initialize-skill/SKILL.md](../skills/blocks/project/initialize-skill/SKILL.md)
+
+#### `jira-adapter`
+
+Issue-tracker source adapter that resolves Jira tickets and fetches ticket scope with acceptance criteria, returning the normalized issue-tracker shape.
+
+- **Invocation:** `model-invoked`
+- **Location:** `../skills/blocks/project/jira-adapter/`
+- **Dependencies:** None.
+- **Details:** [jira-adapter/SKILL.md](../skills/blocks/project/jira-adapter/SKILL.md)
+
+#### `manual-pr-adapter`
+
+Manual PR source adapter that collects PR metadata, changed files, and review feedback from user input, CSV, JSON, or markdown files and returns the normalized pr-source shape.
+
+- **Invocation:** `model-invoked`
+- **Location:** `../skills/blocks/project/manual-pr-adapter/`
+- **Dependencies:** None.
+- **Details:** [manual-pr-adapter/SKILL.md](../skills/blocks/project/manual-pr-adapter/SKILL.md)
+
 #### `map-ticket-relationships`
 
 Map all relationships surrounding a ticket: parent, children, siblings, duplicates, linked tickets, blocked-by/blocks, implementation PRs/branches, original feature for bugs, attachments, and affected files. Use when a skill needs to anchor a ticket in its full context.
@@ -339,6 +421,15 @@ Map all relationships surrounding a ticket: parent, children, siblings, duplicat
 - **Location:** `../skills/blocks/project/map-ticket-relationships/`
 - **Dependencies:** None.
 - **Details:** [map-ticket-relationships/SKILL.md](../skills/blocks/project/map-ticket-relationships/SKILL.md)
+
+#### `pr-adapter-contract`
+
+Defines the normalized adapter interface contract for conductor skills that consume PR metadata, reviews, CI status, static-analysis findings, issue-tracker scope, notifications, and context reports. Use when authoring or reviewing an adapter, implementing the adapter envelope, or mapping a new source into the normalized shape.
+
+- **Invocation:** `model-invoked`
+- **Location:** `../skills/blocks/project/pr-adapter-contract/`
+- **Dependencies:** None.
+- **Details:** [pr-adapter-contract/SKILL.md](../skills/blocks/project/pr-adapter-contract/SKILL.md)
 
 #### `research-ticket`
 
@@ -357,6 +448,33 @@ Discover related context reports in a project's context directory by ticket key,
 - **Location:** `../skills/blocks/project/scan-context/`
 - **Dependencies:** None.
 - **Details:** [scan-context/SKILL.md](../skills/blocks/project/scan-context/SKILL.md)
+
+#### `scope-checker`
+
+Challenge a list of findings against a scope (ticket acceptance criteria, changed files, PR intent, or project conventions) and classify each one as in-scope, out-of-scope, or ambiguous. Use when a conductor needs to triage findings by whether they belong to the current work item.
+
+- **Invocation:** `model-invoked`
+- **Location:** `../skills/blocks/project/scope-checker/`
+- **Dependencies:** None.
+- **Details:** [scope-checker/SKILL.md](../skills/blocks/project/scope-checker/SKILL.md)
+
+#### `sonarcloud-adapter`
+
+Static-analysis source adapter that fetches SonarCloud findings and returns the normalized static-analysis shape.
+
+- **Invocation:** `model-invoked`
+- **Location:** `../skills/blocks/project/sonarcloud-adapter/`
+- **Dependencies:** None.
+- **Details:** [sonarcloud-adapter/SKILL.md](../skills/blocks/project/sonarcloud-adapter/SKILL.md)
+
+#### `tool-discovery`
+
+Discover and rank available tools for a given capability. Given a capability like pr-source or ci-source, returns a ranked list of available tools with confidence, source category, and fallback ordering.
+
+- **Invocation:** `model-invoked`
+- **Location:** `../skills/blocks/project/tool-discovery/`
+- **Dependencies:** None.
+- **Details:** [tool-discovery/SKILL.md](../skills/blocks/project/tool-discovery/SKILL.md)
 
 #### `worker-contract`
 

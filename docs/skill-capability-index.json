@@ -1,9 +1,9 @@
 {
   "version": "1.0.0",
-  "generated_at": "2026-07-15T13:43:34.865811+00:00",
+  "generated_at": "2026-07-15T14:04:59.553645+00:00",
   "source_check": {
     "skills_json_hash": "sha256:2044a1771cf0a2ac1999901c3084e6cff2552f36ecc03315a73eb9b615d496dc",
-    "latest_skill_mtime": "2026-07-15T13:42:34.657144+00:00"
+    "latest_skill_mtime": "2026-07-15T14:04:55.368485+00:00"
   },
   "skills": [
     {
@@ -2037,30 +2037,12 @@
           ]
         },
         {
-          "id": "baseline:script-check-target-reachable-cpython-314",
-          "name": "Run check target reachable.cpython 314",
-          "category": "uncategorized",
-          "description": "Deterministic helper script: check-target-reachable.cpython-314.pyc",
-          "sources": [
-            "scripts/check-target-reachable.cpython-314.pyc"
-          ]
-        },
-        {
           "id": "baseline:script-check-target-reachable",
           "name": "Run check target reachable",
           "category": "uncategorized",
           "description": "Deterministic helper script: check-target-reachable.py",
           "sources": [
             "scripts/check-target-reachable.py"
-          ]
-        },
-        {
-          "id": "baseline:script-detect-baseline-method-cpython-314",
-          "name": "Run detect baseline method.cpython 314",
-          "category": "uncategorized",
-          "description": "Deterministic helper script: detect-baseline-method.cpython-314.pyc",
-          "sources": [
-            "scripts/detect-baseline-method.cpython-314.pyc"
           ]
         },
         {
@@ -2073,15 +2055,6 @@
           ]
         },
         {
-          "id": "baseline:script-detect-project-type-cpython-314",
-          "name": "Run detect project type.cpython 314",
-          "category": "uncategorized",
-          "description": "Deterministic helper script: detect-project-type.cpython-314.pyc",
-          "sources": [
-            "scripts/detect-project-type.cpython-314.pyc"
-          ]
-        },
-        {
           "id": "baseline:script-detect-project-type",
           "name": "Run detect project type",
           "category": "uncategorized",
@@ -2091,30 +2064,12 @@
           ]
         },
         {
-          "id": "baseline:script-resolve-git-scope-cpython-314",
-          "name": "Run resolve git scope.cpython 314",
-          "category": "identity-resolution",
-          "description": "Deterministic helper script: resolve-git-scope.cpython-314.pyc",
-          "sources": [
-            "scripts/resolve-git-scope.cpython-314.pyc"
-          ]
-        },
-        {
           "id": "baseline:script-resolve-git-scope",
           "name": "Run resolve git scope",
           "category": "identity-resolution",
           "description": "Deterministic helper script: resolve-git-scope.py",
           "sources": [
             "scripts/resolve-git-scope.py"
-          ]
-        },
-        {
-          "id": "baseline:script-scan-related-context-cpython-314",
-          "name": "Run scan related context.cpython 314",
-          "category": "context-scanning",
-          "description": "Deterministic helper script: scan-related-context.cpython-314.pyc",
-          "sources": [
-            "scripts/scan-related-context.cpython-314.pyc"
           ]
         },
         {
@@ -2138,15 +2093,10 @@
         "scope-resolver.md"
       ],
       "scripts": [
-        "check-target-reachable.cpython-314.pyc",
         "check-target-reachable.py",
-        "detect-baseline-method.cpython-314.pyc",
         "detect-baseline-method.py",
-        "detect-project-type.cpython-314.pyc",
         "detect-project-type.py",
-        "resolve-git-scope.cpython-314.pyc",
         "resolve-git-scope.py",
-        "scan-related-context.cpython-314.pyc",
         "scan-related-context.py"
       ],
       "config_keys": [],
@@ -3088,30 +3038,12 @@
           ]
         },
         {
-          "id": "index-skill-capabilities:script-index-skill-capabilities-cpython-314",
-          "name": "Run index skill capabilities.cpython 314",
-          "category": "uncategorized",
-          "description": "Deterministic helper script: index-skill-capabilities.cpython-314.pyc",
-          "sources": [
-            "scripts/index-skill-capabilities.cpython-314.pyc"
-          ]
-        },
-        {
           "id": "index-skill-capabilities:script-index-skill-capabilities",
           "name": "Run index skill capabilities",
           "category": "uncategorized",
           "description": "Deterministic helper script: index-skill-capabilities.py",
           "sources": [
             "scripts/index-skill-capabilities.py"
-          ]
-        },
-        {
-          "id": "index-skill-capabilities:script-test-index-skill-capabilities-cpython-314-pytest-9-0",
-          "name": "Run test_index_skill_capabilities.cpython 314 pytest 9.0.3",
-          "category": "uncategorized",
-          "description": "Deterministic helper script: testindexskillcapabilities.cpython-314-pytest-9.0.3.pyc",
-          "sources": [
-            "scripts/test_index_skill_capabilities.cpython-314-pytest-9.0.3.pyc"
           ]
         },
         {
@@ -3142,9 +3074,7 @@
       ],
       "subagents": [],
       "scripts": [
-        "index-skill-capabilities.cpython-314.pyc",
         "index-skill-capabilities.py",
-        "test_index_skill_capabilities.cpython-314-pytest-9.0.3.pyc",
         "test_index_skill_capabilities.py"
       ],
       "config_keys": [],
@@ -3211,15 +3141,6 @@
           ]
         },
         {
-          "id": "parse-skill-frontmatter:script-parse-skill-frontmatter-cpython-314",
-          "name": "Run parse skill frontmatter.cpython 314",
-          "category": "uncategorized",
-          "description": "Deterministic helper script: parse-skill-frontmatter.cpython-314.pyc",
-          "sources": [
-            "scripts/parse-skill-frontmatter.cpython-314.pyc"
-          ]
-        },
-        {
           "id": "parse-skill-frontmatter:script-parse-skill-frontmatter",
           "name": "Run parse skill frontmatter",
           "category": "uncategorized",
@@ -3232,7 +3153,6 @@
       "references": [],
       "subagents": [],
       "scripts": [
-        "parse-skill-frontmatter.cpython-314.pyc",
         "parse-skill-frontmatter.py"
       ],
       "config_keys": [],
@@ -3822,15 +3742,6 @@
           ]
         },
         {
-          "id": "challenge-assumptions:script-challenge-assumptions-cpython-314",
-          "name": "Run challenge assumptions.cpython 314",
-          "category": "assumption-management",
-          "description": "Deterministic helper script: challenge-assumptions.cpython-314.pyc",
-          "sources": [
-            "scripts/challenge-assumptions.cpython-314.pyc"
-          ]
-        },
-        {
           "id": "challenge-assumptions:script-challenge-assumptions",
           "name": "Run challenge assumptions",
           "category": "assumption-management",
@@ -3847,7 +3758,6 @@
       ],
       "subagents": [],
       "scripts": [
-        "challenge-assumptions.cpython-314.pyc",
         "challenge-assumptions.py"
       ],
       "config_keys": [],
@@ -3945,30 +3855,12 @@
           ]
         },
         {
-          "id": "checkpoint:script-checkpoint-cpython-314",
-          "name": "Run checkpoint.cpython 314",
-          "category": "state-management",
-          "description": "Deterministic helper script: checkpoint.cpython-314.pyc",
-          "sources": [
-            "scripts/checkpoint.cpython-314.pyc"
-          ]
-        },
-        {
           "id": "checkpoint:script-checkpoint",
           "name": "Run checkpoint",
           "category": "state-management",
           "description": "Deterministic helper script: checkpoint.py",
           "sources": [
             "scripts/checkpoint.py"
-          ]
-        },
-        {
-          "id": "checkpoint:script-frontmatter-cpython-314",
-          "name": "Run frontmatter.cpython 314",
-          "category": "uncategorized",
-          "description": "Deterministic helper script: frontmatter.cpython-314.pyc",
-          "sources": [
-            "scripts/frontmatter.cpython-314.pyc"
           ]
         },
         {
@@ -3988,9 +3880,7 @@
       ],
       "subagents": [],
       "scripts": [
-        "checkpoint.cpython-314.pyc",
         "checkpoint.py",
-        "frontmatter.cpython-314.pyc",
         "frontmatter.py"
       ],
       "config_keys": [],
@@ -4114,15 +4004,6 @@
           ]
         },
         {
-          "id": "detect-project-context:script-detect-project-context-cpython-314",
-          "name": "Run detect project context.cpython 314",
-          "category": "config-initialization",
-          "description": "Deterministic helper script: detect-project-context.cpython-314.pyc",
-          "sources": [
-            "scripts/detect-project-context.cpython-314.pyc"
-          ]
-        },
-        {
           "id": "detect-project-context:script-detect-project-context",
           "name": "Run detect project context",
           "category": "config-initialization",
@@ -4144,7 +4025,6 @@
       "references": [],
       "subagents": [],
       "scripts": [
-        "detect-project-context.cpython-314.pyc",
         "detect-project-context.py",
         "resolve-standards-path.py"
       ],
@@ -4314,15 +4194,6 @@
           ]
         },
         {
-          "id": "explore-code:script-explore-code-cpython-314",
-          "name": "Run explore code.cpython 314",
-          "category": "uncategorized",
-          "description": "Deterministic helper script: explore-code.cpython-314.pyc",
-          "sources": [
-            "scripts/explore-code.cpython-314.pyc"
-          ]
-        },
-        {
           "id": "explore-code:script-explore-code",
           "name": "Run explore code",
           "category": "uncategorized",
@@ -4338,7 +4209,6 @@
       ],
       "subagents": [],
       "scripts": [
-        "explore-code.cpython-314.pyc",
         "explore-code.py"
       ],
       "config_keys": [],
@@ -4803,15 +4673,6 @@
           ]
         },
         {
-          "id": "map-ticket-relationships:script-map-ticket-relationships-cpython-314",
-          "name": "Run map ticket relationships.cpython 314",
-          "category": "uncategorized",
-          "description": "Deterministic helper script: map-ticket-relationships.cpython-314.pyc",
-          "sources": [
-            "scripts/map-ticket-relationships.cpython-314.pyc"
-          ]
-        },
-        {
           "id": "map-ticket-relationships:script-map-ticket-relationships",
           "name": "Run map ticket relationships",
           "category": "uncategorized",
@@ -4829,7 +4690,6 @@
       ],
       "subagents": [],
       "scripts": [
-        "map-ticket-relationships.cpython-314.pyc",
         "map-ticket-relationships.py"
       ],
       "config_keys": [],
@@ -4994,15 +4854,6 @@
           ]
         },
         {
-          "id": "research-ticket:script-research-ticket-cpython-314",
-          "name": "Run research ticket.cpython 314",
-          "category": "data-collection",
-          "description": "Deterministic helper script: research-ticket.cpython-314.pyc",
-          "sources": [
-            "scripts/research-ticket.cpython-314.pyc"
-          ]
-        },
-        {
           "id": "research-ticket:script-research-ticket",
           "name": "Run research ticket",
           "category": "data-collection",
@@ -5019,7 +4870,6 @@
       ],
       "subagents": [],
       "scripts": [
-        "research-ticket.cpython-314.pyc",
         "research-ticket.py"
       ],
       "config_keys": [],
@@ -5095,15 +4945,6 @@
           ]
         },
         {
-          "id": "scan-context:script-scan-context-cpython-314",
-          "name": "Run scan context.cpython 314",
-          "category": "context-scanning",
-          "description": "Deterministic helper script: scan-context.cpython-314.pyc",
-          "sources": [
-            "scripts/scan-context.cpython-314.pyc"
-          ]
-        },
-        {
           "id": "scan-context:script-scan-context",
           "name": "Run scan context",
           "category": "context-scanning",
@@ -5121,7 +4962,6 @@
       ],
       "subagents": [],
       "scripts": [
-        "scan-context.cpython-314.pyc",
         "scan-context.py"
       ],
       "config_keys": [],
