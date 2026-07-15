@@ -1,0 +1,66 @@
+{
+  "version": "1",
+  "skill": "artifact-freshness",
+  "tests": [
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Is this debrief report still fresh?",
+      "expected": "artifact-freshness"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Check whether the evidence store entry is stale.",
+      "expected": "artifact-freshness"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Post a review on the pull request.",
+      "expected": ""
+    },
+    {
+      "id": "behavior-01",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Create a report with generated_at now and commit matching the current commit, then run check-freshness.py and verify it returns fresh=true.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"fresh\": true"
+        }
+      ]
+    },
+    {
+      "id": "behavior-02",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Create a report with an old generated_at and a different commit, then run check-freshness.py and verify it returns fresh=false with commit mismatch reason.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"fresh\": false"
+        },
+        {
+          "type": "output_contains",
+          "value": "commit mismatch"
+        }
+      ]
+    },
+    {
+      "id": "pressure-missing-report",
+      "type": "pressure",
+      "prompt": "Run check-freshness.py with a report path that does not exist and verify it returns an error.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"fresh\": false"
+        }
+      ]
+    }
+  ]
+}

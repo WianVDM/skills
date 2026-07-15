@@ -1,0 +1,202 @@
+{
+  "version": "1",
+  "skill": "identity-resolver",
+  "tests": [
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "What ticket is this branch about?",
+      "expected": "identity-resolver"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Resolve this PR URL to a work item identity.",
+      "expected": "identity-resolver"
+    },
+    {
+      "id": "trigger-should-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Extract the ticket key from this branch name.",
+      "expected": "identity-resolver"
+    },
+    {
+      "id": "trigger-should-04",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "What is the PR number for this branch?",
+      "expected": "identity-resolver"
+    },
+    {
+      "id": "trigger-should-05",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Identify the work item from this commit hash.",
+      "expected": "identity-resolver"
+    },
+    {
+      "id": "trigger-should-06",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Normalize this user input into a ticket or PR identity.",
+      "expected": "identity-resolver"
+    },
+    {
+      "id": "trigger-should-07",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Find the repo and branch for this PR number.",
+      "expected": "identity-resolver"
+    },
+    {
+      "id": "trigger-should-08",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "What work item does OC-1234 refer to?",
+      "expected": "identity-resolver"
+    },
+    {
+      "id": "trigger-should-09",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Resolve the identity of this pull request.",
+      "expected": "identity-resolver"
+    },
+    {
+      "id": "trigger-should-10",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Turn this branch name into a normalized identity.",
+      "expected": "identity-resolver"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Fetch the PR metadata from GitHub.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Post a review on this pull request.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-03",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Store this tool output as evidence.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-04",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Check if this report is still fresh.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-05",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Discover the available tools for this capability.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-06",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Initialize the skill configuration.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-07",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Resolve the GitHub token.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-08",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Create a baseline snapshot.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-09",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Diagnose why the build failed.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-10",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Generate a PR report from the collected data.",
+      "expected": ""
+    },
+    {
+      "id": "behavior-resolve-ticket",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Run resolve-identity.py with user_input 'feature/OC-1234-auth' and verify it returns type ticket with key OC-1234.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"type\": \"ticket\""
+        },
+        {
+          "type": "output_contains",
+          "value": "\"key\": \"OC-1234\""
+        }
+      ]
+    },
+    {
+      "id": "behavior-resolve-url",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Run resolve-identity.py with user_input 'https://github.com/owner/repo/pull/42' and verify it returns type pr with key 42@owner-repo.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"type\": \"pr\""
+        },
+        {
+          "type": "output_contains",
+          "value": "\"key\": \"42@owner-repo\""
+        }
+      ]
+    },
+    {
+      "id": "behavior-resolve-number",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Run resolve-identity.py with user_input '42' and repo 'owner/repo' and verify it returns type pr.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"type\": \"pr\""
+        }
+      ]
+    },
+    {
+      "id": "behavior-resolve-needs-input",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Run resolve-identity.py with empty user_input in a non-git directory and verify it returns status needs_input.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"needs_input\""
+        }
+      ]
+    }
+  ]
+}

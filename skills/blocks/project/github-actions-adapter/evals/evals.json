@@ -1,0 +1,34 @@
+{
+  "version": "1",
+  "skill": "github-actions-adapter",
+  "tests": [
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Fetch GitHub Actions check runs for this PR.",
+      "expected": "github-actions-adapter"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Get the failing job log summary from GitHub Actions.",
+      "expected": "github-actions-adapter"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Fetch PR metadata from GitHub.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Fetch SonarCloud findings.",
+      "expected": ""
+    }
+  ]
+}

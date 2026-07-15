@@ -44,7 +44,7 @@ Ask one question at a time when the answer shapes the recommendation. These four
 
 ## Colocation vs extraction
 
-Before recommending a new skill, check whether the capability should simply live inside an existing skill.
+Before recommending a new skill, check whether the capability should simply live inside an existing skill. If a capability overlap report from `detect-skill-overlap` is available, use it as primary evidence: **colocate** when the capability is only used by one existing skill or is workflow/provider-specific; **extract** when the same generic capability appears in two or more existing skills.
 
 **Colocate** when:
 - Only one skill would use the capability.
@@ -54,7 +54,7 @@ Before recommending a new skill, check whether the capability should simply live
 
 **Extract** when:
 - The capability is cross-cutting (e.g., token resolution, context reports, worker contracts).
-- Two or more skills currently consume it.
+- Two or more skills currently consume it, or the overlap report shows the same category in multiple skills.
 - It has a stable, narrow interface that changes more slowly than its consumers.
 - It solves a generic-domain problem rather than a workflow-specific problem.
 

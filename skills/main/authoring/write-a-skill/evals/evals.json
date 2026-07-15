@@ -64,19 +64,54 @@
       ]
     },
     {
-      "id": "behavior-standards-path-degraded-warning",
+      "id": "behavior-create-explores-overlap",
       "type": "behavior",
-      "setup": "The project has no local skill standards directory and no network access to fetch them.",
-      "prompt": "Initialize write-a-skill for this project.",
+      "prompt": "I want to build a skill that debriefs a pull request before implementation. Walk me through the design process.",
       "baseline_type": "no_skill",
       "assertions": [
         {
           "type": "output_contains",
-          "value": "degraded"
+          "value": "detect-skill-overlap"
         },
         {
           "type": "output_contains",
-          "value": "embedded"
+          "value": "overlap"
+        },
+        {
+          "type": "output_contains",
+          "value": "debrief"
+        }
+      ]
+    },
+    {
+      "id": "behavior-create-presents-reuse-colocate-extract",
+      "type": "behavior",
+      "prompt": "Design a new skill that resolves a ticket key from a branch name. Show me the alternatives and overlap analysis.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "reuse"
+        },
+        {
+          "type": "output_contains",
+          "value": "colocate"
+        },
+        {
+          "type": "output_contains",
+          "value": "extract"
+        }
+      ]
+    },
+    {
+      "id": "behavior-create-writes-overlap-findings-report",
+      "type": "behavior",
+      "prompt": "Create a skill that helps review PRs. Before drafting, run overlap detection and write the findings to a context report.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "overlap-findings"
         }
       ]
     }

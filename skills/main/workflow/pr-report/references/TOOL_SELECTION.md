@@ -1,6 +1,6 @@
 # Tool Selection
 
-`pr-report` is capability-first. For every load-bearing capability it needs, it discovers the available tools, selects the one that returns the most complete and authoritative data, and falls back to the next-best tool when the preferred tool is unavailable or partial.
+`pr-report` is capability-first. For every load-bearing capability it needs, it invokes `tool-discovery` to discover the available tools, selects the one that returns the most complete and authoritative data, and falls back to the next-best tool when the preferred tool is unavailable or partial.
 
 The conductor considers MCP tools/servers, native binaries, direct provider APIs, harness tools, and manual fallback for every capability. No single tool category is treated as the default.
 
@@ -42,13 +42,13 @@ Notification feedback is deferred until a concrete MCP server, CLI, or API provi
 
 ## Discovery rules
 
-For every capability, the conductor performs the following discovery steps:
+For every capability, the conductor invokes `tool-discovery/scripts/discover-tools.py` with the capability name and project `config_dir`. `tool-discovery` performs the following discovery steps:
 
-1. **Read config** — inspect `.agents/config/pr-report.yaml` for explicit per-capability tool preferences (`pr-report.tools.{capability}.provider` and `pr-report.tooling.preference`).
-2. **Read MCP config** — list configured MCP servers from `.mcp.json` or equivalent harness config, and probe known tool names (`github_get_pull_request_reviews`, `github_get_check_runs`, `sonarcloud_find_issues`, `jira_get_issue`).
+1. **Read config** — inspect `.agents/config/pr-report.yaml` for explicit per-capability tool preferences (`pr-report.tools.{capability}.provider`).
+2. **Read MCP config** — list configured MCP servers from `.mcp.json` or equivalent harness config, and probe known tool names and keywords.
 3. **Check native binaries** — verify whether relevant binaries (`gh`, `git`, `curl`) are available in the environment.
 4. **Check direct API prerequisites** — if a capability has an explicit `endpoint` configured and the user has confirmed it, mark direct API as available.
-5. **Record detected tools** — write the ranked list per capability to `{context_dir}/pr-report/{key}/state.md` under `## Detected Tools`.
+5. **Record detected tools** — return the ranked list per capability to the conductor, which writes the preferred tool and ranking to `{context_dir}/pr-report/{key}/state.md` under `## Detected Tools`.
 
 If the harness does not expose a way to list MCP tools, the conductor discloses that limitation and falls back to native binaries or manual input.
 

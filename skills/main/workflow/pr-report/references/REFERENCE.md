@@ -8,14 +8,14 @@ See [CONFIG_PATTERN.md](CONFIG_PATTERN.md) for the full config schema and token-
 
 ## Resolve PR
 
-Try in order until one succeeds:
+Invoke `identity-resolver/scripts/resolve-identity.py` with the user input, repo hint, and branch hint. Use the returned envelope directly:
 
-1. **Explicit number** — if the user provided digits, use as PR number.
-2. **Ticket key** — if input matches `[A-Z][A-Z0-9_]+-\d+`, search open PRs for one whose title or branch contains the key. If multiple match, ask the user.
-3. **Current branch** — detect the current branch and search for a PR whose head matches it.
-4. **Ask** — ask the user for a PR number or URL.
+- `type: pr` → use `pr_number`, `repo`, `branch`, `base`, `commit`, `url`, `key`.
+- `type: ticket` → use `key` as the ticket key; search open PRs for one whose title or branch contains the key. If multiple match, ask the user.
+- `type: branch` → use `branch` and `repo`; search for a PR whose head matches the branch.
+- `type: commit` → use `commit` and `repo`.
 
-Detect `owner/repo` from the git remote unless the user overrides it.
+If `identity-resolver` returns `needs_input`, ask the user for a PR number or URL.
 
 ## PR resolution ambiguity rules
 

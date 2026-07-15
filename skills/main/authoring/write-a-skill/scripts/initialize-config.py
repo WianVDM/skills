@@ -26,6 +26,12 @@ CONFIG_TEMPLATE = """# write-a-skill configuration
 # and warn the user that some checks are unavailable.
 standards_path: {standards_path}
 
+# Path to the machine-readable capability index used for overlap detection.
+# If relative, it is resolved from the project root. If omitted, the skill
+# searches for .agents/skill-capability-index.json, then docs/skill-capability-index.json,
+# then falls back to a description-level index built from the repository files.
+capability_index_path: {capability_index_path}
+
 # Skill registries to search when exploring alternatives.
 registries:
 {registries}
@@ -38,6 +44,7 @@ def build_config(args: argparse.Namespace) -> dict:
         "config_dir": args.config_dir,
         "context_dir": args.context_dir,
         "standards_path": args.standards_path,
+        "capability_index_path": args.capability_index_path,
         "registries": registries,
     }
 
@@ -71,6 +78,11 @@ def main() -> int:
         help="Path to the canonical skill standards directory, typically ending in skill-standards/.",
     )
     parser.add_argument(
+        "--capability-index-path",
+        default="",
+        help="Path to the machine-readable capability index. Defaults to project-local and bundle defaults.",
+    )
+    parser.add_argument(
         "--registries",
         default=",".join(DEFAULT_REGISTRIES),
         help="Comma-separated list of skill registries.",
@@ -93,6 +105,7 @@ def main() -> int:
 
     proposed = CONFIG_TEMPLATE.format(
         standards_path=config["standards_path"] or "",
+        capability_index_path=config["capability_index_path"] or "",
         registries=format_registries(config["registries"]),
     )
 

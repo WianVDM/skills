@@ -1,0 +1,52 @@
+{
+  "version": "1",
+  "skill": "find-skills",
+  "tests": [
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "How do I make my React app faster?",
+      "expected": "find-skills"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Find a skill for PR review.",
+      "expected": "find-skills"
+    },
+    {
+      "id": "trigger-should-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Is there a skill that can help with testing?",
+      "expected": "find-skills"
+    },
+    {
+      "id": "trigger-should-04",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "I want to extend my agent with deployment skills.",
+      "expected": "find-skills"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Write a React component for me."
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Debug this TypeScript error."
+    },
+    {
+      "id": "trigger-not-03",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Install the skill I asked about earlier."
+    }
+  ]
+}

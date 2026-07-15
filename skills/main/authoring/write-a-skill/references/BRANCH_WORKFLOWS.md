@@ -68,9 +68,17 @@ Understand the problem, trigger, success criteria, and whether a skill is warran
 
 **Why:** a new skill should be the last resort, not the first.
 
-Run `list-available-skills`, `search-skills-registry`, and `detect-skill-overlap` to find existing skills, scripts, MCP servers, or context files that might cover the problem. For any candidate that looks similar, run `detect-skill-overlap` to flag whether the proposed capability duplicates or should be extracted from an existing building block.
+Run `list-available-skills`, `search-skills-registry`, and `detect-skill-overlap` to find existing skills, scripts, MCP servers, or context files that might cover the problem.
 
-**Completion criterion:** the alternatives report lists existing options, includes an overlap scan, and gives a clear recommendation: build new skill, reuse/extend existing skill, or use an alternative.
+For any candidate that looks similar, run `detect-skill-overlap` against the proposed skill directory or a JSON draft. The script produces a structured report with:
+
+- Score-ranked overlap findings against existing skills.
+- Extraction candidates with interface sketches and effort estimates.
+- Warnings when the capability index is stale or missing.
+
+Write the report to `{context}/skill-design/{skill-name}-overlap-findings.md` and present the top findings to the user. Do not make a decision yet; this phase only surfaces evidence.
+
+**Completion criterion:** the alternatives report lists existing options, the overlap findings report exists, and the user knows whether to build new, reuse/extend existing, or install.
 
 #### 3. Decide shape and colocation
 
@@ -78,7 +86,15 @@ Run `list-available-skills`, `search-skills-registry`, and `detect-skill-overlap
 
 Confirm with the user that a new skill is the right shape, not a script, MCP server, context file, or installed skill. Then apply the colocation principle and invoke `detect-skill-overlap` to flag extraction opportunities or unjustified duplication: if the capability is only used by one existing skill, recommend colocating it inside that skill unless extraction is justified by reuse (cross-cutting concern, multiple current consumers, stable narrow interface, or generic-domain problem).
 
-**Completion criterion:** the user confirms the chosen shape is a new skill and that extraction is justified, or agrees to colocate the capability inside an existing skill.
+For each significant overlap in the overlap findings report, present the user with three options:
+
+- **Reuse** — use the existing skill instead of building a new one.
+- **Colocate** — keep the capability in the new skill because the context is different.
+- **Extract** — create a new building block and have both skills depend on it.
+
+Record the user's choice in `{context}/skill-design/{skill-name}-decisions.md`. For each extraction candidate, include the capability name, category, other skills that implement it, the suggested interface sketch, and the **capability contract skeleton** (a draft `SKILL.md` for the proposed building block) from the overlap findings report.
+
+**Completion criterion:** the user confirms the chosen shape is a new skill and the reuse/colocate/extract decision for each significant overlap; any extraction candidates have interface sketches and a recorded rationale.
 
 #### 4. Define identity
 
@@ -174,8 +190,8 @@ Present the design, audit, and alternatives summary. Write files only after expl
 A compressed version of the full gate for minimal skills.
 
 1. **Clarify intent** (minimal) — capture problem, trigger, and success criteria.
-2. **Explore alternatives** (light) — check existing skills and simple alternatives; run `detect-skill-overlap` for any close match.
-3. **Decide shape and colocation** — name, description, invocation; decide whether to colocate inside an existing skill or extract as a new reusable skill; invoke `detect-skill-overlap` to flag extraction opportunities.
+2. **Explore alternatives** (light) — check existing skills and simple alternatives; run `detect-skill-overlap` for any close match and write the findings to `{context}/skill-design/{skill-name}-overlap-findings.md`.
+3. **Decide shape and colocation** — name, description, invocation; decide whether to colocate inside an existing skill or extract as a new reusable skill; invoke `detect-skill-overlap` to flag extraction opportunities; present the user with reuse/colocate/extract options and record decisions in the decision log.
 4. **Define scope** — one objective, in-scope, out-of-scope.
 5. **Select patterns** — apply fundamentals.
 6. **Pattern adherence** — confirm pattern mappings or deviations; warn if canonical docs are unavailable.
@@ -187,14 +203,15 @@ A compressed version of the full gate for minimal skills.
 
 ### Create branch — decide gate
 
-For the full decide workflow, invoke the `decide-skill-shape` skill. It will:
+For the full decide workflow, invoke the `decide-skill-shape` skill. Pass the overlap findings report from `detect-skill-overlap` so the recommendation can account for existing capabilities and extraction opportunities. `decide-skill-shape` will:
 
 1. Capture the problem.
 2. Explore existing solutions using `list-available-skills` and `search-skills-registry`.
 3. Ask classification questions.
 4. Apply the decision rules from [decide-skill-shape/references/DECISION_RULES.md][decision-rules].
-5. Present a recommendation with alternatives and trade-offs.
-6. Write a decision report to `{context}/decide-skill-shape/{key}-decision-report.md`.
+5. Consider reuse/colocate/extract options for any significant overlaps.
+6. Present a recommendation with alternatives, trade-offs, and a summary of the overlap evidence.
+7. Write a decision report to `{context}/decide-skill-shape/{key}-decision-report.md`.
 
 `write-a-skill` consumes the decision report and offers the user the next step. The `decide` gate does not write skill files.
 

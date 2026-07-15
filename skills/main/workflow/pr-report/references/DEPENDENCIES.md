@@ -3,9 +3,14 @@
 ## Required skills
 
 - `detect-project-context` — locates the project root, config directory, and context directory.
+- `initialize-skill` — creates, migrates, and loads `{config_dir}/pr-report.yaml`.
+- `artifact-freshness` — checks whether prior reports and evidence entries are fresh before reuse.
 - `context-reports` — provides the canonical vocabulary and conventions for context reports.
+- `pr-adapter-contract` — normalized adapter envelope and operation shapes for PR, CI, static-analysis, issue-tracker, notification, and context-report adapters.
 - `worker-contract` — provides the canonical subagent return contract.
 - `token-resolver` — resolves tokens from env vars, MCP config, or user input without leaking secrets.
+- `tool-discovery` — discovers and ranks available tools for each capability.
+- `identity-resolver` — resolves a PR number, ticket key, branch, or commit from user input.
 
 ## Internal subagents
 
@@ -26,10 +31,18 @@ The following workers are defined inside `pr-report/subagents/` and are not sepa
 
 The conductor discovers the best available tool for each capability. Out-of-box providers include:
 
-- **PR source** — GitHub (via MCP or `gh` CLI), manual fallback.
-- **CI / build** — GitHub Actions (via MCP or `gh` CLI).
-- **Static analysis** — SonarCloud (via MCP or API).
-- **Issue tracker** — Jira (via MCP or API).
+- **PR source** — GitHub (via MCP or `gh` CLI), manual fallback, or the `github-pr-adapter` / `manual-pr-adapter` building blocks.
+- **CI / build** — GitHub Actions (via MCP or `gh` CLI) or the `github-actions-adapter` building block.
+- **Static analysis** — SonarCloud (via MCP or API) or the `sonarcloud-adapter` building block.
+- **Issue tracker** — Jira (via MCP or API) or the `jira-adapter` building block.
+
+Repository adapter skills:
+
+- `github-pr-adapter`
+- `github-actions-adapter`
+- `sonarcloud-adapter`
+- `jira-adapter`
+- `manual-pr-adapter`
 
 Community or future providers (GitLab, Bitbucket, Azure DevOps, SonarQube, CodeQL, Semgrep, Linear, GitHub Issues) may be added as direct tools or separate skills when they are needed by more than one consumer.
 

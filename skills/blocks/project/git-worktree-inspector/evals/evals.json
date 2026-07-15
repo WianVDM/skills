@@ -1,0 +1,170 @@
+{
+  "version": "1",
+  "skill": "git-worktree-inspector",
+  "tests": [
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Check out this PR branch in a git worktree so I can inspect it.",
+      "expected": "git-worktree-inspector"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Run lint on the changed files in this PR branch without switching my current branch.",
+      "expected": "git-worktree-inspector"
+    },
+    {
+      "id": "trigger-should-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Create a worktree for this branch and list the files that changed against main.",
+      "expected": "git-worktree-inspector"
+    },
+    {
+      "id": "trigger-should-04",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "I need an isolated checkout of the PR branch to run type-checks.",
+      "expected": "git-worktree-inspector"
+    },
+    {
+      "id": "trigger-should-05",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Remove this worktree I created earlier.",
+      "expected": "git-worktree-inspector"
+    },
+    {
+      "id": "trigger-should-06",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Inspect the PR branch in a temporary git worktree.",
+      "expected": "git-worktree-inspector"
+    },
+    {
+      "id": "trigger-should-07",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Run scoped tests on the changed files in a worktree.",
+      "expected": "git-worktree-inspector"
+    },
+    {
+      "id": "trigger-should-08",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "What files changed in this branch compared to main?",
+      "expected": "git-worktree-inspector"
+    },
+    {
+      "id": "trigger-should-09",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Check out the commit in an isolated worktree.",
+      "expected": "git-worktree-inspector"
+    },
+    {
+      "id": "trigger-should-10",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Clean up the temporary worktree after the inspection.",
+      "expected": "git-worktree-inspector"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Post a review on this pull request.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Resolve the PR identity from this URL.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-03",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Discover the available tools for this capability.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-04",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Store this tool output as evidence.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-05",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Check if this report is still fresh.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-06",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Triage these findings against the ticket scope.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-07",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Build a PR report from this data.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-08",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Initialize the skill configuration for this project.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-09",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Resolve the GitHub token.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-10",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Create a baseline snapshot of this feature.",
+      "expected": ""
+    },
+    {
+      "id": "behavior-changed-files",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Run inspect-worktree.py with operation changed_files on a git repo with a branch that has changes and verify it returns a non-empty changed_files list.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"found\""
+        }
+      ]
+    },
+    {
+      "id": "behavior-inspect",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Run inspect-worktree.py with operation inspect on a git repo, with a no-op command, and verify it returns status complete with clean true.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"complete\""
+        }
+      ]
+    }
+  ]
+}

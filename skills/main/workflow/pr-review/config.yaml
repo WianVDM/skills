@@ -1,0 +1,57 @@
+skill:
+  - key: pr-review.tools.pr-source.provider
+    type: string
+    default: auto
+    description: PR source provider. One of auto, github, manual.
+  - key: pr-review.tools.reviews.provider
+    type: string
+    default: auto
+    description: Existing reviews/threads provider. One of auto, github, manual.
+  - key: pr-review.tools.changed-files.provider
+    type: string
+    default: auto
+    description: Changed-files provider. One of auto, github, git.
+  - key: pr-review.tools.ci.provider
+    type: string
+    default: auto
+    description: CI/build provider. One of auto, github, manual.
+  - key: pr-review.tools.issue-tracker.provider
+    type: string
+    default: auto
+    description: Issue-tracker provider. One of auto, jira, github-issues, manual.
+  - key: pr-review.tools.checkout.provider
+    type: string
+    default: auto
+    description: Local checkout provider. One of auto, worktree, clone, manual.
+  - key: pr-review.tools.posting.provider
+    type: string
+    default: auto
+    description: Posting provider. One of auto, github-mcp, gh-cli, manual.
+  - key: pr-review.tooling.preference
+    type: string
+    default: best
+    description: Tool selection preference. One of best, local, configured.
+  - key: pr-review.tooling.degraded_mode
+    type: string
+    default: ask
+    description: How to handle degraded sources. One of ask, accept, reject.
+  - key: pr-review.review.default_event
+    type: string
+    default: REQUEST_CHANGES
+    description: Default review event when posting. One of APPROVE, COMMENT, REQUEST_CHANGES.
+  - key: pr-review.review.require_tests_for_new_logic
+    type: boolean
+    default: true
+    description: Whether to suggest tests for new logic by default.
+  - key: pr-review.review.allow_post_without_confirmation
+    type: boolean
+    default: false
+    description: Whether posting can skip user confirmation. Always false for safety.
+  - key: pr-review.gates
+    type: list
+    default: []
+    description: Optional targeted checks to run on changed files. Each item has name and command.
+  - key: pr-review.project_conventions
+    type: list
+    default: []
+    description: Optional list of project convention strings to include in scope checking.

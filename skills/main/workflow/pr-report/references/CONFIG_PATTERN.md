@@ -2,6 +2,16 @@
 
 `pr-report` uses the config + notes pattern. It detects the environment, asks for missing information once, persists the answers, and reuses them on future runs.
 
+## Initialization
+
+First-run configuration is handled by the `initialize-skill` building block. The conductor detects the environment, then invokes `initialize-skill/scripts/initialize.py` with the skill name and defaults from `pr-report/config.yaml`. The block proposes the merged config, asks the user for approval, and writes `{config_dir}/pr-report.yaml` only after `--approve` is passed.
+
+For the full initialization interface, see `initialize-skill/references/INTERFACE.md`.
+
+## Loading config during operation
+
+After initialization, the conductor uses `initialize-skill/scripts/load-skill-config.py` to load and merge `{config_dir}/shared.yaml` and `{config_dir}/pr-report.yaml` on every run.
+
 ## Canonical location
 
 Config and notes live in the detected project configuration directory:

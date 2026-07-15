@@ -73,8 +73,8 @@ The conductor runs this pipeline. Each phase has a completion criterion and a de
 | Phase                                      | What happens                                                                                                                                                                                                                                | Completion criterion                                                                                                     |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | 1. **Clarify intent and choose gate**      | Classify the top-level branch; resolve the internal gate; ask one question at a time if unclear.                                                                                                                                            | Branch is one of {create, change, initialize}, gate is resolved, and user confirmed.                                     |
-| 2. **Explore alternatives**                | Use `list-available-skills`, `search-skills-registry`, and `detect-skill-overlap` to see what exists and flag overlap with existing skills.                                                                                                 | Alternatives report exists; overlap scan is complete; user knows whether to create, reuse, or install.                   |
-| 3. **Decide shape and colocation**         | Decide whether the answer is a new skill, an existing skill, a script, an MCP server, or a context file. Then apply the colocation principle and invoke `detect-skill-overlap` to flag extraction opportunities or unjustified duplication. | User confirms the chosen shape and that extraction is justified, or agrees to colocate.                                  |
+| 2. **Explore alternatives**                | Use `list-available-skills`, `search-skills-registry`, and `detect-skill-overlap` to see what exists and flag overlap with existing skills. Run `detect-skill-overlap` against the target directory or a JSON draft and write the structured overlap findings to `{context}/skill-design/{skill-name}-overlap-findings.md`. | Alternatives report exists; overlap findings report exists; user knows whether to create, reuse, or install. |
+| 3. **Decide shape and colocation**         | Decide whether the answer is a new skill, an existing skill, a script, an MCP server, or a context file. Then apply the colocation principle and invoke `detect-skill-overlap` to flag extraction opportunities or unjustified duplication. Use the overlap findings report to present the user with three options: **reuse** the existing skill, **colocate** the capability in the new skill, or **extract** a shared building block. | User confirms the chosen shape and the reuse/colocate/extract decision for each significant overlap; extraction candidates have interface sketches. |
 | 4. **Define identity**                     | Name, description, invocation. Version only if the user requires it or the skill will be shared/consumed.                                                                                                                                   | Frontmatter skeleton exists and user confirmed.                                                                          |
 | 5. **Define scope**                        | In-scope, out-of-scope, branches, assumptions.                                                                                                                                                                                              | Scope boundaries are explicit and defensible.                                                                            |
 | 6. **Select patterns**                     | Apply fundamentals; suggest Layer 2 patterns. Decide if the skill is configurable and, if so, which shared and skill-specific keys it needs.                                                                                                | Pattern list and config declaration (if any) exist and user confirmed.                                                   |
@@ -82,7 +82,7 @@ The conductor runs this pipeline. Each phase has a completion criterion and a de
 | 6b. **Design capability-to-tool strategy** | For each load-bearing capability, identify the preferred tool, fallback tools, and degraded-output disclosure. Document the selection rule and user-consent behavior.                                                                       | A capability-to-tool mapping exists for every load-bearing capability; the user has confirmed or corrected the strategy. |
 | 7. **Token justification**                 | Defend every proposed section, reference, subagent, and script; remove or merge unjustified items.                                                                                                                                          | Every artifact in the draft has a stated purpose; the user has confirmed the minimal set.                                |
 | 8. **Draft artifacts**                     | Generate `SKILL.md`, optional `README.md`, `references/`, `subagents/`, `scripts/`, `assets/`, and `config.yaml` if the skill is configurable.                                                                                              | Draft files exist and are linked correctly.                                                                              |
-| 9. **Audit and validate**                  | Run `audit-skill` and `validate-skill-frontmatter`.                                                                                                                                                                                         | Audit report exists with no blocking failures.                                                                           |
+| 9. **Audit and validate**                  | Run `audit-skill` and `validate-skill-frontmatter`. Re-run `detect-skill-overlap` if the skill's capabilities changed during drafting and update the overlap findings report.                                                                                                                                 | Audit report exists with no blocking failures.                                                                           |
 | 10. **Generate evals**                     | Run `run-trigger-evals` for model-invoked skills.                                                                                                                                                                                           | `evals/evals.json` exists or user declined.                                                                              |
 | 11. **Confirm and write**                  | Present the full plan; write files only after explicit approval.                                                                                                                                                                            | User approved; files written; decision log updated.                                                                      |
 
@@ -174,6 +174,7 @@ On first run in a project, or when the user asks to reconfigure, execute the `in
    - `config_dir`: where to write `write-a-skill.yaml`.
    - `context_dir`: where context reports are written.
    - `standards_path`: path to the canonical skill standards directory.
+   - `capability_index_path`: path to the machine-readable capability index (defaults to the project-local override and bundle defaults).
    - `registries`: list of skill registries to search.
 4. Report whether the canonical standards are found locally, missing, or need fetching.
 5. If standards are missing, offer to fetch only the canonical skill standards directory from [skills](https://github.com/wianvdm/skills). Every fetch must be explicitly confirmed by the user.
@@ -197,13 +198,14 @@ Every branch that reads canonical standards must check `standards_path` before u
 
 All artifacts are written as context reports so the session can survive compaction and be resumed. For shared context-report conventions, see the `context-reports` skill. Paths are relative to the detected context directory.
 
-| Artifact            | Location                                              | Purpose                                                           |
-| ------------------- | ----------------------------------------------------- | ----------------------------------------------------------------- |
-| Intent note         | `{context}/skill-design/{skill-name}-intent.md`       | Captured user intent, constraints, and chosen branch/gate.        |
-| Alternatives report | `{context}/skill-design/{skill-name}-alternatives.md` | Existing skills and third-party options found.                    |
-| Design draft        | `{context}/skill-design/{skill-name}-design.md`       | Structured design: identity, scope, type, patterns, dependencies. |
-| Self-audit report   | `{context}/skill-review/{skill-name}-self-audit.md`   | Fundamentals check results.                                       |
-| Decision log        | `{context}/skill-design/{skill-name}-decisions.md`    | Append-only record of decisions and rationale.                    |
+| Artifact            | Location                                                       | Purpose                                                                              |
+| ------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Intent note         | `{context}/skill-design/{skill-name}-intent.md`                | Captured user intent, constraints, and chosen branch/gate.                           |
+| Alternatives report | `{context}/skill-design/{skill-name}-alternatives.md`          | Existing skills and third-party options found.                                     |
+| Overlap findings    | `{context}/skill-design/{skill-name}-overlap-findings.md`      | Score-ranked overlap findings and extraction candidates from `detect-skill-overlap`. |
+| Design draft        | `{context}/skill-design/{skill-name}-design.md`                | Structured design: identity, scope, type, patterns, dependencies.                    |
+| Self-audit report   | `{context}/skill-review/{skill-name}-self-audit.md`            | Fundamentals check results.                                                        |
+| Decision log        | `{context}/skill-design/{skill-name}-decisions.md`             | Append-only record of decisions and rationale.                                     |
 
 Append decisions rather than overwriting them. Never overwrite an existing file without asking.
 
@@ -213,8 +215,9 @@ If the conversation is compacted, resume by reading the latest state files in th
 
 1. Decision log.
 2. Intent note.
-3. Design draft or review report (whichever is most recent).
-4. Latest self-audit or audit report.
+3. Overlap findings report (to understand prior reuse/colocate/extract decisions).
+4. Design draft or review report (whichever is most recent).
+5. Latest self-audit or audit report.
 
 Summarize completed work, pending work, current focus, and the recommended next action before continuing.
 

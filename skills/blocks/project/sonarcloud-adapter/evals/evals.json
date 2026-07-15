@@ -1,0 +1,34 @@
+{
+  "version": "1",
+  "skill": "sonarcloud-adapter",
+  "tests": [
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Fetch SonarCloud findings for this PR.",
+      "expected": "sonarcloud-adapter"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Get static-analysis issues from SonarCloud.",
+      "expected": "sonarcloud-adapter"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Fetch PR metadata from GitHub.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Fetch GitHub Actions check runs.",
+      "expected": ""
+    }
+  ]
+}

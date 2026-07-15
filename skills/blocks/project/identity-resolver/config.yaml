@@ -1,0 +1,8 @@
+# Config declaration for identity-resolver
+
+# This block does not require project-level config. It accepts context_dir,
+# config_dir, repo, and branch as input on each invocation.
+
+skill: []
+
+requires_setup: false

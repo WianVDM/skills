@@ -4,6 +4,10 @@
 
 None. `verify-branch` does not require another skill to function.
 
+## Recommended skills
+
+- `artifact-freshness` — used to check whether context reports are fresh before consuming them as advisory context. If unavailable, the skill notes the absence but continues without freshness checks.
+
 ## Optional consumed context
 
 The skill may scan `.agents/context/` for reports whose filename or frontmatter matches the current branch or ticket. It consumes these reports as advisory context only; they do not influence the verification verdict.
@@ -26,7 +30,8 @@ None by default. The skill uses whatever tools the project has configured (test 
 The following tools are used by built-in adapters and scripts when they are available in the runtime environment:
 
 - `js-yaml` — used by the built-in standards adapters (`yaml-standards`, `markdown-frontmatter`) and the context/state loaders to parse YAML. If `js-yaml` is not installed, the JavaScript loaders fall back to a Python + PyYAML parser.
-- `python3` (3.10+) and `PyYAML` — used by the Python context scanners (`scripts/scan-related-context.py`, `scripts/check-context-freshness.py`), `scripts/infer-standards.py`, `scripts/detect-gates.py`, and the YAML fallback parser in the standards adapters.
+- `python3` (3.10+) and `PyYAML` — used by the Python context scanners (`scripts/scan-related-context.py`), `scripts/infer-standards.py`, `scripts/detect-gates.py`, and the YAML fallback parser in the standards adapters.
+- `artifact-freshness` — used to check whether context reports are fresh before consuming them as advisory context.
 
 Dependency manifests are provided for convenience:
 

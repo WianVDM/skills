@@ -1,0 +1,344 @@
+{
+  "version": "1",
+  "skill": "pr-review",
+  "tests": [
+    {
+      "id": "should-trigger-use-the-user-says-pr-review-review-this-pr-review-pull-request-or-help-me-review-1",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "The user says `/pr-review`, `review this PR`, `review pull request`, or `help me review`.",
+      "expected": "pr-review"
+    },
+    {
+      "id": "should-trigger-use-the-user-says-pr-review-review-this-pr-review-pull-request-or-help-me-review-2",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "In this situation: The user says `/pr-review`, `review this PR`, `review pull request`, or `help me review`.",
+      "expected": "pr-review"
+    },
+    {
+      "id": "should-trigger-use-the-user-provides-a-pr-number-ticket-key-branch-name-or-pr-url-1",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "The user provides a PR number, ticket key, branch name, or PR URL.",
+      "expected": "pr-review"
+    },
+    {
+      "id": "should-trigger-use-the-user-provides-a-pr-number-ticket-key-branch-name-or-pr-url-2",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "In this situation: The user provides a PR number, ticket key, branch name, or PR URL.",
+      "expected": "pr-review"
+    },
+    {
+      "id": "should-trigger-use-the-user-wants-local-inspection-and-targeted-checks-before-drafting-a-review-1",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "The user wants local inspection and targeted checks before drafting a review.",
+      "expected": "pr-review"
+    },
+    {
+      "id": "should-trigger-use-the-user-wants-local-inspection-and-targeted-checks-before-drafting-a-review-2",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "In this situation: The user wants local inspection and targeted checks before drafting a review.",
+      "expected": "pr-review"
+    },
+    {
+      "id": "should-trigger-use-the-user-wants-a-review-draft-that-does-not-repeat-existing-comments-1",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "The user wants a review draft that does not repeat existing comments.",
+      "expected": "pr-review"
+    },
+    {
+      "id": "should-trigger-use-the-user-wants-a-review-draft-that-does-not-repeat-existing-comments-2",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "In this situation: The user wants a review draft that does not repeat existing comments.",
+      "expected": "pr-review"
+    },
+    {
+      "id": "should-trigger-use-the-user-wants-safe-posting-with-a-manual-fallback-when-tools-are-not-trustworthy-1",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "The user wants safe posting with a manual fallback when tools are not trustworthy.",
+      "expected": "pr-review"
+    },
+    {
+      "id": "should-trigger-use-the-user-wants-safe-posting-with-a-manual-fallback-when-tools-are-not-trustworthy-2",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "In this situation: The user wants safe posting with a manual fallback when tools are not trustworthy.",
+      "expected": "pr-review"
+    },
+    {
+      "id": "should-not-trigger-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Can you help me with something related to help user review but not pr-review?"
+    },
+    {
+      "id": "should-not-trigger-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "I need a different tool for help user review, not pr-review."
+    },
+    {
+      "id": "should-not-trigger-03",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "How do I do something else instead of using pr-review?"
+    },
+    {
+      "id": "should-not-trigger-04",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "What is the best way to handle help user review without using pr-review?"
+    },
+    {
+      "id": "should-not-trigger-05",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Please do something related to help user review but do not invoke pr-review."
+    },
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "/pr-review",
+      "expected": "pr-review"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "review this PR",
+      "expected": "pr-review"
+    },
+    {
+      "id": "trigger-should-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "help me review pull request 123",
+      "expected": "pr-review"
+    },
+    {
+      "id": "trigger-should-04",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "review pull request https://github.com/owner/repo/pull/456",
+      "expected": "pr-review"
+    },
+    {
+      "id": "trigger-should-05",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "can you take a look at my PR",
+      "expected": "pr-review"
+    },
+    {
+      "id": "trigger-should-06",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "draft a review for branch feature/login",
+      "expected": "pr-review"
+    },
+    {
+      "id": "trigger-should-07",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "review this PR for OC-1234",
+      "expected": "pr-review"
+    },
+    {
+      "id": "trigger-should-08",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "help me review the current branch as a PR",
+      "expected": "pr-review"
+    },
+    {
+      "id": "trigger-should-09",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "I need a code review for PR 789",
+      "expected": "pr-review"
+    },
+    {
+      "id": "trigger-should-10",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "prepare a review for the pull request",
+      "expected": "pr-review"
+    },
+    {
+      "id": "trigger-should-11",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "/pr-review 42",
+      "expected": "pr-review"
+    },
+    {
+      "id": "trigger-should-12",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "check out PR 99 and review it locally",
+      "expected": "pr-review"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "audit this skill for standards issues",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "create a new skill from scratch",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-03",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "run the test suite",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-04",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "fix the login bug",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-05",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "write a PRD for the new feature",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-06",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "merge latest upstream into this branch",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-07",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "verify the current branch",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-08",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "debrief ticket PROJ-123",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-09",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "triage this incoming bug",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-10",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "plan the next steps for this project",
+      "expected": ""
+    },
+    {
+      "id": "behavioral-posting-approval-01",
+      "type": "behavior",
+      "category": "posting-safety",
+      "prompt": "Given a confirmed review draft and a high-confidence posting tool, run /pr-review. The user has not explicitly approved the draft. Expect the conductor to present the draft and ask for approval before posting.",
+      "expected": "The conductor asks for explicit approval before posting; no review is posted without confirmation."
+    },
+    {
+      "id": "behavioral-posting-approval-02",
+      "type": "behavior",
+      "category": "posting-safety",
+      "prompt": "Given a confirmed review draft and a high-confidence posting tool, run /pr-review. The user declines to post. Expect the conductor to write the exact manual payload to a file and explain how to post it manually.",
+      "expected": "The manual payload is written and the user is told how to post it manually."
+    },
+    {
+      "id": "behavioral-posting-confidence-01",
+      "type": "behavior",
+      "category": "posting-safety",
+      "prompt": "Given a confirmed review draft and medium confidence in the posting tool, run /pr-review. The user has explicitly approved. Expect the conductor to hand back the exact manual payload instead of posting.",
+      "expected": "The conductor does not post when confidence is medium; it provides the manual payload."
+    },
+    {
+      "id": "behavioral-deduplication-01",
+      "type": "behavior",
+      "category": "review-quality",
+      "prompt": "Given a PR with an existing inline thread on line 42 that already requests password validation, run /pr-review. Expect the synthesizer to avoid proposing a duplicate comment on the same line.",
+      "expected": "The proposed review does not duplicate the existing comment on line 42."
+    },
+    {
+      "id": "behavioral-scope-01",
+      "type": "behavior",
+      "category": "review-quality",
+      "prompt": "Given a PR that changes a billing file but the ticket scope is only login validation, run /pr-review. Expect the synthesizer to flag the billing change as scope drift and keep it out of the required comments unless the user accepts it.",
+      "expected": "Scope drift is flagged and the unrelated change is not treated as a required fix."
+    },
+    {
+      "id": "behavioral-checkout-01",
+      "type": "behavior",
+      "category": "local-inspection",
+      "prompt": "Given a PR branch and an available git worktree, run /pr-review. Expect the conductor to check out the branch in a detached worktree without switching the user's current branch.",
+      "expected": "The user's current branch is not disturbed and the PR branch is inspected in a worktree."
+    },
+    {
+      "id": "behavioral-checks-01",
+      "type": "behavior",
+      "category": "local-inspection",
+      "prompt": "Given a PR with two changed TypeScript files and a project with a typecheck script, run /pr-review. Expect the check selector to run typecheck scoped to the changed files only.",
+      "expected": "Typecheck is run only on the changed files, not on the whole project."
+    },
+    {
+      "id": "behavioral-manual-fallback-01",
+      "type": "behavior",
+      "category": "posting-safety",
+      "prompt": "Given a confirmed review draft and no available posting tool, run /pr-review. Expect the conductor to write the exact manual payload to a file and explain how to post it.",
+      "expected": "The exact manual payload is written to the context directory."
+    },
+    {
+      "id": "pressure-post-placeholder-01",
+      "type": "behavior",
+      "category": "pressure",
+      "prompt": "Given a review draft that contains placeholder text like 'TODO' or 'test', run /pr-review. Expect the conductor to reject the draft and ask the user to fix it before posting.",
+      "expected": "Placeholder text is rejected and the draft is not posted."
+    },
+    {
+      "id": "pressure-line-coordinates-01",
+      "type": "behavior",
+      "category": "pressure",
+      "prompt": "Given a review draft with an inline comment anchored to a line outside the changed diff hunks, run /pr-review. Expect the posting coordinator to reject the coordinate and hand back the manual payload.",
+      "expected": "Invalid line coordinates are rejected; the manual payload is provided instead of posting."
+    },
+    {
+      "id": "pressure-tool-discovery-01",
+      "type": "behavior",
+      "category": "pressure",
+      "prompt": "Given a configured GitHub MCP server and the gh CLI, run /pr-review. Expect the conductor to discover both tools and prefer the best available tool according to config.",
+      "expected": "Tool discovery ranks both tools and records the preferred one."
+    },
+    {
+      "id": "pressure-context-compaction-01",
+      "type": "behavior",
+      "category": "pressure",
+      "prompt": "Given context compaction mid-run, run /pr-review. Expect the conductor to resume from the pending phase using the state file.",
+      "expected": "The conductor resumes from the first pending phase after reading the state file."
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "version": "1",
+  "skill": "manual-pr-adapter",
+  "tests": [
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Collect PR data manually from a CSV file for pr-report.",
+      "expected": "manual-pr-adapter"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Use the manual fallback for PR source data.",
+      "expected": "manual-pr-adapter"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Fetch PR metadata from GitHub.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Fetch GitHub Actions check runs.",
+      "expected": ""
+    }
+  ]
+}

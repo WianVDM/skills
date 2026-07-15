@@ -4,7 +4,7 @@ Build an actionable understanding of a pull request.
 
 ## What it does
 
-`pr-report` is a capability-first conductor skill. For every load-bearing capability it needs — PR metadata, review feedback, inline comments, CI/build status, static-analysis findings, and ticket scope — it discovers the available tools, selects the best one, and falls back gracefully when the best tool is unavailable. It normalizes all feedback, triages every item against ticket scope and actual changes, and produces a concise issue board, task list, and report.
+`pr-report` is a capability-first conductor skill. For every load-bearing capability it needs — PR metadata, review feedback, inline comments, CI/build status, static-analysis findings, and ticket scope — it invokes `tool-discovery` to find the available tools, selects the best one, and falls back gracefully when the best tool is unavailable. It uses `identity-resolver` to turn the user's PR number, URL, ticket key, or branch into a normalized identity. It normalizes all feedback, triages every item against ticket scope and actual changes, and produces a concise issue board, task list, and report.
 
 The skill does not treat any single tool or provider as the only source of truth for a capability. MCP tools, native binaries, direct APIs, harness tools, and manual fallback are all candidates.
 
@@ -53,7 +53,7 @@ pr-report/
 
 ## Key conventions
 
-- Config lives in the detected project config directory (default `{project-root}/.agents/config/pr-report.yaml`).
+- Config lives in the detected project config directory (default `{project-root}/.agents/config/pr-report.yaml`), created and migrated by the `initialize-skill` building block.
 - Reports and state live in the detected project context directory (default `{project-root}/.agents/context/pr-report/`).
 - All provider-specific data comes from the best available tool for each capability; no tool category is treated as the default.
 - Tool selection is documented in `references/TOOL_SELECTION.md` and recorded in the report's **Data sources** section.
@@ -78,6 +78,8 @@ The capability matrix and selection hierarchy are in `references/TOOL_SELECTION.
 - `context-reports` — shared context report conventions.
 - `worker-contract` — canonical worker return format.
 - `token-resolver` — secure token resolution.
+- `tool-discovery` — capability-first tool discovery and ranking.
+- `identity-resolver` — normalized PR/ticket/branch/commit resolution.
 
 ## Optional context producers
 

@@ -1,0 +1,174 @@
+{
+  "version": "1",
+  "skill": "tool-discovery",
+  "tests": [
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "What tools are available for fetching pull request metadata?",
+      "expected": "tool-discovery"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Find the best available CI source for this project.",
+      "expected": "tool-discovery"
+    },
+    {
+      "id": "trigger-should-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Discover which issue tracker this project uses.",
+      "expected": "tool-discovery"
+    },
+    {
+      "id": "trigger-should-04",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "List available static analysis tools.",
+      "expected": "tool-discovery"
+    },
+    {
+      "id": "trigger-should-05",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "What can I use to post a review comment?",
+      "expected": "tool-discovery"
+    },
+    {
+      "id": "trigger-should-06",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Rank the tools for the pr-source capability.",
+      "expected": "tool-discovery"
+    },
+    {
+      "id": "trigger-should-07",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Is there a GitHub MCP server configured?",
+      "expected": "tool-discovery"
+    },
+    {
+      "id": "trigger-should-08",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Check for available notification sources.",
+      "expected": "tool-discovery"
+    },
+    {
+      "id": "trigger-should-09",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Which adapter should I use for this ticket source?",
+      "expected": "tool-discovery"
+    },
+    {
+      "id": "trigger-should-10",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Find the right tool to fetch build status.",
+      "expected": "tool-discovery"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Fetch the pull request metadata from GitHub.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Post this review comment on the PR.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-03",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Store this tool output as evidence.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-04",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Check if this report is still fresh.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-05",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Initialize the skill configuration for this workspace.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-06",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Resolve the GitHub token.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-07",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Create a baseline snapshot.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-08",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Diagnose why the build failed.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-09",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Triage this incoming bug report.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-10",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Write a PRD from this conversation.",
+      "expected": ""
+    },
+    {
+      "id": "behavior-discover-01",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Run discover-tools.py for capability pr-source in a temp directory with no MCP config and verify it returns manual as the only available fallback.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"found\""
+        },
+        {
+          "type": "output_contains",
+          "value": "\"name\": \"manual\""
+        }
+      ]
+    },
+    {
+      "id": "behavior-discover-02",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Run discover-tools.py for an unknown capability and verify it returns an error.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"error\""
+        }
+      ]
+    }
+  ]
+}

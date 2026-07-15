@@ -1,0 +1,8 @@
+# Config declaration for evidence-store
+
+# This block does not require project-level config. It accepts the context_dir
+# as input on each invocation.
+
+skill: []
+
+requires_setup: false

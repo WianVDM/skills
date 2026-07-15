@@ -6,7 +6,7 @@ This file holds governance notes for human maintainers of `write-a-skill`. It do
 
 `write-a-skill` tracks its own changes because it is a shared conductor consumed by other skills and workflows. For skills produced by this conductor, `version` is optional unless the user requires it or the skill will be shared or consumed.
 
-`write-a-skill` uses the versioning scheme defined in the project [`AGENTS.md`](../../../../AGENTS.md): all skills and artifacts start at **v1.0.0**, and increments are strictly right-to-left (v1.0.0 → v1.0.1 → ... → v1.0.9 → v1.1.0) with no semantic meaning assigned to major, minor, or patch. Bumps are based on the latest version published to GitHub, and each release bumps the version exactly once.
+`write-a-skill` uses the versioning scheme defined in the project [`AGENTS.md`](../../../../../.agents/AGENTS.md): all skills and artifacts start at **v1.0.0**, and increments are strictly right-to-left (v1.0.0 → v1.0.1 → ... → v1.0.9 → v1.1.0) with no semantic meaning assigned to major, minor, or patch. Bumps are based on the latest version published to GitHub, and each release bumps the version exactly once.
 
 Current version: **v1.0.1**.
 
@@ -21,7 +21,7 @@ Versions before v1.0.0 were a series of extractions and branch reorganizations u
 - Extracted shared vocabulary building blocks (`worker-contract`, `context-reports`, `eval-format`) from monolithic guidance files.
 - Extracted conductor skills (`decide-skill-shape`, `review-skill`) from inline `write-a-skill` branches.
 - Collapsed the branch model into `create`/`change`, added pre-audit comprehension to the `change` branch, and added `standards_path` detection/fallback to initialization.
-- Reset all versions to **v1.0.0** under the project-specific versioning scheme in `AGENTS.md`.
+- Reset all versions to **v1.0.0** under the project-specific versioning scheme in [`AGENTS.md`](../../../../../.agents/AGENTS.md).
 
 ## Review cadence
 

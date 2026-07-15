@@ -1,0 +1,41 @@
+{
+  "version": "1",
+  "skill": "github-pr-adapter",
+  "tests": [
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Fetch PR metadata from GitHub for pr-report.",
+      "expected": "github-pr-adapter"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Get the changed files and review threads from a GitHub PR.",
+      "expected": "github-pr-adapter"
+    },
+    {
+      "id": "trigger-should-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Resolve this GitHub PR number and fetch its reviews.",
+      "expected": "github-pr-adapter"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Fetch GitHub Actions check runs.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Fetch Jira ticket scope.",
+      "expected": ""
+    }
+  ]
+}

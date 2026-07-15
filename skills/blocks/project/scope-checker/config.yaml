@@ -1,0 +1,7 @@
+scope-checker:
+  # Default classification when scope is unclear.
+  default_classification: ambiguous
+  # When true, include project conventions in the scope challenge.
+  include_project_conventions: true
+  # Confidence threshold below which a finding is marked ambiguous.
+  ambiguity_threshold: low

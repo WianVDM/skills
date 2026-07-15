@@ -44,8 +44,7 @@
         },
         "category": {
           "type": "string",
-          "enum": ["should-trigger", "should-not-trigger"],
-          "description": "For trigger tests: whether the prompt should or should not load the skill."
+          "description": "For trigger tests: whether the prompt should or should not load the skill. For other test types, an arbitrary grouping category."
         },
         "prompt": {
           "type": "string",
@@ -115,5 +114,19 @@
       },
       "additionalProperties": true
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": { "const": "trigger" }
+        }
+      },
+      "then": {
+        "properties": {
+          "category": { "enum": ["should-trigger", "should-not-trigger"] }
+        }
+      }
+    }
+  ]
 }

@@ -1,0 +1,18 @@
+# Config declaration for initialize-skill
+
+# This block consumes a skill-level config.yaml from the calling skill.
+# It does not require project-level config itself, but we declare its own
+# behavior defaults here so a consuming skill can override them if needed.
+
+skill:
+  - key: initialize-skill.backup_existing
+    required: false
+    default: true
+    description: Whether to back up an existing project config before overwriting it.
+
+  - key: initialize-skill.write_shared
+    required: false
+    default: false
+    description: Whether this block is allowed to write to shared.yaml. Default false; only skill-specific config is written.
+
+requires_setup: false

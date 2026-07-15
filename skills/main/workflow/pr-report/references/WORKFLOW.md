@@ -13,28 +13,24 @@ This is the detailed step sequence that the `pr-report` skill follows. It is a c
 
 ## Phase 2: Resolve PR
 
-1. **Identify PR number** — try in order until one succeeds:
-   - Explicit number if the user provided digits.
-   - Ticket key if input matches `[A-Z][A-Z0-9_]+-\d+`; search open PRs for a matching title or branch. If multiple match, ask the user.
-   - Current branch; search for a PR whose head matches it.
-   - Ask the user for a PR number or URL.
-2. **Identify repo and branch** — detect `owner/repo` from the git remote unless the user overrides it; detect the branch from the PR or git state.
-3. **Record state** — write `pr_number`, `repo`, `branch`, and `key` to `{context_dir}/pr-report/{key}/state.md`.
+1. **Invoke `identity-resolver/scripts/resolve-identity.py`** with the user input, optional repo/branch hints, and project context. If it returns `needs_input`, ask the user for a PR number or URL. If it returns a `ticket` type, search open PRs for a matching title or branch and ask the user if multiple match. If it returns a `branch` type, search for a PR whose head matches the branch.
+2. **Identify repo and branch** — use the `repo`, `branch`, `base`, `commit`, and `url` fields from the identity envelope. Fall back to detecting `owner/repo` from the git remote and the current branch from git state only if the envelope does not provide them.
+3. **Record state** — write `pr_number`, `repo`, `branch`, `base`, `commit`, `url`, and `key` to `{context_dir}/pr-report/{key}/state.md`.
 
 **Completion criterion:** `pr_number`, `repo`, `branch`, and `key` are recorded in state.
 
 ## PR resolution ambiguity rules
 
-- **Multiple PRs matching a ticket key** — ask the user to pick one, or use the most recently updated one if confidence is medium.
+- **Multiple PRs matching a ticket key** — after `identity-resolver` returns `type: ticket`, search open PRs for a matching title or branch. Ask the user to pick one, or use the most recently updated one if confidence is medium.
 - **No open PR for the current branch** — stop and ask the user to create a PR or provide a number.
-- **PR URL provided** — parse `owner/repo/pull/number` from the URL and use it directly.
+- **PR URL provided** — `identity-resolver` parses `owner/repo/pull/number` from the URL and returns it directly.
 - **Forks** — detect the base repo from the upstream remote or the PR head repo from the PR URL.
 - **Ambiguous repo** — if `git remote` has multiple entries, ask the user to select one and persist the choice.
 
 ## Phase 3: Discover tools
 
 1. **Create skeleton report** — write `{context_dir}/pr-report/{key}-report.md` with section headers and status markers. See [CHECKPOINTING.md](CHECKPOINTING.md).
-2. **Discover tools per capability** — for each load-bearing capability (PR metadata, top-level reviews, inline threads, changed files, CI/build, static analysis, issue tracker, related context reports), detect available tools across all categories (MCP tools/servers, native binaries, direct APIs, harness tools, manual fallback). Rank them and record the preferred tool in state. See [TOOL_SELECTION.md](TOOL_SELECTION.md).
+2. **Discover tools per capability** — for each load-bearing capability (PR metadata, top-level reviews, inline threads, changed files, CI/build, static analysis, issue tracker, related context reports), invoke `tool-discovery/scripts/discover-tools.py` with the capability name and project `config_dir`. Record the ranked list and the preferred tool in state. See [TOOL_SELECTION.md](TOOL_SELECTION.md).
 3. **Report discovery summary** — note the preferred tool for each capability and any capabilities that are skipped because no tool is available.
 
 **Completion criterion:** The skeleton report exists; the `## Detected Tools` section in state lists a preferred tool for every capability that has one; skipped capabilities are noted with a reason.

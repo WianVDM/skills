@@ -139,6 +139,7 @@ def validate_no_adapter_names() -> dict:
         migration_files = {
             (REFERENCES_DIR / "VERSIONING.md").resolve(),
             (REFERENCES_DIR / "WORKFLOW.md").resolve(),
+            (REFERENCES_DIR / "DEPENDENCIES.md").resolve(),
         }
         for path in [SKILL_MD, CONFIG_YAML] + list(REFERENCES_DIR.glob("*.md")) + list(SUBAGENTS_DIR.glob("*.md")):
             text = path.read_text(encoding="utf-8")

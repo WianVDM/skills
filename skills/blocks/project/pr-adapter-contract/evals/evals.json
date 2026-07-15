@@ -1,0 +1,62 @@
+{
+  "version": "1",
+  "skill": "pr-adapter-contract",
+  "tests": [
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Define the interface for a new PR adapter.",
+      "expected": "pr-adapter-contract"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "What shape should a CI adapter return for pr-report?",
+      "expected": "pr-adapter-contract"
+    },
+    {
+      "id": "trigger-should-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Review this adapter against the pr-report contract.",
+      "expected": "pr-adapter-contract"
+    },
+    {
+      "id": "trigger-should-04",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Map a new static-analysis tool into the pr-report shape.",
+      "expected": "pr-adapter-contract"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Post a review on this pull request.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Resolve the PR identity from this URL.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-03",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Discover the available tools for this capability.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-04",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Check out this PR branch in a git worktree.",
+      "expected": ""
+    }
+  ]
+}

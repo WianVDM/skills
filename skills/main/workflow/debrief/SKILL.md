@@ -4,6 +4,7 @@ description: "Debrief a ticket before implementation. Use when the user asks to 
 invocation: model-invoked
 depends:
   - checkpoint
+  - initialize-skill
   - research-ticket
   - map-ticket-relationships
   - explore-code
@@ -15,6 +16,8 @@ depends:
   - baseline
   - parse-skill-frontmatter
   - token-resolver
+  - tool-discovery
+  - identity-resolver
 ---
 
 # debrief
@@ -56,17 +59,13 @@ Produce a structured, confidence-rated understanding of **one ticket** before im
 
 1. Detect project context (`detect-project-context`).
 2. Load the skill-level defaults from `config.yaml`.
-3. Check for `{config_dir}/debrief.yaml`.
-4. If the file is missing, propose the default config to the user.
-5. If the file exists but uses an older schema, migrate it to the current schema.
-6. Ask the user for any required values that cannot be detected or defaulted.
-7. Validate required capabilities.
-8. Write the config and initial notes only after explicit approval.
-9. Report readiness.
+3. Invoke `initialize-skill` to propose and, after explicit user approval, write `{config_dir}/debrief.yaml`.
+4. Validate required capabilities.
+5. Report readiness.
 
 **Idempotency:** running initialization twice must not overwrite user edits or create duplicate files. If the config is already present and current, the skill reports that it is initialized and proceeds.
 
-**Implementation:** the initialization phase is implemented by `scripts/initialize.py`. The conductor invokes it with the detected `marker_dir` and only passes `--approve` after the user confirms.
+**Implementation:** the initialization phase is delegated to the `initialize-skill` building block. The conductor invokes `initialize-skill/scripts/initialize.py` with the detected `marker_dir` and only passes `--approve` after the user confirms.
 
 ## Branches
 
@@ -89,13 +88,13 @@ Each phase ends by updating `checkpoint` state. The conductor always records the
 Steps:
 
 1. Detect project context (`detect-project-context`).
-2. Run initialization if needed. If `{config_dir}/debrief.yaml` is missing or incomplete, invoke `scripts/initialize.py` and ask the user for approval before writing. Then load config (`load-skill-config`) with the defaults from `references/CONFIG_PATTERN.md`.
-3. Detect the issue tracker (`detect-issue-tracker`) if `issue_tracker: auto`; pass `config_dir` from `detect-project-context` as input. If `issue_tracker` is not `auto`, validate the configured tracker.
-4. Extract the ticket key (`extract-ticket-key`) from user input, branch, or previous state.
+2. Run initialization if needed. If `{config_dir}/debrief.yaml` is missing or incomplete, invoke `initialize-skill/scripts/initialize.py` and ask the user for approval before writing. Then load config (`initialize-skill/scripts/load-skill-config.py`) with the defaults from `references/CONFIG_PATTERN.md`.
+3. Detect the issue tracker by invoking `tool-discovery` with capability `issue-tracker-source` if `issue_tracker: auto`; pass `config_dir` from `detect-project-context` as input. If `issue_tracker` is not `auto`, validate the configured tracker.
+4. Resolve the ticket identity by invoking `identity-resolver/scripts/resolve-identity.py` with the user input, branch, or previous state. Use the returned `key` and `project` as the ticket identity. If `identity-resolver` returns `needs_input`, ask the user for the ticket key.
 5. Get git state (`get-git-state`) if needed.
 6. Resolve tracker credentials (`token-resolver`). The conductor builds a `token_config` from the tracker block in `debrief.yaml` (e.g. `env_var`, `mcp_config_sources`, `mcp_server_key`) and invokes `token-resolver`. If the token is missing and prompting is not authorized, report `blocked` and stop.
 7. Create or resume checkpoint (`checkpoint`) at `{context_dir}/debrief/{key}/state.md`.
-8. Check whether an existing debrief report is fresh (`check-debrief-freshness`). If a report exists, parse its frontmatter with `parse-skill-frontmatter` and pass it to the script. If the report is fresh and the user has not asked for a fresh debrief, enter the `resume` branch.
+8. Check whether an existing debrief report is fresh (`artifact-freshness`). If a report exists, parse its frontmatter with `parse-skill-frontmatter` and pass it to `artifact-freshness/scripts/check-freshness.py` along with the ticket's `updated_at`, current branch, and current commit. If the report is fresh and the user has not asked for a fresh debrief, enter the `resume` branch.
 9. If any required capability is missing, report `blocked` and stop.
 
 ### Phase 1 — Gather evidence
@@ -180,12 +179,16 @@ Required dependencies are validated eagerly during initialization and Phase 0. R
 
 | Dependency | Category | Evaluation | Loading trigger |
 |---|---|---|---|
+| `initialize-skill` | Required | Eager | Used during initialization to create or migrate `{config_dir}/debrief.yaml` and to load merged config during operation. |
+| `artifact-freshness` | Required | Eager | Checks whether existing debrief reports are fresh before reuse. |
 | `checkpoint` | Required | Eager | Always loaded before any workflow phase. |
 | `research-ticket` | Required | Eager | Always loaded in Phase 1. |
 | `challenge-assumptions` | Required | Eager | Always loaded in Phase 2. |
 | `context-reports` | Required | Eager | Used for report schemas and freshness conventions in every phase. |
 | `worker-contract` | Required | Eager | Subagents use this contract in every phase that delegates work. |
 | `detect-project-context` | Required | Eager | Used during initialization and Phase 0. |
+| `tool-discovery` | Required | Eager | Used in Phase 0 to detect the issue-tracker tool. |
+| `identity-resolver` | Required | Eager | Used in Phase 0 to resolve the ticket key from user input, branch, or previous state. |
 | `map-ticket-relationships` | Recommended | Lazy | Loaded in Phase 1 when the tracker provides relationship data or the user asks for it. If missing, the conductor performs minimal inline mapping and records the degraded depth. |
 | `explore-code` | Recommended | Lazy | Loaded in Phase 1 when the task type is `code`/`ui` or a code-related ambiguity exists. If missing, the conductor skips code exploration and records the gap. |
 | `scan-context` | Recommended | Lazy | Loaded in Phase 1 when the conductor wants to discover related reports. If missing, the conductor proceeds without prior context and notes the gap. |

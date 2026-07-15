@@ -1,0 +1,9 @@
+# Config declaration for tool-discovery
+
+# This block does not require project-level config. It accepts the config_dir
+# as input on each invocation and reads optional preferences from
+# {config_dir}/tool-discovery.yaml if present.
+
+skill: []
+
+requires_setup: false

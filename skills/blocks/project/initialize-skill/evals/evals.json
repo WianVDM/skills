@@ -1,0 +1,108 @@
+{
+  "version": "1",
+  "skill": "initialize-skill",
+  "tests": [
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Initialize the debrief skill config for this project.",
+      "expected": "initialize-skill"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Set up the pr-report configuration for this repo.",
+      "expected": "initialize-skill"
+    },
+    {
+      "id": "trigger-should-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Configure the skill defaults and write the project config.",
+      "expected": "initialize-skill"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Review the pull request and post comments.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "What is the weather today?",
+      "expected": ""
+    },
+    {
+      "id": "behavior-01",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Run initialize.py with marker-dir ./.agents, skill-name my-skill, and defaults '{\"timeout\": 30}' without --approve and verify it returns status needs_approval and does not write the file.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"needs_approval\""
+        },
+        {
+          "type": "no_file_write",
+          "path": ".agents/config/my-skill.yaml"
+        }
+      ]
+    },
+    {
+      "id": "behavior-02",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Run initialize.py with marker-dir ./.agents, skill-name my-skill, and defaults '{\"timeout\": 30}' with --approve and verify it writes the config.",
+      "assertions": [
+        {
+          "type": "file_write",
+          "path": ".agents/config/my-skill.yaml"
+        },
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"written\""
+        }
+      ]
+    },
+    {
+      "id": "behavior-03",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Create a project config with timeout=60, then run initialize.py with defaults '{\"timeout\": 30}' and verify the existing user value 60 is preserved.",
+      "assertions": [
+        {
+          "type": "file_contains",
+          "path": ".agents/config/my-skill.yaml",
+          "value": "timeout: 60"
+        }
+      ]
+    },
+    {
+      "id": "pressure-missing-marker-dir",
+      "type": "pressure",
+      "prompt": "Run initialize.py with a non-existent marker directory and verify it returns an error.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"error\""
+        }
+      ]
+    },
+    {
+      "id": "pressure-invalid-defaults",
+      "type": "pressure",
+      "prompt": "Run initialize.py with invalid JSON in --defaults and verify it returns an error.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"error\""
+        }
+      ]
+    }
+  ]
+}

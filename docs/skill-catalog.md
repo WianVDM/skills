@@ -193,7 +193,7 @@ Design, review, and update skills that follow the skill standards. Coordinates c
 - **Location:** `../skills/main/authoring/write-a-skill/`
 - **Dependencies:**
   - **Required:** detect-project-context, decide-skill-shape, audit-skill, validate-skill-frontmatter, review-skill, eval-format, worker-contract, context-reports, parse-skill-frontmatter
-  - **Recommended:** list-available-skills, search-skills-registry, detect-skill-overlap, install-skill, run-trigger-evals
+  - **Recommended:** list-available-skills, search-skills-registry, detect-skill-overlap, install-skill, run-trigger-evals, index-skill-capabilities
   - **Optional:** prototype
 - **Details:** [write-a-skill/SKILL.md](../skills/main/authoring/write-a-skill/SKILL.md)
 
@@ -238,6 +238,15 @@ Provide the canonical schema and conventions for skill evaluation artifacts stor
 - **Location:** `../skills/blocks/authoring/eval-format/`
 - **Dependencies:** None.
 - **Details:** [eval-format/SKILL.md](../skills/blocks/authoring/eval-format/SKILL.md)
+
+#### `index-skill-capabilities`
+
+Generate a structured, deterministic capability index from skill files so other skills can discover, rank, and compare capabilities across the skill catalog.
+
+- **Invocation:** `model-invoked`
+- **Location:** `../skills/blocks/authoring/index-skill-capabilities/`
+- **Dependencies:** None.
+- **Details:** [index-skill-capabilities/SKILL.md](../skills/blocks/authoring/index-skill-capabilities/SKILL.md)
 
 #### `parse-skill-frontmatter`
 

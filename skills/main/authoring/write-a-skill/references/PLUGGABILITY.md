@@ -44,6 +44,18 @@ The only hardcoded project-level values are the detection rules, the marker-dire
 - If the harness cannot fetch external standards, the skill falls back to the embedded `references/FUNDAMENTALS.md` and `references/PATTERN_HINTS.md` and must use the degraded-mode warning template below.
 - If the project context cannot be detected, the skill fails closed and explains what is missing.
 - If `standards_path` is configured but the directory is missing, the skill warns and falls back to embedded docs.
+- If `capability_index_path` is configured but the file is missing, the skill searches for `.agents/skill-capability-index.json`, then `docs/skill-capability-index.json`, and finally builds a description-level index from the repository files. The user is warned and can regenerate the index if needed.
+
+## Capability index discovery
+
+`write-a-skill` and its building blocks use the machine-readable capability index for overlap detection. The index path is resolved lazily:
+
+1. Configured `capability_index_path` in `write-a-skill.yaml`.
+2. Project-local override at `.agents/skill-capability-index.json`.
+3. Bundle default at `docs/skill-capability-index.json`.
+4. Build a fresh index from the repository files as a fallback.
+
+If the index is stale or missing, the skill warns the user and continues in degraded mode. It never fails silently.
 
 ## Degraded-mode warning template
 

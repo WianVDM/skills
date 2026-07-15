@@ -1,6 +1,8 @@
 # Config pattern
 
-`debrief` reads its project-specific configuration from `{marker_dir}/config/debrief.yaml` after it has been merged with `{marker_dir}/config/shared.yaml` by `load-skill-config`.
+`debrief` reads its project-specific configuration from `{marker_dir}/config/debrief.yaml`. The file is created, migrated, and loaded by the `initialize-skill` building block, which merges `{marker_dir}/config/shared.yaml` and `{marker_dir}/config/debrief.yaml` with the skill-level defaults from `debrief/config.yaml`.
+
+For the full initialization interface, see `initialize-skill/references/INTERFACE.md`.
 
 ## Full schema
 

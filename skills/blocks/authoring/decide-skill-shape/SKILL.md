@@ -21,6 +21,7 @@ Conductor.
 
 - Capture the problem in one or two sentences.
 - Explore existing skills and registry results that might cover the problem.
+- Consume an overlap findings report from `detect-skill-overlap` when provided by the caller (e.g., `write-a-skill`'s `decide` gate), using it to identify existing capabilities and extraction opportunities.
 - Ask classification questions to narrow the shape.
 - Apply decision rules to recommend a shape.
 - Present the recommendation, alternatives, and trade-offs.
@@ -46,21 +47,28 @@ Conductor.
 2. **Explore existing solutions.**
    - Run `list-available-skills` to discover local skills.
    - Optionally run `search-skills-registry` to find third-party skills.
+   - If the caller provides an overlap findings report from `detect-skill-overlap`, use it to identify:
+     - Existing skills that already implement the capability.
+     - Capabilities that could be extracted as a generic building block.
+     - Reuse / colocate / extract options for any significant overlap.
    - Also consider whether an existing tool, MCP server, native binary, or context file already fulfills the capability before building a new skill.
-   - **Completion criterion:** an alternatives report exists listing existing skills, tool categories, and registry results.
+   - **Completion criterion:** an alternatives report exists listing existing skills, tool categories, registry results, and any overlap findings.
 3. **Classify the problem.**
    - Ask one question at a time when the answer shapes the recommendation:
      - Is this a repeated, judgment-shaped task or a narrow, deterministic transformation?
      - Should it fire autonomously, only when explicitly invoked, or always be active?
      - Does it coordinate multiple tools or skills, or is it a single focused capability?
      - Does this capability belong inside an existing skill, or is extraction as a separate skill justified by reuse?
+       - Use the overlap findings report (if available) to answer this: if the capability already exists in two or more skills under the same category, extraction is a strong candidate; if only one skill uses it, colocation is usually preferred.
      - Is the output behavior, reference/configuration, or external tooling?
    - **Completion criterion:** classification answers are recorded.
 4. **Apply decision rules.**
    - Use the decision table in [references/DECISION_RULES.md][decision-rules].
+   - If an overlap findings report is available, prefer reusing an existing skill or extracting a building block when the report shows a strong capability overlap.
    - **Completion criterion:** a primary shape is recommended with rationale.
 5. **Present recommendation.**
    - Explain the primary recommendation, alternatives, and trade-offs.
+   - If an overlap findings report informed the recommendation, summarize the key evidence (e.g., "three existing skills already implement `tool-discovery`, so extracting a building block is recommended").
    - Propose a default and ask the user to confirm, reject, or request more options.
    - **Completion criterion:** the user has confirmed, rejected, or asked for more options.
 6. **Write decision report.**
@@ -77,8 +85,13 @@ A decision report with the following structure:
 ## Problem summary
 ...
 
+## Existing options considered
+- Local skills from `list-available-skills`.
+- Registry results from `search-skills-registry` (if run).
+- Overlap findings from `detect-skill-overlap` (if provided), including reuse / colocate / extract options.
+
 ## Recommendation
-{skill | script | MCP server | context file | mode | reuse existing skill}
+{skill | script | MCP server | context file | mode | reuse existing skill | extract building block}
 
 ## Rationale
 ...

@@ -4,9 +4,13 @@ description: Build an actionable understanding of a pull request. Gather PR meta
 invocation: model-invoked
 depends:
   - detect-project-context
+  - initialize-skill
+  - artifact-freshness
   - context-reports
   - worker-contract
   - token-resolver
+  - tool-discovery
+  - identity-resolver
 ---
 
 # PR Report
@@ -35,9 +39,10 @@ The skill does not treat any single tool as the only source of truth for a capab
 
 ## Workflow
 
-1. **Initialize** — detect project context, load or create config, and validate that at least one PR source tool is available. **Completion:** `{config_dir}/pr-report.yaml` exists, the PR capability has a selected tool, and its token resolves without error.
-2. **Resolve PR** — identify PR number, repo, branch, and ticket key. **Completion:** `pr_number`, `repo`, `branch`, and `key` are recorded in `{context_dir}/pr-report/{key}/state.md`.
-3. **Discover tools** — for each load-bearing capability (PR source, top-level reviews, inline threads, changed files, CI/build, static analysis, issue tracker), detect available tools across all categories: MCP tools/servers, native binaries, direct APIs, harness tools, and manual fallback. Record the ranked list and the preferred tool in state. **Completion:** For every capability, at least one tool is detected and the preferred tool is identified; the ranking is recorded in state.
+1. **Initialize** — detect project context, invoke `initialize-skill` to load or create config, and validate that at least one PR source tool is available. **Completion:** `{config_dir}/pr-report.yaml` exists, the PR capability has a selected tool, and its token resolves without error.
+2. **Resolve PR** — invoke `identity-resolver/scripts/resolve-identity.py` with the user input to identify PR number, repo, branch, and ticket key. If `identity-resolver` returns `needs_input`, ask the user for a PR number or URL. **Completion:** `pr_number`, `repo`, `branch`, and `key` are recorded in `{context_dir}/pr-report/{key}/state.md`.
+2a. **Check prior reports** — scan `{context_dir}/` for existing reports matching the PR or ticket key, and use `artifact-freshness` to check whether any are fresh enough to reuse as context. Reuse fresh reports; record stale reports as ignored. **Completion:** Fresh prior reports are identified and noted in state; stale reports are flagged.
+3. **Discover tools** — for each load-bearing capability (PR source, top-level reviews, inline threads, changed files, CI/build, static analysis, issue tracker), invoke `tool-discovery/scripts/discover-tools.py` with the capability name and the project `config_dir`. Record the ranked list and the preferred tool in state. **Completion:** For every capability, at least one tool is detected and the preferred tool is identified; the ranking is recorded in state.
 4. **Collect** — invoke the preferred tool for each capability. If the preferred tool returns partial or no data and a better-ranked tool is available, fall back to the next-best tool before accepting degradation. **Completion:** Every capability has returned data from the best available tool, or the user has explicitly accepted a degraded source.
 5. **Scope-check and triage** — challenge every item against changed code, ticket scope, and project conventions. **Completion:** Every item is classified as actionable, resolved, outdated, or no-action-needed; the issue board is recorded in the report.
 6. **Report** — render the final Markdown report, optionally an HTML dashboard, and present a concise summary with open items, a generated task list, and a suggested next step. **Completion:** All report sections are marked `<!-- STATUS: completed -->`, `report_status` is `complete`, and the chat summary is delivered.

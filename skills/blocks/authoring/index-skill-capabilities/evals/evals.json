@@ -1,0 +1,76 @@
+{
+  "version": "1",
+  "skill": "index-skill-capabilities",
+  "tests": [
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Generate the capability index for the skill bundle.",
+      "expected": "index-skill-capabilities"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Create a machine-readable index of skill capabilities.",
+      "expected": "index-skill-capabilities"
+    },
+    {
+      "id": "trigger-should-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Index what every skill in this bundle can do.",
+      "expected": "index-skill-capabilities"
+    },
+    {
+      "id": "trigger-should-04",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Regenerate the skill-capability-index.json.",
+      "expected": "index-skill-capabilities"
+    },
+    {
+      "id": "trigger-should-05",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Check if the capability index is stale.",
+      "expected": "index-skill-capabilities"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Detect overlap between two skills.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Write a new SKILL.md for a building block.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-03",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Audit the skill against the fundamentals.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-04",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Decide whether this should be a skill or a script.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-05",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Install the capability index into the project.",
+      "expected": ""
+    }
+  ]
+}

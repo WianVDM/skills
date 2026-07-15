@@ -1,0 +1,166 @@
+capabilities:
+  pr-source:
+    description: Pull-request metadata, changed files, reviews, and inline threads.
+    tools:
+      - name: github-mcp
+        category: mcp
+        confidence: high
+        keywords:
+          - github
+        identifiers:
+          - github_get_pull_request
+          - github_get_pull_request_reviews
+          - github_get_pull_request_files
+      - name: gh-cli
+        category: cli
+        confidence: medium
+        identifiers:
+          - gh
+      - name: github-api
+        category: api
+        confidence: medium
+        identifiers:
+          - GITHUB_TOKEN
+      - name: git-cli
+        category: cli
+        confidence: low
+        identifiers:
+          - git
+      - name: manual
+        category: manual
+        confidence: low
+        identifiers: []
+
+  ci-source:
+    description: CI / build status and job logs.
+    tools:
+      - name: github-actions-mcp
+        category: mcp
+        confidence: high
+        keywords:
+          - github
+        identifiers:
+          - github_get_check_runs
+      - name: gh-cli
+        category: cli
+        confidence: medium
+        identifiers:
+          - gh
+      - name: github-api
+        category: api
+        confidence: medium
+        identifiers:
+          - GITHUB_TOKEN
+      - name: manual
+        category: manual
+        confidence: low
+        identifiers: []
+
+  static-analysis-source:
+    description: Static-analysis findings.
+    tools:
+      - name: sonarcloud-mcp
+        category: mcp
+        confidence: high
+        keywords:
+          - sonar
+          - sonarcloud
+        identifiers:
+          - sonarcloud_find_issues
+      - name: sonarcloud-api
+        category: api
+        confidence: medium
+        identifiers:
+          - SONAR_TOKEN
+      - name: semgrep-mcp
+        category: mcp
+        confidence: medium
+        keywords:
+          - semgrep
+        identifiers:
+          - semgrep_scan
+      - name: manual
+        category: manual
+        confidence: low
+        identifiers: []
+
+  issue-tracker-source:
+    description: Ticket scope and acceptance criteria.
+    tools:
+      - name: jira-mcp
+        category: mcp
+        confidence: high
+        keywords:
+          - jira
+        identifiers:
+          - jira_get_issue
+      - name: jira-api
+        category: api
+        confidence: medium
+        identifiers:
+          - JIRA_SERVER_URL
+          - JIRA_USERNAME
+          - JIRA_API_TOKEN
+      - name: linear-mcp
+        category: mcp
+        confidence: high
+        keywords:
+          - linear
+        identifiers:
+          - linear_get_issue
+      - name: linear-api
+        category: api
+        confidence: medium
+        identifiers:
+          - LINEAR_API_TOKEN
+      - name: manual
+        category: manual
+        confidence: low
+        identifiers: []
+
+  notification-source:
+    description: Feedback from chat, email, or meeting tools.
+    tools:
+      - name: slack-mcp
+        category: mcp
+        confidence: high
+        keywords:
+          - slack
+        identifiers:
+          - slack_get_thread
+      - name: teams-mcp
+        category: mcp
+        confidence: high
+        keywords:
+          - teams
+        identifiers:
+          - teams_get_messages
+      - name: manual
+        category: manual
+        confidence: low
+        identifiers: []
+
+  posting:
+    description: Posting reviews or comments back to a platform.
+    tools:
+      - name: github-mcp
+        category: mcp
+        confidence: high
+        keywords:
+          - github
+        identifiers:
+          - github_create_pull_request_review
+      - name: gh-cli
+        category: cli
+        confidence: medium
+        identifiers:
+          - gh
+      - name: github-api
+        category: api
+        confidence: medium
+        identifiers:
+          - GITHUB_TOKEN
+      - name: manual
+        category: manual
+        confidence: low
+        identifiers: []

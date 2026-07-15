@@ -1,0 +1,108 @@
+{
+  "version": "1",
+  "skill": "scope-checker",
+  "tests": [
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Check whether these findings are in scope for the ticket.",
+      "expected": "scope-checker"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Are these PR comments related to the work described in the acceptance criteria?",
+      "expected": "scope-checker"
+    },
+    {
+      "id": "trigger-should-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Triage these review comments against the ticket scope.",
+      "expected": "scope-checker"
+    },
+    {
+      "id": "trigger-should-04",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Classify each finding as in-scope or out-of-scope.",
+      "expected": "scope-checker"
+    },
+    {
+      "id": "trigger-should-05",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Flag scope drift in these review findings.",
+      "expected": "scope-checker"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Post a review on this pull request.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Resolve the PR identity from this URL.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-03",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Discover the available tools for this capability.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-04",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Store this tool output as evidence.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-05",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Check out this PR branch in a git worktree.",
+      "expected": ""
+    },
+    {
+      "id": "behavior-classify-against-acceptance-criteria",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Given scope type ticket with acceptance criteria ['Add user login endpoint', 'Return 401 on bad password'] and findings [{id: f1, message: 'Use bcrypt for passwords'}, {id: f2, message: 'Fix typo in README'}], the scope-checker subagent should classify f1 as in-scope and f2 as out-of-scope and include a summary with in_scope 1 and out_of_scope 1.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "classification: in-scope"
+        },
+        {
+          "type": "output_contains",
+          "value": "classification: out-of-scope"
+        },
+        {
+          "type": "output_contains",
+          "value": "in_scope: 1"
+        }
+      ]
+    },
+    {
+      "id": "behavior-flag-unchanged-file",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Given scope changed_files ['src/auth.ts'] and a finding {id: f1, file: 'src/legacy.ts', message: 'Remove unused import'}, the scope-checker should classify the finding as out-of-scope or ambiguous with the flag touches-unchanged-file.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "touches-unchanged-file"
+        }
+      ]
+    }
+  ]
+}

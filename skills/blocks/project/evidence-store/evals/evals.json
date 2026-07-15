@@ -1,0 +1,218 @@
+{
+  "version": "1",
+  "skill": "evidence-store",
+  "tests": [
+    {
+      "id": "trigger-should-01",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Store the output of this tool run so I can reuse it later.",
+      "expected": "evidence-store"
+    },
+    {
+      "id": "trigger-should-02",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Append this PR data to the evidence timeline for OC-1234.",
+      "expected": "evidence-store"
+    },
+    {
+      "id": "trigger-should-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "What evidence do we already have for ticket OC-5678?",
+      "expected": "evidence-store"
+    },
+    {
+      "id": "trigger-should-04",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Get the latest CI results I collected for this pull request.",
+      "expected": "evidence-store"
+    },
+    {
+      "id": "trigger-should-05",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Mark the previous static analysis findings as stale.",
+      "expected": "evidence-store"
+    },
+    {
+      "id": "trigger-should-06",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Has anyone gathered evidence for branch feature/auth?",
+      "expected": "evidence-store"
+    },
+    {
+      "id": "trigger-should-07",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Save these findings as append-only evidence.",
+      "expected": "evidence-store"
+    },
+    {
+      "id": "trigger-should-08",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Show me all evidence collected since yesterday for this commit.",
+      "expected": "evidence-store"
+    },
+    {
+      "id": "trigger-should-09",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "I need to query the latest evidence per capability for this work item.",
+      "expected": "evidence-store"
+    },
+    {
+      "id": "trigger-should-10",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Record that the issue-tracker data is out of date.",
+      "expected": "evidence-store"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Post a review comment on the pull request.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Check if this debrief report is still fresh.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-03",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Find the project root and config directory.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-04",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Initialize the skill configuration for this project.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-05",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Resolve the GitHub token from the environment.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-06",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Build a throwaway prototype for this UI idea.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-07",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Diagnose why the tests are failing.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-08",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Break this PRD into implementation tickets.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-09",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Create a baseline snapshot of this feature.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-10",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Verify this branch passes the configured CI gates.",
+      "expected": ""
+    },
+    {
+      "id": "behavior-append-01",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Append an evidence entry for work item type pr, key 42@owner-repo, capability pr-source, source github-mcp, with payload 'PR opened' and verify it is appended successfully.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"appended\""
+        }
+      ]
+    },
+    {
+      "id": "behavior-query-latest-01",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Append two evidence entries for the same PR with different collected_at timestamps, then query_latest for capability pr-source and verify the latest entry is returned.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"found\""
+        }
+      ]
+    },
+    {
+      "id": "behavior-query-all-01",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Append two evidence entries for the same PR with different capabilities, then query_all and verify both entries are returned.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"count\": 2"
+        }
+      ]
+    },
+    {
+      "id": "behavior-query-since-01",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Append one old evidence entry and one recent evidence entry, then query_since the recent timestamp and verify only the recent entry is returned.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"count\": 1"
+        }
+      ]
+    },
+    {
+      "id": "behavior-exists-01",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Append an evidence entry for a PR, then check exists for that PR and verify it returns true.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"exists\": true"
+        }
+      ]
+    },
+    {
+      "id": "behavior-mark-stale-01",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Append an evidence entry for a PR capability, then mark_stale that capability and verify the staleness marker is appended.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"appended\""
+        }
+      ]
+    }
+  ]
+}

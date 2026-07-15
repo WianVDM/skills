@@ -424,7 +424,7 @@ def _find_schema_path(provided_schema: Optional[str]) -> Optional[Path]:
         path = Path(provided_schema).expanduser().resolve()
         if path.is_file():
             return path
-    repo_root = Path(__file__).resolve().parents[4]
+    repo_root = Path(__file__).resolve().parents[5]
     candidates = [
         repo_root / "docs" / "skill-standards" / "schemas" / "skill-frontmatter.schema.json",
         Path(__file__).resolve().parent.parent / "references" / "skill-frontmatter.schema.json",
@@ -437,8 +437,8 @@ def _find_schema_path(provided_schema: Optional[str]) -> Optional[Path]:
 
 def _run_schema_validation(skill_md: Path, schema_path: Optional[str] = None) -> dict:
     """Invoke validate-skill-frontmatter directly and return its JSON report."""
-    repo_root = Path(__file__).resolve().parents[4]
-    script = repo_root / "skills" / "tooling" / "validate-skill-frontmatter" / "scripts" / "validate-skill-frontmatter.py"
+    repo_root = Path(__file__).resolve().parents[5]
+    script = repo_root / "skills" / "blocks" / "authoring" / "validate-skill-frontmatter" / "scripts" / "validate-skill-frontmatter.py"
     schema = _find_schema_path(schema_path)
     if not script.is_file():
         return {"valid": False, "errors": ["Validation tool not found."]}

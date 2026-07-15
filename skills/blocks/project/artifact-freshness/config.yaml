@@ -1,0 +1,12 @@
+# Config declaration for artifact-freshness
+
+# This block does not require project-level config. It accepts freshness rules
+# as input on each invocation. These keys document the default behavior.
+
+skill:
+  - key: artifact-freshness.default_freshness_hours
+    required: false
+    default: 24
+    description: Default maximum age in hours when no freshness_hours is provided.
+
+requires_setup: false

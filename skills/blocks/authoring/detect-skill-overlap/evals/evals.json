@@ -165,6 +165,70 @@
       ]
     },
     {
+      "id": "behavior-index-based-overlap",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Compare the target skill to the existing catalog. The target skill is `pr-report` and it builds a pull-request report. Report any overlaps with existing skills.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "debrief"
+        },
+        {
+          "type": "output_contains",
+          "value": "overlap"
+        }
+      ]
+    },
+    {
+      "id": "behavior-extraction-candidate-card",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Compare the target skill to the existing catalog. The target skill is `pr-report`. Identify extraction candidates and include an interface sketch.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "Extraction candidates"
+        },
+        {
+          "type": "output_contains",
+          "value": "Interface sketch"
+        },
+        {
+          "type": "output_contains",
+          "value": "identity-resolution"
+        }
+      ]
+    },
+    {
+      "id": "behavior-fallback-when-index-missing",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Compare the target skill to the existing catalog. The capability index is missing. Detect overlaps for `pr-report` anyway.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "fallback"
+        },
+        {
+          "type": "output_contains",
+          "value": "debrief"
+        }
+      ]
+    },
+    {
+      "id": "behavior-false-positive-filter",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Compare the target skill to the existing catalog. The target skill is `pr-report`. `debrief` has been marked as a false positive. Verify that `debrief` does not appear in the overlap findings.",
+      "assertions": [
+        {
+          "type": "output_excludes",
+          "value": "debrief"
+        }
+      ]
+    },
+    {
       "id": "behavior-read-only",
       "type": "behavior",
       "baseline_type": "no_skill",
