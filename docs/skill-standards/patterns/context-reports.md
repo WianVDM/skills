@@ -96,6 +96,8 @@ A report is stale if:
 - It was produced by an older skill version with an incompatible schema.
 - The source it describes no longer exists or has changed materially.
 
+When a report is generated from data collected by tools, the freshness of the report depends on the freshness of the underlying observations. If observations are stored in a [`chainlog`](./chainlog.md), the consumer should check the observations — not just the report — before trusting the view.
+
 Skills should document how they determine freshness and what they do when a report is stale.
 
 ---
@@ -124,7 +126,7 @@ A shared `context-reports` skill can define:
 - Freshness rules.
 - How to handle missing reports.
 
-Individual skills then reference it.
+Reports are views over data. When the underlying data is collected from tools and may be reused across skills, append the observations to a [`chainlog`](./chainlog.md) and generate the report from the latest observations per capability. Individual skills then reference the appropriate pattern.
 
 ---
 

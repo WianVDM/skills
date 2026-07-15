@@ -19,6 +19,7 @@ Opt-in architecture shapes: reusable ways to solve recurring skill-design proble
 - [`global-pluggable.md`](./global-pluggable.md) — what pluggability requires.
 - [`versioning.md`](./versioning.md) — version changes and deprecation.
 - [`context-reports.md`](./context-reports.md) — shared context report conventions.
+- [`chainlog.md`](./chainlog.md) — shared append-only observation ledger.
 - [`stateful.md`](./stateful.md) — skills that maintain state across invocations.
 
 ---

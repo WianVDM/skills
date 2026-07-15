@@ -68,6 +68,8 @@ Project-level state lives in a well-known location:
 
 A skill must document its state layout. Do not scatter state across unrelated directories.
 
+State files are private working memory for one skill. If observations need to be shared across skills, append them to a [`chainlog`](./chainlog.md) and generate reports or views from the chainlog as needed.
+
 ---
 
 ## State schema

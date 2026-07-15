@@ -37,9 +37,10 @@ A conductor is responsible for:
 1. **Defining the workflow** — what phases exist, in what order, and what each phase produces.
 2. **Delegating work** — sending focused tasks to subagents, workers, or building-block skills.
 3. **Maintaining state** — tracking progress across phases and surviving context compaction.
-4. **Integrating findings** — combining worker outputs before deciding what to do next.
-5. **Handling failure** — deciding whether to retry, escalate, or stop when a step fails.
-6. **Owning user interaction** — or delegating it to a wrapper so the workflow stays clean.
+4. **Collecting and sharing observations** — appending tool outputs to a [`chainlog`](./chainlog.md) when the data may be reused across skills or runs.
+5. **Integrating findings** — combining worker outputs before deciding what to do next.
+6. **Handling failure** — deciding whether to retry, escalate, or stop when a step fails.
+7. **Owning user interaction** — or delegating it to a wrapper so the workflow stays clean.
 
 ---
 

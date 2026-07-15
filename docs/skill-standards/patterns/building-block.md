@@ -64,6 +64,7 @@ A vocabulary building block provides shared language, reference, or conventions 
 - `design-vocabulary` — shared terms for deep modules, seams, and public interfaces.
 - `config-pattern` — shared conventions for loading and validating project config (see [configurable.md][configurable]).
 - `context-reports` — report schema and freshness rules.
+- `chainlog` — shared append-only observation ledger (see [chainlog.md](./chainlog.md)).
 
 ---
 

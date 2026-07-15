@@ -24,6 +24,7 @@ A skill should consider the full tool catalog, not only its own adapters:
 | **Native binaries** | `gh`, `git`, `curl`, `jq` |
 | **Direct APIs** | Provider REST or GraphQL endpoints called directly |
 | **Harness tools** | Built-in browser, file system, search, shell |
+| **Shared storage adapters** | `chainlog` file adapter, graph-backed chainlog adapter |
 | **Manual fallback** | User input, CSV, markdown files |
 
 ## Tool discovery

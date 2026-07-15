@@ -16,6 +16,7 @@ Format, package, evaluation, glossary, and lookup tables for skill authors and m
 - [`extensibility.md`](./extensibility.md) — how the standard extends to new harnesses and tools.
 - [`review-principles.md`](./review-principles.md) — principles for reviewing skills.
 - [`audit-rubric.md`](./audit-rubric.md) — rubric for auditing skills.
+- [`chainlog-contract.md`](./chainlog-contract.md) — machine-readable contract for the `chainlog` pattern.
 - [`glossary.md`](./glossary.md) — terms and definitions.
 - [`sources.md`](./sources.md) — research basis for the standards.
 
