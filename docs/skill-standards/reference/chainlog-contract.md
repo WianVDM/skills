@@ -67,7 +67,7 @@ Each observation has frontmatter and a body:
 
 ```yaml
 ---
-evidence_id: <uuid>
+observation_id: <uuid>
 work_item_type: pr
 work_item_key: 42@owner-repo
 capability: pr-source
@@ -89,7 +89,7 @@ Normalized data for this capability, defined by the capability contract.
 
 | Field | Required | Description |
 |-------|----------|-------------|
-| `evidence_id` | yes | UUID for this observation. Generated if omitted. |
+| `observation_id` | yes | UUID for this observation. Generated if omitted. |
 | `work_item_type` | yes | `ticket`, `pr`, `branch`, `commit`, or another bounded type. |
 | `work_item_key` | yes | Stable identifier for the work item. |
 | `capability` | yes | The capability category. |
@@ -145,14 +145,14 @@ Add a new observation to the head segment for a work item.
 }
 ```
 
-Required entry fields: `work_item_type`, `work_item_key`, `capability`, `source`. If `evidence_id` or `collected_at` are omitted, the implementation generates them.
+Required entry fields: `work_item_type`, `work_item_key`, `capability`, `source`. If `observation_id` or `collected_at` are omitted, the implementation generates them.
 
 **Output:**
 
 ```json
 {
   "status": "appended",
-  "evidence_id": "...",
+  "observation_id": "...",
   "path": ".agents/context/chainlog/pr/42@owner-repo.001.chain.md"
 }
 ```
@@ -269,7 +269,7 @@ Append a marker indicating that a capability is stale.
 ```json
 {
   "status": "appended",
-  "evidence_id": "...",
+  "observation_id": "...",
   "path": "..."
 }
 ```

@@ -93,6 +93,15 @@ This is the contract that `audit-skill` uses to evaluate any skill. Each check h
 | TA-01 | Capability-first tool selection. | Warning | The skill does not treat its own adapters as the only data source. It detects available tools and selects the best one for each capability. |
 | TA-02 | Degradation disclosure. | Warning | If a weaker tool is used, the skill tells the user what better option was available and obtains user consent or records the preference. |
 
+## Category: Chainlog
+
+| ID | Check | Severity | Pass condition |
+|---|---|---|---|
+| CL-01 | If a skill produces or consumes observable data, it declares a `chainlog` classification in `references/chainlog.md` and depends on `chainlog`. | Blocker for skills touching observable data. | `references/chainlog.md` exists with a classification of `producer`, `consumer`, `both`, or `neither`; `chainlog` is declared as a dependency when classification is not `neither`. |
+| CL-02 | A `consumer` or `both` skill documents how it checks observation freshness before reuse. | Warning | `artifact-freshness` is declared as a dependency and the freshness rule is documented. |
+| CL-03 | Observations do not contain secret values. | Blocker | No tokens, keys, or passwords appear in sample observations, templates, or chainlog payloads. |
+| CL-04 | A skill classified as `neither` does not collect or consume observable data. | Blocker if violated. | The workflow does not query or append to `chainlog` and does not synthesize views from tool-collected data. |
+
 ## Category: Portability
 
 | ID | Check | Severity | Pass condition |
@@ -100,6 +109,7 @@ This is the contract that `audit-skill` uses to evaluate any skill. Each check h
 | P01 | No hardcoded project-specific paths. | Blocker | Paths are detected, configured, or asked for. |
 | P02 | Global/pluggable skills detect environment. | Warning | Global skills use `detect-project-context` or equivalent. |
 | P03 | Degradation behavior is documented. | Suggestion | Skill notes what happens if a feature is unsupported. |
+| P-04 | External references are resolved through declared dependencies or configured paths, not hardcoded relative paths. | Warning | Skill files do not contain hardcoded relative paths to `docs/skill-standards`, other skill directories, or project conventions unless those targets are declared dependencies or standard context/config paths. |
 
 ## Category: Evaluation
 

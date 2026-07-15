@@ -1,9 +1,9 @@
 {
   "version": "1.0.0",
-  "generated_at": "2026-07-14T11:37:33.282621+00:00",
+  "generated_at": "2026-07-15T13:43:34.865811+00:00",
   "source_check": {
-    "skills_json_hash": "sha256:b65b94a6564d8cd04e22389bc6e1a06dc13200427df110ea034c04c2e58bb033",
-    "latest_skill_mtime": "2026-07-14T11:35:49.359106+00:00"
+    "skills_json_hash": "sha256:2044a1771cf0a2ac1999901c3084e6cff2552f36ecc03315a73eb9b615d496dc",
+    "latest_skill_mtime": "2026-07-15T13:42:34.657144+00:00"
   },
   "skills": [
     {
@@ -2370,6 +2370,15 @@
           ]
         },
         {
+          "id": "write-a-skill:subagent-check-chainlog-needs",
+          "name": "Check-Chainlog-Needs",
+          "category": "uncategorized",
+          "description": "Subagent role for write-a-skill.",
+          "sources": [
+            "subagents/check-chainlog-needs.md"
+          ]
+        },
+        {
           "id": "write-a-skill:subagent-clarify-scope",
           "name": "Worker: Clarify-Scope",
           "category": "scope-checking",
@@ -2443,7 +2452,9 @@
         }
       ],
       "references": [
+        "artifact-freshness",
         "audit-skill",
+        "chainlog",
         "context-reports",
         "debrief",
         "decide-skill-shape",
@@ -2458,6 +2469,7 @@
         "run-trigger-evals",
         "search-skills-registry",
         "token-resolver",
+        "tool-discovery",
         "triage",
         "validate-skill-frontmatter",
         "worker-contract"
@@ -2465,6 +2477,7 @@
       "subagents": [
         "_TEMPLATE.md",
         "change-branch.md",
+        "check-chainlog-needs.md",
         "clarify-scope.md",
         "classify-intent.md",
         "classify-skill-type.md",
@@ -2484,7 +2497,9 @@
       ],
       "consumes": [],
       "depends": [
+        "artifact-freshness",
         "audit-skill",
+        "chainlog",
         "context-reports",
         "decide-skill-shape",
         "detect-project-context",
@@ -2618,9 +2633,11 @@
         }
       ],
       "references": [
+        "chainlog",
         "detect-skill-overlap",
         "run-trigger-evals",
-        "validate-skill-frontmatter"
+        "validate-skill-frontmatter",
+        "write-a-skill"
       ],
       "subagents": [],
       "scripts": [
@@ -2999,10 +3016,10 @@
           ]
         },
         {
-          "id": "index-skill-capabilities:by-default-write-the-index-to",
-          "name": "By default, write the index to",
+          "id": "index-skill-capabilities:by-default-write-the-index-to-the-configured-output-path-fal",
+          "name": "By default, write the index to the configured output path, falling back to",
           "category": "tool-discovery",
-          "description": "By default, write the index to .agents/skill-capability-index.json in the detected project (project-local override).",
+          "description": "By default, write the index to the configured output path, falling back to .agents/skill-capability-index.json in the detected project (project-local override).",
           "sources": [
             "SKILL.md:In scope"
           ]
@@ -3636,7 +3653,7 @@
       "origin": "bundle",
       "type": "building-block",
       "invocation": "model-invoked",
-      "description": "Check whether a context report or evidence-store entry is fresh enough to reuse. Evaluates branch, commit, source timestamp, schema version, and age dimensions and returns a structured reason for any staleness.",
+      "description": "Check whether a context report or chainlog entry is fresh enough to reuse. Evaluates branch, commit, source timestamp, schema version, and age dimensions and returns a structured reason for any staleness.",
       "capabilities": [
         {
           "id": "artifact-freshness:read-report-frontmatter-and-extract-freshness-metadata",
@@ -3648,10 +3665,10 @@
           ]
         },
         {
-          "id": "artifact-freshness:accept-evidence-entries-directly-as-json",
-          "name": "Accept evidence entries directly as JSON",
+          "id": "artifact-freshness:accept-chainlog-observations-directly-as-json",
+          "name": "Accept chainlog observations directly as JSON",
           "category": "uncategorized",
-          "description": "Accept evidence entries directly as JSON.",
+          "description": "Accept chainlog observations directly as JSON.",
           "sources": [
             "SKILL.md:In scope"
           ]
@@ -3694,9 +3711,10 @@
         }
       ],
       "references": [
+        "chainlog",
         "context-reports",
-        "evidence-store",
-        "worker-contract"
+        "worker-contract",
+        "write-a-skill"
       ],
       "subagents": [],
       "scripts": [
@@ -4112,13 +4130,23 @@
           "sources": [
             "scripts/detect-project-context.py"
           ]
+        },
+        {
+          "id": "detect-project-context:script-resolve-standards-path",
+          "name": "Run resolve standards path",
+          "category": "identity-resolution",
+          "description": "Deterministic helper script: resolve-standards-path.py",
+          "sources": [
+            "scripts/resolve-standards-path.py"
+          ]
         }
       ],
       "references": [],
       "subagents": [],
       "scripts": [
         "detect-project-context.cpython-314.pyc",
-        "detect-project-context.py"
+        "detect-project-context.py",
+        "resolve-standards-path.py"
       ],
       "config_keys": [],
       "produces": [],
@@ -4126,51 +4154,51 @@
       "depends": []
     },
     {
-      "name": "evidence-store",
-      "path": "skills/blocks/project/evidence-store",
+      "name": "chainlog",
+      "path": "skills/blocks/project/chainlog",
       "origin": "bundle",
       "type": "building-block",
       "invocation": "model-invoked",
-      "description": "Append-only storage for evidence collected by tools. Lets skills reuse prior work, build reports as views over evidence, and check freshness per capability rather than per report.",
+      "description": "Append-only storage for observations collected by tools. Lets skills reuse prior work, build reports as views over observations, and check freshness per capability rather than per report.",
       "capabilities": [
         {
-          "id": "evidence-store:append-evidence-entries-to-a-per-work-item-timeline",
-          "name": "Append evidence entries to a per-work-item timeline",
+          "id": "chainlog:append-observation-entries-to-a-per-work-item-chain",
+          "name": "Append observation entries to a per-work-item chain",
           "category": "uncategorized",
-          "description": "Append evidence entries to a per-work-item timeline.",
+          "description": "Append observation entries to a per-work-item chain.",
           "sources": [
             "SKILL.md:In scope"
           ]
         },
         {
-          "id": "evidence-store:query-the-latest-evidence-entry-per-capability-for-a-work-it",
-          "name": "Query the latest evidence entry per capability for a work item",
+          "id": "chainlog:query-the-latest-observation-entry-per-capability-for-a-work",
+          "name": "Query the latest observation entry per capability for a work item",
           "category": "identity-resolution",
-          "description": "Query the latest evidence entry per capability for a work item.",
+          "description": "Query the latest observation entry per capability for a work item.",
           "sources": [
             "SKILL.md:In scope"
           ]
         },
         {
-          "id": "evidence-store:query-all-evidence-entries-for-a-work-item-optionally-filter",
-          "name": "Query all evidence entries for a work item, optionally filtered by capability or time",
+          "id": "chainlog:query-all-observation-entries-for-a-work-item-optionally-fil",
+          "name": "Query all observation entries for a work item, optionally filtered by capability or time",
           "category": "identity-resolution",
-          "description": "Query all evidence entries for a work item, optionally filtered by capability or time.",
+          "description": "Query all observation entries for a work item, optionally filtered by capability or time.",
           "sources": [
             "SKILL.md:In scope"
           ]
         },
         {
-          "id": "evidence-store:check-whether-a-work-item-has-any-evidence",
-          "name": "Check whether a work item has any evidence",
+          "id": "chainlog:check-whether-a-work-item-has-any-observations",
+          "name": "Check whether a work item has any observations",
           "category": "identity-resolution",
-          "description": "Check whether a work item has any evidence.",
+          "description": "Check whether a work item has any observations.",
           "sources": [
             "SKILL.md:In scope"
           ]
         },
         {
-          "id": "evidence-store:record-staleness-markers-when-a-capability-is-known-to-be-st",
+          "id": "chainlog:record-staleness-markers-when-a-capability-is-known-to-be-st",
           "name": "Record staleness markers when a capability is known to be stale",
           "category": "tool-discovery",
           "description": "Record staleness markers when a capability is known to be stale.",
@@ -4179,12 +4207,12 @@
           ]
         },
         {
-          "id": "evidence-store:script-evidence-store",
-          "name": "Run evidence store",
+          "id": "chainlog:script-chainlog",
+          "name": "Run chainlog",
           "category": "uncategorized",
-          "description": "Deterministic helper script: evidence-store.py",
+          "description": "Deterministic helper script: chainlog.py",
           "sources": [
-            "scripts/evidence-store.py"
+            "scripts/chainlog.py"
           ]
         }
       ],
@@ -4195,7 +4223,7 @@
       ],
       "subagents": [],
       "scripts": [
-        "evidence-store.py"
+        "chainlog.py"
       ],
       "config_keys": [],
       "produces": [],
@@ -5248,8 +5276,8 @@
       ],
       "references": [
         "artifact-freshness",
+        "chainlog",
         "context-reports",
-        "evidence-store",
         "github-pr-adapter",
         "initialize-skill",
         "token-resolver",
