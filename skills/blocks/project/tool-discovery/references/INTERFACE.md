@@ -12,7 +12,6 @@ JSON on stdin with an `operation` field.
 |---|---|---|
 | `operation` | yes | One of `discover`. |
 | `capability` | yes | The capability to discover tools for. |
-| `context_dir` | no | Project context directory. Default: `.agents/context`. |
 | `config_dir` | no | Project config directory. Default: `.agents/config`. |
 | `preference` | no | Tool preference: `auto`, `mcp`, `cli`, `api`, `harness`, `manual`. Default: `auto`. |
 | `registry` | no | Path to a custom capability registry YAML file. Default: bundled registry. |
@@ -23,7 +22,6 @@ JSON on stdin with an `operation` field.
 {
   "operation": "discover",
   "capability": "pr-source",
-  "context_dir": ".agents/context",
   "config_dir": ".agents/config",
   "preference": "auto"
 }
@@ -45,7 +43,7 @@ All operations return JSON to stdout.
       "category": "mcp",
       "available": true,
       "confidence": "high",
-      "detail": "MCP tools github_get_pull_request and github_get_pull_request_reviews available"
+      "detail": "MCP keywords github matched"
     }
   ]
 }

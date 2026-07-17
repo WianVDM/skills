@@ -2,8 +2,7 @@
 
 ## Required skills
 
-- `context-reports` — provides the canonical vocabulary and conventions for shared context reports produced or consumed by this skill.
-- `worker-contract` — provides the canonical worker/subagent return contract and status values used by the skill output.
+None. The output envelope is tracker-agnostic JSON; conductors wrap it in their own contracts.
 
 ## Required tools and capabilities
 

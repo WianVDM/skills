@@ -4,7 +4,7 @@
 
 1. **Validate inputs** — ensure `repo` and `branch` are provided. Resolve `repo` to an absolute path. Verify it is a git repository.
 2. **Resolve base branch** — use the provided `base` or fall back to `main`. If `main` does not exist, try `master`.
-3. **Create worktree** — run `git worktree add --checkout <temp-path> <branch>` in the repo. The path includes a sanitized branch name and a short random suffix to avoid collisions.
+3. **Create worktree** — run `git worktree add --detach <temp-path> <branch>` in the repo. Detached HEAD lets the branch be checked out even when it is already active elsewhere. The path is a sanitized branch name with a unique suffix, a sibling of the repo by default.
 4. **List changed files** — run `git diff --name-only base..HEAD` in the worktree.
 5. **Run commands** — for each command in `commands`:
    - Substitute `{files}` with the changed files if `include_files` is true.
@@ -27,7 +27,7 @@
 ## Operation: `cleanup`
 
 1. Validate that `worktree` is provided.
-2. Run `git worktree remove <worktree>` if it exists and is a registered worktree.
+2. Run `git worktree remove <worktree>` only if the path exists and is registered in `git worktree list` of its owning repo. Refuse anything else: unregistered directories, repository roots, missing paths.
 3. Return the removal status.
 
 ## Safety rules

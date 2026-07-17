@@ -7,10 +7,7 @@
 
 ## Required skills
 
-- `worker-contract` — return contract used if the block is invoked through a subagent.
-- `context-reports` — conventions for context directory layout and report schemas.
-- `initialize-skill` — load project config and defaults.
-- `token-resolver` — resolve secure tokens when needed by consumers.
+None. The block takes explicit paths and capability names as input.
 
 ## Recommended
 

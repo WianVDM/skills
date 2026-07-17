@@ -212,6 +212,13 @@ def _parse_iso_datetime(value: str | datetime | None) -> datetime | None:
             return value.replace(tzinfo=timezone.utc)
         return value
     value = str(value).strip()
+    try:
+        dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt
+    except ValueError:
+        pass
     formats = [
         "%Y-%m-%dT%H:%M:%SZ",
         "%Y-%m-%dT%H:%M:%S%z",
@@ -373,6 +380,10 @@ def _write_json(value: dict) -> None:
     sys.stdout.write("\n")
 
 
+def _error(message: str) -> dict:
+    return {"status": "error", "errors": [message]}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Discover related context reports in a project's context directory.",
@@ -383,16 +394,16 @@ def main() -> int:
     try:
         input_data = json.load(sys.stdin)
     except json.JSONDecodeError as exc:
-        _write_json({"status": "error", "error": f"Invalid JSON input: {exc}"})
-        return 1
+        _write_json(_error(f"Invalid JSON input: {exc}"))
+        return 2
 
     if not isinstance(input_data, dict):
-        _write_json({"status": "error", "error": "Input must be a JSON object."})
-        return 1
+        _write_json(_error("Input must be a JSON object."))
+        return 2
 
     if "context_dir" not in input_data:
-        _write_json({"status": "error", "error": "Missing required field: context_dir."})
-        return 1
+        _write_json(_error("Missing required field: context_dir."))
+        return 2
 
     result = scan_context(input_data)
     _write_json(result)

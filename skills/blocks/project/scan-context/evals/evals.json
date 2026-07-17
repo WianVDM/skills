@@ -52,167 +52,104 @@
       "expected": ""
     },
     {
-      "id": "behavior-01",
+      "id": "behavior-key-match",
       "type": "behavior",
-      "category": "exact-match",
-      "description": "Returns a High-relevance match when a report key matches the ticket_key exactly.",
-      "input": {
-        "context_dir": "test-context",
-        "ticket_key": "OC-4644",
-        "report_types": ["baseline"]
-      },
-      "expected": {
-        "status": "complete",
-        "reports": [
-          {
-            "path": "test-context/baseline/OC-4644.md",
-            "type": "baseline",
-            "ticket_key": "OC-4644",
-            "relevance": "High",
-            "matched_by": "ticket_key"
-          }
-        ]
-      }
+      "baseline_type": "no_skill",
+      "prompt": "Create a context directory containing .agents/context/baseline/OC-4644.md with valid report frontmatter (skill, key: OC-4644, generated_at), then run scan-context.py with ticket_key OC-4644 and report_types ['baseline']. Verify status is complete and the report is returned with relevance High.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"complete\""
+        },
+        {
+          "type": "output_contains",
+          "value": "OC-4644.md"
+        },
+        {
+          "type": "output_contains",
+          "value": "\"relevance\": \"High\""
+        }
+      ]
     },
     {
-      "id": "behavior-02",
+      "id": "behavior-branch-match",
       "type": "behavior",
-      "category": "branch-match",
-      "description": "Returns a Medium-relevance match when a report branch matches the input branch.",
-      "input": {
-        "context_dir": "test-context",
-        "branch": "feature/OC-4644",
-        "report_types": ["handoff"]
-      },
-      "expected": {
-        "status": "complete",
-        "reports": [
-          {
-            "type": "handoff",
-            "relevance": "Medium",
-            "matched_by": "branch"
-          }
-        ]
-      }
+      "baseline_type": "no_skill",
+      "prompt": "Create a context directory containing a handoff report whose frontmatter branch is feature/OC-4644, then run scan-context.py with branch feature/OC-4644 and report_types ['handoff']. Verify the report matches by branch with relevance Medium.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"matched_by\": \"branch\""
+        },
+        {
+          "type": "output_contains",
+          "value": "\"relevance\": \"Medium\""
+        }
+      ]
     },
     {
-      "id": "behavior-03",
+      "id": "behavior-project-match",
       "type": "behavior",
-      "category": "project-match",
-      "description": "Returns a Low-relevance match when a report key shares the project prefix.",
-      "input": {
-        "context_dir": "test-context",
-        "project": "OC",
-        "report_types": ["debrief"]
-      },
-      "expected": {
-        "status": "complete",
-        "reports": [
-          {
-            "type": "debrief",
-            "relevance": "Low",
-            "matched_by": "project"
-          }
-        ]
-      }
+      "baseline_type": "no_skill",
+      "prompt": "Create a context directory containing a debrief report for ticket OC-1234, then run scan-context.py with project OC and report_types ['debrief']. Verify the report matches by project prefix with relevance Low.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"matched_by\": \"project\""
+        },
+        {
+          "type": "output_contains",
+          "value": "\"relevance\": \"Low\""
+        }
+      ]
     },
     {
-      "id": "behavior-04",
+      "id": "behavior-missing-dir",
       "type": "behavior",
-      "category": "empty",
-      "description": "Returns empty status when no reports or context directory exist.",
-      "input": {
-        "context_dir": "test-context-missing",
-        "ticket_key": "OC-4644"
-      },
-      "expected": {
-        "status": "empty",
-        "reports": []
-      }
+      "baseline_type": "no_skill",
+      "prompt": "Run scan-context.py with a context_dir that does not exist. Verify the result is status empty with no reports, not an error.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"empty\""
+        }
+      ]
     },
     {
-      "id": "behavior-05",
+      "id": "behavior-stale-report",
       "type": "behavior",
-      "category": "freshness-stale",
-      "description": "Flags a report as stale when generated_at is older than the threshold.",
-      "input": {
-        "context_dir": "test-context",
-        "ticket_key": "OC-4644",
-        "artifact_freshness_hours": 1
-      },
-      "expected": {
-        "status": "complete",
-        "reports": [
-          {
-            "fresh": false
-          }
-        ]
-      }
+      "baseline_type": "no_skill",
+      "prompt": "Create a context directory containing a baseline report for OC-4644 with generated_at several days in the past, then run scan-context.py with ticket_key OC-4644 and artifact_freshness_hours 1. Verify the report is flagged fresh: false.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"fresh\": false"
+        }
+      ]
     },
     {
-      "id": "behavior-06",
+      "id": "behavior-fresh-report",
       "type": "behavior",
-      "category": "ticket-alias",
-      "description": "Matches reports that use 'ticket' instead of 'ticket_key' in frontmatter.",
-      "input": {
-        "context_dir": "test-context",
-        "ticket_key": "OC-5000",
-        "report_types": ["debrief"]
-      },
-      "expected": {
-        "status": "complete",
-        "reports": [
-          {
-            "type": "debrief",
-            "ticket_key": "OC-5000",
-            "relevance": "High",
-            "matched_by": "ticket_key"
-          }
-        ]
-      }
+      "baseline_type": "no_skill",
+      "prompt": "Create a context directory containing a baseline report for OC-7000 with a recent generated_at, then run scan-context.py with ticket_key OC-7000 and artifact_freshness_hours 720. Verify the report is flagged fresh: true.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"fresh\": true"
+        }
+      ]
     },
     {
-      "id": "behavior-07",
+      "id": "behavior-invalid-input",
       "type": "behavior",
-      "category": "baselined-at-alias",
-      "description": "Uses 'baselined_at' or 'updated_at' when 'generated_at' is absent.",
-      "input": {
-        "context_dir": "test-context",
-        "ticket_key": "OC-6000",
-        "report_types": ["baseline"]
-      },
-      "expected": {
-        "status": "complete",
-        "reports": [
-          {
-            "type": "baseline",
-            "ticket_key": "OC-6000",
-            "generated_at_present": true,
-            "relevance": "High",
-            "matched_by": "ticket_key"
-          }
-        ]
-      }
-    },
-    {
-      "id": "behavior-08",
-      "type": "behavior",
-      "category": "freshness-fresh",
-      "description": "Flags a report as fresh when it is newer than the threshold.",
-      "input": {
-        "context_dir": "test-context",
-        "ticket_key": "OC-7000",
-        "artifact_freshness_hours": 720,
-        "report_types": ["baseline"]
-      },
-      "expected": {
-        "status": "complete",
-        "reports": [
-          {
-            "fresh": true
-          }
-        ]
-      }
+      "baseline_type": "no_skill",
+      "prompt": "Pipe invalid JSON to scan-context.py and verify it returns a status error envelope and exits non-zero.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"error\""
+        }
+      ]
     }
   ]
 }

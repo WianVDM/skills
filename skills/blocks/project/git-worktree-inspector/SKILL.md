@@ -1,12 +1,7 @@
 ---
 name: git-worktree-inspector
 description: Check out a branch or commit in a git worktree, inspect changed files, run scoped checks, and clean up without disturbing the user's current branch.
-version: 1.0.0
 invocation: model-invoked
-depends:
-  - worker-contract
-  - context-reports
-  - detect-project-context
 ---
 
 # git-worktree-inspector
@@ -61,7 +56,11 @@ Accept a repo path, branch or commit, and base branch. Return the worktree path,
   "branch": "feature/OC-1234",
   "base": "main",
   "commands": [
-    {"name": "eslint", "cmd": ["npx", "eslint", "{files}"], "include_files": true}
+    {
+      "name": "eslint",
+      "cmd": ["npx", "eslint", "{files}"],
+      "include_files": true
+    }
   ]
 }
 ```
@@ -74,7 +73,7 @@ Accept a repo path, branch or commit, and base branch. Return the worktree path,
   "worktree": "/path/to/repo/.git/worktrees/...",
   "changed_files": ["src/file.ts"],
   "results": [
-    {"name": "eslint", "returncode": 0, "stdout": "...", "stderr": ""}
+    { "name": "eslint", "returncode": 0, "stdout": "...", "stderr": "" }
   ],
   "reset_files": ["src/file.ts"],
   "clean": true

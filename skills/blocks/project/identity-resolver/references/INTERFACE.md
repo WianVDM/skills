@@ -39,7 +39,7 @@ The resolver tries, in order:
 3. **PR URL** — if the input matches `owner/repo/pull/number`, return `type: pr` with repo and number parsed.
 4. **PR number** — if the input is all digits, return `type: pr` using the provided or detected repo.
 5. **Commit hash** — if the input is a 40-character hex string or valid git commit, return `type: commit`.
-6. **Branch** — if a branch is provided or the current git branch is detectable, return `type: branch`.
+6. **Branch** — if an explicit `branch` field is provided, the input matches a branch that exists in git, or no input is given and the current git branch is detectable, return `type: branch`. Free text that has no git evidence is never treated as a branch.
 7. **Text fallback** — search the input text for a ticket key; if found, return `type: ticket`.
 8. **Ask** — if nothing matches, return `status: needs_input`.
 

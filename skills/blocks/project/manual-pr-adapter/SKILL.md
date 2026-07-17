@@ -1,7 +1,6 @@
 ---
 name: manual-pr-adapter
 description: Manual PR source adapter that collects PR metadata, changed files, and review feedback from user input, CSV, JSON, or markdown files and returns the normalized pr-source shape.
-version: 1.0.0
 invocation: model-invoked
 depends:
   - pr-adapter-contract
@@ -32,7 +31,7 @@ Tool building block.
 
 ## Out of scope
 
-- Fetching data from APIs.
+- Fetching data from APIs itself; the user or conductor supplies any API-obtained data.
 - Synthesizing or triaging issues.
 - Writing the PR report.
 
@@ -42,7 +41,7 @@ Tool building block.
 2. **CSV file** — Read a CSV with a standard column set.
 3. **JSON file** — Read a JSON file matching the normalized shape.
 4. **Markdown file** — Read a local `.md` file with frontmatter and structured body.
-5. **Mixed mode** — Combine API data with manual additions.
+5. **Mixed mode** — Merge data supplied through the other modes (for example, exported API JSON plus pasted comments).
 
 ## Inputs
 

@@ -62,10 +62,18 @@ def main():
     try:
         data = json.load(sys.stdin)
     except Exception as exc:  # noqa: BLE001
-        print(json.dumps(error_output("blocked", f"Invalid JSON input: {exc}"), indent=2))
-        sys.exit(0)
+        print(json.dumps({"status": "error", "errors": [f"Invalid JSON input: {exc}"]}, indent=2))
+        sys.exit(2)
 
-    result = dispatch(data)
+    if not isinstance(data, dict):
+        print(json.dumps({"status": "error", "errors": ["Input must be a JSON object."]}, indent=2))
+        sys.exit(2)
+
+    try:
+        result = dispatch(data)
+    except Exception as exc:  # noqa: BLE001
+        print(json.dumps({"status": "error", "errors": [f"Runtime failure: {exc}"]}, indent=2))
+        sys.exit(1)
     print(json.dumps(result, indent=2))
 
 
@@ -239,6 +247,8 @@ def jira_adapter(ticket_key, cfg, scope):
         "reporter",
         "labels",
         "components",
+        "issuetype",
+        "development",
         "issuelinks",
         "attachment",
         "comment",
@@ -737,6 +747,17 @@ def _extract_adf_text(node):
     return "".join(text_parts)
 
 
+def _ac_section_start(line):
+    """Return True when a line opens an acceptance-criteria section.
+
+    Accepts a markdown heading form (``## Acceptance Criteria`` or ``## AC``)
+    and a label form with a trailing colon or dash (``Acceptance Criteria:``).
+    """
+    if re.match(r"^#{1,6}\s*(acceptance criteria|ac)\s*:?\s*$", line, re.IGNORECASE):
+        return True
+    return bool(re.match(r"^\s*(acceptance criteria|ac)\s*[:\-]", line, re.IGNORECASE))
+
+
 def infer_acceptance_criteria(description):
     """Lightweight extraction of acceptance criteria from a description."""
     if not description:
@@ -748,7 +769,7 @@ def infer_acceptance_criteria(description):
         stripped = line.strip()
         if not stripped:
             continue
-        if re.search(r"(?i)^\s*(acceptance criteria|ac)\s*[:\-]", stripped):
+        if _ac_section_start(stripped):
             in_section = True
             continue
         if in_section:

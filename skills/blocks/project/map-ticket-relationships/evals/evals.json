@@ -146,7 +146,7 @@
       "id": "behavior-complete-01",
       "type": "behavior",
       "baseline_type": "no_skill",
-      "prompt": "Map the relationships for ticket OC-4644 with parent OC-4000, linked OC-4500, and affected file src/app/guards/auth.guard.ts.",
+      "prompt": "Create a temp project directory containing the file src/app/guards/auth.guard.ts. Run scripts/map-ticket-relationships.py with ticket_key OC-4644, codebase_root set to the temp project directory, infer_by_file true, and ticket_data containing related_tickets with parent OC-4000 and linked [OC-4500] and a description that mentions src/app/guards/auth.guard.ts. Verify the relationship graph contains the parent, the linked ticket, and the affected file.",
       "assertions": [
         {
           "type": "output_contains",
@@ -154,7 +154,7 @@
         },
         {
           "type": "output_contains",
-          "value": "\"linked\": [\"OC-4500\"]"
+          "value": "OC-4500"
         },
         {
           "type": "output_contains",

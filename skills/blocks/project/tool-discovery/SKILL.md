@@ -1,13 +1,7 @@
 ---
 name: tool-discovery
 description: Discover and rank available tools for a given capability. Given a capability like pr-source or ci-source, returns a ranked list of available tools with confidence, source category, and fallback ordering.
-version: 1.0.0
 invocation: model-invoked
-depends:
-  - worker-contract
-  - context-reports
-  - initialize-skill
-  - token-resolver
 ---
 
 # tool-discovery
@@ -57,7 +51,6 @@ JSON on stdin:
 {
   "operation": "discover",
   "capability": "pr-source",
-  "context_dir": ".agents/context",
   "config_dir": ".agents/config",
   "preference": "auto"
 }
@@ -77,14 +70,14 @@ JSON on stdout:
       "category": "mcp",
       "available": true,
       "confidence": "high",
-      "detail": "MCP tools github_get_pull_request and github_get_pull_request_reviews available"
+      "detail": "MCP keywords github matched"
     },
     {
       "name": "gh-cli",
       "category": "cli",
       "available": true,
       "confidence": "medium",
-      "detail": "gh binary found on PATH"
+      "detail": "binary gh found on PATH"
     },
     {
       "name": "manual",

@@ -1,9 +1,7 @@
 ---
 name: worker-contract
 description: Provide the canonical worker/subagent return contract for conductors to embed in subagent prompts. Use when composing a worker, standardizing subagent output, or referencing the shared return format, forbidden actions, and scope boundaries.
-version: 1.0.1
 invocation: model-invoked
-
 ---
 
 # worker-contract

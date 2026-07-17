@@ -53,7 +53,6 @@
     {
       "id": "ca-behavior-01",
       "type": "behavior",
-      "name": "Challenges assumption with direct contradiction",
       "description": "Given an assumption and evidence that contradicts it, the script marks the assumption as challenged.",
       "baseline_type": "no_skill",
       "assertions": [
@@ -61,14 +60,82 @@
           "type": "output_contains",
           "value": "challenged"
         }
-      ]
+      ],
+      "prompt": "Run challenge-assumptions.py with assumption 'Token refresh happens in auth.guard.ts.' and codebase evidence 'Token refresh does not happen in auth.guard.ts; it is handled by the interceptor.' Verify the assumption is challenged."
     },
     {
       "id": "ca-behavior-02",
       "type": "behavior",
-      "name": "Holds assumption when no contradiction exists",
       "description": "Given an assumption with no contradicting evidence, the script marks it as holds.",
       "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "holds"
+        }
+      ],
+      "prompt": "Run challenge-assumptions.py with assumption 'Token refresh happens in auth.guard.ts.' and codebase evidence that restates it without contradiction ('The auth.guard.ts file is responsible for route protection and token refresh.'). Verify the assumption holds."
+    },
+    {
+      "id": "ca-behavior-03",
+      "type": "behavior",
+      "description": "When no assumptions are provided, the script returns status needs_input.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "needs_input"
+        }
+      ],
+      "prompt": "Run challenge-assumptions.py with an empty assumptions list and verify it returns status needs_input."
+    },
+    {
+      "id": "ca-behavior-04",
+      "type": "behavior",
+      "description": "The script always returns a JSON object with status and assumptions keys.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_format",
+          "value": "json"
+        }
+      ],
+      "prompt": "Run challenge-assumptions.py with any valid assumption/evidence pair and verify the output is a JSON object with status and assumptions keys."
+    },
+    {
+      "id": "ca-composition-01",
+      "type": "composition",
+      "available_skills": [
+        "challenge-assumptions",
+        "explore-code",
+        "research-ticket"
+      ],
+      "expected_selection": [
+        "challenge-assumptions"
+      ],
+      "prompt": "A conductor has a set of assumptions about a ticket and evidence gathered by explore-code. It must avoid confirmation bias before planning. Which skill should it run?"
+    },
+    {
+      "id": "ca-pressure-01",
+      "type": "pressure",
+      "description": "A sentence that explicitly negates the assumption is flagged as challenged.",
+      "prompt": "Run challenge-assumptions.py with assumption 'Token refresh happens in auth.guard.ts.' and codebase evidence 'Token refresh does not happen in auth.guard.ts; it is handled by the interceptor.' Verify status challenged with a disproof reference to the codebase evidence.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "challenged"
+        },
+        {
+          "type": "output_contains",
+          "value": "codebase"
+        }
+      ]
+    },
+    {
+      "id": "ca-pressure-02",
+      "type": "pressure",
+      "description": "Evidence that restates the assumption without contradiction is marked as holds.",
+      "prompt": "Run challenge-assumptions.py with assumption 'Token refresh happens in auth.guard.ts.' and codebase evidence 'The auth.guard.ts file is responsible for route protection and token refresh.' Verify status holds.",
       "assertions": [
         {
           "type": "output_contains",
@@ -77,117 +144,32 @@
       ]
     },
     {
-      "id": "ca-behavior-03",
-      "type": "behavior",
-      "name": "Returns needs_input when assumptions are missing",
-      "description": "When no assumptions are provided, the script returns status needs_input.",
-      "baseline_type": "no_skill",
+      "id": "ca-pressure-03",
+      "type": "pressure",
+      "description": "A contradiction marker that is far from the assumption phrase does not trigger a challenge.",
+      "prompt": "Run challenge-assumptions.py with assumption 'Token refresh happens in auth.guard.ts.', proximity 3, and codebase evidence where a contradiction marker appears far from the assumption phrase. Verify status holds (distant markers must not trigger).",
       "assertions": [
         {
           "type": "output_contains",
-          "value": "needs_input"
+          "value": "holds"
         }
       ]
-    },
-    {
-      "id": "ca-behavior-04",
-      "type": "behavior",
-      "name": "Returns structured JSON envelope",
-      "description": "The script always returns a JSON object with status and assumptions keys.",
-      "baseline_type": "no_skill",
-      "assertions": [
-        {
-          "type": "output_format",
-          "value": "json"
-        }
-      ]
-    },
-    {
-      "id": "ca-composition-01",
-      "type": "composition",
-      "name": "Consumes evidence from explore-code",
-      "description": "The skill should be selected when a conductor has assumptions and evidence from explore-code.",
-      "available_skills": ["challenge-assumptions", "explore-code", "research-ticket"],
-      "expected_selection": ["challenge-assumptions"]
-    },
-    {
-      "id": "ca-pressure-01",
-      "type": "pressure",
-      "name": "Direct contradiction is detected",
-      "description": "A sentence that explicitly negates the assumption is flagged as challenged.",
-      "input": {
-        "assumptions": [{"text": "Token refresh happens in auth.guard.ts."}],
-        "evidence": {
-          "codebase": "Token refresh does not happen in auth.guard.ts; it is handled by the interceptor."
-        }
-      },
-      "expected": {
-        "assumptions": [
-          {
-            "status": "challenged",
-            "disproof_refs_contains": ["codebase"]
-          }
-        ]
-      }
-    },
-    {
-      "id": "ca-pressure-02",
-      "type": "pressure",
-      "name": "Neutral evidence does not trigger false positive",
-      "description": "Evidence that restates the assumption without contradiction is marked as holds.",
-      "input": {
-        "assumptions": [{"text": "Token refresh happens in auth.guard.ts."}],
-        "evidence": {
-          "codebase": "The auth.guard.ts file is responsible for route protection."
-        }
-      },
-      "expected": {
-        "assumptions": [
-          {
-            "status": "holds"
-          }
-        ]
-      }
-    },
-    {
-      "id": "ca-pressure-03",
-      "type": "pressure",
-      "name": "Distant contradiction marker is ignored",
-      "description": "A contradiction marker that is far from the assumption phrase does not trigger a challenge.",
-      "input": {
-        "assumptions": [{"text": "Token refresh happens in auth.guard.ts."}],
-        "evidence": {
-          "codebase": "Token refresh happens in auth.guard.ts. The interceptor does not handle retries."
-        },
-        "proximity": 3
-      },
-      "expected": {
-        "assumptions": [
-          {
-            "status": "holds"
-          }
-        ]
-      }
     },
     {
       "id": "ca-pressure-04",
       "type": "pressure",
-      "name": "Alternative handler phrasing is detected",
       "description": "Evidence that attributes the same responsibility to a different component is flagged as challenged.",
-      "input": {
-        "assumptions": [{"text": "Token refresh happens in auth.guard.ts."}],
-        "evidence": {
-          "codebase": "The refresh interceptor handles token refresh before the guard runs."
+      "prompt": "Run challenge-assumptions.py with assumption 'Token refresh happens in auth.guard.ts.' and codebase evidence 'The refresh interceptor handles token refresh before each request.' Verify status challenged with a codebase disproof reference.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "challenged"
+        },
+        {
+          "type": "output_contains",
+          "value": "codebase"
         }
-      },
-      "expected": {
-        "assumptions": [
-          {
-            "status": "challenged",
-            "disproof_refs_contains": ["codebase"]
-          }
-        ]
-      }
+      ]
     }
   ]
 }

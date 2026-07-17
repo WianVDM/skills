@@ -1,11 +1,7 @@
 ---
 name: explore-code
 description: "Search the codebase for evidence related to a specific question, ticket, or ambiguity. Find mentioned files, similar patterns, relevant tests, ADRs, and docs. Use when a skill needs code context to resolve uncertainty."
-version: 1.0.0
 invocation: model-invoked
-metadata:
-  author: Wian van der Merwe
-  tags: [codebase, exploration, evidence, building-block]
 allowed-tools:
   - bash
 ---
@@ -14,7 +10,7 @@ allowed-tools:
 
 ## Identity
 
-`explore-code` is a deterministic building-block skill that searches a codebase for evidence related to a ticket, question, or ambiguity. It answers: *"What does the codebase say about this?"*
+`explore-code` is a deterministic building-block skill that searches a codebase for evidence related to a ticket, question, or ambiguity. It answers: _"What does the codebase say about this?"_
 
 ## Purpose and type
 
@@ -45,7 +41,7 @@ allowed-tools:
 
 - A conductor such as `debrief` needs to resolve a code-related ambiguity.
 - A skill needs to know how a ticket or feature maps to the codebase.
-- A user asks: *"Where does X happen in the code?"* or *"What files relate to this ticket?"*
+- A user asks: _"Where does X happen in the code?"_ or _"What files relate to this ticket?"_
 
 ## Input / output contract
 
@@ -66,18 +62,18 @@ The skill accepts a JSON object via stdin to `scripts/explore-code.py`.
 }
 ```
 
-| Field | Required | Default | Description |
-|---|---|---|---|
-| `ticket_summary` | yes | — | Ticket summary, question, or short description to search against. |
-| `mentioned_files` | no | `[]` | Files explicitly mentioned in the ticket. Paths can be relative or absolute. |
-| `task_type` | no | `"code"` | One of `code`, `ui`, `docs`, `process`. Exploration is skipped for `process` unless `force` is true. |
-| `workspace` | no | `null` | Monorepo workspace name to scope searches. Resolved relative to `project_root` (or the current working directory if no project root is supplied). |
-| `project_root` | no | `null` | Project root directory used to resolve `workspace` and relative paths. Defaults to the current working directory. |
-| `force` | no | `false` | When true, run exploration even for `process` task types. |
-| `time_box_minutes` | no | `5` | Target time budget in minutes; used to limit search breadth. |
-| `max_files` | no | `20` | Maximum number of relevant files to return. |
-| `min_relevance` | no | `"Low"` | Minimum relevance threshold to include in results. One of `High`, `Medium`, `Low`. |
-| `read_limit_lines` | no | `200` | Maximum number of lines to read from a discovered file when generating a `content_summary`. |
+| Field              | Required | Default  | Description                                                                                                                                       |
+| ------------------ | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ticket_summary`   | yes      | —        | Ticket summary, question, or short description to search against.                                                                                 |
+| `mentioned_files`  | no       | `[]`     | Files explicitly mentioned in the ticket. Paths can be relative or absolute.                                                                      |
+| `task_type`        | no       | `"code"` | One of `code`, `ui`, `docs`, `process`. Exploration is skipped for `process` unless `force` is true.                                              |
+| `workspace`        | no       | `null`   | Monorepo workspace name to scope searches. Resolved relative to `project_root` (or the current working directory if no project root is supplied). |
+| `project_root`     | no       | `null`   | Project root directory used to resolve `workspace` and relative paths. Defaults to the current working directory.                                 |
+| `force`            | no       | `false`  | When true, run exploration even for `process` task types.                                                                                         |
+| `time_box_minutes` | no       | `5`      | Target time budget in minutes; used to limit search breadth.                                                                                      |
+| `max_files`        | no       | `20`     | Maximum number of relevant files to return.                                                                                                       |
+| `min_relevance`    | no       | `"Low"`  | Minimum relevance threshold to include in results. One of `High`, `Medium`, `Low`.                                                                |
+| `read_limit_lines` | no       | `200`    | Maximum number of lines to read from a discovered file when generating a `content_summary`.                                                       |
 
 ### Output
 
@@ -101,21 +97,21 @@ The skill accepts a JSON object via stdin to `scripts/explore-code.py`.
 }
 ```
 
-| Field | Description |
-|---|---|
-| `status` | `complete`, `partial`, `blocked`, or `needs_input`. |
-| `relevant_files` | Ranked list of `{path, relevance, reason}`. |
-| `snippets` | Summarized content for the top files. |
-| `missing_files` | Mentioned files that could not be found. |
+| Field            | Description                                         |
+| ---------------- | --------------------------------------------------- |
+| `status`         | `complete`, `partial`, `blocked`, or `needs_input`. |
+| `relevant_files` | Ranked list of `{path, relevance, reason}`.         |
+| `snippets`       | Summarized content for the top files.               |
+| `missing_files`  | Mentioned files that could not be found.            |
 
 ### Status values
 
-| Status | Meaning | Caller action |
-|---|---|---|
-| `complete` | Search completed within time and file limits. | Use evidence. |
-| `partial` | Some files searched or limits hit; results are incomplete. | Note gaps. |
-| `blocked` | Tool or filesystem error prevented searching. | Investigate. |
-| `needs_input` | Required input missing (e.g., empty `ticket_summary`). | Surface to user. |
+| Status        | Meaning                                                    | Caller action    |
+| ------------- | ---------------------------------------------------------- | ---------------- |
+| `complete`    | Search completed within time and file limits.              | Use evidence.    |
+| `partial`     | Some files searched or limits hit; results are incomplete. | Note gaps.       |
+| `blocked`     | Tool or filesystem error prevented searching.              | Investigate.     |
+| `needs_input` | Required input missing (e.g., empty `ticket_summary`).     | Surface to user. |
 
 ## Lazy loading
 

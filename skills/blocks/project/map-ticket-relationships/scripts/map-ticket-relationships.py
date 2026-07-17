@@ -121,11 +121,13 @@ def _extract_affected_files(text: str | None, cwd: Path | None = None) -> list[s
     """
     if not text:
         return []
-    # Require at least one directory separator and an optional file extension.
+    # Require at least one directory separator. The final segment may carry
+    # multiple dot-separated extensions (e.g. auth.guard.ts, styles.module.css).
+    # The lookahead allows a trailing sentence period but not a continuing path.
     path_re = re.compile(
         r"(?<![a-zA-Z0-9_\-./])"
-        r"([a-zA-Z0-9_\-]+(?:/[a-zA-Z0-9_\-]+)+(?:\.[a-zA-Z0-9_\-]+)?)"
-        r"(?![a-zA-Z0-9_\-./])"
+        r"([a-zA-Z0-9_\-]+(?:/[a-zA-Z0-9_\-]+)*/[a-zA-Z0-9_\-]+(?:\.[a-zA-Z0-9_\-]+)*)"
+        r"(?![a-zA-Z0-9_\-/])"
     )
     candidates = path_re.findall(text)
     affected: list[str] = []
@@ -199,6 +201,10 @@ def _trace_original_feature(
                     break
 
     return result
+
+
+class InputError(Exception):
+    """Raised when caller input is invalid; maps to exit code 2."""
 
 
 def _normalize_list(value: object | None) -> list:
@@ -383,51 +389,23 @@ def main():
 
     raw_input = sys.stdin.read()
     if not raw_input.strip():
-        print(
-            json.dumps(
-                {
-                    "status": "blocked",
-                    "relationships": {},
-                    "gaps": ["No JSON input provided on stdin."],
-                }
-            ),
-            file=sys.stderr,
-        )
-        sys.exit(1)
+        raise InputError("No JSON input provided on stdin.")
 
     try:
         payload = json.loads(raw_input)
     except json.JSONDecodeError as exc:
-        print(
-            json.dumps(
-                {
-                    "status": "blocked",
-                    "relationships": {},
-                    "gaps": [f"Invalid JSON input: {exc}"],
-                }
-            ),
-            file=sys.stderr,
-        )
-        sys.exit(1)
+        raise InputError(f"Invalid JSON input: {exc}")
+
+    if not isinstance(payload, dict):
+        raise InputError("Input must be a JSON object.")
 
     ticket_key = payload.get("ticket_key")
     if not ticket_key:
-        print(
-            json.dumps(
-                {
-                    "status": "blocked",
-                    "relationships": {},
-                    "gaps": ["ticket_key is required."],
-                }
-            ),
-            file=sys.stderr,
-        )
-        sys.exit(1)
+        raise InputError("ticket_key is required.")
 
     ticket_data = payload.get("ticket_data", {})
     git_state = payload.get("git_state")
     codebase_root = payload.get("codebase_root", ".")
-    max_depth = payload.get("max_depth", 1)
     infer_by_file = payload.get("infer_by_file", False)
 
     result = map_relationships(
@@ -441,4 +419,11 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except InputError as e:
+        print(json.dumps({"status": "error", "errors": [str(e)]}, indent=2))
+        sys.exit(2)
+    except Exception as e:
+        print(json.dumps({"status": "error", "errors": [f"unexpected error: {e}"]}, indent=2))
+        sys.exit(1)

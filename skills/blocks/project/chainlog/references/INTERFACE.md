@@ -41,6 +41,8 @@ Append an observation entry.
 
 Required entry fields: `work_item_type`, `work_item_key`, `capability`, `source`. If `observation_id` or `collected_at` are omitted, they are generated automatically.
 
+The `payload` is stored as the entry body only; it is never duplicated into frontmatter. Bodies are opaque markdown: a body line that is exactly `---` is written as `--- ` (trailing space, visually identical) so it cannot be mistaken for an entry boundary.
+
 ### `query_latest`
 
 Return the latest observation entry per capability, or for one capability if specified.
@@ -71,7 +73,7 @@ Return all observation entries for a work item, optionally filtered by capabilit
 
 ### `query_since`
 
-Return entries collected after a given timestamp.
+Return entries collected at or after a given timestamp (inclusive).
 
 ```json
 {

@@ -14,7 +14,10 @@ tool-discovery/
 ├── README.md
 ├── config.yaml
 ├── scripts/
-│   └── discover-tools.py
+│   ├── discover-tools.py
+│   ├── capability-registry.yaml
+│   └── tests/
+│       └── test_discover_tools.py
 ├── references/
 │   ├── INTERFACE.md
 │   ├── DEPENDENCIES.md

@@ -1,11 +1,7 @@
 ---
 name: scan-context
 description: "Discover related context reports in a project's context directory by ticket key, project, branch, or report type. Use when a skill needs to find prior baselines, handoffs, debriefs, or other shared reports."
-version: 1.0.0
 invocation: model-invoked
-metadata:
-  author: Wian van der Merwe
-  tags: [core, building-block, context, reports, discovery]
 allowed-tools:
   - read
   - bash
@@ -61,15 +57,15 @@ The skill accepts a JSON object via stdin when invoked as a script:
 }
 ```
 
-| Field | Required | Description |
-|---|---|---|
-| `context_dir` | yes | Absolute or relative path to the context directory. |
-| `ticket_key` | no | Ticket or report key to match exactly. |
-| `project` | no | Project key to match against ticket key prefixes. |
-| `branch` | no | Branch name to match against report frontmatter. |
-| `report_types` | no | List of report type subdirectory names to scan. Defaults to all subdirectories. |
-| `artifact_freshness_hours` | no | Age threshold in hours for freshness. Defaults to `24`. |
-| `top_n` | no | Maximum number of reports to return. Defaults to `10`. |
+| Field                      | Required | Description                                                                     |
+| -------------------------- | -------- | ------------------------------------------------------------------------------- |
+| `context_dir`              | yes      | Absolute or relative path to the context directory.                             |
+| `ticket_key`               | no       | Ticket or report key to match exactly.                                          |
+| `project`                  | no       | Project key to match against ticket key prefixes.                               |
+| `branch`                   | no       | Branch name to match against report frontmatter.                                |
+| `report_types`             | no       | List of report type subdirectory names to scan. Defaults to all subdirectories. |
+| `artifact_freshness_hours` | no       | Age threshold in hours for freshness. Defaults to `24`.                         |
+| `top_n`                    | no       | Maximum number of reports to return. Defaults to `10`.                          |
 
 ### Output
 
@@ -93,21 +89,21 @@ The skill returns a JSON object:
 }
 ```
 
-| Field | Description |
-|---|---|
-| `status` | `complete`, `empty`, or `error`. |
-| `reports` | Ranked list of matching report metadata. |
-| `path` | Absolute path to the report file. |
-| `type` | Report type inferred from the subdirectory name. |
-| `ticket_key` | Ticket key from frontmatter (`key`, `ticket_key`, or `ticket`), when present. |
-| `branch` | Branch from frontmatter, when present. |
+| Field          | Description                                                                                          |
+| -------------- | ---------------------------------------------------------------------------------------------------- |
+| `status`       | `complete`, `empty`, or `error`.                                                                     |
+| `reports`      | Ranked list of matching report metadata.                                                             |
+| `path`         | Absolute path to the report file.                                                                    |
+| `type`         | Report type inferred from the subdirectory name.                                                     |
+| `ticket_key`   | Ticket key from frontmatter (`key`, `ticket_key`, or `ticket`), when present.                        |
+| `branch`       | Branch from frontmatter, when present.                                                               |
 | `generated_at` | ISO 8601 timestamp from frontmatter (`generated_at`, `baselined_at`, or `updated_at`), when present. |
-| `scope` | Scope from frontmatter, when present. |
-| `method` | Method from frontmatter, when present. |
-| `parent` | Parent reference from frontmatter, when present. |
-| `relevance` | `High`, `Medium`, or `Low`. |
-| `matched_by` | `ticket_key`, `branch`, `project`, or `recency`. |
-| `fresh` | `true` if the report is newer than the freshness threshold. |
+| `scope`        | Scope from frontmatter, when present.                                                                |
+| `method`       | Method from frontmatter, when present.                                                               |
+| `parent`       | Parent reference from frontmatter, when present.                                                     |
+| `relevance`    | `High`, `Medium`, or `Low`.                                                                          |
+| `matched_by`   | `ticket_key`, `branch`, `project`, or `recency`.                                                     |
+| `fresh`        | `true` if the report is newer than the freshness threshold.                                          |
 
 ## Steps
 

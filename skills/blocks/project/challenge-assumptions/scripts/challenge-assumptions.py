@@ -279,8 +279,8 @@ def main() -> None:
         input_data = json.load(sys.stdin)
 
     if not isinstance(input_data, dict):
-        print(json.dumps({"status": "blocked", "error": "Input must be a JSON object"}, indent=2))
-        sys.exit(1)
+        print(json.dumps({"status": "error", "errors": ["Input must be a JSON object"]}, indent=2))
+        sys.exit(2)
 
     assumptions = input_data.get("assumptions") or []
     evidence = input_data.get("evidence") or {}
@@ -364,8 +364,8 @@ if __name__ == "__main__":
     try:
         main()
     except json.JSONDecodeError as e:
-        print(json.dumps({"status": "blocked", "error": f"Invalid JSON input: {e}"}, indent=2))
-        sys.exit(1)
+        print(json.dumps({"status": "error", "errors": [f"Invalid JSON input: {e}"]}, indent=2))
+        sys.exit(2)
     except Exception as e:
-        print(json.dumps({"status": "blocked", "error": f"Unexpected error: {e}"}, indent=2))
+        print(json.dumps({"status": "error", "errors": [f"Unexpected error: {e}"]}, indent=2))
         sys.exit(1)

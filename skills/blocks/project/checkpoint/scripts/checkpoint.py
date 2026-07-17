@@ -21,6 +21,10 @@ from typing import Any
 import frontmatter  # vendored parser from scripts/frontmatter.py
 
 
+class InputError(ValueError):
+    """Invalid caller input; maps to exit code 2."""
+
+
 DEFAULT_MAX_HISTORY_ROWS = 20
 REQUIRED_FRONTMATTER_KEYS = ["skill", "version", "state_schema", "owner", "key", "updated_at"]
 
@@ -110,9 +114,22 @@ def _parse_session_history(section_text: str) -> list[dict]:
     return rows
 
 
+CANONICAL_SECTIONS = (
+    "Phase Checklist",
+    "Current Focus",
+    "Last Completed Action",
+    "Session History",
+    "Owner Sections",
+)
+
+
 def _parse_state_body(body: str) -> dict:
-    """Parse the markdown body into structured sections."""
-    sections: dict[str, str] = {}
+    """Parse the markdown body into structured sections.
+
+    Unknown `##` sections (owner-authored content) are preserved verbatim in
+    `extra_sections`, in original order, so nothing an owner adds is lost on
+    the next update."""
+    ordered: list[tuple[str, str]] = []
     current_heading: str | None = None
     current_lines: list[str] = []
 
@@ -120,27 +137,30 @@ def _parse_state_body(body: str) -> dict:
         heading_match = re.match(r"^##\s+(.+)$", line)
         if heading_match:
             if current_heading is not None:
-                sections[current_heading] = "\n".join(current_lines).strip()
+                ordered.append((current_heading, "\n".join(current_lines).strip("\n")))
             current_heading = heading_match.group(1).strip()
             current_lines = []
         else:
             current_lines.append(line)
 
     if current_heading is not None:
-        sections[current_heading] = "\n".join(current_lines).strip()
+        ordered.append((current_heading, "\n".join(current_lines).strip("\n")))
 
+    sections = dict(ordered)
     phase_checklist = _parse_phase_checklist(sections.get("Phase Checklist", ""))
     current_focus = sections.get("Current Focus", "").strip()
     last_action = sections.get("Last Completed Action", "").strip()
     history = _parse_session_history(sections.get("Session History", ""))
 
     owner_sections = sections.get("Owner Sections", "")
+    extra_sections = [pair for pair in ordered if pair[0] not in CANONICAL_SECTIONS]
     return {
         "phase_checklist": phase_checklist,
         "current_focus": current_focus,
         "last_action": last_action,
         "history": history,
         "owner_sections": owner_sections,
+        "extra_sections": extra_sections,
     }
 
 
@@ -160,6 +180,7 @@ def _render_body(
     last_action: str,
     history: list[dict],
     owner_sections: str,
+    extra_sections: list[tuple[str, str]] | None = None,
 ) -> str:
     lines = ["# Checkpoint State"]
 
@@ -191,6 +212,11 @@ def _render_body(
         lines.append(owner_sections)
     else:
         lines.append("<!-- The owner skill can add arbitrary sections below this marker. -->")
+
+    for heading, text in extra_sections or []:
+        lines.append("")
+        lines.append(f"## {heading}")
+        lines.append(text)
 
     lines.append("")
     return "\n".join(lines)
@@ -285,9 +311,7 @@ def _archive_history(state_path: str, history: list[dict], max_rows: int) -> lis
     with archive_path.open("a", encoding="utf-8") as fh:
         fh.write("\n".join(lines) + "\n")
 
-    # Renumber kept rows so they start at 1 in the active file.
-    for i, row in enumerate(kept, start=1):
-        row["number"] = i
+    # Kept rows retain their original numbers so the archive stays consistent.
     return kept
 
 
@@ -296,22 +320,33 @@ def _archive_history(state_path: str, history: list[dict], max_rows: int) -> lis
 # ---------------------------------------------------------------------------
 
 
+def _max_rows(data: dict) -> int:
+    """Parse max_history_rows, failing as invalid input when not an integer."""
+    try:
+        value = int(data.get("max_history_rows", DEFAULT_MAX_HISTORY_ROWS))
+    except (TypeError, ValueError):
+        raise InputError("max_history_rows must be an integer")
+    if value < 1:
+        raise InputError("max_history_rows must be at least 1")
+    return value
+
+
 def _op_create(data: dict) -> dict:
     state_path = data.get("state_path")
     owner = data.get("owner")
     key = data.get("key")
     phases = data.get("phases")
     focus = data.get("focus")
-    max_history_rows = int(data.get("max_history_rows", DEFAULT_MAX_HISTORY_ROWS))
+    max_history_rows = _max_rows(data)
 
     if not state_path:
-        return _fail(["missing required input: state_path"])
+        raise InputError("missing required input: state_path")
     if not owner:
-        return _fail(["missing required input: owner"])
+        raise InputError("missing required input: owner")
     if not key:
-        return _fail(["missing required input: key"])
+        raise InputError("missing required input: key")
     if not phases or not isinstance(phases, list):
-        return _fail(["missing or invalid input: phases (list required)"])
+        raise InputError("missing or invalid input: phases (list required)")
 
     overwrite = data.get("overwrite", False) is True
 
@@ -354,7 +389,9 @@ def _op_create(data: dict) -> dict:
 def _op_update(data: dict) -> dict:
     state_path = data.get("state_path")
     if not state_path:
-        return _fail(["missing required input: state_path"])
+        raise InputError("missing required input: state_path")
+
+    max_history_rows = _max_rows(data)
 
     try:
         frontmatter, parsed, _ = _read_state(state_path)
@@ -371,7 +408,7 @@ def _op_update(data: dict) -> dict:
     current_focus = data.get("current_focus", parsed["current_focus"])
     last_action = data.get("last_action", parsed["last_action"])
     owner_sections = data.get("owner_sections", parsed["owner_sections"])
-    max_history_rows = int(data.get("max_history_rows", DEFAULT_MAX_HISTORY_ROWS))
+    extra_sections = parsed["extra_sections"]
 
     def _match_phase(name: str) -> dict | None:
         target = name.strip().lower()
@@ -418,6 +455,7 @@ def _op_update(data: dict) -> dict:
         last_action=last_action,
         history=parsed["history"],
         owner_sections=owner_sections,
+        extra_sections=extra_sections,
     )
     _write_state(state_path, frontmatter, body)
 
@@ -437,7 +475,7 @@ def _op_update(data: dict) -> dict:
 def _op_resume(data: dict) -> dict:
     state_path = data.get("state_path")
     if not state_path:
-        return _fail(["missing required input: state_path"])
+        raise InputError("missing required input: state_path")
 
     try:
         frontmatter, parsed, _ = _read_state(state_path)
@@ -462,13 +500,14 @@ def _op_resume(data: dict) -> dict:
         last_action=parsed["last_action"],
         next_pending_phase=next_pending_phase,
         owner_sections=parsed["owner_sections"],
+        extra_sections=parsed["extra_sections"],
     )
 
 
 def _op_validate(data: dict) -> dict:
     state_path = data.get("state_path")
     if not state_path:
-        return _fail(["missing required input: state_path"])
+        raise InputError("missing required input: state_path")
 
     try:
         frontmatter, parsed, _ = _read_state(state_path)
@@ -500,7 +539,7 @@ Writes JSON to stdout.
 def _run(data: dict) -> dict:
     operation = data.get("operation")
     if not operation:
-        return _fail(["missing required input: operation"])
+        raise InputError("missing required input: operation")
 
     if operation == "create":
         return _op_create(data)
@@ -511,7 +550,7 @@ def _run(data: dict) -> dict:
     if operation == "validate":
         return _op_validate(data)
 
-    return _fail([f"unknown operation: {operation}"])
+    raise InputError(f"unknown operation: {operation}")
 
 
 def main() -> int:
@@ -522,12 +561,19 @@ def main() -> int:
     try:
         data = json.load(sys.stdin)
     except json.JSONDecodeError as exc:
-        print(json.dumps(_fail([f"invalid JSON input: {exc}"])), file=sys.stderr)
+        print(json.dumps(_fail([f"invalid JSON input: {exc}"])))
         return 2
 
-    result = _run(data)
+    result: dict
+    try:
+        result = _run(data)
+        code = 0 if result.get("status") == "complete" else 1
+    except InputError as exc:
+        result = _fail([str(exc)])
+        code = 2
+
     print(json.dumps(result, indent=2))
-    return 0 if result.get("status") == "complete" else 1
+    return code
 
 
 if __name__ == "__main__":

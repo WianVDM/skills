@@ -1,14 +1,7 @@
 ---
 name: research-ticket
 description: "Fetch and normalize all data about a ticket from a configured issue tracker, including core fields, comments, attachments, history, development info, and related tickets. Use when a skill needs ticket context before making decisions or recommendations."
-version: 1.0.0
 invocation: model-invoked
-metadata:
-  author: Wian van der Merwe
-  tags: [ticket, issue-tracker, research, building-block]
-depends:
-  - context-reports
-  - worker-contract
 ---
 
 # research-ticket
@@ -82,14 +75,14 @@ manual_context:
   description: "..."
 ```
 
-| Field | Required | Description |
-|---|---|---|
-| `ticket_key` | yes | Ticket or issue key to research. |
-| `project` | no | Project key, if known. Used for validation. |
-| `tracker` | yes | Tracker type: `jira`, `github`, `linear`, or `manual`. |
-| `tracker_config` | yes | Tracker-specific config (env var names, repo, team, server URL). |
-| `scope` | no | Data categories to fetch. Defaults to all categories. |
-| `manual_context` | no | User-provided context when `tracker: manual`. |
+| Field            | Required | Description                                                      |
+| ---------------- | -------- | ---------------------------------------------------------------- |
+| `ticket_key`     | yes      | Ticket or issue key to research.                                 |
+| `project`        | no       | Project key, if known. Used for validation.                      |
+| `tracker`        | yes      | Tracker type: `jira`, `github`, `linear`, or `manual`.           |
+| `tracker_config` | yes      | Tracker-specific config (env var names, repo, team, server URL). |
+| `scope`          | no       | Data categories to fetch. Defaults to all categories.            |
+| `manual_context` | no       | User-provided context when `tracker: manual`.                    |
 
 ### Output
 
@@ -130,23 +123,23 @@ context_graph: []
 ---
 ```
 
-| Status | Meaning | Caller action |
-|---|---|---|
-| `complete` | All requested data fetched and normalized. | Continue. |
-| `partial` | Some data unavailable or truncated. | Note gaps and continue with reduced confidence. |
-| `needs_input` | Credentials, scope, or tracker choice needed. | Surface question to user. |
-| `blocked` | Unrecoverable error (tracker unavailable, key invalid). | Report blocker and offer alternatives. |
+| Status        | Meaning                                                 | Caller action                                   |
+| ------------- | ------------------------------------------------------- | ----------------------------------------------- |
+| `complete`    | All requested data fetched and normalized.              | Continue.                                       |
+| `partial`     | Some data unavailable or truncated.                     | Note gaps and continue with reduced confidence. |
+| `needs_input` | Credentials, scope, or tracker choice needed.           | Surface question to user.                       |
+| `blocked`     | Unrecoverable error (tracker unavailable, key invalid). | Report blocker and offer alternatives.          |
 
 ## Tracker adapters
 
 `research-ticket` internally dispatches to tracker-specific adapters.
 
-| Adapter | Source | Notes |
-|---|---|---|
-| `jira` | REST API via env vars | Richest metadata; supports parent/child, links, worklog. |
-| `github` | GitHub API via env vars | Issue-centric; PR links via development info. |
-| `linear` | Linear API via env vars | Team-based identifiers; supports related issues. |
-| `manual` | User-provided context | No API calls; user provides summary, description, acceptance criteria, and related context. |
+| Adapter  | Source                  | Notes                                                                                       |
+| -------- | ----------------------- | ------------------------------------------------------------------------------------------- |
+| `jira`   | REST API via env vars   | Richest metadata; supports parent/child, links, worklog.                                    |
+| `github` | GitHub API via env vars | Issue-centric; PR links via development info.                                               |
+| `linear` | Linear API via env vars | Team-based identifiers; supports related issues.                                            |
+| `manual` | User-provided context   | No API calls; user provides summary, description, acceptance criteria, and related context. |
 
 The script implementing this skill (`scripts/research-ticket.py`) reads JSON from stdin and writes JSON to stdout. It is deterministic and can be invoked by the model directly or by a conductor.
 

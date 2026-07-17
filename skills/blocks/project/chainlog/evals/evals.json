@@ -206,11 +206,15 @@
       "id": "behavior-mark-stale-01",
       "type": "behavior",
       "baseline_type": "no_skill",
-      "prompt": "Append an observation entry for a PR capability, then mark_stale that capability and verify the staleness marker is appended.",
+      "prompt": "Append an observation entry for a PR capability, then mark_stale that capability, then query_latest for the same capability and verify the stale marker is visible in the latest entry's frontmatter.",
       "assertions": [
         {
           "type": "output_contains",
           "value": "\"status\": \"appended\""
+        },
+        {
+          "type": "output_contains",
+          "value": "\"stale\": true"
         }
       ]
     }

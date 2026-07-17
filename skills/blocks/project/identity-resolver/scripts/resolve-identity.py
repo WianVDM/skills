@@ -24,8 +24,12 @@ from typing import Optional
 
 
 TICKET_RE = re.compile(r"[A-Z][A-Z0-9]*-\d+")
-PR_URL_RE = re.compile(r"(?:https?://[^/]+/)?([^/]+)/([^/]+)/(?:pull|merge_requests)/(\d+)", re.IGNORECASE)
+PR_URL_RE = re.compile(
+    r"(?:https?://([^/]+)/)?([^/]+)/([^/]+)/(?:(-)/)?(pull|merge_requests)/(\d+)",
+    re.IGNORECASE,
+)
 COMMIT_RE = re.compile(r"^[a-f0-9]{7,40}$", re.IGNORECASE)
+BRANCH_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/-]*$")
 
 
 def _help() -> str:
@@ -126,8 +130,13 @@ def _resolve_pr_url(user_input: str) -> Optional[dict]:
     m = PR_URL_RE.search(user_input)
     if not m:
         return None
-    owner, repo_name, number = m.groups()
+    host, owner, repo_name, _dash, kind, number = m.groups()
     repo = f"{owner}/{repo_name}"
+    is_gitlab = kind.lower() == "merge_requests" or bool(host and "gitlab" in host.lower())
+    if is_gitlab:
+        url = f"https://{host or 'gitlab.com'}/{owner}/{repo_name}/-/merge_requests/{number}"
+    else:
+        url = f"https://{host or 'github.com'}/{owner}/{repo_name}/pull/{number}"
     return {
         "status": "found",
         "type": "pr",
@@ -136,7 +145,7 @@ def _resolve_pr_url(user_input: str) -> Optional[dict]:
         "branch": None,
         "base": None,
         "commit": None,
-        "url": f"https://github.com/{owner}/{repo_name}/pull/{number}",
+        "url": url,
         "project": None,
         "source": "url",
     }
@@ -185,6 +194,15 @@ def _resolve_commit(user_input: str, cwd: Optional[Path] = None) -> Optional[dic
         "project": None,
         "source": "user_input",
     }
+
+
+def _branch_exists(branch: str, cwd: Optional[Path] = None) -> bool:
+    """Return True when git evidence shows the branch exists locally or on origin."""
+    rc, _, _ = _run_git(["rev-parse", "--verify", f"refs/heads/{branch}"], cwd)
+    if rc == 0:
+        return True
+    rc, _, _ = _run_git(["rev-parse", "--verify", f"refs/remotes/origin/{branch}"], cwd)
+    return rc == 0
 
 
 def _resolve_branch(branch: Optional[str], repo: Optional[str], cwd: Optional[Path] = None) -> Optional[dict]:
@@ -266,8 +284,17 @@ def _do_resolve(data: dict) -> dict:
         if commit:
             return _clean_output(commit)
 
-    # 6. Branch (provided or current).
-    branch = _resolve_branch(branch_hint or user_input, repo, cwd_path)
+    # 6. Branch: an explicit branch field is trusted; user input is only
+    # resolved as a branch when it is branch-shaped and git evidence confirms
+    # it; with no input at all, fall back to the current git branch.
+    if branch_hint:
+        branch = _resolve_branch(branch_hint, repo, cwd_path)
+    elif user_input and BRANCH_RE.match(user_input) and _branch_exists(user_input, cwd_path):
+        branch = _resolve_branch(user_input, repo, cwd_path)
+    elif not user_input:
+        branch = _resolve_branch(None, repo, cwd_path)
+    else:
+        branch = None
     if branch:
         return _clean_output(branch)
 
@@ -294,14 +321,22 @@ def _main() -> int:
     try:
         data = json.load(sys.stdin)
     except json.JSONDecodeError as exc:
-        print(
-            json.dumps({"status": "error", "errors": [f"invalid JSON input: {exc}"]}),
-            file=sys.stderr,
-        )
+        print(json.dumps({"status": "error", "errors": [f"invalid JSON input: {exc}"]}))
         return 2
 
-    result = _run(data)
+    if not isinstance(data, dict):
+        print(json.dumps({"status": "error", "errors": ["input must be a JSON object"]}))
+        return 2
+
+    try:
+        result = _run(data)
+    except Exception as exc:
+        print(json.dumps({"status": "error", "errors": [f"unexpected error: {exc}"]}))
+        return 1
+
     print(json.dumps(result, indent=2))
+    if result.get("status") == "error":
+        return 2
     return 0 if result.get("status") == "found" else 1
 
 

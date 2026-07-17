@@ -9,7 +9,7 @@
 ## Required environment
 
 - Network access to the GitHub API.
-- Python 3.x or equivalent for API calls.
+- An HTTP-capable tool for GitHub Actions API calls, chosen by the conductor (no bundled script).
 
 ## Environment variables
 

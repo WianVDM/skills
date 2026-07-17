@@ -1,11 +1,7 @@
 ---
 name: map-ticket-relationships
 description: "Map all relationships surrounding a ticket: parent, children, siblings, duplicates, linked tickets, blocked-by/blocks, implementation PRs/branches, original feature for bugs, attachments, and affected files. Use when a skill needs to anchor a ticket in its full context."
-version: 1.0.0
 invocation: model-invoked
-metadata:
-  author: Wian van der Merwe
-  tags: [relationships, ticket-graph, dependencies, building-block]
 depends:
   - context-reports
   - worker-contract
@@ -57,7 +53,7 @@ Building-block skill.
 ```yaml
 ---
 ticket_key: OC-4644
-ticket_data: { ... }  # normalized output from research-ticket
+ticket_data: { ... } # normalized output from research-ticket
 git_state:
   branch: SHB-362
   commit: abc1234
@@ -66,13 +62,13 @@ infer_by_file: true
 ---
 ```
 
-| Field | Required | Description |
-|---|---|---|
-| `ticket_key` | yes | Ticket/issue key to map. |
-| `ticket_data` | yes | Normalized ticket from `research-ticket`. Must contain `related_tickets`, `dev_info`, `attachments`, and optionally `description`/`summary`. |
-| `git_state` | no | Current branch/commit. If omitted, local git discovery is skipped. |
-| `codebase_root` | no | Root of the codebase. Defaults to the current working directory. |
-| `infer_by_file` | no | Infer affected files from ticket description. Default `false`. |
+| Field           | Required | Description                                                                                                                                  |
+| --------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ticket_key`    | yes      | Ticket/issue key to map.                                                                                                                     |
+| `ticket_data`   | yes      | Normalized ticket from `research-ticket`. Must contain `related_tickets`, `dev_info`, `attachments`, and optionally `description`/`summary`. |
+| `git_state`     | no       | Current branch/commit. If omitted, local git discovery is skipped.                                                                           |
+| `codebase_root` | no       | Root of the codebase. Defaults to the current working directory.                                                                             |
+| `infer_by_file` | no       | Infer affected files from ticket description. Default `false`.                                                                               |
 
 ### Output
 
@@ -90,7 +86,7 @@ relationships:
   original_feature:
     ticket: OC-3000
     commit: def5678
-    pr: "#234"
+    pr: null # reserved; not populated in this version
   implementation:
     prs: ["#123"]
     branches: [feature/OC-4644-auth-guard]
@@ -105,11 +101,11 @@ gaps: []
 ---
 ```
 
-| Status | Meaning |
-|---|---|
-| `complete` | All available relationships mapped. |
-| `partial` | Some relationships unavailable; gaps noted. |
-| `blocked` | No tracker or git data available. |
+| Status     | Meaning                                     |
+| ---------- | ------------------------------------------- |
+| `complete` | All available relationships mapped.         |
+| `partial`  | Some relationships unavailable; gaps noted. |
+| `blocked`  | No tracker or git data available.           |
 
 ## Lazy loading
 
@@ -134,3 +130,5 @@ Run map-ticket-relationships with ticket_key OC-4644 and tracker_data from resea
 - This first version does not call tracker APIs. It uses only the data provided in `ticket_data` plus local `git` inspection.
 - Sibling mapping relies on the parent ticket's children. If `ticket_data` does not include explicit siblings, a gap note is returned because this version does not fetch parent data.
 - `infer_by_file` performs lightweight, filesystem-validated extraction from the ticket description; it is not a semantic code search.
+- `original_feature.pr` is a reserved field. This version makes no tracker or PR-source calls, so it is always returned as null.
+- `max_depth` is not a supported input. Relationship depth is not configurable in this version.

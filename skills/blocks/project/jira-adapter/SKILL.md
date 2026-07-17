@@ -1,7 +1,6 @@
 ---
 name: jira-adapter
 description: Issue-tracker source adapter that resolves Jira tickets and fetches ticket scope with acceptance criteria, returning the normalized issue-tracker shape.
-version: 1.0.0
 invocation: model-invoked
 depends:
   - pr-adapter-contract
@@ -43,6 +42,7 @@ Tool building block.
 config:
   base_url: https://my-org.atlassian.net
   project_key: OC
+  email: ${JIRA_EMAIL}
   token: ${JIRA_TOKEN}
   custom_fields:
     acceptance_criteria: customfield_10101

@@ -8,6 +8,7 @@
 config:
   base_url: https://my-org.atlassian.net
   project_key: OC
+  email: ${JIRA_EMAIL}
   token: ${JIRA_TOKEN}
   custom_fields:
     acceptance_criteria: customfield_10101
@@ -22,7 +23,8 @@ input:
 |---|---|---|
 | `config.base_url` | yes | Jira instance URL. |
 | `config.project_key` | yes | Jira project key. |
-| `config.token` | yes | Jira token, resolved by `token-resolver`. |
+| `config.email` | yes | Account email for Basic auth, resolved by `token-resolver`. |
+| `config.token` | yes | Jira API token for Basic auth, resolved by `token-resolver`. |
 | `config.custom_fields.acceptance_criteria` | no | Custom field ID for acceptance criteria. |
 | `input.key` | no | Ticket key; inferred from PR title/body if omitted. |
 | `input.repo` | no | Repository context. |

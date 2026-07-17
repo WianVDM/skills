@@ -1,167 +1,266 @@
 {
+  "version": "1",
   "skill": "explore-code",
-  "version": "1.0.0",
-  "evals": [
+  "tests": [
     {
-      "id": "ec-trigger-01",
+      "id": "trigger-should-01",
       "type": "trigger",
-      "name": "Triggered by code-related question",
-      "description": "The skill should be invoked when the user asks a code-related question or ticket summary.",
-      "input": {
-        "ticket_summary": "Where is token refresh handled?",
-        "mentioned_files": [],
-        "task_type": "code"
-      },
-      "expected": {
-        "triggered": true,
-        "reason": "task_type is code"
-      }
+      "category": "should-trigger",
+      "prompt": "Where does token refresh happen in the codebase?",
+      "expected": "explore-code"
     },
     {
-      "id": "ec-trigger-02",
+      "id": "trigger-should-02",
       "type": "trigger",
-      "name": "Skipped for process tickets",
-      "description": "The skill should not explore code for process-only tickets.",
-      "input": {
-        "ticket_summary": "Update quarterly planning doc",
-        "mentioned_files": [],
-        "task_type": "process"
-      },
-      "expected": {
-        "triggered": false,
-        "reason": "task_type is process"
-      }
+      "category": "should-trigger",
+      "prompt": "Find the files related to the auth guard race condition ticket.",
+      "expected": "explore-code"
     },
     {
-      "id": "ec-behavior-01",
-      "type": "behavior",
-      "name": "Returns complete with mentioned file",
-      "description": "Given a ticket summary and a file that exists, the script returns the file as High relevance.",
-      "input": {
-        "ticket_summary": "Auth guard race condition during token refresh",
-        "mentioned_files": ["src/app/guards/auth.guard.ts"],
-        "task_type": "code",
-        "max_files": 5
-      },
-      "expected": {
-        "status": "complete",
-        "relevant_files_count_min": 1,
-        "first_relevance": "High",
-        "missing_files": []
-      }
+      "id": "trigger-should-03",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Search the code for evidence about how billing validation works.",
+      "expected": "explore-code"
     },
     {
-      "id": "ec-behavior-02",
-      "type": "behavior",
-      "name": "Reports missing mentioned files",
-      "description": "If a mentioned file does not exist, it appears in missing_files and status is partial.",
-      "input": {
-        "ticket_summary": "Auth guard race condition",
-        "mentioned_files": ["src/app/guards/nonexistent.guard.ts"],
-        "task_type": "code"
-      },
-      "expected": {
-        "status": "partial",
-        "missing_files": ["src/app/guards/nonexistent.guard.ts"]
-      }
+      "id": "trigger-should-04",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Which files mention the retry logic described in this bug report?",
+      "expected": "explore-code"
     },
     {
-      "id": "ec-behavior-03",
-      "type": "behavior",
-      "name": "Returns needs_input when summary is missing",
-      "description": "The script returns needs_input when no ticket_summary or question is provided.",
-      "input": {
-        "mentioned_files": [],
-        "task_type": "code"
-      },
-      "expected": {
-        "status": "needs_input"
-      }
+      "id": "trigger-should-05",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Locate the tests covering the checkout flow in this repository.",
+      "expected": "explore-code"
     },
     {
-      "id": "ec-behavior-04",
-      "type": "behavior",
-      "name": "Respects max_files limit",
-      "description": "The script returns at most max_files relevant files.",
-      "input": {
-        "ticket_summary": "Authentication and billing validation",
-        "mentioned_files": [],
-        "task_type": "code",
-        "max_files": 2
-      },
-      "expected": {
-        "relevant_files_count_max": 2
-      }
+      "id": "trigger-should-06",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Show me where the ADRs and docs for the caching decision live in the code.",
+      "expected": "explore-code"
     },
     {
-      "id": "ec-behavior-05",
-      "type": "behavior",
-      "name": "Respects process skip",
-      "description": "The script returns complete with empty results for process tickets unless force is true.",
-      "input": {
-        "ticket_summary": "Update quarterly planning doc",
-        "mentioned_files": [],
-        "task_type": "process"
-      },
-      "expected": {
-        "status": "complete",
-        "relevant_files_count_max": 0,
-        "note": "process tickets skipped by default; set force: true to override"
-      }
+      "id": "trigger-should-07",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Explore the codebase to find where websocket reconnects are handled.",
+      "expected": "explore-code"
     },
     {
-      "id": "ec-behavior-06",
-      "type": "behavior",
-      "name": "Force overrides process skip",
-      "description": "When task_type is process and force is true, the script runs the search anyway.",
-      "input": {
-        "ticket_summary": "Update quarterly planning doc",
-        "mentioned_files": [],
-        "task_type": "process",
-        "force": true,
-        "max_files": 5
-      },
-      "expected": {
-        "status": "complete",
-        "relevant_files_count_min": 1,
-        "note_missing": "process tickets skipped by default"
-      }
+      "id": "trigger-should-08",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Find comparable implementations of pagination in the code.",
+      "expected": "explore-code"
     },
     {
-      "id": "ec-behavior-07",
-      "type": "behavior",
-      "name": "Workspace scoping resolves against project_root",
-      "description": "The script resolves workspace relative to project_root rather than cwd.",
-      "input": {
-        "ticket_summary": "Find frontend components",
-        "mentioned_files": [],
-        "task_type": "code",
-        "project_root": "skills/core/explore-code",
-        "workspace": "scripts",
-        "max_files": 10
-      },
-      "expected": {
-        "status": "complete",
-        "relevant_files_count_min": 1,
-        "all_paths_under_workspace": "scripts"
-      }
+      "id": "trigger-should-09",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "The ticket says the login module is broken. Find the mentioned file and any related source files.",
+      "expected": "explore-code"
     },
     {
-      "id": "ec-behavior-08",
+      "id": "trigger-should-10",
+      "type": "trigger",
+      "category": "should-trigger",
+      "prompt": "Gather code evidence for this question: how is session expiry enforced?",
+      "expected": "explore-code"
+    },
+    {
+      "id": "trigger-not-01",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Search the chainlog for observations we already collected for this PR.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-02",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Find the project root and the config directories for this workspace.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-03",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Write the new source files for the login feature.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-04",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Run the test suite and fix the failing tests.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-05",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Update the docs to describe the release process.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-06",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Review the code in this pull request and post review comments.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-07",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Find the ticket in Jira and summarize its acceptance criteria.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-08",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Check whether this context report is still fresh.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-09",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Search the skills registry for a skill that formats markdown.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-10",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Diagnose why the app crashes on startup.",
+      "expected": ""
+    },
+    {
+      "id": "behavior-mentioned-file-01",
       "type": "behavior",
-      "name": "Falls back to Python walk when rg is missing",
-      "description": "If rg is not available, the script still finds files using Python os.walk.",
-      "input": {
-        "ticket_summary": "explore code script",
-        "mentioned_files": [],
-        "task_type": "code",
-        "project_root": "skills/core/explore-code",
-        "max_files": 10
-      },
-      "expected": {
-        "status": "complete",
-        "relevant_files_count_min": 1
-      }
+      "baseline_type": "no_skill",
+      "prompt": "Create a temp directory containing src/auth.guard.ts with any content, then run scripts/explore-code.py with ticket_summary 'Auth guard race condition during token refresh', mentioned_files ['src/auth.guard.ts'], project_root set to the temp directory, and max_files 5. Verify the mentioned file is returned as High relevance and nothing is missing.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"complete\""
+        },
+        {
+          "type": "output_contains",
+          "value": "explicitly mentioned in ticket"
+        }
+      ]
+    },
+    {
+      "id": "behavior-missing-file-01",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Create an empty temp directory and run scripts/explore-code.py with ticket_summary 'Auth guard race condition', mentioned_files ['src/nonexistent.guard.ts'], and project_root set to the temp directory. Verify the missing file is reported.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"partial\""
+        },
+        {
+          "type": "output_contains",
+          "value": "src/nonexistent.guard.ts"
+        }
+      ]
+    },
+    {
+      "id": "behavior-needs-input-01",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Run scripts/explore-code.py with a JSON input that has mentioned_files and task_type but no ticket_summary and no question. Verify the script asks for input.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"needs_input\""
+        }
+      ]
+    },
+    {
+      "id": "behavior-max-files-01",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Create a temp directory with two files: hits.txt containing the words 'billing validation' repeated many times, and sparse.txt containing the word 'billing' once. Run scripts/explore-code.py with ticket_summary 'Authentication and billing validation', project_root set to the temp directory, and max_files 1. Verify only the strongest hit is returned.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "hits.txt"
+        },
+        {
+          "type": "output_excludes",
+          "value": "sparse.txt"
+        }
+      ]
+    },
+    {
+      "id": "behavior-process-skip-01",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Run scripts/explore-code.py with ticket_summary 'Update quarterly planning doc', task_type 'process', and force false. Verify exploration is skipped by default.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "process tickets skipped by default"
+        }
+      ]
+    },
+    {
+      "id": "behavior-force-process-01",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Create a temp directory containing planning.txt with the words 'quarterly planning' inside. Run scripts/explore-code.py with ticket_summary 'Update quarterly planning doc', task_type 'process', force true, project_root set to the temp directory, and max_files 5. Verify the search runs despite the process task type.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"complete\""
+        },
+        {
+          "type": "output_contains",
+          "value": "planning.txt"
+        }
+      ]
+    },
+    {
+      "id": "behavior-workspace-scope-01",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Create a temp directory with a subdirectory frontend/ containing widget.ts that mentions 'checkout button'. Run scripts/explore-code.py from a different working directory with ticket_summary 'Find frontend checkout button components', project_root set to the temp directory, workspace 'frontend', and max_files 10. Verify the workspace is resolved against project_root, not the current working directory.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"complete\""
+        },
+        {
+          "type": "output_contains",
+          "value": "widget.ts"
+        }
+      ]
+    },
+    {
+      "id": "behavior-python-fallback-01",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Create a temp directory containing notes.txt with the words 'explore code script' inside. Run scripts/explore-code.py with a PATH that does not contain the rg binary, ticket_summary 'explore code script', project_root set to the temp directory, and max_files 10. Verify the Python directory-walk fallback still finds the file.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"complete\""
+        },
+        {
+          "type": "output_contains",
+          "value": "notes.txt"
+        }
+      ]
     }
   ]
 }

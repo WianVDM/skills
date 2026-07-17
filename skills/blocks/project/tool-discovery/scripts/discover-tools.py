@@ -7,7 +7,7 @@ Operations:
   discover  Return ranked tools for a capability.
 
 Input JSON on stdin:
-  {"operation": "discover", "capability": "pr-source", "context_dir": "...", "config_dir": "...", "preference": "auto"}
+  {"operation": "discover", "capability": "pr-source", "config_dir": "...", "preference": "auto"}
 
 Output JSON to stdout:
   {"status": "found", "capability": "pr-source", "tools": [...]}
@@ -36,7 +36,7 @@ def _help() -> str:
     return """discover-tools.py — discover available tools for a capability
 
 Input JSON (stdin):
-  {"operation": "discover", "capability": "pr-source", "context_dir": "...", "config_dir": "...", "preference": "auto"}
+  {"operation": "discover", "capability": "pr-source", "config_dir": "...", "preference": "auto"}
 
 Output JSON (stdout):
   {"status": "found", "capability": "pr-source", "tools": [...]}
@@ -92,11 +92,17 @@ def _detect_mcp_tools(config_dir: Path) -> set[str]:
     return found
 
 
-def _matches_mcp(tool: dict, mcp_tokens: set[str]) -> tuple[bool, list[str]]:
-    """Check whether an MCP tool's keywords are present in MCP config."""
-    keywords = tool.get("keywords", tool.get("identifiers", []))
-    matched = [kw for kw in keywords if kw.lower() in mcp_tokens]
-    return bool(matched), matched
+def _matches_mcp(tool: dict, mcp_tokens: set[str]) -> tuple[bool, list[str], list[str]]:
+    """Check an MCP tool's keywords and identifiers against MCP config tokens.
+
+    Keywords match configured MCP server names; identifiers match concrete
+    tool names when the config lists them. Either signal is sufficient.
+    """
+    keywords = [kw for kw in tool.get("keywords", []) if kw]
+    identifiers = [i for i in tool.get("identifiers", []) if i]
+    matched_keywords = [kw for kw in keywords if kw.lower() in mcp_tokens]
+    matched_identifiers = [i for i in identifiers if i.lower() in mcp_tokens]
+    return bool(matched_keywords or matched_identifiers), matched_keywords, matched_identifiers
 
 
 def _detect_cli_tools(identifiers: list[str]) -> bool:
@@ -124,9 +130,14 @@ def _discover_tool(tool: dict, mcp_tokens: set[str]) -> dict:
     identifiers = tool.get("identifiers", [])
 
     if category == "mcp":
-        available, matched = _matches_mcp(tool, mcp_tokens)
-        detail = f"MCP keywords {', '.join(matched)} matched" if matched else "no matching MCP keywords detected"
-        if matched and confidence == "low":
+        available, matched_kw, matched_ids = _matches_mcp(tool, mcp_tokens)
+        parts = []
+        if matched_kw:
+            parts.append(f"MCP keywords {', '.join(matched_kw)} matched")
+        if matched_ids:
+            parts.append(f"MCP identifiers {', '.join(matched_ids)} matched")
+        detail = "; ".join(parts) if parts else "no matching MCP keywords or identifiers detected"
+        if available and confidence == "low":
             confidence = "high"
     elif category == "cli":
         available = _detect_cli_tools(identifiers)
@@ -186,7 +197,6 @@ def _do_discover(data: dict) -> dict:
     if not capability:
         return {"status": "error", "errors": ["capability is required"]}
 
-    context_dir = Path(data.get("context_dir", ".agents/context")).resolve()
     config_dir = Path(data.get("config_dir", ".agents/config")).resolve()
     preference = data.get("preference") or _load_preference(config_dir, capability)
     registry_path = Path(data.get("registry", _default_registry_path())).resolve()
@@ -227,7 +237,6 @@ def _do_discover(data: dict) -> dict:
     return {
         "status": "found",
         "capability": capability,
-        "context_dir": str(context_dir),
         "config_dir": str(config_dir),
         "tools": ranked,
     }
@@ -248,13 +257,18 @@ def _main() -> int:
     try:
         data = json.load(sys.stdin)
     except json.JSONDecodeError as exc:
-        print(
-            json.dumps({"status": "error", "errors": [f"invalid JSON input: {exc}"]}),
-            file=sys.stderr,
-        )
+        print(json.dumps({"status": "error", "errors": [f"invalid JSON input: {exc}"]}))
         return 2
 
-    result = _run(data)
+    if not isinstance(data, dict):
+        print(json.dumps({"status": "error", "errors": ["input must be a JSON object"]}))
+        return 2
+
+    try:
+        result = _run(data)
+    except Exception as exc:  # noqa: BLE001
+        print(json.dumps({"status": "error", "errors": [f"runtime failure: {exc}"]}))
+        return 1
     print(json.dumps(result, indent=2))
     return 0 if result["status"] in ("found",) else 1
 

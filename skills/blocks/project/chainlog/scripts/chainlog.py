@@ -31,6 +31,10 @@ from typing import Any
 import yaml
 
 
+class InputError(ValueError):
+    """Invalid caller input; maps to exit code 2."""
+
+
 # Required frontmatter fields for an observation entry.
 REQUIRED_ENTRY_FIELDS = [
     "work_item_type",
@@ -106,34 +110,78 @@ def _parse_frontmatter(text: str) -> dict:
     return {str(k): _coerce_value(v) for k, v in data.items()}
 
 
+# Fields that mark the start of a chain entry's frontmatter.
+_ENTRY_START_FIELDS = set(REQUIRED_ENTRY_FIELDS) | {"observation_id", "stale", "collected_at"}
+
+
+def _looks_like_entry_start(lines: list[str], i: int) -> bool:
+    """An entry starts at a line exactly '---' followed by a frontmatter block
+    that closes with '---' and parses to a dict holding at least one known field.
+    This keeps opaque bodies (markdown, diffs, stack traces) from desyncing the
+    parse: a '---' inside a body does not start an entry unless the following
+    block really is observation frontmatter."""
+    if lines[i] != "---":
+        return False
+    j = i + 1
+    block: list[str] = []
+    while j < len(lines) and lines[j] != "---":
+        block.append(lines[j])
+        j += 1
+    if j >= len(lines) or not block:
+        return False
+    frontmatter = _parse_frontmatter("\n".join(block))
+    return bool(frontmatter) and any(f in frontmatter for f in _ENTRY_START_FIELDS)
+
+
 def _parse_chain(text: str) -> list[dict]:
-    """Parse a chain file into a list of entries with frontmatter and body."""
+    """Parse a chain file into a list of entries with frontmatter and body.
+
+    State machine over lines: entry start (validated frontmatter), body up to
+    the next entry start or EOF. Empty-bodied entries are preserved."""
     if not text.strip():
         return []
 
-    # Split by --- lines. The file alternates frontmatter and body.
-    parts = re.split(r"\n---\s*\n", text.strip())
-    # If the file starts with ---, the first split part may be empty.
-    if parts and not parts[0].strip():
-        parts = parts[1:]
-
-    entries = []
-    for i in range(0, len(parts), 2):
-        frontmatter_text = parts[i]
-        body = parts[i + 1] if i + 1 < len(parts) else ""
-        frontmatter = _parse_frontmatter(frontmatter_text)
-        if frontmatter:
-            entries.append({
-                "frontmatter": frontmatter,
-                "body": body.strip("\n"),
-            })
+    lines = text.splitlines()
+    entries: list[dict] = []
+    i = 0
+    n = len(lines)
+    while i < n:
+        if not _looks_like_entry_start(lines, i):
+            i += 1
+            continue
+        j = i + 1
+        block: list[str] = []
+        while j < n and lines[j] != "---":
+            block.append(lines[j])
+            j += 1
+        frontmatter = _parse_frontmatter("\n".join(block))
+        j += 1  # skip the closing ---
+        if j < n and lines[j].strip() == "":
+            j += 1  # one blank line separates frontmatter from body
+        body_lines: list[str] = []
+        k = j
+        while k < n:
+            if lines[k] == "---" and _looks_like_entry_start(lines, k):
+                break
+            body_lines.append(lines[k])
+            k += 1
+        entries.append({"frontmatter": frontmatter, "body": "\n".join(body_lines).strip("\n")})
+        i = k
     return entries
+
+
+def _escape_body(body: str) -> str:
+    """Render body lines that are exactly '---' as '--- ' (trailing space).
+
+    Visually identical in markdown, but no longer an exact delimiter line, so a
+    written body can never desync the chain parser."""
+    return "\n".join(line + " " if line == "---" else line for line in body.split("\n"))
 
 
 def _render_entry(entry: dict) -> str:
     """Render an observation entry as markdown text."""
     frontmatter = dict(entry.get("frontmatter", {}))
-    body = entry.get("body", "")
+    body = _escape_body(entry.get("body", ""))
     fm_text = yaml.dump(frontmatter, default_flow_style=False, sort_keys=False, allow_unicode=True)
     return f"---\n{fm_text}---\n\n{body}\n"
 
@@ -148,10 +196,18 @@ def _validate_entry(entry: dict) -> list[str]:
 
 
 def _entry_to_output(entry: dict) -> dict:
-    """Convert an internal entry to the output format."""
+    """Convert an internal entry to the output format.
+
+    The payload lives in the body. Legacy entries written with the payload in
+    frontmatter (duplicated in the body) are normalized to the same shape."""
+    frontmatter = dict(entry["frontmatter"])
+    body = entry["body"]
+    legacy_payload = frontmatter.pop("payload", None)
+    if legacy_payload and not body:
+        body = legacy_payload
     return {
-        "frontmatter": entry["frontmatter"],
-        "body": entry["body"],
+        "frontmatter": frontmatter,
+        "body": body,
     }
 
 
@@ -172,7 +228,9 @@ def _do_append(context_dir: Path, entry: dict) -> dict:
     if "collected_at" not in entry or not entry["collected_at"]:
         entry["collected_at"] = _format_timestamp(datetime.datetime.now(datetime.timezone.utc))
 
-    rendered = _render_entry({"frontmatter": entry, "body": entry.get("payload", "")})
+    # The payload is the body; it is not duplicated into frontmatter.
+    payload = entry.pop("payload", "")
+    rendered = _render_entry({"frontmatter": entry, "body": payload})
 
     # Append to file.
     with chain_path.open("a", encoding="utf-8") as f:
@@ -286,7 +344,7 @@ def _do_exists(context_dir: Path, work_item_type: str, work_item_key: str) -> di
     """Check whether a work item has any observations."""
     chain_path = _chain_path(context_dir, work_item_type, work_item_key)
     if not chain_path.exists():
-        return {"status": "found", "exists": False, "path": str(chain_path)}
+        return {"status": "found", "exists": False, "path": str(chain_path), "count": 0}
 
     text = chain_path.read_text(encoding="utf-8", errors="ignore")
     entries = _parse_chain(text)
@@ -319,6 +377,16 @@ def _do_mark_stale(
     return _do_append(context_dir, entry)
 
 
+def _require_work_item(data: dict, need_capability: bool = False) -> tuple[str, str]:
+    work_item_type = data.get("work_item_type")
+    work_item_key = data.get("work_item_key")
+    if not work_item_type or not work_item_key:
+        raise InputError("work_item_type and work_item_key are required")
+    if need_capability and not data.get("capability"):
+        raise InputError("work_item_type, work_item_key, and capability are required")
+    return work_item_type, work_item_key
+
+
 def _run(data: dict) -> dict:
     operation = data.get("operation")
     context_dir = Path(data.get("context_dir", ".agents/context")).resolve()
@@ -326,51 +394,33 @@ def _run(data: dict) -> dict:
     if operation == "append":
         entry = data.get("entry")
         if not isinstance(entry, dict):
-            return {"status": "error", "errors": ["entry is required for append"]}
+            raise InputError("entry is required for append")
         return _do_append(context_dir, entry)
 
     if operation == "query_latest":
-        work_item_type = data.get("work_item_type")
-        work_item_key = data.get("work_item_key")
-        capability = data.get("capability")
-        if not work_item_type or not work_item_key:
-            return {"status": "error", "errors": ["work_item_type and work_item_key are required"]}
-        return _do_query_latest(context_dir, work_item_type, work_item_key, capability)
+        work_item_type, work_item_key = _require_work_item(data)
+        return _do_query_latest(context_dir, work_item_type, work_item_key, data.get("capability"))
 
     if operation == "query_all":
-        work_item_type = data.get("work_item_type")
-        work_item_key = data.get("work_item_key")
-        capability = data.get("capability")
-        if not work_item_type or not work_item_key:
-            return {"status": "error", "errors": ["work_item_type and work_item_key are required"]}
-        return _do_query(context_dir, work_item_type, work_item_key, capability, None)
+        work_item_type, work_item_key = _require_work_item(data)
+        return _do_query(context_dir, work_item_type, work_item_key, data.get("capability"), None)
 
     if operation == "query_since":
-        work_item_type = data.get("work_item_type")
-        work_item_key = data.get("work_item_key")
-        capability = data.get("capability")
-        since = data.get("since")
-        if not work_item_type or not work_item_key:
-            return {"status": "error", "errors": ["work_item_type and work_item_key are required"]}
-        return _do_query(context_dir, work_item_type, work_item_key, capability, since)
+        work_item_type, work_item_key = _require_work_item(data)
+        return _do_query(context_dir, work_item_type, work_item_key, data.get("capability"), data.get("since"))
 
     if operation == "exists":
-        work_item_type = data.get("work_item_type")
-        work_item_key = data.get("work_item_key")
-        if not work_item_type or not work_item_key:
-            return {"status": "error", "errors": ["work_item_type and work_item_key are required"]}
+        work_item_type, work_item_key = _require_work_item(data)
         return _do_exists(context_dir, work_item_type, work_item_key)
 
     if operation == "mark_stale":
-        work_item_type = data.get("work_item_type")
-        work_item_key = data.get("work_item_key")
-        capability = data.get("capability")
-        reason = data.get("reason", "")
-        if not work_item_type or not work_item_key or not capability:
-            return {"status": "error", "errors": ["work_item_type, work_item_key, and capability are required"]}
-        return _do_mark_stale(context_dir, work_item_type, work_item_key, capability, reason)
+        work_item_type, work_item_key = _require_work_item(data, need_capability=True)
+        return _do_mark_stale(
+            context_dir, work_item_type, work_item_key,
+            data.get("capability"), data.get("reason", ""),
+        )
 
-    return {"status": "error", "errors": [f"unknown operation: {operation}"]}
+    raise InputError(f"unknown operation: {operation}")
 
 
 def _main() -> int:
@@ -381,15 +431,18 @@ def _main() -> int:
     try:
         data = json.load(sys.stdin)
     except json.JSONDecodeError as exc:
-        print(
-            json.dumps({"status": "error", "errors": [f"invalid JSON input: {exc}"]}),
-            file=sys.stderr,
-        )
+        print(json.dumps({"status": "error", "errors": [f"invalid JSON input: {exc}"]}))
         return 2
 
-    result = _run(data)
+    try:
+        result = _run(data)
+        code = 0 if result["status"] in ("appended", "found") else 1
+    except InputError as exc:
+        result = {"status": "error", "errors": [str(exc)]}
+        code = 2
+
     print(json.dumps(result, indent=2))
-    return 0 if result["status"] in ("appended", "found") else 1
+    return code
 
 
 if __name__ == "__main__":

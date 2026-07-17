@@ -1,7 +1,6 @@
 ---
 name: github-pr-adapter
 description: GitHub PR source adapter that fetches PR metadata, changed files, reviews, and inline review threads via the GitHub API and returns the normalized pr-source shape.
-version: 1.0.0
 invocation: model-invoked
 depends:
   - pr-adapter-contract
@@ -35,8 +34,8 @@ Tool building block. Implements the `pr-source` adapter interface.
 ## Out of scope
 
 - CI / build status (use `github-actions-adapter`).
-- Static-analysis findings (use `sonarcloud-adapter` or `sonarqube-adapter`).
-- Issue tracker scope (use `jira-adapter` or `github-issues-adapter`).
+- Static-analysis findings (use `sonarcloud-adapter`).
+- Issue tracker scope (use `jira-adapter`).
 - Synthesizing or triaging issues.
 
 ## Inputs

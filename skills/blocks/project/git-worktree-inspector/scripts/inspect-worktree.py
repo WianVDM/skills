@@ -6,15 +6,25 @@ Check out a branch or commit in a git worktree, inspect changed files, run scope
 Operations:
   inspect       Create a worktree, list changed files, run commands, reset changes, clean up.
   changed_files Create a worktree and list changed files.
-  cleanup       Remove a worktree.
+  cleanup       Remove a registered worktree.
 
 Input JSON on stdin.
 Output JSON to stdout.
+
+Safety: cleanup only removes directories registered in `git worktree list` of
+their owning repo. It never deletes the main repo and never falls back to
+recursive deletion of unverified paths.
+
+Exit codes:
+  0 — operation completed (status complete/found/removed).
+  1 — runtime failure (git errors, missing repo, refused cleanup).
+  2 — invalid input (missing required fields, unknown operation, bad JSON).
 """
 
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -27,6 +37,10 @@ from typing import Any, Optional
 TIMEOUT = 300
 
 
+class InputError(ValueError):
+    """Invalid caller input; maps to exit code 2."""
+
+
 def _help() -> str:
     return """inspect-worktree.py — check out a branch in a git worktree and run scoped checks
 
@@ -34,10 +48,14 @@ Input JSON (stdin):
   {"operation": "inspect", "repo": "/path/to/repo", "branch": "feature/x", "base": "main", "commands": [{"name": "lint", "cmd": ["npx", "eslint", "{files}"], "include_files": true}]}
   {"operation": "changed_files", "repo": "/path/to/repo", "branch": "feature/x", "base": "main"}
   {"operation": "cleanup", "worktree": "/path/to/worktree"}
+
+cleanup only removes directories that are registered git worktrees.
 """
 
 
 def _run_git(args: list[str], cwd: Path, check: bool = True) -> tuple[int, str, str]:
+    if not cwd.exists():
+        raise RuntimeError(f"directory does not exist: {cwd}")
     try:
         proc = subprocess.run(
             ["git", *args],
@@ -57,16 +75,9 @@ def _run_git(args: list[str], cwd: Path, check: bool = True) -> tuple[int, str, 
 def _validate_repo(repo: Path) -> None:
     if not repo.exists():
         raise RuntimeError(f"repo path does not exist: {repo}")
-    if not (repo / ".git").exists() and not _is_git_dir(repo):
-        # Check if repo itself is a git worktree or bare repo
-        pass
     git_dir = _git_dir(repo)
     if not git_dir or not git_dir.exists():
         raise RuntimeError(f"repo is not a git repository: {repo}")
-
-
-def _is_git_dir(path: Path) -> bool:
-    return (path / "HEAD").exists() and (path / "config").exists()
 
 
 def _git_dir(repo: Path) -> Optional[Path]:
@@ -78,7 +89,10 @@ def _git_dir(repo: Path) -> Optional[Path]:
         git_dir = out.strip()
         if not git_dir:
             return None
-        return Path(git_dir).resolve()
+        path = Path(git_dir)
+        if not path.is_absolute():
+            path = repo / path
+        return path.resolve()
     except RuntimeError:
         return None
 
@@ -108,22 +122,38 @@ def _sanitize_branch_name(branch: str) -> str:
 
 
 def _create_worktree(repo: Path, branch: str) -> Path:
-    """Create a git worktree and return its path."""
-    suffix = Path(tempfile.mkdtemp(prefix="wti-", dir=str(repo.parent))).name
-    worktree_name = f"{_sanitize_branch_name(branch)}-{suffix}"
-    parent = repo.parent
-    worktree_path = parent / worktree_name
-    # If parent is not writable, fall back to system temp.
-    try:
-        worktree_path = Path(tempfile.mkdtemp(prefix=f"wti-{_sanitize_branch_name(branch)}-")).resolve()
-    except Exception:
-        pass
-    # Use detached HEAD so the branch can be checked out even if it is already active elsewhere.
-    _run_git(["worktree", "add", "--detach", str(worktree_path), branch], repo)
-    return worktree_path
+    """Create a git worktree and return its path.
+
+    Sibling of the main repo by default; system temp if the repo parent is not
+    writable. git creates the target directory itself.
+    """
+    name = f"wti-{_sanitize_branch_name(branch)}-{int(time.time())}-{os.getpid()}"
+    candidates = [repo.parent / name, Path(tempfile.gettempdir()) / name]
+    last_error: Optional[Exception] = None
+    for path in candidates:
+        try:
+            # Detached HEAD so the branch can be checked out even if it is already active elsewhere.
+            _run_git(["worktree", "add", "--detach", str(path), branch], repo)
+            return path.resolve()
+        except RuntimeError as exc:
+            last_error = exc
+    raise RuntimeError(f"could not create worktree for '{branch}': {last_error}")
+
+
+def _registered_worktrees(repo: Path) -> list[Path]:
+    """All worktree paths registered with the repo (main repo included)."""
+    rc, out, _ = _run_git(["worktree", "list", "--porcelain"], repo, check=False)
+    paths = []
+    for line in out.splitlines():
+        if line.startswith("worktree "):
+            paths.append(Path(line[len("worktree "):].strip()).resolve())
+    return paths
 
 
 def _remove_worktree(repo: Path, worktree_path: Path) -> None:
+    """Remove a registered worktree. Never removes the main repo."""
+    if worktree_path.resolve() == repo.resolve():
+        raise RuntimeError(f"refusing to remove the main repo: {worktree_path}")
     _run_git(["worktree", "remove", "--force", str(worktree_path)], repo, check=False)
     if worktree_path.exists():
         shutil.rmtree(str(worktree_path), ignore_errors=True)
@@ -146,7 +176,11 @@ def _status_files(worktree: Path) -> list[str]:
     files = []
     for line in out.splitlines():
         if len(line) >= 3 and line[:2] != "??":
-            files.append(line[3:].strip())
+            entry = line[3:].strip()
+            # Porcelain renames look like "old -> new"; track the new path.
+            if " -> " in entry:
+                entry = entry.split(" -> ")[-1]
+            files.append(entry)
     return files
 
 
@@ -212,13 +246,13 @@ def _do_inspect(data: dict) -> dict:
     repo = Path(data.get("repo", ".")).resolve()
     branch = data.get("branch")
     if not branch:
-        return {"status": "error", "errors": ["branch is required"]}
+        raise InputError("branch is required")
+    _validate_repo(repo)
     base_name = _resolve_base_name(repo, data.get("base"))
     base_sha = _resolve_sha(repo, base_name)
     commands = data.get("commands", [])
     keep_worktree = data.get("keep_worktree", False)
 
-    _validate_repo(repo)
     worktree = _create_worktree(repo, branch)
 
     try:
@@ -260,11 +294,11 @@ def _do_changed_files(data: dict) -> dict:
     repo = Path(data.get("repo", ".")).resolve()
     branch = data.get("branch")
     if not branch:
-        return {"status": "error", "errors": ["branch is required"]}
+        raise InputError("branch is required")
+    _validate_repo(repo)
     base_name = _resolve_base_name(repo, data.get("base"))
     base_sha = _resolve_sha(repo, base_name)
 
-    _validate_repo(repo)
     worktree = _create_worktree(repo, branch)
     try:
         files = _changed_files(worktree, base_sha)
@@ -276,25 +310,48 @@ def _do_changed_files(data: dict) -> dict:
 def _do_cleanup(data: dict) -> dict:
     worktree_path = data.get("worktree")
     if not worktree_path:
-        return {"status": "error", "errors": ["worktree is required for cleanup"]}
+        raise InputError("worktree is required for cleanup")
     worktree = Path(worktree_path).resolve()
-    # Try to find the main repo from the worktree.
+    if not worktree.exists():
+        return {"status": "error", "errors": [f"worktree path does not exist: {worktree}"]}
+
     repo = _find_main_repo(worktree)
-    if repo:
-        _remove_worktree(repo, worktree)
-    else:
-        if worktree.exists():
-            shutil.rmtree(str(worktree), ignore_errors=True)
+    if repo is None:
+        if _git_dir(worktree) is not None:
+            return {
+                "status": "error",
+                "errors": [
+                    f"refusing to remove {worktree}: it is a repository root, "
+                    "not a worktree. cleanup only removes registered worktrees."
+                ],
+            }
+        return {
+            "status": "error",
+            "errors": [
+                f"refusing to remove {worktree}: not a git worktree. "
+                "cleanup only removes registered worktrees."
+            ],
+        }
+    if worktree == repo.resolve():
+        return {
+            "status": "error",
+            "errors": [f"refusing to remove the main repo: {worktree}"],
+        }
+    if worktree not in _registered_worktrees(repo):
+        return {
+            "status": "error",
+            "errors": [
+                f"refusing to remove {worktree}: not registered in `git worktree list` "
+                f"of {repo}."
+            ],
+        }
+
+    _remove_worktree(repo, worktree)
     return {"status": "removed", "worktree": str(worktree)}
 
 
 def _find_main_repo(worktree: Path) -> Optional[Path]:
     """Try to find the main repo that owns a worktree."""
-    git_dir = _git_dir(worktree)
-    if not git_dir:
-        return None
-    # In a worktree, git-dir points to .git/worktrees/<name>; parent is .git; main repo is .git/..
-    # But the worktree may not be inside the main repo. We can look for the gitdir file.
     gitdir_file = worktree / ".git"
     if gitdir_file.is_file():
         try:
@@ -305,7 +362,7 @@ def _find_main_repo(worktree: Path) -> Optional[Path]:
                     gitdir = (worktree / gitdir).resolve()
                 # gitdir is .../.git/worktrees/<name>. Main repo is ...
                 main = gitdir.parent.parent.parent
-                if (main / ".git").exists() or _is_git_dir(main / ".git"):
+                if _git_dir(main):
                     return main
         except OSError:
             pass
@@ -320,7 +377,7 @@ def _run(data: dict) -> dict:
         return _do_changed_files(data)
     if operation == "cleanup":
         return _do_cleanup(data)
-    return {"status": "error", "errors": [f"unknown operation: {operation}"]}
+    raise InputError(f"unknown operation: {operation}")
 
 
 def _main() -> int:
@@ -331,16 +388,21 @@ def _main() -> int:
     try:
         data = json.load(sys.stdin)
     except json.JSONDecodeError as exc:
-        print(json.dumps({"status": "error", "errors": [f"invalid JSON input: {exc}"]}), file=sys.stderr)
+        print(json.dumps({"status": "error", "errors": [f"invalid JSON input: {exc}"]}))
         return 2
 
     try:
         result = _run(data)
+        code = 0 if result.get("status") in ("complete", "found", "removed") else 1
+    except InputError as exc:
+        result = {"status": "error", "errors": [str(exc)]}
+        code = 2
     except Exception as exc:
         result = {"status": "error", "errors": [str(exc)]}
+        code = 1
 
     print(json.dumps(result, indent=2))
-    return 0 if result.get("status") in ("complete", "found", "removed") else 1
+    return code
 
 
 if __name__ == "__main__":

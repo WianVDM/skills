@@ -54,6 +54,8 @@ JSON on stdin with an `operation` field.
 }
 ```
 
+Cleanup is guarded: it refuses to remove anything that is not a registered git worktree. A path that is not a worktree, is a repository root, or is missing returns an error and is never deleted.
+
 ## Output
 
 All operations return JSON to stdout.
@@ -123,4 +125,5 @@ All operations return JSON to stdout.
 - In a detached worktree, branch refs from the main repo are not available. To keep diffs reliable, the base ref is resolved to a commit SHA in the main repo before the worktree is created, and the SHA is used for the diff inside the worktree. The `base` field in the output still reports the original ref name, and `base_sha` reports the resolved SHA.
 - If a command exits non-zero, the script still runs subsequent commands and records the failure. The final exit code is 1 if any command failed.
 - Unintended modifications are reset with `git checkout -- .` after all commands complete.
-- The worktree is created under a temporary directory that is a sibling of the main repo by default, or in the system temp directory if the repo path is not writable.
+- The worktree is created as a sibling of the main repo by default, or in the system temp directory if the repo parent is not writable. `git worktree add` creates the directory itself; nothing is pre-created.
+- `cleanup` verifies the path against `git worktree list` of its owning repo before removing. It never deletes unregistered directories and never touches the main repo.

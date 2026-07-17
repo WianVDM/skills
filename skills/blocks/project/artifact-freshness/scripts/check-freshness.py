@@ -393,29 +393,24 @@ def _check_freshness(data: dict) -> dict:
             {"artifact_generated_at": None},
         )
 
-    # Schema version dimension
-    if schema_version or artifact["artifact_schema_version"]:
-        if schema_version and artifact["artifact_schema_version"]:
-            fresh = str(schema_version) == str(artifact["artifact_schema_version"])
-            dimensions["schema_version"] = _check_dimension(
-                "schema_version",
-                fresh,
-                "schema version matches" if fresh else "schema version mismatch",
-                {
-                    "expected_schema_version": schema_version,
-                    "artifact_schema_version": artifact["artifact_schema_version"],
-                },
-            )
+    # Schema version dimension: evaluated only when the caller states an expectation.
+    if schema_version:
+        artifact_version = artifact["artifact_schema_version"]
+        if artifact_version:
+            fresh = str(schema_version) == str(artifact_version)
+            reason = "schema version matches" if fresh else "schema version mismatch"
         else:
-            dimensions["schema_version"] = _check_dimension(
-                "schema_version",
-                False,
-                "missing schema version for comparison",
-                {
-                    "expected_schema_version": schema_version,
-                    "artifact_schema_version": artifact["artifact_schema_version"],
-                },
-            )
+            fresh = False
+            reason = "artifact does not declare a schema version"
+        dimensions["schema_version"] = _check_dimension(
+            "schema_version",
+            fresh,
+            reason,
+            {
+                "expected_schema_version": schema_version,
+                "artifact_schema_version": artifact_version,
+            },
+        )
 
     overall_fresh = all(d.get("fresh", False) for d in dimensions.values())
 
@@ -430,6 +425,12 @@ def _check_freshness(data: dict) -> dict:
         "reason": reason,
         "dimensions": dimensions,
     }
+
+
+def _error_envelope(message: str, code: int) -> int:
+    """Standard error envelope for invalid input and runtime failures."""
+    print(json.dumps({"status": "error", "errors": [message]}))
+    return code
 
 
 def _main() -> int:
@@ -449,10 +450,12 @@ def _main() -> int:
 
     stdin_data: dict = {}
     if not sys.stdin.isatty():
-        try:
-            stdin_data = json.load(sys.stdin)
-        except json.JSONDecodeError:
-            pass
+        raw = sys.stdin.read()
+        if raw.strip():
+            try:
+                stdin_data = json.loads(raw)
+            except json.JSONDecodeError as exc:
+                return _error_envelope(f"invalid JSON on stdin: {exc}", 2)
 
     data = dict(stdin_data)
     if args.report:
@@ -463,8 +466,7 @@ def _main() -> int:
         try:
             data["observation"] = json.loads(args.observation)
         except json.JSONDecodeError as exc:
-            print(json.dumps({"fresh": False, "reason": f"invalid --observation JSON: {exc}", "dimensions": {}}), file=sys.stderr)
-            return 1
+            return _error_envelope(f"invalid --observation JSON: {exc}", 2)
     if args.branch:
         data["branch"] = args.branch
     if args.commit:
@@ -479,14 +481,12 @@ def _main() -> int:
         data["cwd"] = args.cwd
 
     if not data.get("mode"):
-        print(json.dumps({"fresh": False, "reason": "either --report or --observation is required", "dimensions": {}}), file=sys.stderr)
-        return 1
+        return _error_envelope("either --report or --observation is required", 2)
 
     try:
         result = _check_freshness(data)
     except Exception as exc:
-        print(json.dumps({"fresh": False, "reason": str(exc), "dimensions": {}}), file=sys.stderr)
-        return 1
+        return _error_envelope(str(exc), 1)
 
     if args.json or not sys.stdout.isatty():
         print(json.dumps(result, indent=2))

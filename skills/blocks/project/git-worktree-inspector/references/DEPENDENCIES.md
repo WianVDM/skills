@@ -7,9 +7,7 @@
 
 ## Required skills
 
-- `worker-contract` — return contract used if the block is invoked through a subagent.
-- `context-reports` — conventions for context directory layout and report schemas.
-- `detect-project-context` — locate the project root and git repository.
+None. The block takes an explicit `repo` path or worktree path as input.
 
 ## Recommended
 

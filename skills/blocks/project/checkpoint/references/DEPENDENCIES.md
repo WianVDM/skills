@@ -18,7 +18,7 @@ None required. `checkpoint` is a standalone building block.
 
 ## Required scripts
 
-- `_frontmatter` — shared frontmatter parser. The `checkpoint` script imports the parser from `skills/workflow/debrief/scripts/_frontmatter.py` at runtime.
+- `scripts/frontmatter.py` — vendored frontmatter parser, imported by `checkpoint.py` (`import frontmatter`). Both live in this skill's `scripts/` directory.
 
 ## Required tools and binaries
 

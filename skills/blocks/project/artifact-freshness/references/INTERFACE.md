@@ -37,6 +37,8 @@ python check-freshness.py --observation <json> [options]
 }
 ```
 
+Dimensions are evaluated only when there is something to compare. `schema_version` is evaluated only when the caller passes `--schema-version`: an artifact that declares a schema version is not judged stale just because the caller did not ask.
+
 If `report_frontmatter` is provided, it is used instead of parsing the file at `report_path`. This avoids re-parsing when the caller already has the frontmatter.
 
 ## Output
@@ -63,8 +65,10 @@ JSON to stdout:
 | Code | Meaning |
 |---|---|
 | 0 | The artifact is fresh. |
-| 1 | The artifact is stale or an error occurred. |
-| 2 | Invalid input. |
+| 1 | The artifact is stale, or a runtime error occurred. |
+| 2 | Invalid input (malformed JSON, missing mode). |
+
+Verdicts use the `fresh`/`reason`/`dimensions` shape. Invalid input and runtime failures use the standard error envelope: `{"status": "error", "errors": [...]}`.
 
 ## Report frontmatter fields
 

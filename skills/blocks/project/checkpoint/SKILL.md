@@ -1,11 +1,7 @@
 ---
 name: checkpoint
 description: "Maintain phase checklists, current focus, and resume state for long-running conductor skills. Use when a skill needs to survive context compaction, track progress across phases, or resume from a previous session."
-version: 1.0.0
 invocation: model-invoked
-metadata:
-  author: Wian van der Merwe
-  tags: [state, resume, checkpoint, building-block]
 depends:
   - context-reports
 ---
@@ -69,14 +65,14 @@ updated_at: 2026-07-07T10:00:00Z
 ---
 ```
 
-| Field | Required | Description |
-|---|---|---|
-| `skill` | yes | Always `checkpoint`. |
-| `version` | yes | Skill version that wrote the state. |
-| `state_schema` | yes | Version of the state file schema, independent of the skill version. |
-| `owner` | yes | Name of the conductor skill that owns this state (e.g., `debrief`, `debrief-all`). |
-| `key` | yes | Stable identifier for the work item (e.g., ticket key). |
-| `updated_at` | yes | ISO 8601 timestamp of the last update. |
+| Field          | Required | Description                                                                        |
+| -------------- | -------- | ---------------------------------------------------------------------------------- |
+| `skill`        | yes      | Always `checkpoint`.                                                               |
+| `version`      | yes      | Skill version that wrote the state.                                                |
+| `state_schema` | yes      | Version of the state file schema, independent of the skill version.                |
+| `owner`        | yes      | Name of the conductor skill that owns this state (e.g., `debrief`, `debrief-all`). |
+| `key`          | yes      | Stable identifier for the work item (e.g., ticket key).                            |
+| `updated_at`   | yes      | ISO 8601 timestamp of the last update.                                             |
 
 ### Body
 
@@ -84,6 +80,7 @@ updated_at: 2026-07-07T10:00:00Z
 # Checkpoint State: OC-4644
 
 ## Phase Checklist
+
 - [x] Phase 0: Bootstrap
 - [x] Phase 1: Gather evidence
 - [/] Phase 2: Build context graph
@@ -93,18 +90,22 @@ updated_at: 2026-07-07T10:00:00Z
 - [ ] Phase 6: Present
 
 ## Current Focus
+
 Build context graph for ticket OC-4644.
 
 ## Last Completed Action
+
 Ticket researcher returned normalized ticket data and context graph.
 
 ## Session History
-| # | Timestamp | Action | Focus After |
-|---|-----------|--------|-------------|
-| 1 | 2026-07-07T09:00:00Z | Bootstrap complete | Gather evidence |
-| 2 | 2026-07-07T09:05:00Z | Ticket researcher returned | Build context graph |
+
+| #   | Timestamp            | Action                     | Focus After         |
+| --- | -------------------- | -------------------------- | ------------------- |
+| 1   | 2026-07-07T09:00:00Z | Bootstrap complete         | Gather evidence     |
+| 2   | 2026-07-07T09:05:00Z | Ticket researcher returned | Build context graph |
 
 ## Owner Sections
+
 <!-- The owner skill can add arbitrary sections below this marker. -->
 ```
 
@@ -118,60 +119,60 @@ When `## Session History` exceeds the configured row limit (default 20), the old
 
 Create a new state file with an initial phase checklist.
 
-| Input | Description |
-|---|---|
-| `state_path` | Where to write the state file. |
-| `owner` | Conductor skill name. |
-| `key` | Work item identifier. |
-| `phases` | List of phase names to pre-populate the checklist. |
-| `focus` | Optional initial focus. |
-| `max_history_rows` | Optional history row limit (default 20). |
-| `overwrite` | Optional. If `true`, overwrite an existing state file. Default `false`. |
+| Input              | Description                                                             |
+| ------------------ | ----------------------------------------------------------------------- |
+| `state_path`       | Where to write the state file.                                          |
+| `owner`            | Conductor skill name.                                                   |
+| `key`              | Work item identifier.                                                   |
+| `phases`           | List of phase names to pre-populate the checklist.                      |
+| `focus`            | Optional initial focus.                                                 |
+| `max_history_rows` | Optional history row limit (default 20).                                |
+| `overwrite`        | Optional. If `true`, overwrite an existing state file. Default `false`. |
 
-| Output | Description |
-|---|---|
+| Output       | Description                       |
+| ------------ | --------------------------------- |
 | `state_path` | Confirmed path to the state file. |
-| `status` | `complete` or `blocked`. |
+| `status`     | `complete` or `blocked`.          |
 
 ### `update`
 
 Update the state after a sub-step.
 
-| Input | Description |
-|---|---|
-| `state_path` | Path to the state file. |
-| `completed_phase` | Phase to mark completed (optional). |
-| `in_progress_phase` | Phase to mark in-progress (optional). |
-| `current_focus` | Updated focus string (optional). |
-| `last_action` | Description of what just completed (optional). |
-| `owner_sections` | Arbitrary markdown sections to preserve (optional). |
-| `max_history_rows` | Optional history row limit (default 20). |
+| Input               | Description                                         |
+| ------------------- | --------------------------------------------------- |
+| `state_path`        | Path to the state file.                             |
+| `completed_phase`   | Phase to mark completed (optional).                 |
+| `in_progress_phase` | Phase to mark in-progress (optional).               |
+| `current_focus`     | Updated focus string (optional).                    |
+| `last_action`       | Description of what just completed (optional).      |
+| `owner_sections`    | Arbitrary markdown sections to preserve (optional). |
+| `max_history_rows`  | Optional history row limit (default 20).            |
 
-| Output | Description |
-|---|---|
-| `state_path` | Confirmed path. |
-| `status` | `complete` or `blocked`. |
-| `phase_checklist` | Updated checklist with phase status. |
-| `current_focus` | Updated focus. |
+| Output               | Description                                                                          |
+| -------------------- | ------------------------------------------------------------------------------------ |
+| `state_path`         | Confirmed path.                                                                      |
+| `status`             | `complete` or `blocked`.                                                             |
+| `phase_checklist`    | Updated checklist with phase status.                                                 |
+| `current_focus`      | Updated focus.                                                                       |
 | `next_pending_phase` | Next pending phase derived from the checklist (deterministic, not a recommendation). |
 
 ### `resume`
 
 Return the current state without modifying it.
 
-| Input | Description |
-|---|---|
+| Input        | Description             |
+| ------------ | ----------------------- |
 | `state_path` | Path to the state file. |
 
-| Output | Description |
-|---|---|
-| `completed_phases` | List of completed phases. |
-| `pending_phases` | List of pending phases. |
-| `in_progress_phase` | Current in-progress phase, if any. |
-| `current_focus` | Recorded focus. |
-| `last_action` | Last completed action. |
+| Output               | Description                                                                          |
+| -------------------- | ------------------------------------------------------------------------------------ |
+| `completed_phases`   | List of completed phases.                                                            |
+| `pending_phases`     | List of pending phases.                                                              |
+| `in_progress_phase`  | Current in-progress phase, if any.                                                   |
+| `current_focus`      | Recorded focus.                                                                      |
+| `last_action`        | Last completed action.                                                               |
 | `next_pending_phase` | Next pending phase derived from the checklist (deterministic, not a recommendation). |
-| `owner_sections` | Preserved owner sections. |
+| `owner_sections`     | Preserved owner sections.                                                            |
 
 ### `validate`
 
@@ -179,13 +180,13 @@ Check that the state file is well-formed and consistent.
 
 If `update` or `resume` is called on a missing or corrupt state file and `create` was not requested, `checkpoint` fails closed and reports the error to the caller.
 
-| Input | Description |
-|---|---|
+| Input        | Description             |
+| ------------ | ----------------------- |
 | `state_path` | Path to the state file. |
 
-| Output | Description |
-|---|---|
-| `valid` | `true` or `false`. |
+| Output   | Description                      |
+| -------- | -------------------------------- |
+| `valid`  | `true` or `false`.               |
 | `errors` | List of inconsistencies, if any. |
 
 ## Lazy loading

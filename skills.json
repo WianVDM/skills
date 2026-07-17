@@ -343,6 +343,97 @@
       "optional": [
         "prototype"
       ]
+    },
+    "github-actions-adapter": {
+      "required": [
+        "pr-adapter-contract",
+        "worker-contract",
+        "token-resolver"
+      ]
+    },
+    "github-pr-adapter": {
+      "required": [
+        "pr-adapter-contract",
+        "worker-contract",
+        "token-resolver"
+      ]
+    },
+    "jira-adapter": {
+      "required": [
+        "pr-adapter-contract",
+        "worker-contract",
+        "token-resolver"
+      ]
+    },
+    "manual-pr-adapter": {
+      "required": [
+        "pr-adapter-contract",
+        "worker-contract"
+      ]
+    },
+    "sonarcloud-adapter": {
+      "required": [
+        "pr-adapter-contract",
+        "worker-contract",
+        "token-resolver"
+      ]
+    },
+    "pr-adapter-contract": {
+      "required": [
+        "worker-contract",
+        "context-reports",
+        "token-resolver"
+      ]
+    },
+    "map-ticket-relationships": {
+      "required": [
+        "context-reports",
+        "worker-contract",
+        "research-ticket"
+      ]
+    },
+    "identity-resolver": {
+      "required": [
+        "worker-contract",
+        "context-reports",
+        "detect-project-context",
+        "tool-discovery"
+      ]
+    },
+    "initialize-skill": {
+      "required": [
+        "detect-project-context"
+      ]
+    },
+    "scope-checker": {
+      "required": [
+        "worker-contract"
+      ]
+    },
+    "checkpoint": {
+      "required": [
+        "context-reports"
+      ]
+    },
+    "artifact-freshness": {
+      "required": [
+        "worker-contract",
+        "context-reports"
+      ]
+    },
+    "chainlog": {
+      "required": [
+        "worker-contract",
+        "context-reports"
+      ],
+      "recommended": [
+        "artifact-freshness"
+      ]
+    },
+    "context-reports": {
+      "recommended": [
+        "artifact-freshness"
+      ]
     }
   }
 }

@@ -5,9 +5,9 @@ explore-code.py
 Deterministic codebase exploration script for the explore-code skill.
 Reads JSON from stdin, searches the codebase, and returns ranked evidence.
 
-This script does not call LLMs. It uses ripgrep (rg), find, or Python's
-built-in directory walk as a fallback. It is intended to be invoked by the
-explore-code skill in a conductor workflow.
+This script does not call LLMs. It uses ripgrep (rg) when available, with
+Python's built-in directory walk as a fallback. It is intended to be invoked by
+the explore-code skill in a conductor workflow.
 """
 import argparse
 import json
@@ -204,19 +204,27 @@ def normalize_path(path: str, cwd: str) -> str:
         return path.replace(os.sep, "/")
 
 
+class InputError(Exception):
+    """Raised when caller input is invalid; maps to exit code 2."""
+
+
 def main() -> None:
     args = parse_args()
     start = time.time()
 
-    if args.input_file:
-        with open(args.input_file, "r", encoding="utf-8") as f:
-            input_data = json.load(f)
-    else:
-        input_data = json.load(sys.stdin)
+    try:
+        if args.input_file:
+            with open(args.input_file, "r", encoding="utf-8") as f:
+                input_data = json.load(f)
+        else:
+            input_data = json.load(sys.stdin)
+    except json.JSONDecodeError as e:
+        raise InputError(f"invalid JSON input: {e}")
+    except OSError as e:
+        raise InputError(f"could not read input: {e}")
 
     if not isinstance(input_data, dict):
-        print(json.dumps({"status": "blocked", "error": "Input must be a JSON object"}, indent=2))
-        sys.exit(1)
+        raise InputError("input must be a JSON object")
 
     ticket_summary = input_data.get("ticket_summary") or input_data.get("question") or ""
     mentioned_files = input_data.get("mentioned_files") or []
@@ -250,7 +258,7 @@ def main() -> None:
     project_root = project_root or cwd
     mentioned_abs: set[str] = set()
     for mf in mentioned_files:
-        p = os.path.abspath(mf) if os.path.isabs(mf) else os.path.abspath(os.path.join(cwd, mf))
+        p = os.path.abspath(mf) if os.path.isabs(mf) else os.path.abspath(os.path.join(project_root, mf))
         mentioned_abs.add(p)
 
     keywords = extract_keywords(ticket_summary)
@@ -259,7 +267,7 @@ def main() -> None:
 
     # Process mentioned files first
     for mf in mentioned_files:
-        p = os.path.abspath(mf) if os.path.isabs(mf) else os.path.abspath(os.path.join(cwd, mf))
+        p = os.path.abspath(mf) if os.path.isabs(mf) else os.path.abspath(os.path.join(project_root, mf))
         if os.path.isfile(p):
             rel = normalize_path(p, cwd)
             relevant[p] = {
@@ -329,9 +337,9 @@ def main() -> None:
 if __name__ == "__main__":
     try:
         main()
-    except json.JSONDecodeError as e:
-        print(json.dumps({"status": "blocked", "error": f"Invalid JSON input: {e}"}, indent=2))
-        sys.exit(1)
+    except InputError as e:
+        print(json.dumps({"status": "error", "errors": [str(e)]}, indent=2))
+        sys.exit(2)
     except Exception as e:
-        print(json.dumps({"status": "blocked", "error": f"Unexpected error: {e}"}, indent=2))
+        print(json.dumps({"status": "error", "errors": [f"unexpected error: {e}"]}, indent=2))
         sys.exit(1)

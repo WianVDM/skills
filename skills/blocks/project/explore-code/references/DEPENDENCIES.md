@@ -20,12 +20,6 @@ This file lists the tools, binaries, environment variables, and skill dependenci
 |---|---|
 | `rg` (ripgrep) | Fast content search across the codebase when available. The script falls back to Python's built-in directory walk if `rg` is missing. |
 
-## Optional binaries
-
-| Binary | Purpose |
-|---|---|
-| `find` (POSIX/MSYS) | Alternative directory traversal when the Python fallback is insufficient. |
-
 ## Environment variables
 
 `explore-code` does not require any environment variables. It uses the caller-provided `workspace` and `project_root` to scope searches.

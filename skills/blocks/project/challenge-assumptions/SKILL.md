@@ -1,11 +1,7 @@
 ---
 name: challenge-assumptions
 description: "Stress-test a list of assumptions by searching for disproof signals across provided evidence. Use when a skill needs to avoid confirmation bias."
-version: 1.0.0
 invocation: model-invoked
-metadata:
-  author: Wian van der Merwe
-  tags: [assumptions, skepticism, validation, building-block, core]
 allowed-tools:
   - read
   - bash
@@ -47,7 +43,7 @@ allowed-tools:
 
 - A conductor such as `debrief` has formed assumptions and needs to stress-test them before accepting them.
 - Any skill that forms explicit assumptions wants to avoid confirmation bias by searching for disproof.
-- The user asks: *"What could disprove this assumption?"* or *"Challenge these assumptions."*
+- The user asks: _"What could disprove this assumption?"_ or _"Challenge these assumptions."_
 
 ## Input / output contract
 
@@ -71,13 +67,13 @@ The skill accepts a JSON object via stdin to `scripts/challenge-assumptions.py`.
 }
 ```
 
-| Field | Required | Default | Description |
-|---|---|---|---|
-| `assumptions` | yes | — | List of assumptions to challenge. Each item has `text` (required) and optional `basis`. |
-| `evidence` | no | `{}` | Dictionary of named evidence sources. Values are strings or lists of strings. |
-| `max_signals` | no | `10` | Maximum number of disproof signals to generate per assumption. |
-| `context_window` | no | `10` | Number of words around a matched phrase to check for contradiction markers. |
-| `proximity` | no | `3` | Maximum word distance between a contradiction marker and an assumption phrase before the marker is considered adjacent. |
+| Field            | Required | Default | Description                                                                                                             |
+| ---------------- | -------- | ------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `assumptions`    | yes      | —       | List of assumptions to challenge. Each item has `text` (required) and optional `basis`.                                 |
+| `evidence`       | no       | `{}`    | Dictionary of named evidence sources. Values are strings or lists of strings.                                           |
+| `max_signals`    | no       | `10`    | Maximum number of disproof signals to generate per assumption.                                                          |
+| `context_window` | no       | `10`    | Number of words around a matched phrase to check for contradiction markers.                                             |
+| `proximity`      | no       | `3`     | Maximum word distance between a contradiction marker and an assumption phrase before the marker is considered adjacent. |
 
 ### Output
 
@@ -90,7 +86,12 @@ The skill accepts a JSON object via stdin to `scripts/challenge-assumptions.py`.
       "status": "challenged",
       "notes": "Found contradiction in codebase_evidence: 'refresh.interceptor.ts handles token refresh' near the assumption phrase.",
       "disproof_refs": ["codebase_evidence", "adrs"],
-      "disproof_signals_searched": ["not auth.guard.ts", "not in auth.guard.ts", "interceptor handles", "refresh interceptor"],
+      "disproof_signals_searched": [
+        "not auth.guard.ts",
+        "not in auth.guard.ts",
+        "interceptor handles",
+        "refresh interceptor"
+      ],
       "evidence_found": [
         "codebase_evidence: 'src/app/interceptors/refresh.interceptor.ts handles token refresh'"
       ]
@@ -99,25 +100,25 @@ The skill accepts a JSON object via stdin to `scripts/challenge-assumptions.py`.
 }
 ```
 
-| Field | Description |
-|---|---|
-| `status` | `complete`, `needs_input`, `blocked`, or `partial`. |
-| `assumptions` | Parallel list of assumptions with challenge results. |
-| `text` | The original assumption text. |
-| `status` | `holds`, `challenged`, or `inconclusive`. |
-| `notes` | Human-readable explanation of the challenge result. |
-| `disproof_refs` | List of evidence source keys that contained disproof signals. |
-| `disproof_signals_searched` | Signals generated and searched for this assumption. |
-| `evidence_found` | Exact or near-exact evidence snippets that challenged the assumption. |
+| Field                       | Description                                                           |
+| --------------------------- | --------------------------------------------------------------------- |
+| `status`                    | `complete`, `needs_input`, `blocked`, or `partial`.                   |
+| `assumptions`               | Parallel list of assumptions with challenge results.                  |
+| `text`                      | The original assumption text.                                         |
+| `status`                    | `holds`, `challenged`, or `inconclusive`.                             |
+| `notes`                     | Human-readable explanation of the challenge result.                   |
+| `disproof_refs`             | List of evidence source keys that contained disproof signals.         |
+| `disproof_signals_searched` | Signals generated and searched for this assumption.                   |
+| `evidence_found`            | Exact or near-exact evidence snippets that challenged the assumption. |
 
 ### Status values
 
-| Status | Meaning | Caller action |
-|---|---|---|
-| `complete` | All assumptions processed and results returned. | Use results to adjust confidence or escalate. |
-| `partial` | Some assumptions processed; an error or limit prevented full processing. | Review assumptions that returned `inconclusive`. |
-| `needs_input` | Required input is missing (e.g., no `assumptions` provided). | Surface to user or provide assumptions. |
-| `blocked` | Unexpected error prevented processing. | Investigate. |
+| Status        | Meaning                                                                  | Caller action                                    |
+| ------------- | ------------------------------------------------------------------------ | ------------------------------------------------ |
+| `complete`    | All assumptions processed and results returned.                          | Use results to adjust confidence or escalate.    |
+| `partial`     | Some assumptions processed; an error or limit prevented full processing. | Review assumptions that returned `inconclusive`. |
+| `needs_input` | Required input is missing (e.g., no `assumptions` provided).             | Surface to user or provide assumptions.          |
+| `blocked`     | Unexpected error prevented processing.                                   | Investigate.                                     |
 
 ## Lazy loading
 

@@ -47,6 +47,6 @@ explore_code_time_box_minutes: 5
 ## Notes
 
 - `workspace` is resolved relative to `project_root` (or the current working directory if `project_root` is not provided). If the workspace does not exist, the script falls back to searching the project root.
-- `time_box_minutes` is a target, not a hard real-time guarantee. The script checks elapsed time between search batches and stops early when the budget is consumed.
+- `time_box_minutes` is a target, not a hard real-time guarantee. The script checks elapsed time once, before the keyword search starts, and skips the search if the budget is already consumed.
 - `max_files` is enforced as a hard cutoff on the returned `relevant_files` list.
 - `force` overrides the default skip behavior for `process` task types.

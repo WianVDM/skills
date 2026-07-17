@@ -31,6 +31,57 @@ capabilities:
         confidence: low
         identifiers: []
 
+  reviews:
+    description: Pull-request reviews and inline review threads.
+    tools:
+      - name: github-mcp
+        category: mcp
+        confidence: high
+        keywords:
+          - github
+        identifiers:
+          - github_get_pull_request_reviews
+          - github_get_pull_request_review_comments
+      - name: gh-cli
+        category: cli
+        confidence: medium
+        identifiers:
+          - gh
+      - name: github-api
+        category: api
+        confidence: medium
+        identifiers:
+          - GITHUB_TOKEN
+      - name: manual
+        category: manual
+        confidence: low
+        identifiers: []
+
+  changed-files:
+    description: Files changed in a pull request.
+    tools:
+      - name: github-mcp
+        category: mcp
+        confidence: high
+        keywords:
+          - github
+        identifiers:
+          - github_get_pull_request_files
+      - name: gh-cli
+        category: cli
+        confidence: medium
+        identifiers:
+          - gh
+      - name: git-cli
+        category: cli
+        confidence: low
+        identifiers:
+          - git
+      - name: manual
+        category: manual
+        confidence: low
+        identifiers: []
+
   ci-source:
     description: CI / build status and job logs.
     tools:
@@ -160,6 +211,24 @@ capabilities:
         confidence: medium
         identifiers:
           - GITHUB_TOKEN
+      - name: manual
+        category: manual
+        confidence: low
+        identifiers: []
+
+  checkout:
+    description: Local branch checkout for inspection without disturbing the current branch.
+    tools:
+      - name: git-worktree-inspector
+        category: harness
+        confidence: high
+        identifiers:
+          - git-worktree-inspector
+      - name: git-cli
+        category: cli
+        confidence: medium
+        identifiers:
+          - git
       - name: manual
         category: manual
         confidence: low
