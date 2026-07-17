@@ -1,9 +1,9 @@
 {
   "version": "1.0.0",
-  "generated_at": "2026-07-15T14:04:59.553645+00:00",
+  "generated_at": "2026-07-17T11:16:07.344091+00:00",
   "source_check": {
-    "skills_json_hash": "sha256:2044a1771cf0a2ac1999901c3084e6cff2552f36ecc03315a73eb9b615d496dc",
-    "latest_skill_mtime": "2026-07-15T14:04:55.368485+00:00"
+    "skills_json_hash": "sha256:c93474ce553fd102ddad829362871801d95cc1331e80bef7e3e68a2dee355515",
+    "latest_skill_mtime": "2026-07-17T11:16:03.691827+00:00"
   },
   "skills": [
     {
@@ -2586,8 +2586,7 @@
         "chainlog",
         "detect-skill-overlap",
         "run-trigger-evals",
-        "validate-skill-frontmatter",
-        "write-a-skill"
+        "validate-skill-frontmatter"
       ],
       "subagents": [],
       "scripts": [
@@ -3633,8 +3632,7 @@
       "references": [
         "chainlog",
         "context-reports",
-        "worker-contract",
-        "write-a-skill"
+        "worker-contract"
       ],
       "subagents": [],
       "scripts": [
@@ -3871,6 +3869,15 @@
           "sources": [
             "scripts/frontmatter.py"
           ]
+        },
+        {
+          "id": "checkpoint:script-test-checkpoint",
+          "name": "Run test_checkpoint",
+          "category": "state-management",
+          "description": "Deterministic helper script: testcheckpoint.py",
+          "sources": [
+            "scripts/test_checkpoint.py"
+          ]
         }
       ],
       "references": [
@@ -3881,7 +3888,8 @@
       "subagents": [],
       "scripts": [
         "checkpoint.py",
-        "frontmatter.py"
+        "frontmatter.py",
+        "test_checkpoint.py"
       ],
       "config_keys": [],
       "produces": [],
@@ -3926,27 +3934,19 @@
           ]
         },
         {
-          "id": "context-reports:define-freshness-and-staleness-rules",
-          "name": "Define freshness and staleness rules",
+          "id": "context-reports:define-freshness-and-missing-report-handling",
+          "name": "Define freshness and missing-report handling",
           "category": "freshness-checking",
-          "description": "Define freshness and staleness rules.",
-          "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "context-reports:define-how-to-handle-missing-required-and-optional-reports",
-          "name": "Define how to handle missing required and optional reports",
-          "category": "uncategorized",
-          "description": "Define how to handle missing required and optional reports.",
+          "description": "Define freshness and missing-report handling.",
           "sources": [
             "SKILL.md:In scope"
           ]
         }
       ],
       "references": [
-        "baseline",
-        "debrief"
+        "artifact-freshness",
+        "chainlog",
+        "detect-project-context"
       ],
       "subagents": [],
       "scripts": [],
@@ -3965,40 +3965,31 @@
       "origin": "bundle",
       "type": "building-block",
       "invocation": "model-invoked",
-      "description": "Detect the project root, harness, skill directories, config directories, and conventions for any workspace.",
+      "description": "Detect the project root, skill/context/config directories, and the skill-standards path for any workspace.",
       "capabilities": [
         {
-          "id": "detect-project-context:search-upward-from-a-starting-directory-for-a-known-project",
-          "name": "Search upward from a starting directory for a known project marker directory",
+          "id": "detect-project-context:upward-marker-search",
+          "name": "Upward marker search (",
           "category": "uncategorized",
-          "description": "Search upward from a starting directory for a known project marker directory.",
+          "description": "Upward marker search (.agents, .pi, harness markers), bounded by the VCS root.",
           "sources": [
             "SKILL.md:In scope"
           ]
         },
         {
-          "id": "detect-project-context:recommend-skills-context-and-config-directory-candidates",
-          "name": "Recommend skills, context, and config directory candidates",
-          "category": "config-initialization",
-          "description": "Recommend skills, context, and config directory candidates.",
+          "id": "detect-project-context:candidate-ranking-existing-directories-win",
+          "name": "Candidate ranking; existing directories win",
+          "category": "uncategorized",
+          "description": "Candidate ranking; existing directories win.",
           "sources": [
             "SKILL.md:In scope"
           ]
         },
         {
-          "id": "detect-project-context:report-confidence-based-on-which-expected-directories-alread",
-          "name": "Report confidence based on which expected directories already exist",
+          "id": "detect-project-context:confidence-reporting-with-a-note-when-the-answer-is-weakened",
+          "name": "Confidence reporting, with a note when the answer is weakened",
           "category": "uncategorized",
-          "description": "Report confidence based on which expected directories already exist.",
-          "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "detect-project-context:output-results-as-structured-json-or-human-readable-text",
-          "name": "Output results as structured JSON or human-readable text",
-          "category": "uncategorized",
-          "description": "Output results as structured JSON or human-readable text.",
+          "description": "Confidence reporting, with a note when the answer is weakened.",
           "sources": [
             "SKILL.md:In scope"
           ]
@@ -4020,13 +4011,23 @@
           "sources": [
             "scripts/resolve-standards-path.py"
           ]
+        },
+        {
+          "id": "detect-project-context:script-test-detect-project-context",
+          "name": "Run test_detect_project_context",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: testdetectprojectcontext.py",
+          "sources": [
+            "scripts/test_detect_project_context.py"
+          ]
         }
       ],
       "references": [],
       "subagents": [],
       "scripts": [
         "detect-project-context.py",
-        "resolve-standards-path.py"
+        "resolve-standards-path.py",
+        "test_detect_project_context.py"
       ],
       "config_keys": [],
       "produces": [],
@@ -4094,6 +4095,15 @@
           "sources": [
             "scripts/chainlog.py"
           ]
+        },
+        {
+          "id": "chainlog:script-test-chainlog",
+          "name": "Run test_chainlog",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: testchainlog.py",
+          "sources": [
+            "scripts/test_chainlog.py"
+          ]
         }
       ],
       "references": [
@@ -4103,7 +4113,8 @@
       ],
       "subagents": [],
       "scripts": [
-        "chainlog.py"
+        "chainlog.py",
+        "test_chainlog.py"
       ],
       "config_keys": [],
       "produces": [],
@@ -4201,6 +4212,15 @@
           "sources": [
             "scripts/explore-code.py"
           ]
+        },
+        {
+          "id": "explore-code:script-test-explore-code",
+          "name": "Run test_explore_code",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: testexplorecode.py",
+          "sources": [
+            "scripts/test_explore_code.py"
+          ]
         }
       ],
       "references": [
@@ -4209,7 +4229,8 @@
       ],
       "subagents": [],
       "scripts": [
-        "explore-code.py"
+        "explore-code.py",
+        "test_explore_code.py"
       ],
       "config_keys": [],
       "produces": [],
@@ -4277,6 +4298,15 @@
           "sources": [
             "scripts/inspect-worktree.py"
           ]
+        },
+        {
+          "id": "git-worktree-inspector:script-test-inspect-worktree",
+          "name": "Run test_inspect_worktree",
+          "category": "checkout",
+          "description": "Deterministic helper script: testinspectworktree.py",
+          "sources": [
+            "scripts/test_inspect_worktree.py"
+          ]
         }
       ],
       "references": [
@@ -4286,16 +4316,13 @@
       ],
       "subagents": [],
       "scripts": [
-        "inspect-worktree.py"
+        "inspect-worktree.py",
+        "test_inspect_worktree.py"
       ],
       "config_keys": [],
       "produces": [],
       "consumes": [],
-      "depends": [
-        "context-reports",
-        "detect-project-context",
-        "worker-contract"
-      ]
+      "depends": []
     },
     {
       "name": "identity-resolver",
@@ -4358,6 +4385,15 @@
           "sources": [
             "scripts/resolve-identity.py"
           ]
+        },
+        {
+          "id": "identity-resolver:script-test-resolve-identity",
+          "name": "Run test_resolve_identity",
+          "category": "identity-resolution",
+          "description": "Deterministic helper script: testresolveidentity.py",
+          "sources": [
+            "scripts/test_resolve_identity.py"
+          ]
         }
       ],
       "references": [
@@ -4368,7 +4404,8 @@
       ],
       "subagents": [],
       "scripts": [
-        "resolve-identity.py"
+        "resolve-identity.py",
+        "test_resolve_identity.py"
       ],
       "config_keys": [],
       "produces": [],
@@ -4389,141 +4426,6 @@
       "description": "First-run config initializer for any skill. Detects the project environment, loads skill-level defaults, merges them with existing project config, handles schema migration, proposes the result to the user, and persists it only after explicit approval.",
       "capabilities": [
         {
-          "id": "initialize-skill:load-skill-level-defaults-from-the-consuming-skill-s-config",
-          "name": "Load skill-level defaults from the consuming skill's config",
-          "category": "config-initialization",
-          "description": "Load skill-level defaults from the consuming skill's config.yaml.",
-          "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "initialize-skill:load-configdir-shared",
-          "name": "Load {configdir}/shared",
-          "category": "config-initialization",
-          "description": "Load {configdir}/shared.yaml if present.",
-          "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "initialize-skill:load-configdir-skill",
-          "name": "Load {configdir}/{skill}",
-          "category": "config-initialization",
-          "description": "Load {configdir}/{skill}.yaml if present.",
-          "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "initialize-skill:merge-configs-with-the-precedence-defaults-shared-skill-spec",
-          "name": "Merge configs with the precedence: defaults < shared < skill-specific",
-          "category": "config-initialization",
-          "description": "Merge configs with the precedence: defaults < shared < skill-specific.",
-          "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "initialize-skill:add-missing-default-keys-when-the-existing-config-is-older-o",
-          "name": "Add missing default keys when the existing config is older or incomplete",
-          "category": "config-initialization",
-          "description": "Add missing default keys when the existing config is older or incomplete.",
-          "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "initialize-skill:propose-the-final-config-without-writing-it",
-          "name": "Propose the final config without writing it",
-          "category": "config-initialization",
-          "description": "Propose the final config without writing it.",
-          "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "initialize-skill:write-the-config-only-when-explicit-approval-is-provided",
-          "name": "Write the config only when explicit approval is provided",
-          "category": "config-initialization",
-          "description": "Write the config only when explicit approval is provided.",
-          "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "initialize-skill:type-check-merged-values-against-defaults",
-          "name": "Type-check merged values against defaults",
-          "category": "uncategorized",
-          "description": "Type-check merged values against defaults.",
-          "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "initialize-skill:the-caller-detects-the-project-context-with-detect-project-c",
-          "name": "The caller detects the project context with detect-project-context and obtains markerdir",
-          "category": "uncategorized",
-          "description": "The caller detects the project context with detect-project-context and obtains markerdir.",
-          "sources": [
-            "SKILL.md:Workflow"
-          ]
-        },
-        {
-          "id": "initialize-skill:the-caller-invokes-initialize",
-          "name": "The caller invokes initialize",
-          "category": "config-initialization",
-          "description": "The caller invokes initialize.py with the skill name and optional defaults.",
-          "sources": [
-            "SKILL.md:Workflow"
-          ]
-        },
-        {
-          "id": "initialize-skill:the-block-loads-existing-config-files-and-merges-them-with-d",
-          "name": "The block loads existing config files and merges them with defaults",
-          "category": "config-initialization",
-          "description": "The block loads existing config files and merges them with defaults.",
-          "sources": [
-            "SKILL.md:Workflow"
-          ]
-        },
-        {
-          "id": "initialize-skill:the-block-returns-the-proposed-config-with-status",
-          "name": "The block returns the proposed config with status",
-          "category": "config-initialization",
-          "description": "The block returns the proposed config with status: needsapproval.",
-          "sources": [
-            "SKILL.md:Workflow"
-          ]
-        },
-        {
-          "id": "initialize-skill:the-caller-shows-the-proposed-config-to-the-user-and-asks-fo",
-          "name": "The caller shows the proposed config to the user and asks for approval",
-          "category": "config-initialization",
-          "description": "The caller shows the proposed config to the user and asks for approval.",
-          "sources": [
-            "SKILL.md:Workflow"
-          ]
-        },
-        {
-          "id": "initialize-skill:if-approved-the-caller-invokes-initialize",
-          "name": "If approved, the caller invokes initialize",
-          "category": "config-initialization",
-          "description": "If approved, the caller invokes initialize.py again with --approve.",
-          "sources": [
-            "SKILL.md:Workflow"
-          ]
-        },
-        {
-          "id": "initialize-skill:the-block-writes-configdir-skill-yaml-and-returns-status",
-          "name": "The block writes {configdir}/{skill}.yaml and returns status",
-          "category": "config-initialization",
-          "description": "The block writes {configdir}/{skill}.yaml and returns status: written.",
-          "sources": [
-            "SKILL.md:Workflow"
-          ]
-        },
-        {
           "id": "initialize-skill:script-initialize",
           "name": "Run initialize",
           "category": "config-initialization",
@@ -4540,29 +4442,32 @@
           "sources": [
             "scripts/load-skill-config.py"
           ]
+        },
+        {
+          "id": "initialize-skill:script-test-initialize",
+          "name": "Run test_initialize",
+          "category": "config-initialization",
+          "description": "Deterministic helper script: testinitialize.py",
+          "sources": [
+            "scripts/test_initialize.py"
+          ]
         }
       ],
       "references": [
-        "context-reports",
         "detect-project-context",
-        "token-resolver",
-        "worker-contract"
+        "token-resolver"
       ],
       "subagents": [],
       "scripts": [
         "initialize.py",
-        "load-skill-config.py"
+        "load-skill-config.py",
+        "test_initialize.py"
       ],
-      "config_keys": [
-        "initialize-skill.backup_existing",
-        "initialize-skill.write_shared"
-      ],
+      "config_keys": [],
       "produces": [],
       "consumes": [],
       "depends": [
-        "context-reports",
-        "detect-project-context",
-        "worker-contract"
+        "detect-project-context"
       ]
     },
     {
@@ -4680,6 +4585,15 @@
           "sources": [
             "scripts/map-ticket-relationships.py"
           ]
+        },
+        {
+          "id": "map-ticket-relationships:script-test-map-ticket-relationships",
+          "name": "Run test_map_ticket_relationships",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: testmapticketrelationships.py",
+          "sources": [
+            "scripts/test_map_ticket_relationships.py"
+          ]
         }
       ],
       "references": [
@@ -4690,7 +4604,8 @@
       ],
       "subagents": [],
       "scripts": [
-        "map-ticket-relationships.py"
+        "map-ticket-relationships.py",
+        "test_map_ticket_relationships.py"
       ],
       "config_keys": [],
       "produces": [],
@@ -4861,6 +4776,15 @@
           "sources": [
             "scripts/research-ticket.py"
           ]
+        },
+        {
+          "id": "research-ticket:script-test-research-ticket",
+          "name": "Run test_research_ticket",
+          "category": "data-collection",
+          "description": "Deterministic helper script: testresearchticket.py",
+          "sources": [
+            "scripts/test_research_ticket.py"
+          ]
         }
       ],
       "references": [
@@ -4870,17 +4794,15 @@
       ],
       "subagents": [],
       "scripts": [
-        "research-ticket.py"
+        "research-ticket.py",
+        "test_research_ticket.py"
       ],
       "config_keys": [],
       "produces": [],
       "consumes": [
         "data-collection"
       ],
-      "depends": [
-        "context-reports",
-        "worker-contract"
-      ]
+      "depends": []
     },
     {
       "name": "scan-context",
@@ -5112,6 +5034,15 @@
           "sources": [
             "scripts/discover-tools.py"
           ]
+        },
+        {
+          "id": "tool-discovery:script-test-discover-tools",
+          "name": "Run test_discover_tools",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: testdiscovertools.py",
+          "sources": [
+            "scripts/test_discover_tools.py"
+          ]
         }
       ],
       "references": [
@@ -5126,17 +5057,13 @@
       "subagents": [],
       "scripts": [
         "capability-registry.yaml",
-        "discover-tools.py"
+        "discover-tools.py",
+        "test_discover_tools.py"
       ],
       "config_keys": [],
       "produces": [],
       "consumes": [],
-      "depends": [
-        "context-reports",
-        "initialize-skill",
-        "token-resolver",
-        "worker-contract"
-      ]
+      "depends": []
     },
     {
       "name": "worker-contract",
