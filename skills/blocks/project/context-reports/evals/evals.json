@@ -141,6 +141,43 @@
       "category": "should-not-trigger",
       "prompt": "Validate the frontmatter of this SKILL.md.",
       "expected": ""
+    },
+    {
+      "id": "behavior-schema-conformance",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Following the context-reports contract, write a ticket-research report for key OC-1234 to the canonical location and verify the frontmatter carries skill, key, and generated_at, and that the file is organized by report type under the context directory.",
+      "assertions": [
+        {
+          "type": "file_contains",
+          "path": ".agents/context/ticket-research/OC-1234.md",
+          "value": "skill:"
+        },
+        {
+          "type": "file_contains",
+          "path": ".agents/context/ticket-research/OC-1234.md",
+          "value": "key: OC-1234"
+        },
+        {
+          "type": "file_contains",
+          "path": ".agents/context/ticket-research/OC-1234.md",
+          "value": "generated_at:"
+        }
+      ]
+    },
+    {
+      "id": "composition-01",
+      "type": "composition",
+      "prompt": "A skill must write a research summary that other skills can discover, trust, and freshness-check later. Which shared convention governs where the report lives and its metadata envelope?",
+      "available_skills": [
+        "context-reports",
+        "artifact-freshness",
+        "chainlog",
+        "worker-contract"
+      ],
+      "expected_selection": [
+        "context-reports"
+      ]
     }
   ]
 }

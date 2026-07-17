@@ -1,7 +1,6 @@
 ---
 name: chainlog
 description: Append-only storage for observations collected by tools. Lets skills reuse prior work, build reports as views over observations, and check freshness per capability rather than per report.
-version: 1.0.0
 invocation: model-invoked
 depends:
   - worker-contract
@@ -64,7 +63,6 @@ commit: abc1234
 confidence: high
 producing_skill: example-skill
 ---
-
 ## Payload
 
 Normalized data for this capability.

@@ -4,22 +4,14 @@
 
 None. `context-reports` is a standalone vocabulary building block.
 
-## Required tools and capabilities
+## Recommended skills
 
-- **Read filesystem** — reads this skill's `SKILL.md` so conductors can embed or reference it.
+- `artifact-freshness` — the operational freshness check for consumed reports. Evaluated lazily: only needed when a consumer validates freshness.
 
-## Required binaries
+## Consumed references
 
-None.
+- `references/context-report-schema.json` — embedded fallback mirror of the canonical context-report schema in the skill-standards wiki. When the standards are resolvable via the standards path, they take precedence.
 
-## Required MCP servers
+## Required tools
 
-None.
-
-## Environment variables
-
-None.
-
-## Required Python packages
-
-None.
+- **Read filesystem** — consumers read this skill's contract and report files.

@@ -1,9 +1,7 @@
 ---
 name: context-reports
 description: Provide the canonical vocabulary for shared context reports. Use when a skill produces or consumes context reports, defines report schemas, or needs freshness rules and missing-report handling.
-version: 1.0.1
 invocation: model-invoked
-
 ---
 
 # context-reports
@@ -21,35 +19,22 @@ Vocabulary building block.
 - Define the canonical directory layout for context reports.
 - Define the shared report frontmatter schema.
 - Document producer and consumer rules.
-- Define freshness and staleness rules.
-- Define how to handle missing required and optional reports.
+- Define freshness and missing-report handling.
 
 ## Out of scope
 
-- This skill does not write reports itself; producing skills own report generation.
-- It does not replace skill-specific report schemas or report types; individual skills define those and reference this contract for shared conventions.
-- It does not decide whether a missing report can be regenerated; the consumer skill makes that judgment.
-
-## When to use
-
-- A skill needs to read or write context reports in a standard location.
-- A skill author wants to align report metadata, freshness checks, or missing-report handling with the shared convention.
-- A skill needs to reference the canonical directory layout or report envelope.
+- Writing reports; producing skills own report generation.
+- Skill-specific report schemas; individual skills define those and reference this contract for shared conventions.
+- Deciding whether a missing report can be regenerated; the consumer judges.
 
 ## Canonical directory layout
 
-Reports live at:
+Reports live at `{context_dir}/{report-type}/{key}.md`, where `{context_dir}` is resolved by `detect-project-context` (canonical default: `{project-root}/.agents/context`).
+
+Organize by report type, not by producing skill, so any skill can find relevant context:
 
 ```text
-{project-root}/.agents/context/{report-type}/{key}.md
-```
-
-Organize by report type, not by producing skill. This makes it easy for any skill to find relevant context.
-
-Examples:
-
-```text
-.agents/context/
+{context_dir}/
 ├── ticket-research/OC-1234.md
 ├── state-capture/OC-1234-main.md
 ├── session-summary/OC-1234-checkpoint.md
@@ -58,53 +43,40 @@ Examples:
 
 ## Report schema
 
-Reports use frontmatter and a markdown body. The frontmatter is the shared envelope; the body is skill-specific. A skill must document what reports it produces and what reports from other skills it consumes.
+Reports use YAML frontmatter (the shared envelope) and a markdown body (skill-specific). See [references/SCHEMA.md](references/SCHEMA.md) for the envelope, repo conventions, consumer declaration format, and the machine-readable schema.
 
-For the full schema and consumer declaration format, see [`references/SCHEMA.md`](references/SCHEMA.md). A machine-readable JSON Schema is available at [`references/context-report-schema.json`](references/context-report-schema.json).
+## Producer rules
 
-## Producer/consumer rules
-
-When a skill produces a report:
-
-- Write it to the canonical location.
-- Include enough metadata for consumers to trust it: skill name, version, timestamp, scope.
+- Write to the canonical location.
+- Include enough metadata for consumers to trust the report: skill, timestamp, scope.
 - Keep the body agent-readable: structured headings, concise paragraphs, clear lists.
 - Link to related artifacts rather than duplicating them.
 
-When a skill consumes a report:
+## Consumer rules
 
 - Check whether the report exists.
-- Validate freshness against timestamps and underlying changes.
-- If a fallback path has been approved and recorded in config notes, use it. Otherwise, note the gap or consult the user.
-
-A consuming skill should declare the reports it needs in `references/DEPENDENCIES.md` or in a `consumes` section in `SKILL.md` frontmatter. See [`references/SCHEMA.md`](references/SCHEMA.md) for the declaration format.
+- Validate freshness (below) before trusting it.
+- If a fallback path has been approved and recorded in config notes, use it; otherwise note the gap or consult the user.
+- Declare consumed reports in `references/DEPENDENCIES.md` and in `skills.json`.
 
 ## Freshness and staleness
 
-A report is fresh enough if:
+A report is fresh enough when its timestamp is recent for the domain, the underlying source has not changed since generation, and the producing skill's version is compatible. It is stale when it predates significant changes, comes from an incompatible schema version, or describes a source that no longer exists or has changed materially.
 
-- Its timestamp is recent relative to the rate of change in the domain.
-- The underlying source has not changed since the report was generated.
-- The skill's version matches the consumer's expectations.
+`artifact-freshness` is the operational check: it evaluates branch, commit, timestamps, schema version, and age, and returns a structured verdict. Consumers use it rather than re-implementing freshness heuristics.
 
-A report is stale if:
-
-- It predates significant code changes.
-- It was produced by an older skill version with an incompatible schema.
-- The source it describes no longer exists or has changed materially.
-
-Skills should document how they determine freshness and what they do when a report is stale.
+Reports are views over data. When a report is generated from tool-collected observations, check the freshness of the underlying observations (see `chainlog`), not just the report.
 
 ## Missing reports
 
-Do not fail silently. The right response depends on whether the report is required or optional:
+Do not fail silently.
 
 | Required? | Response |
-|-----------|----------|
+| --------- | -------- |
 | Required | Stop and consult the user, or run the producing skill if the user has approved that flow. |
 | Optional | Proceed, noting in output that the report was not found. |
 
-If a skill can produce a missing report itself, ask before doing so. Auto-running another skill can have side effects the user did not expect.
+If the skill can produce the missing report itself, ask first; auto-running another skill has side effects.
 
 ## Security
 
@@ -117,5 +89,5 @@ See [references/DEPENDENCIES.md](references/DEPENDENCIES.md).
 
 ## References
 
-- `docs/skill-standards/patterns/context-reports.md`
-- [`references/SCHEMA.md`](references/SCHEMA.md)
+- [Report schema](references/SCHEMA.md)
+- The `context-reports` pattern in the skill-standards wiki

@@ -1,17 +1,26 @@
 # Report schema
 
-Context reports use YAML frontmatter and a markdown body. The frontmatter is the shared envelope; the body is skill-specific.
+Context reports use YAML frontmatter (the shared envelope) and a markdown body (skill-specific).
 
 ## Machine-readable schema
 
-A JSON Schema for the shared envelope is provided in [`context-report-schema.json`](context-report-schema.json). Consumers can validate report frontmatter against it; skills may add additional skill-specific fields because `additionalProperties` is `true`.
+[`context-report-schema.json`](context-report-schema.json) is the **embedded fallback** mirror of the canonical context-report schema in the skill-standards wiki.
 
-## Example
+Precedence:
+
+1. When the standards are resolvable (configured `standards_path` or `resolve-standards-path.py`), validate against the canonical schema.
+2. When they are not, validate against this copy.
+
+The two files are kept byte-identical by a sync test in this repo. A consuming conductor that falls back to this copy discloses degraded mode; the consumer owns the warning, this block never prompts.
+
+`additionalProperties` is `true`: skills may add skill-specific fields.
+
+## Envelope
 
 ```yaml
 ---
-skill: skill-name
-version: 1.0.0
+skill: ticket-research
+version: 1
 key: OC-1234
 generated_at: 2026-06-26T08:42:00Z
 summary: "One-sentence synthesis."
@@ -20,41 +29,36 @@ artifacts:
 ---
 ```
 
-## Required fields
+Required: `skill`, `key`, `generated_at` (ISO 8601).
+Optional in the envelope: `version` (string or integer), `summary`, `artifacts`.
 
-- `skill` — name of the producing skill.
-- `version` — version of the producing skill.
-- `key` — report identifier, usually matching the ticket or session key.
-- `generated_at` — ISO 8601 timestamp.
+## Repo conventions
 
-## Optional fields
+These optional fields are conventional across this repository's skills. They are not part of the shared envelope; the envelope allows them via `additionalProperties`.
 
-- `summary` — one-sentence synthesis.
-- `artifacts` — list of related report paths.
-- `ticket` — ticket key the report is about (used by `debrief` and `ticket-research`).
-- `scope` — scope identifier, e.g., `feature`, `route`, `bug`, `module` (used by `baseline`).
-- `branch` — branch the report was produced on (used by `debrief` and `baseline`).
-- `commit` — commit hash the report was produced at (used by `debrief` and `baseline`).
-- `method` — capture method, e.g., `ui-browser`, `api-http`, `test-runner`, `code-snapshot`, `manual` (used by `baseline`).
-- `updated_at` — ISO 8601 timestamp of the last update (used by `debrief`).
-- `baselined_at` — ISO 8601 timestamp when the baseline was captured (used by `baseline`).
-- `parent` — parent ticket key, if any (used by `debrief`).
-- `parent_debrief` — path to the parent debrief report (used by `debrief`).
+| Field | Used by | Meaning |
+|---|---|---|
+| `ticket` | debrief, ticket-research | Ticket key the report is about. |
+| `scope` | baseline | Scope identifier (`feature`, `route`, `bug`, `module`). |
+| `branch` | debrief, baseline | Branch the report was produced on. |
+| `commit` | debrief, baseline | Commit hash at production time. |
+| `method` | baseline | Capture method (`ui-browser`, `api-http`, `test-runner`, `code-snapshot`, `manual`). |
+| `updated_at` | debrief | ISO 8601 last-update timestamp. |
+| `baselined_at` | baseline | ISO 8601 capture timestamp. |
+| `parent` | debrief | Parent ticket key. |
+| `parent_debrief` | debrief | Path to the parent debrief report. |
 
-Individual skills may add additional skill-specific fields as long as they do not conflict with the required envelope fields. Each skill must document its full report schema and point to this shared envelope for the canonical fields.
+Skills may add further fields that do not conflict with the envelope. Each skill documents its full report schema and points to this shared envelope for the canonical fields.
 
 ## Consumer declaration
 
-A consuming skill should declare the reports it needs in `references/DEPENDENCIES.md` or in a `consumes` section in `SKILL.md` frontmatter.
+Declare produced and consumed reports in `references/DEPENDENCIES.md` for human readers and in `skills.json` for machines. Example:
 
-```yaml
----
-name: project-orchestration
-consumes:
-  - .agents/context/ticket-research/{key}.md
-  - .agents/context/state-capture/{key}-{branch}.md
-requires:
-  - ticket-research
-  - state-capture
----
+```markdown
+## Consumed reports
+
+- `{context_dir}/ticket-research/{key}.md`
+- `{context_dir}/state-capture/{key}-{branch}.md`
 ```
+
+Consumers must handle absence gracefully: fall back to an approved alternative, note the gap, or consult the user.
