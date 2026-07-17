@@ -4,23 +4,24 @@
 
 None. `detect-project-context` is a standalone building block.
 
-## Required tools and capabilities
+## `scripts/detect-project-context.py`
 
-- **Read filesystem** — the script walks directories and checks for marker directories.
-- **Python 3.x** — the script is written in Python and uses only the standard library.
+- **Python 3** — standard library only (`pathlib`, `argparse`, `json`).
+
+## `scripts/resolve-standards-path.py`
+
+- **Python 3** — standard library.
+- **PyYAML** — used only for the config layer (`write-a-skill.yaml`). The import is lazy; without it the layer is skipped with a disclosure note.
 
 ## Required binaries
 
 - `python3` (or equivalent Python 3 interpreter)
 
-## Required MCP servers
+## Consumed references
 
-None.
+- `{config_dir}/write-a-skill.yaml` — optional `standards_path` override, read by `resolve-standards-path.py`.
+- `docs/skill-standards/` — located by walking up from the script for the bundle fallback.
 
 ## Environment variables
 
 None.
-
-## Optional dependencies
-
-None. The script uses only `pathlib`, `argparse`, and `json` from the Python standard library.

@@ -1,7 +1,7 @@
 {
   "name": "detect-project-context",
   "version": "1.0.1",
-  "description": "Detect the project root, harness, skill directories, config directories, and conventions for any workspace.",
+  "description": "Detect the project root, skill/context/config directories, and the skill-standards path for any workspace.",
   "skills": ["detect-project-context"],
   "namespaces": {
     "detect-project-context": "detect-project-context:detect-project-context"
@@ -19,7 +19,7 @@
     "environment_variables": []
   },
   "recommended": {
-    "description": "No optional dependencies. The script uses only the Python standard library.",
+    "description": "PyYAML is used only by resolve-standards-path.py for the optional config layer; the import is lazy and degrades with a disclosure note.",
     "skills": [],
     "mcp_servers": [],
     "binaries": [

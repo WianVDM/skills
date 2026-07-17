@@ -1,31 +1,31 @@
 # detect-project-context
 
-A global, model-invoked building block that detects the project root and recommended directories for skills, context, and config.
-
-## When to use
-
-Use this skill when another skill or conductor needs to locate the project root or the canonical skills, context, and config directories without hardcoding paths.
+A global, model-invoked building block that detects the project root and the canonical skills, context, and config directories, and resolves the skill-standards path.
 
 ## How to use
 
-The skill can be invoked by name or by running its script directly:
-
 ```bash
 python scripts/detect-project-context.py --start . --json
+python scripts/resolve-standards-path.py --start . --json
 ```
 
-Use `--json` for structured output. The default is human-readable text.
+Use `--json` for structured output. The default is a short human summary.
 
-A conductor should call `detect-project-context` before reading or writing any skill, context, or config files. Use the `recommended_*_dir` values as the destination for generated files, and confirm the detected `project_root` with the user if `confidence` is `low`.
+## Caller rules
 
-## Output
+- Call `detect-project-context` before reading or writing any skill, context, or config files, and use the `recommended_*_dir` values as destinations.
+- Confirm the detected `project_root` with the user when `confidence` is `low` or a `note` is present.
+- `resolve-standards-path.py` discloses degraded mode; never silently fall back when it reports `status: missing`.
 
-The skill returns a report with:
+The contract, output schemas, marker table, and resolution order live in [SKILL.md](SKILL.md) and [references/INTERFACE.md](references/INTERFACE.md).
 
-- `project_root`: resolved project root, or `null` if none found.
-- `marker`: detected marker directory (`.agents`, `.pi`, `agents`, ...) or `null`.
-- `confidence`: `high`, `medium`, or `low`.
-- `recommended_skills_dir`, `recommended_context_dir`, `recommended_config_dir`: preferred directories.
-- `skills_dir_candidates`, `context_dir_candidates`, `config_dir_candidates`: full candidate lists.
+## When to maintain or extend this block
 
-See `SKILL.md` for the canonical behavior, output schema, and confidence rules.
+- A new marker convention needs to be recognized.
+- The candidate or confidence rules change.
+- The standards resolution order changes (keep `docs/skill-standards/fundamentals/architecture/standards-path.md` in sync).
+
+## How to update
+
+- Keep `SKILL.md` as the contract; schemas and algorithm detail belong in `references/INTERFACE.md`.
+- Run the test suite (`python -m pytest scripts/tests/`) before publishing changes.

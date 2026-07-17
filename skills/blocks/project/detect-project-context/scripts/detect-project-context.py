@@ -4,9 +4,26 @@ detect-project-context.py
 
 Detect the project root and recommended directories for skills, context, and config.
 
-This script is deterministic, read-only, and safe. It never writes files and never
-asks the user. It is used by global skills and conductors to avoid hardcoding
-project paths.
+Deterministic, read-only, and safe. It never writes files and never asks the user.
+Global skills and conductors use it to avoid hardcoding project paths.
+
+Anchoring rules:
+  - The upward marker search stops at the nearest VCS root (.git file or dir).
+    A marker above the repo is never mistaken for the project.
+  - If the search lands on the home directory, the answer is returned with
+    confidence capped at low and a note, so callers confirm before use.
+
+Markers:
+  - Layout markers (.agents, .pi) carry skills/context/config subdirectories.
+  - Harness markers (.claude, .codex, .cursor) identify the root only;
+    candidates fall back to the standard .agents layout.
+
+Usage:
+  python detect-project-context.py [--start <dir>] [--json]
+
+Exit codes:
+  0 — detection returned (check confidence and note).
+  2 — invalid input (bad start path).
 """
 
 import argparse
@@ -15,7 +32,9 @@ import sys
 from pathlib import Path
 from typing import Optional, Tuple
 
-MARKER_DIRS = [".agents", ".pi", "agents", ".claude", ".codex", ".cursor"]
+LAYOUT_MARKERS = [".agents", ".pi"]
+HARNESS_MARKERS = [".claude", ".codex", ".cursor"]
+MARKER_DIRS = LAYOUT_MARKERS + HARNESS_MARKERS
 
 
 def _dedupe(items: list) -> list:
@@ -29,30 +48,25 @@ def _dedupe(items: list) -> list:
     return result
 
 
-def _vcs_root(start: Path) -> Optional[Path]:
-    """Return a VCS root (git) above start, or None."""
-    for path in [start] + list(start.parents):
-        if (path / ".git").is_dir():
-            return path
-    return None
+def _is_vcs_root(path: Path) -> bool:
+    """A .git entry, dir or file (worktrees), marks a VCS root."""
+    return (path / ".git").exists()
 
 
 def find_project_root(start: Path) -> Tuple[Optional[Path], Optional[str]]:
     """Search upward from `start` for a known project marker directory.
 
-    If no marker is found, fall back to the nearest VCS root with low confidence.
-    Returns (root, marker) where root may be None if nothing is found.
+    The search stops at the nearest VCS root: if no marker exists at or below
+    it, the VCS root is returned with marker None and low confidence.
+    Returns (root, marker); root is None if nothing anchors the project.
     """
     start = start.resolve()
     for path in [start] + list(start.parents):
         for marker in MARKER_DIRS:
             if (path / marker).is_dir():
                 return path, marker
-
-    # Fall back to VCS root; do not return the starting directory as the root.
-    git_root = _vcs_root(start)
-    if git_root:
-        return git_root, None
+        if _is_vcs_root(path):
+            return path, None
     return None, None
 
 
@@ -74,9 +88,10 @@ def detect(start: Path) -> dict:
         }
 
     root_path = root
-    agents_dir = root_path / marker if marker else None
+    notes = []
 
-    if marker and agents_dir and agents_dir.is_dir():
+    if marker in LAYOUT_MARKERS:
+        agents_dir = root_path / marker
         candidates = {
             "skills_dir_candidates": _dedupe([
                 str(agents_dir / "skills"),
@@ -96,6 +111,11 @@ def detect(start: Path) -> dict:
             ]),
         }
     else:
+        if marker in HARNESS_MARKERS:
+            notes.append(
+                f"Harness marker '{marker}' identifies the root but has no standard "
+                "skills/context/config layout; using .agents-style candidates."
+            )
         candidates = {
             "skills_dir_candidates": [
                 str(root_path / ".agents" / "skills"),
@@ -136,6 +156,14 @@ def detect(start: Path) -> dict:
     else:
         confidence = "low"
 
+    if marker is None:
+        notes.append("No marker directory found; root fell back to the VCS root.")
+        confidence = "low"
+
+    if root_path == Path.home():
+        notes.append("Marker found in the home directory; confirm this is the intended project root.")
+        confidence = "low"
+
     return {
         "project_root": str(root_path),
         "marker": marker,
@@ -146,7 +174,12 @@ def detect(start: Path) -> dict:
         "skills_dir_candidates": candidates["skills_dir_candidates"],
         "context_dir_candidates": candidates["context_dir_candidates"],
         "config_dir_candidates": candidates["config_dir_candidates"],
+        "note": "; ".join(notes) if notes else None,
     }
+
+
+def _error(message: str) -> dict:
+    return {"status": "error", "errors": [message]}
 
 
 def main():
@@ -160,33 +193,30 @@ def main():
     args = parser.parse_args()
 
     start_path = Path(args.start)
-    if not start_path.exists():
-        error = {
-            "error": "start path does not exist",
-            "start": args.start,
-        }
+    if not start_path.exists() or not start_path.is_dir():
+        reason = (
+            f"start path does not exist: {args.start}"
+            if not start_path.exists()
+            else f"start path is not a directory: {args.start}"
+        )
         if args.json:
-            print(json.dumps(error))
+            print(json.dumps(_error(reason)))
         else:
-            print(f"ERROR: start path does not exist: {args.start}", file=sys.stderr)
-        sys.exit(1)
-    if not start_path.is_dir():
-        error = {
-            "error": "start path is not a directory",
-            "start": args.start,
-        }
-        if args.json:
-            print(json.dumps(error))
-        else:
-            print(f"ERROR: start path is not a directory: {args.start}", file=sys.stderr)
-        sys.exit(1)
+            print(f"ERROR: {reason}", file=sys.stderr)
+        sys.exit(2)
 
     result = detect(start_path)
     if args.json:
         print(json.dumps(result, indent=2))
     else:
-        for key, value in result.items():
-            print(f"{key}: {value}")
+        print(f"project_root: {result['project_root']}")
+        print(f"marker: {result['marker']}")
+        print(f"confidence: {result['confidence']}")
+        if result.get("note"):
+            print(f"note: {result['note']}")
+        print(f"recommended_skills_dir: {result['recommended_skills_dir']}")
+        print(f"recommended_context_dir: {result['recommended_context_dir']}")
+        print(f"recommended_config_dir: {result['recommended_config_dir']}")
 
 
 if __name__ == "__main__":

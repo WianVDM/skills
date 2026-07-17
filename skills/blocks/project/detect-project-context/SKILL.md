@@ -1,97 +1,43 @@
 ---
 name: detect-project-context
-description: Detect the project root, harness, skill directories, config directories, and conventions for any workspace.
-version: 1.0.1
+description: Detect the project root, skill/context/config directories, and the skill-standards path for any workspace.
 invocation: model-invoked
-
 ---
 
 # detect-project-context
 
-## Purpose
+Tool building block: answer where project-level directories live so no skill hardcodes paths.
 
-Detect the project root and recommended directories for skills, context, and config so that global skills can avoid hardcoded paths.
+## Contract
 
-## Type
+Read-only and deterministic. Given a start directory, return the project root, marker, confidence, and recommended directories as structured JSON. Never write, never prompt.
 
-Building block.
+## Operations
+
+- `scripts/detect-project-context.py` — root and directory detection.
+- `scripts/resolve-standards-path.py` — canonical skill-standards path (cli → config → marker → project defaults → bundle), with degraded-mode disclosure.
 
 ## In scope
 
-- Search upward from a starting directory for a known project marker directory.
-- Recommend skills, context, and config directory candidates.
-- Report confidence based on which expected directories already exist.
-- Output results as structured JSON or human-readable text.
+- Upward marker search (`.agents`, `.pi`, harness markers), bounded by the VCS root.
+- Candidate ranking; existing directories win.
+- Confidence reporting, with a `note` when the answer is weakened.
 
 ## Out of scope
 
 - Writing or creating directories.
-- Asking the user for confirmation.
-- Detecting harness-specific features beyond directory layout.
+- Prompting the user; callers confirm low-confidence roots.
+- Harness feature detection beyond directory markers.
 
-## When to use
+## Confidence
 
-Another skill or conductor needs to know where project-level skill, context, and config directories live before reading or writing files.
+- `high` — skills and context directories exist under the marker.
+- `medium` — some expected directories exist.
+- `low` — none exist, or the root fell back to VCS or home.
 
-## Steps
+Callers confirm with the user before writing when confidence is `low` or a `note` is present.
 
-1. **Accept optional starting directory.** Default to the current working directory.
-   - **Completion criterion:** a resolved starting path is available.
-2. **Search upward for a marker directory.** Markers: `.agents`, `.pi`, `agents`, `.claude`, `.codex`, `.cursor`.
-   - **Completion criterion:** a project root and marker (or none) are identified.
-3. **Build candidate directories.** Prefer `{root}/{marker}/{purpose}/`; fall back to common alternatives.
-   - **Completion criterion:** candidate lists exist for skills, context, and config directories.
-4. **Select recommended directories.** Prefer existing directories; otherwise use the first candidate.
-   - **Completion criterion:** recommended paths are chosen for each purpose.
-5. **Return structured report.** Include root, marker, confidence, recommended paths, and all candidates.
-   - **Completion criterion:** the report is emitted in the requested format.
+## Detail
 
-## Output format
-
-Output fields:
-
-| Field | Meaning |
-|---|---|
-| `project_root` | Detected project root. |
-| `marker` | The marker directory that identified the root. |
-| `confidence` | `high` / `medium` / `low` based on how many expected directories exist. |
-| `recommended_skills_dir` | Preferred skills directory. |
-| `recommended_context_dir` | Preferred context directory. |
-| `recommended_config_dir` | Preferred config directory. |
-| `skills_dir_candidates` | All candidate skills directories. |
-| `context_dir_candidates` | All candidate context directories. |
-| `config_dir_candidates` | All candidate config directories. |
-
-When invoked as a script with `--json`, the report is:
-
-```json
-{
-  "project_root": "/path/to/project",
-  "marker": ".agents",
-  "confidence": "high",
-  "recommended_skills_dir": "/path/to/project/.agents/skills",
-  "recommended_context_dir": "/path/to/project/.agents/context",
-  "recommended_config_dir": "/path/to/project/.agents/config",
-  "skills_dir_candidates": [...],
-  "context_dir_candidates": [...],
-  "config_dir_candidates": [...]
-}
-```
-
-Confidence levels:
-- `high`: both skills and context directories exist under the detected marker.
-- `medium`: only one expected directory exists.
-- `low`: no expected directories exist.
-
-## Security
-
-- This skill is read-only. It does not create, modify, or delete files.
-- It does not execute shell commands beyond the internal Python script.
-
-## Dependencies
-
-See [references/DEPENDENCIES.md](references/DEPENDENCIES.md).
-
-## References
-
-- None.
+- [Interface](references/INTERFACE.md) — output schemas, marker table, resolution order, exit codes.
+- [Dependencies](references/DEPENDENCIES.md)

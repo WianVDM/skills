@@ -15,6 +15,11 @@ Resolution order:
 
 If no path is found, the script returns a degraded status and suggests fetching
 from the canonical registry or using the embedded fallback.
+
+Exit codes:
+  0 — standards path found.
+  1 — no standards path found (degraded).
+  2 — invalid input (bad start path).
 """
 
 from __future__ import annotations
@@ -24,8 +29,6 @@ import json
 import sys
 from pathlib import Path
 from typing import Optional
-
-import yaml
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -42,28 +45,39 @@ def _detect_project_context(start: Path) -> dict:
     return module.detect(start)
 
 
-def _load_config_standards_path(config_dir: Path) -> Optional[str]:
-    """Load standards_path from write-a-skill.yaml if it exists."""
+def _load_config_standards_path(config_dir: Path) -> tuple[Optional[str], Optional[str]]:
+    """Load standards_path from write-a-skill.yaml if it exists.
+
+    Returns (value, note). The yaml import is lazy: without PyYAML the config
+    layer is skipped with a disclosure note rather than an ImportError.
+    """
     config_path = config_dir / "write-a-skill.yaml"
     if not config_path.is_file():
-        return None
+        return None, None
+    try:
+        import yaml
+    except ImportError:
+        return None, "PyYAML not installed; skipped the config layer for standards_path."
     try:
         data = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
     except Exception:
-        return None
+        return None, None
     value = data.get("standards_path")
     if value:
-        return str(value)
-    return None
+        return str(value), None
+    return None, None
 
 
 def _bundle_default() -> Optional[Path]:
-    """If this script is inside the skills bundle, return the bundled standards path."""
-    # The script is at skills/blocks/project/detect-project-context/scripts/resolve-standards-path.py
-    # The bundled standards are at skills/../docs/skill-standards (5 levels up from script).
-    candidate = SCRIPT_DIR.parents[5] / "docs" / "skill-standards"
-    if candidate.is_dir() and (candidate / "README.md").is_file():
-        return candidate
+    """If this script ships inside the skills bundle, return the bundled standards path.
+
+    Walks up from the script looking for docs/skill-standards; the first valid
+    match wins, so the lookup survives any bundle layout depth.
+    """
+    for path in [SCRIPT_DIR] + list(SCRIPT_DIR.parents):
+        candidate = path / "docs" / "skill-standards"
+        if _is_valid_standards_path(candidate):
+            return candidate
     return None
 
 
@@ -127,10 +141,13 @@ def resolve_standards_path(
 
     project_root = Path(project_root)
     candidates = []
+    notes = []
 
     # 2. Config file
     if config_dir:
-        config_value = _load_config_standards_path(Path(config_dir))
+        config_value, note = _load_config_standards_path(Path(config_dir))
+        if note:
+            notes.append(note)
         if config_value:
             candidates.append(("config", Path(config_value).expanduser().resolve()))
 
@@ -147,22 +164,28 @@ def resolve_standards_path(
 
     for source, candidate in candidates:
         if _is_valid_standards_path(candidate):
-            return {
+            result = {
                 "status": "found",
                 "standards_path": str(candidate),
                 "source": source,
                 "degraded": False,
             }
+            if notes:
+                result["note"] = "; ".join(notes)
+            return result
 
     # 7. Bundle default
     bundle = _bundle_default()
     if bundle:
-        return {
+        result = {
             "status": "found",
             "standards_path": str(bundle),
             "source": "bundle",
             "degraded": False,
         }
+        if notes:
+            result["note"] = "; ".join(notes)
+        return result
 
     return {
         "status": "missing",
@@ -195,13 +218,13 @@ def main():
     if not start_path.exists():
         error = {
             "status": "error",
-            "reason": f"start path does not exist: {args.start}",
+            "errors": [f"start path does not exist: {args.start}"],
         }
         if args.json:
             print(json.dumps(error))
         else:
             print(f"ERROR: start path does not exist: {args.start}", file=sys.stderr)
-        sys.exit(1)
+        sys.exit(2)
 
     result = resolve_standards_path(start_path, args.standards_path or None)
 
@@ -211,6 +234,8 @@ def main():
         print(f"status: {result['status']}")
         print(f"standards_path: {result.get('standards_path')}")
         print(f"source: {result.get('source')}")
+        if result.get("note"):
+            print(f"note: {result['note']}")
         if result.get("degraded"):
             print(f"degraded: true")
             print(f"reason: {result.get('reason')}")

@@ -20,7 +20,7 @@
       "id": "trigger-should-03",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Detect the harness and directory layout for this repo.",
+      "prompt": "Detect the directory layout for this repo.",
       "expected": "detect-project-context"
     },
     {
@@ -41,14 +41,14 @@
       "id": "trigger-should-06",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Show me the project structure for agents and skills.",
+      "prompt": "Which marker directory indicates the project root?",
       "expected": "detect-project-context"
     },
     {
       "id": "trigger-should-07",
       "type": "trigger",
       "category": "should-trigger",
-      "prompt": "Which marker directory indicates the project root?",
+      "prompt": "Resolve the skill-standards path for this workspace.",
       "expected": "detect-project-context"
     },
     {
@@ -143,64 +143,142 @@
       "expected": ""
     },
     {
-      "id": "behavior-no-marker",
+      "id": "behavior-no-anchor",
       "type": "behavior",
-      "category": "edge-case",
-      "setup": "Run the script from a temporary directory that contains no marker directories and is not inside a git repository.",
-      "input": "python scripts/detect-project-context.py --start /tmp/no-marker --json",
-      "expected": {
-        "project_root": null,
-        "marker": null,
-        "confidence": "low",
-        "recommended_skills_dir": null,
-        "recommended_context_dir": null,
-        "recommended_config_dir": null
-      }
+      "baseline_type": "no_skill",
+      "prompt": "In a temporary directory with no marker directories and no git repository anywhere above it, run detect-project-context.py --start <dir> --json and verify project_root is null, marker is null, and confidence is low.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"project_root\": null"
+        },
+        {
+          "type": "output_contains",
+          "value": "\"confidence\": \"low\""
+        }
+      ]
     },
     {
       "id": "behavior-nested-subdir",
       "type": "behavior",
-      "category": "happy-path",
-      "setup": "Create a project with `.agents/context` and run the script from a deeply nested subdirectory (e.g. `src/app/components`).",
-      "input": "python scripts/detect-project-context.py --start src/app/components --json",
-      "expected": {
-        "project_root": "/path/to/project",
-        "marker": ".agents",
-        "confidence": "high",
-        "recommended_context_dir": "/path/to/project/.agents/context"
-      }
+      "baseline_type": "no_skill",
+      "prompt": "Create a project with .agents/skills and .agents/context, then run detect-project-context.py from a deeply nested subdirectory and verify the project root is found with marker .agents and confidence high.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"marker\": \".agents\""
+        },
+        {
+          "type": "output_contains",
+          "value": "\"confidence\": \"high\""
+        }
+      ]
     },
     {
-      "id": "behavior-multiple-markers",
+      "id": "behavior-marker-priority",
       "type": "behavior",
-      "category": "edge-case",
-      "setup": "Create a project with both `.pi` and `.agents` marker directories at the root. The nearest marker in the search order is `.agents`, so it should be selected.",
-      "input": "python scripts/detect-project-context.py --start . --json",
-      "expected": {
-        "project_root": "/path/to/project",
-        "marker": ".agents"
-      }
+      "baseline_type": "no_skill",
+      "prompt": "Create a project with both .pi and .agents marker directories at the root. Run detect-project-context.py and verify .agents is selected by priority.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"marker\": \".agents\""
+        }
+      ]
     },
     {
       "id": "behavior-invalid-start",
       "type": "behavior",
-      "category": "error-handling",
-      "setup": "Pass a non-existent path to --start.",
-      "input": "python scripts/detect-project-context.py --start /does/not/exist --json",
-      "expected": {
-        "error": "start path does not exist"
-      }
+      "baseline_type": "no_skill",
+      "prompt": "Run detect-project-context.py with --start pointing at a non-existent path and verify it returns a status error envelope and a non-zero exit code.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"error\""
+        }
+      ]
     },
     {
-      "id": "behavior-git-fallback",
+      "id": "behavior-vcs-ceiling",
       "type": "behavior",
-      "category": "edge-case",
-      "setup": "Run from a git repository that has no marker directories. No marker should be found, but the project_root should be the git root and confidence should be low.",
-      "input": "python scripts/detect-project-context.py --start . --json",
-      "expected": {
-        "marker": null,
-        "confidence": "low"
-      }
+      "baseline_type": "no_skill",
+      "prompt": "Create a directory with .agents, and inside it a git repository (with .git) that has no marker of its own. Run detect-project-context.py from inside the repo and verify the root is the repo, marker is null, and confidence is low — the search must not escape the repo to the parent marker.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"marker\": null"
+        },
+        {
+          "type": "output_contains",
+          "value": "\"confidence\": \"low\""
+        }
+      ]
+    },
+    {
+      "id": "behavior-home-cap",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Run detect-project-context.py from a stray directory whose only ancestor marker is in the user's home directory. Verify the answer is returned with confidence low and a note about the home directory, not confidence high.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"confidence\": \"low\""
+        },
+        {
+          "type": "output_contains",
+          "value": "home directory"
+        }
+      ]
+    },
+    {
+      "id": "behavior-standards-resolved",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Run resolve-standards-path.py inside a project that has docs/skill-standards at its root and verify status found with the project-root source.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"found\""
+        },
+        {
+          "type": "output_contains",
+          "value": "skill-standards"
+        }
+      ]
+    },
+    {
+      "id": "behavior-standards-degraded",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Run resolve-standards-path.py with --standards-path pointing at a non-existent directory and verify status missing, degraded true, and fallback options are disclosed.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"missing\""
+        },
+        {
+          "type": "output_contains",
+          "value": "\"degraded\": true"
+        },
+        {
+          "type": "output_contains",
+          "value": "fallback_options"
+        }
+      ]
+    },
+    {
+      "id": "composition-01",
+      "type": "composition",
+      "prompt": "You are running first-run setup for the pr-report skill in this project. Resolve the project context first, then initialize its config, without hardcoding any paths.",
+      "available_skills": [
+        "detect-project-context",
+        "initialize-skill",
+        "token-resolver"
+      ],
+      "expected_selection": [
+        "detect-project-context",
+        "initialize-skill"
+      ]
     }
   ]
 }
