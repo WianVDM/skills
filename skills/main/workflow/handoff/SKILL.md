@@ -33,7 +33,6 @@ Conductor. It coordinates multiple internal synthesis passes and writes a shared
 
 ## Portability
 
-- Global skill; works in any project with a writable context directory.
 - Uses `detect-project-context` if available, otherwise detects `.agents/context` or the current working directory.
 - Configuration is stored in `.agents/config/handoff.yaml`.
 
@@ -72,11 +71,11 @@ If the config file already exists, skip initialization unless the user asks to r
 
 ## Levels
 
-| Level | Command | Passes |
-|---|---|---|
-| **quick** | `handoff quick` | 1 |
-| **standard** | `handoff` | 4 |
-| **thorough** | `handoff thorough` | 5 |
+| Level        | Command            | Passes |
+| ------------ | ------------------ | ------ |
+| **quick**    | `handoff quick`    | 1      |
+| **standard** | `handoff`          | 4      |
+| **thorough** | `handoff thorough` | 5      |
 
 If the user does not specify a level, use `handoff.default_level` from config.
 

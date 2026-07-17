@@ -213,6 +213,7 @@ Common files:
 - `references/SUBAGENTS.md` — worker contracts.
 - `references/EXAMPLES.md` — sample prompts and expected outputs.
 - `references/DEPENDENCIES.md` — required skills, tools, MCP servers, environment variables.
+- `references/CHAINLOG.md` — chainlog classification for producers, consumers, or both. Absent means `neither`.
 - `references/VERSIONING.md` — versioning policy and migration paths.
 
 ### `subagents/`
@@ -226,6 +227,14 @@ Deterministic helpers. Scripts are documented, safe, isolated, and failure-expli
 ### `assets/`
 
 Templates and static resources. Especially useful for non-coding skills that ship fonts, images, sample files, or document templates.
+
+### File naming
+
+Filename case signals how a file is reached.
+
+- **UPPERCASE.md** — the file is found *by name*, not by link. A harness, tool, audit, or convention looks for it directly: `SKILL.md`, `README.md`, and the canonical contract docs in `references/` (`DEPENDENCIES.md`, `INTERFACE.md`, `CHAINLOG.md`). The name is part of the API.
+- **lowercase-hyphenated.md** — the file is reached *through* a link from another document: documentation trees, templates, and fixtures (e.g., `chainlog-template-producer.md`). The link text is the interface; the filename is an implementation detail.
+- **Data and config files** follow their ecosystem convention: `config.yaml`, `skills.json`, `evals.json`, `*.schema.json`.
 
 ---
 

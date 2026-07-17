@@ -856,8 +856,13 @@ def check_pattern_compliance(skill_dir: Path, body: str) -> list[dict]:
 def check_chainlog(skill_dir: Path, body: str, files: list[Path]) -> list[dict]:
     """Check chainlog classification and integration rules (CL-01 to CL-04)."""
     findings = []
-    chainlog_md = skill_dir / "references" / "chainlog.md"
+    chainlog_md = skill_dir / "references" / "CHAINLOG.md"
+    legacy_chainlog_md = skill_dir / "references" / "chainlog.md"
     has_chainlog_md = chainlog_md.is_file()
+    has_legacy_chainlog_md = legacy_chainlog_md.is_file() and not has_chainlog_md
+    if has_legacy_chainlog_md:
+        chainlog_md = legacy_chainlog_md
+        has_chainlog_md = True
     body_lower = body.lower()
     skill_name = skill_dir.name
 
@@ -881,19 +886,27 @@ def check_chainlog(skill_dir: Path, body: str, files: list[Path]) -> list[dict]:
     ]
     may_touch_observable = any(sig in body_lower for sig in observable_signals)
 
-    # CL-01 — classification and dependency declaration
+    # CL-01 — classification and dependency declaration. Absence of the file
+    # means `neither`; only producers/consumers/both need the declaration.
     check = "Skill touching observable data declares a chainlog classification"
-    if is_chainlog_skill or has_chainlog_md:
+    if is_chainlog_skill:
+        findings.append(pass_finding("CL-01", "Chainlog", "blocker", check))
+    elif has_legacy_chainlog_md:
+        findings.append(manual_finding(
+            "CL-01", "Chainlog", "warning", check,
+            "Rename `references/chainlog.md` to `references/CHAINLOG.md` (canonical contract docs are UPPERCASE)."
+        ))
+    elif has_chainlog_md:
         findings.append(pass_finding("CL-01", "Chainlog", "blocker", check))
     elif clearly_uses_chainlog:
         findings.append(fail_finding(
             "CL-01", "Chainlog", "blocker", check,
-            "The skill appears to use chainlog directly. Create `references/chainlog.md` with a producer/consumer/both/neither classification and declare the `chainlog` dependency."
+            "The skill appears to use chainlog directly. Create `references/CHAINLOG.md` with a producer/consumer/both classification and declare the `chainlog` dependency."
         ))
     elif may_touch_observable:
         findings.append(manual_finding(
             "CL-01", "Chainlog", "blocker", check,
-            "The skill may collect or consume observable data. Review whether it should declare a chainlog classification in `references/chainlog.md`."
+            "The skill may collect or consume observable data. If it does, declare a classification in `references/CHAINLOG.md`; if it does not, no file is needed."
         ))
     else:
         findings.append(na_finding("CL-01", "Chainlog", "blocker", check))
@@ -931,7 +944,7 @@ def check_chainlog(skill_dir: Path, body: str, files: list[Path]) -> list[dict]:
     check = "Observations do not contain secret values"
     secrets_in_observation = []
     for f in files:
-        if f.name != "chainlog.md" and f.suffix != ".py":
+        if f.name.lower() != "chainlog.md" and f.suffix != ".py":
             continue
         try:
             text = f.read_text(encoding="utf-8", errors="replace")

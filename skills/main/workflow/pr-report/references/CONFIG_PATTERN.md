@@ -4,7 +4,7 @@
 
 ## Initialization
 
-First-run configuration is handled by the `initialize-skill` building block. The conductor detects the environment, then invokes `initialize-skill/scripts/initialize.py` with the skill name and defaults from `pr-report/config.yaml`. The block proposes the merged config, asks the user for approval, and writes `{config_dir}/pr-report.yaml` only after `--approve` is passed.
+First-run configuration is handled by the `initialize-skill` building block. The conductor detects the environment, then invokes `initialize-skill/scripts/initialize.py` with the skill name and defaults from `pr-report/config.yaml`. The block returns a proposal with a changes summary and a `proposal_hash`. The conductor shows the summary and asks the user for approval; the block writes `{config_dir}/pr-report.yaml` only when re-invoked with `--approve` and that hash. Only skill-layer keys are written; shared keys stay in `shared.yaml`.
 
 For the full initialization interface, see `initialize-skill/references/INTERFACE.md`.
 

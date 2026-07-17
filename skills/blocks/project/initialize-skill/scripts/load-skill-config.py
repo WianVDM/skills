@@ -16,7 +16,10 @@ Loads:
 
 Merges them with the provided defaults (skill-specific overrides shared, shared overrides defaults).
 Writes JSON to stdout:
-  {"status": "ready"|"missing"|"error", "config": {...}, "errors": []}
+  {"status": "ready"|"missing"|"error", "config": {...}, "shadowed_shared": [...], "errors": []}
+
+shadowed_shared lists config paths present in both shared.yaml and {skill_name}.yaml;
+the skill-layer copy shadows the shared value at those paths.
 
 This script is read-only; it does not create or modify files.
 """
@@ -50,6 +53,18 @@ def _deep_merge(base: dict, override: dict) -> dict:
         else:
             result[key] = value
     return result
+
+
+def _flatten(config: dict, prefix: str = "") -> dict:
+    """Flatten nested dicts to {dot.path: leaf_value}. Lists are leaves."""
+    flat: dict = {}
+    for key, value in config.items():
+        path = f"{prefix}.{key}" if prefix else str(key)
+        if isinstance(value, dict):
+            flat.update(_flatten(value, path))
+        else:
+            flat[path] = value
+    return flat
 
 
 def _load_yaml(path: Path) -> tuple:
@@ -100,6 +115,7 @@ def _run(data: dict) -> dict:
         return {
             "status": "error",
             "config": {},
+            "shadowed_shared": [],
             "errors": ["marker_dir and skill_name are required"],
         }
 
@@ -108,39 +124,46 @@ def _run(data: dict) -> dict:
     errors = []
     any_loaded = bool(defaults)
 
+    shared_data: dict = {}
     shared_path = marker_path / "config" / "shared.yaml"
     if shared_path.exists():
-        shared_data, err = _load_yaml(shared_path)
+        loaded, err = _load_yaml(shared_path)
         if err:
             errors.append(err)
-        elif shared_data is not None:
+        elif loaded is not None:
+            shared_data = loaded
             config = _deep_merge(config, shared_data)
             any_loaded = True
 
+    skill_data: dict = {}
     skill_path = marker_path / "config" / f"{skill_name}.yaml"
     if skill_path.exists():
-        skill_data, err = _load_yaml(skill_path)
+        loaded, err = _load_yaml(skill_path)
         if err:
             errors.append(err)
-        elif skill_data is not None:
+        elif loaded is not None:
+            skill_data = loaded
             config = _deep_merge(config, skill_data)
             any_loaded = True
+
+    shadowed_shared = sorted(set(_flatten(skill_data)) & set(_flatten(shared_data)))
 
     # Type check against defaults
     type_errors = _type_check(defaults, config)
     errors.extend(type_errors)
 
     if errors:
-        return {"status": "error", "config": config, "errors": errors}
+        return {"status": "error", "config": config, "shadowed_shared": shadowed_shared, "errors": errors}
 
     if not any_loaded:
         return {
             "status": "missing",
             "config": config,
+            "shadowed_shared": shadowed_shared,
             "errors": ["no configuration sources found"],
         }
 
-    return {"status": "ready", "config": config, "errors": []}
+    return {"status": "ready", "config": config, "shadowed_shared": shadowed_shared, "errors": []}
 
 
 def _main() -> int:

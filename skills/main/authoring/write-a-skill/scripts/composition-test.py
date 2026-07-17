@@ -281,7 +281,6 @@ def main() -> int:
         "chainlog-template-producer.md",
         "chainlog-template-consumer.md",
         "chainlog-template-both.md",
-        "chainlog-template-neither.md",
     ]
     template_dir = skill_path(skills_dir, "main", "authoring", "write-a-skill", "references")
     all_templates_present = all((template_dir / t).is_file() for t in templates)
@@ -324,7 +323,7 @@ Building block.
 
 ## References
 
-- [Chainlog](references/chainlog.md)
+- [Chainlog](references/CHAINLOG.md)
 """
         chainlog_decl = """# chainlog-consumer-fixture chainlog declaration
 
@@ -342,7 +341,7 @@ Rationale: The skill reads prior observations from the chainlog and makes a deci
 """
         (fixture_dir / "SKILL.md").write_text(fixture_skill_md, encoding="utf-8")
         (fixture_dir / "references").mkdir()
-        (fixture_dir / "references" / "chainlog.md").write_text(chainlog_decl, encoding="utf-8")
+        (fixture_dir / "references" / "CHAINLOG.md").write_text(chainlog_decl, encoding="utf-8")
 
         rc, out, err = run([
             sys.executable, str(skill_path(skills_dir, "blocks", "authoring", "audit-skill", "scripts", "audit-skill.py")),

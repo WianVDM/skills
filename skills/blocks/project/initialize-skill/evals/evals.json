@@ -27,25 +27,36 @@
       "id": "trigger-not-01",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "Review the pull request and post comments.",
+      "prompt": "Set up a new Python project in this repo with a package layout.",
       "expected": ""
     },
     {
       "id": "trigger-not-02",
       "type": "trigger",
       "category": "should-not-trigger",
-      "prompt": "What is the weather today?",
+      "prompt": "Initialize a git repository here and make the first commit.",
+      "expected": ""
+    },
+    {
+      "id": "trigger-not-03",
+      "type": "trigger",
+      "category": "should-not-trigger",
+      "prompt": "Review the pull request and post comments.",
       "expected": ""
     },
     {
       "id": "behavior-01",
       "type": "behavior",
       "baseline_type": "no_skill",
-      "prompt": "Run initialize.py with marker-dir ./.agents, skill-name my-skill, and defaults '{\"timeout\": 30}' without --approve and verify it returns status needs_approval and does not write the file.",
+      "prompt": "Run initialize.py with marker-dir ./.agents, skill-name my-skill, and defaults '{\"timeout\": 30}' without --approve and verify it returns status needs_approval with a proposal_hash and does not write the file.",
       "assertions": [
         {
           "type": "output_contains",
           "value": "\"status\": \"needs_approval\""
+        },
+        {
+          "type": "output_contains",
+          "value": "proposal_hash"
         },
         {
           "type": "no_file_write",
@@ -57,7 +68,7 @@
       "id": "behavior-02",
       "type": "behavior",
       "baseline_type": "no_skill",
-      "prompt": "Run initialize.py with marker-dir ./.agents, skill-name my-skill, and defaults '{\"timeout\": 30}' with --approve and verify it writes the config.",
+      "prompt": "Run initialize.py to propose config for my-skill with defaults '{\"timeout\": 30}', then approve by re-running with --approve and the proposal_hash from the proposal. Verify it writes .agents/config/my-skill.yaml.",
       "assertions": [
         {
           "type": "file_write",
@@ -73,34 +84,90 @@
       "id": "behavior-03",
       "type": "behavior",
       "baseline_type": "no_skill",
-      "prompt": "Create a project config with timeout=60, then run initialize.py with defaults '{\"timeout\": 30}' and verify the existing user value 60 is preserved.",
+      "prompt": "Create .agents/config/my-skill.yaml with timeout=60, then propose and approve initialize.py with defaults '{\"timeout\": 30, \"retries\": 3}' and verify the existing user value 60 is preserved and retries 3 is added.",
       "assertions": [
         {
           "type": "file_contains",
           "path": ".agents/config/my-skill.yaml",
           "value": "timeout: 60"
+        },
+        {
+          "type": "file_contains",
+          "path": ".agents/config/my-skill.yaml",
+          "value": "retries: 3"
         }
+      ]
+    },
+    {
+      "id": "behavior-04",
+      "type": "behavior",
+      "baseline_type": "no_skill",
+      "prompt": "Create .agents/config/shared.yaml with an agents.context_dir key, then propose and approve initialize.py for my-skill with defaults '{\"timeout\": 30}'. Verify the written my-skill.yaml contains only the skill layer and no shared keys.",
+      "assertions": [
+        {
+          "type": "file_contains",
+          "path": ".agents/config/my-skill.yaml",
+          "value": "timeout: 30"
+        },
+        {
+          "type": "file_excludes",
+          "path": ".agents/config/my-skill.yaml",
+          "value": "context_dir"
+        }
+      ]
+    },
+    {
+      "id": "composition-01",
+      "type": "composition",
+      "prompt": "You are running first-run setup for the pr-report skill in this project. pr-report declares requires_setup: true and ships a config.yaml with defaults. Detect the project context and initialize its project config without writing anything until the user approves.",
+      "available_skills": [
+        "initialize-skill",
+        "detect-project-context",
+        "token-resolver"
+      ],
+      "expected_selection": [
+        "detect-project-context",
+        "initialize-skill"
       ]
     },
     {
       "id": "pressure-missing-marker-dir",
       "type": "pressure",
-      "prompt": "Run initialize.py with a non-existent marker directory and verify it returns an error.",
+      "prompt": "Run initialize.py with a non-existent marker directory and verify it fails closed with status error and creates nothing.",
       "assertions": [
         {
           "type": "output_contains",
           "value": "\"status\": \"error\""
+        },
+        {
+          "type": "no_file_write",
+          "path": ".agents/config/my-skill.yaml"
         }
       ]
     },
     {
       "id": "pressure-invalid-defaults",
       "type": "pressure",
-      "prompt": "Run initialize.py with invalid JSON in --defaults and verify it returns an error.",
+      "prompt": "Run initialize.py with invalid JSON in --defaults and verify it returns status error without writing.",
       "assertions": [
         {
           "type": "output_contains",
           "value": "\"status\": \"error\""
+        }
+      ]
+    },
+    {
+      "id": "security-stdin-approve",
+      "type": "security",
+      "prompt": "Pipe a JSON payload to initialize.py that includes \"approve\": true and valid marker_dir, skill_name, and defaults, but do not pass the --approve flag. Verify the script rejects it and writes nothing.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "\"status\": \"error\""
+        },
+        {
+          "type": "no_file_write",
+          "path": ".agents/config/my-skill.yaml"
         }
       ]
     }

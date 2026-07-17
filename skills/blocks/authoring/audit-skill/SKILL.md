@@ -112,8 +112,8 @@ When the script reports `MANUAL` findings, use this checklist to complete the re
 12. **Token economy** — Is every section, reference, subagent, and example load-bearing and justified?
 13. **Pattern compliance** — Does the skill fully adhere to the relevant `skill-standards` patterns?
 14. **Overlap** — Has `detect-skill-overlap` been run, and have duplicate capabilities been addressed?
-15. **Chainlog classification** — Does the skill correctly classify itself as producer, consumer, both, or neither in `references/chainlog.md`? Does the classification match the actual workflow?
-16. **Chainlog integration** — If the skill is a producer/consumer/both, does it depend on `chainlog` and document the produced/consumed capabilities in `references/chainlog.md`?
+15. **Chainlog classification** — A skill that produces or consumes observable data classifies itself as producer, consumer, or both in `references/CHAINLOG.md`. Absence of the file means `neither`. Does the classification match the actual workflow?
+16. **Chainlog integration** — If the skill is a producer/consumer/both, does it depend on `chainlog` and document the produced/consumed capabilities in `references/CHAINLOG.md`?
 17. **Chainlog freshness** — If the skill is a consumer or `both`, does it check freshness before reusing observations?
 18. **Chainlog secrets** — Does the skill store secret values anywhere in the chainlog envelope or payload?
 

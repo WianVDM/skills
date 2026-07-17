@@ -3,43 +3,54 @@
 
 Generic first-run config initializer for any skill.
 
-Reads the skill-level config.yaml for defaults, then ensures the project-level
-{marker_dir}/config/{skill_name}.yaml exists with those defaults merged over any
-existing user edits.
-
-The script prints the proposed configuration and refuses to write unless
---approve is passed. The caller must obtain explicit user approval before
-invoking this script with --approve.
+Reads the skill-level config.yaml for defaults, merges them with the project's
+shared.yaml and existing {skill}.yaml, and proposes the result. Writes only the
+skill layer, and only when --approve carries the hash of the approved proposal.
 
 Usage:
   python initialize.py --marker-dir <path> --skill-name <name> \
     [--skill-dir <path> | --defaults <json>] \
-    [--schema-version <version>] [--approve] [--json]
+    [--schema-version <version>] [--approve <hash>] [--json]
 
-Input JSON via stdin (alternative to CLI flags):
-  {
-    "marker_dir": "...",
-    "skill_name": "...",
-    "skill_dir": "...",        // optional
-    "defaults": {...},         // optional; used if skill_dir is omitted
-    "schema_version": "...",   // optional
-    "approve": false           // optional
-  }
+Data fields may also arrive as a JSON object on stdin (CLI flags win):
+  {"marker_dir": "...", "skill_name": "...", "skill_dir": "...",
+   "defaults": {...}, "schema_version": "..."}
 
-Output:
-  JSON report to stdout.
+Control fields are CLI-only. Passing "approve" via stdin is an error.
+
+Layers: defaults < shared < skill. The proposal reports the effective view
+(all layers) and the write_set (skill layer only). Only write_set is persisted;
+shared keys are read-only inputs and are never written to {skill}.yaml.
+
+Exit codes:
+  0 — proposal returned (needs_approval/unchanged) or config written.
+  1 — runtime failure (missing marker dir, unreadable files, stale hash).
+  2 — invalid input (missing fields, malformed JSON, bad key prefix).
+
+Output: JSON report to stdout.
 """
 
 from __future__ import annotations
 
 import argparse
 import datetime
+import hashlib
 import json
 import shutil
 import sys
 from pathlib import Path
 
 import yaml
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+def _fail(message: str, code: int) -> int:
+    """Print a minimal JSON error report and return the exit code."""
+    print(json.dumps({"status": "error", "errors": [message]}, indent=2))
+    return code
 
 
 def _load_yaml(path: Path) -> tuple[dict | None, str | None]:
@@ -57,34 +68,6 @@ def _load_yaml(path: Path) -> tuple[dict | None, str | None]:
         return None, f"failed to parse {path}: {exc}"
 
 
-def _extract_defaults(config: dict) -> dict:
-    """Extract skill-specific defaults from a skill-level config.yaml.
-
-    Dotted keys are converted into nested dictionaries so that a key like
-    'tools.pr.provider' becomes {'tools': {'pr': {'provider': ...}}}.
-    A skill-name prefix (e.g. 'pr-report.tools.pr.provider') is stripped first.
-    """
-    defaults: dict = {}
-    for item in config.get("skill", []):
-        key = item.get("key")
-        if not key:
-            continue
-        # Strip a skill-name prefix if present (e.g. pr-report.tools.pr.provider).
-        short_key = key.split(".", 1)[1] if "." in key else key
-        if "default" not in item:
-            continue
-        value = item["default"]
-        # Build nested dict from dotted key.
-        parts = short_key.split(".")
-        current = defaults
-        for part in parts[:-1]:
-            if part not in current:
-                current[part] = {}
-            current = current[part]
-        current[parts[-1]] = value
-    return defaults
-
-
 def _deep_merge(base: dict, override: dict) -> dict:
     """Merge override into base, recursing into nested dicts."""
     result = dict(base)
@@ -96,196 +79,315 @@ def _deep_merge(base: dict, override: dict) -> dict:
     return result
 
 
-def _load_defaults(skill_dir: Path | None, defaults_json: str | None, defaults_dict: dict | None = None) -> tuple[dict, list[str]]:
-    """Load defaults from skill_dir/config.yaml or from the provided JSON/dict."""
+def _flatten(config: dict, prefix: str = "") -> dict:
+    """Flatten nested dicts to {dot.path: leaf_value}. Lists are leaves."""
+    flat: dict = {}
+    for key, value in config.items():
+        path = f"{prefix}.{key}" if prefix else str(key)
+        if isinstance(value, dict):
+            flat.update(_flatten(value, path))
+        else:
+            flat[path] = value
+    return flat
+
+
+def _type_check(base: dict, override: dict, path: str = "") -> list[str]:
+    """Advisory type mismatches between defaults and a merged config."""
+    warnings: list[str] = []
+    for key, value in override.items():
+        current_path = f"{path}.{key}" if path else key
+        if key not in base:
+            continue
+        expected = base[key]
+        # Check bool before int because isinstance(True, int) is True in Python.
+        if isinstance(expected, bool) and not isinstance(value, bool):
+            warnings.append(f"{current_path} must be a boolean")
+        elif isinstance(expected, int) and not isinstance(value, int):
+            warnings.append(f"{current_path} must be an integer")
+        elif isinstance(expected, str) and not isinstance(value, str):
+            warnings.append(f"{current_path} must be a string")
+        elif isinstance(expected, list) and not isinstance(value, list):
+            warnings.append(f"{current_path} must be a list")
+        elif isinstance(expected, dict) and isinstance(value, dict):
+            warnings.extend(_type_check(expected, value, current_path))
+        elif isinstance(expected, dict):
+            warnings.append(f"{current_path} must be a mapping")
+    return warnings
+
+
+def _extract_skill_config(config: dict, skill_name: str) -> tuple[dict, list[str], list[str]]:
+    """Extract skill-layer defaults and required keys from a config.yaml.
+
+    Dotted keys must carry the skill-name prefix ('my-skill.tools.pr.provider'),
+    which is stripped; flat keys ('timeout') are used as-is. Anything else is a
+    declaration error, reported rather than silently rewritten.
+    """
+    defaults: dict = {}
+    required: list[str] = []
     errors: list[str] = []
+    for item in config.get("skill", []):
+        key = item.get("key")
+        if not key:
+            continue
+        if "." in key:
+            first, short_key = key.split(".", 1)
+            if first != skill_name:
+                errors.append(
+                    f"key '{key}' must be flat or start with the skill name "
+                    f"prefix '{skill_name}.'"
+                )
+                continue
+        else:
+            short_key = key
+        if item.get("required"):
+            required.append(short_key)
+        if "default" not in item:
+            continue
+        parts = short_key.split(".")
+        current = defaults
+        for part in parts[:-1]:
+            current = current.setdefault(part, {})
+        current[parts[-1]] = item["default"]
+    return defaults, required, errors
+
+
+def _load_defaults(
+    skill_dir: Path | None,
+    defaults_json: str | None,
+    defaults_dict: dict | None,
+    skill_name: str,
+) -> tuple[dict, list[str], str | None, int]:
+    """Load defaults from --defaults JSON or {skill_dir}/config.yaml.
+
+    Returns (defaults, required_keys, error, exit_code).
+    """
     if defaults_dict is not None:
-        return defaults_dict, errors
+        return defaults_dict, [], None, 0
     if defaults_json is not None:
         try:
-            return json.loads(defaults_json), errors
+            return json.loads(defaults_json), [], None, 0
         except json.JSONDecodeError as exc:
-            errors.append(f"invalid --defaults JSON: {exc}")
-            return {}, errors
+            return {}, [], f"invalid --defaults JSON: {exc}", 2
 
     if skill_dir is not None:
-        skill_config_path = Path(skill_dir) / "config.yaml"
-        skill_config, err = _load_yaml(skill_config_path)
+        config, err = _load_yaml(Path(skill_dir) / "config.yaml")
         if err:
-            errors.append(f"failed to load skill config.yaml: {err}")
-            return {}, errors
-        if skill_config is not None:
-            return _extract_defaults(skill_config), errors
+            return {}, [], f"failed to load skill config.yaml: {err}", 1
+        if config is not None:
+            defaults, required, key_errors = _extract_skill_config(config, skill_name)
+            if key_errors:
+                return {}, [], "; ".join(key_errors), 2
+            return defaults, required, None, 0
 
-    return {}, errors
+    return {}, [], None, 0
 
+
+def _proposal_hash(write_set: dict) -> str:
+    """Fingerprint of what would be persisted. Covers write_set only."""
+    canonical = json.dumps(write_set, sort_keys=True, default=str)
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:16]
+
+
+def _changes(write_set: dict, existing: dict | None, shared: dict | None, migrated_from: str | None) -> dict:
+    """Summarize what writing would do, for the approval prompt."""
+    flat_write = _flatten(write_set)
+    flat_existing = _flatten(existing or {})
+    added = sorted(p for p in flat_write if p not in flat_existing)
+    updated = sorted(
+        p for p in flat_write
+        if p in flat_existing and flat_write[p] != flat_existing[p]
+    )
+    return {
+        "added": added,
+        "preserved": [],  # filled by caller, needs defaults
+        "updated": updated,
+        "migrated_from": migrated_from,
+        "shadowed_shared": sorted(set(_flatten(existing or {})) & set(_flatten(shared or {}))),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
 
 def _main() -> int:
     parser = argparse.ArgumentParser(
         description="Initialize a skill's project-level configuration.",
     )
-    parser.add_argument(
-        "--marker-dir",
-        required=True,
-        help="Project marker directory (e.g. .agents or .pi).",
-    )
-    parser.add_argument(
-        "--skill-name",
-        required=True,
-        help="Name of the skill to initialize.",
-    )
+    parser.add_argument("--marker-dir", help="Project marker directory (e.g. .agents).")
+    parser.add_argument("--skill-name", help="Name of the skill to initialize.")
     group = parser.add_mutually_exclusive_group()
-    group.add_argument(
-        "--skill-dir",
-        help="Directory containing the skill's config.yaml. Defaults are extracted from it.",
-    )
-    group.add_argument(
-        "--defaults",
-        help="JSON object with default config values.",
-    )
-    parser.add_argument(
-        "--schema-version",
-        help="Expected config schema version. Triggers migration if older.",
-    )
+    group.add_argument("--skill-dir", help="Directory containing the skill's config.yaml.")
+    group.add_argument("--defaults", help="JSON object with default config values.")
+    parser.add_argument("--schema-version", help="Expected config schema version.")
     parser.add_argument(
         "--approve",
-        action="store_true",
-        help="Write the file after the user has explicitly approved.",
+        metavar="HASH",
+        help="Write the config. HASH must be the proposal_hash the user approved.",
     )
-    parser.add_argument(
-        "--json",
-        action="store_true",
-        help="Emit machine-readable output.",
-    )
+    parser.add_argument("--json", action="store_true", help="Emit machine-readable output.")
     args = parser.parse_args()
 
-    # If stdin is provided, merge it with CLI args (CLI wins).
+    # Data fields may arrive on stdin; control fields are CLI-only.
     stdin_data: dict = {}
     if not sys.stdin.isatty():
-        try:
-            stdin_data = json.load(sys.stdin)
-        except json.JSONDecodeError:
-            pass
+        raw = sys.stdin.read()
+        if raw.strip():
+            try:
+                stdin_data = json.loads(raw)
+            except json.JSONDecodeError as exc:
+                return _fail(f"invalid JSON on stdin: {exc}", 2)
+    if stdin_data.get("approve"):
+        return _fail("approve must be passed as --approve HASH, not via stdin", 2)
 
-    marker_dir = Path(args.marker_dir or stdin_data.get("marker_dir", "")).resolve()
-    skill_name = args.skill_name or stdin_data.get("skill_name", "")
+    marker_dir_raw = args.marker_dir or stdin_data.get("marker_dir")
+    skill_name = args.skill_name or stdin_data.get("skill_name")
     skill_dir = args.skill_dir or stdin_data.get("skill_dir")
-    skill_dir_path = Path(skill_dir) if skill_dir else None
-    defaults_json = args.defaults or stdin_data.get("defaults")
-    defaults_dict = None
-    if isinstance(defaults_json, dict):
-        defaults_dict = defaults_json
-        defaults_json = None
+    defaults_raw = args.defaults if args.defaults is not None else stdin_data.get("defaults")
+    defaults_json = defaults_raw if isinstance(defaults_raw, str) else None
+    defaults_dict = defaults_raw if isinstance(defaults_raw, dict) else None
     schema_version = args.schema_version or stdin_data.get("schema_version")
-    approve = args.approve or stdin_data.get("approve", False)
+    approve_hash = args.approve
 
-    if not skill_dir_path and defaults_json is None and defaults_dict is None:
-        errors.append("either --skill-dir or --defaults must be provided")
+    if not marker_dir_raw or not skill_name:
+        return _fail("marker_dir and skill_name are required", 2)
+    if skill_dir is None and defaults_json is None and defaults_dict is None:
+        return _fail("either --skill-dir or --defaults must be provided", 2)
+
+    marker_dir = Path(marker_dir_raw).resolve()
+    if not marker_dir.is_dir():
+        return _fail(
+            f"marker directory does not exist: {marker_dir}. "
+            "Resolve it via detect-project-context first.",
+            1,
+        )
+
+    defaults, required_keys, err, code = _load_defaults(
+        Path(skill_dir) if skill_dir else None,
+        defaults_json,
+        defaults_dict,
+        skill_name,
+    )
+    if err:
+        return _fail(err, code)
 
     config_dir = marker_dir / "config"
     skill_config_path = config_dir / f"{skill_name}.yaml"
     shared_config_path = config_dir / "shared.yaml"
 
-    defaults, defaults_errors = _load_defaults(
-        skill_dir_path,
-        defaults_json,
-        defaults_dict,
-    )
-    errors: list[str] = []
-    errors.extend(defaults_errors)
-
-    # Load existing project config if present.
     existing_config: dict | None = None
     existing = False
     if skill_config_path.exists():
         existing = True
         existing_config, err = _load_yaml(skill_config_path)
         if err:
-            errors.append(f"failed to load existing config: {err}")
+            return _fail(f"failed to load existing config: {err}", 1)
 
-    # Load shared config if present.
     shared_config: dict | None = None
     if shared_config_path.exists():
         shared_config, err = _load_yaml(shared_config_path)
         if err:
-            errors.append(f"failed to load shared config: {err}")
+            return _fail(f"failed to load shared config: {err}", 1)
 
-    # Merge: defaults < shared < skill-specific.
-    proposed = dict(defaults)
-    if shared_config is not None:
-        proposed = _deep_merge(proposed, shared_config)
-    if existing_config is not None:
-        proposed = _deep_merge(proposed, existing_config)
+    # Layers: defaults < shared < skill. Only the skill layer is ever written.
+    write_set = _deep_merge(defaults, existing_config or {})
+    effective = _deep_merge(_deep_merge(defaults, shared_config or {}), existing_config or {})
 
-    # Add any missing default keys and migrate schema version if needed.
-    changed = False
-    if existing:
-        for key, value in defaults.items():
-            if key not in proposed:
-                proposed[key] = value
-                changed = True
-
+    migrated_from = None
     if schema_version is not None:
-        existing_version = proposed.get("schema_version")
+        existing_version = (existing_config or {}).get("schema_version")
         if existing_version != schema_version:
-            changed = True
-        proposed["schema_version"] = schema_version
-    elif "schema_version" not in proposed and existing:
-        # If not provided and not present, leave it absent to avoid forcing a version.
-        pass
+            migrated_from = existing_version
+        write_set["schema_version"] = schema_version
+        effective["schema_version"] = schema_version
+
+    changes = _changes(write_set, existing_config, shared_config, migrated_from)
+    flat_defaults = _flatten(defaults)
+    flat_existing = _flatten(existing_config or {})
+    changes["preserved"] = sorted(
+        p for p in flat_existing
+        if p in flat_defaults and flat_existing[p] != flat_defaults[p]
+    )
+
+    flat_effective = _flatten(effective)
+    missing_required = [k for k in required_keys if k not in flat_effective]
+    warnings = _type_check(defaults, effective)
+
+    proposal_hash = _proposal_hash(write_set)
+    nothing_to_write = existing and not changes["added"] and not changes["updated"]
 
     report = {
-        "status": "needs_approval" if not approve else "written",
+        "status": "needs_approval",
+        "proposal_hash": proposal_hash,
         "marker_dir": str(marker_dir),
         "config_path": str(skill_config_path),
         "existing": existing,
-        "changed": changed or not existing,
         "schema_version": schema_version,
-        "proposed": proposed,
-        "errors": errors,
+        "changes": changes,
+        "missing_required": missing_required,
+        "warnings": warnings,
+        "proposed": effective,
+        "write_set": write_set,
+        "errors": [],
     }
 
-    if errors and not approve:
-        # If there are errors and we are not writing, return the report with error status.
-        report["status"] = "error" if any(
-            not e.startswith("failed to load") for e in errors
-        ) else "needs_approval"
-
-    if not approve:
+    # --- Approve path: write exactly what was approved. ---
+    if approve_hash is not None:
+        if approve_hash != proposal_hash:
+            return _fail(
+                "proposal changed since approval; re-run for a fresh proposal_hash",
+                1,
+            )
+        if nothing_to_write:
+            report["status"] = "unchanged"
+            print(json.dumps(report, indent=2))
+            return 0
+        config_dir.mkdir(parents=True, exist_ok=True)
+        if existing:
+            backup_path = skill_config_path.with_suffix(
+                f".yaml.backup.{datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%SZ')}"
+            )
+            shutil.copy2(skill_config_path, backup_path)
+            report["backup_path"] = str(backup_path)
+        skill_config_path.write_text(
+            yaml.dump(write_set, default_flow_style=False, sort_keys=False),
+            encoding="utf-8",
+        )
+        report["status"] = "written"
         if args.json:
             print(json.dumps(report, indent=2))
         else:
-            print(f"Proposed {skill_name} configuration:")
-            print("-" * 40)
-            print(yaml.dump(proposed, default_flow_style=False, sort_keys=False))
-            print("-" * 40)
-            print(f"Would write to: {skill_config_path}")
-            print("Run with --approve to write after explicit user confirmation.")
-        return 0 if report["status"] != "error" else 1
+            print(f"Configuration written to {skill_config_path}")
+        return 0
 
-    if errors:
-        print(json.dumps(report, indent=2), file=sys.stderr)
-        return 1
+    # --- Proposal path: never writes. ---
+    if nothing_to_write:
+        report["status"] = "unchanged"
 
-    config_dir.mkdir(parents=True, exist_ok=True)
-
-    if existing:
-        backup_path = skill_config_path.with_suffix(
-            f".yaml.backup.{datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%SZ')}"
-        )
-        shutil.copy2(skill_config_path, backup_path)
-        report["backup_path"] = str(backup_path)
-
-    skill_config_path.write_text(
-        yaml.dump(proposed, default_flow_style=False, sort_keys=False),
-        encoding="utf-8",
-    )
-
-    report["status"] = "written"
     if args.json:
         print(json.dumps(report, indent=2))
     else:
-        print(f"Configuration written to {skill_config_path}")
+        print(f"Proposed {skill_name} configuration:")
+        for label, paths in (
+            ("added", changes["added"]),
+            ("preserved", changes["preserved"]),
+            ("updated", changes["updated"]),
+            ("shadowed", changes["shadowed_shared"]),
+        ):
+            if paths:
+                print(f"  {label}: {', '.join(paths)}")
+        if changes["migrated_from"]:
+            print(f"  migrated from schema_version: {changes['migrated_from']}")
+        if missing_required:
+            print(f"  missing required: {', '.join(missing_required)}")
+        print("-" * 40)
+        print(yaml.dump(effective, default_flow_style=False, sort_keys=False))
+        print("-" * 40)
+        if report["status"] == "unchanged":
+            print("Already initialized; nothing to write.")
+        else:
+            print(f"Would write to: {skill_config_path}")
+            print(f"Run with --approve {proposal_hash} after explicit user confirmation.")
     return 0
 
 

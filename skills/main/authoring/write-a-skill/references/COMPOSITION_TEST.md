@@ -18,8 +18,8 @@ python skills/write-a-skill/scripts/composition-test.py
 - `run-trigger-evals` — generates branch-aware trigger evals that pass schema validation.
 - `chainlog` — verifies the `chainlog` building block exists and parses.
 - `check-chainlog-needs` — verifies the chainlog classification subagent exists.
-- chainlog templates — verifies all four `references/chainlog-template-*.md` files exist.
-- chainlog audit fixture — verifies `audit-skill` reports `CL-02` for a consumer skill missing `artifact-freshness`.
+- chainlog templates — verifies all three `references/chainlog-template-*.md` files exist.
+- chainlog audit fixture — verifies `audit-skill` reports `CL-02` for a consumer skill (declared in `references/CHAINLOG.md`) missing `artifact-freshness`.
 
 ## What it does not test
 

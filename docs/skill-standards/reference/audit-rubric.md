@@ -97,10 +97,10 @@ This is the contract that `audit-skill` uses to evaluate any skill. Each check h
 
 | ID | Check | Severity | Pass condition |
 |---|---|---|---|
-| CL-01 | If a skill produces or consumes observable data, it declares a `chainlog` classification in `references/chainlog.md` and depends on `chainlog`. | Blocker for skills touching observable data. | `references/chainlog.md` exists with a classification of `producer`, `consumer`, `both`, or `neither`; `chainlog` is declared as a dependency when classification is not `neither`. |
+| CL-01 | If a skill produces or consumes observable data, it declares a `chainlog` classification in `references/CHAINLOG.md` and depends on `chainlog`. A skill that touches no observable data needs no file; absence means `neither`. | Blocker for skills touching observable data. | For producers, consumers, or both: `references/CHAINLOG.md` exists with a classification of `producer`, `consumer`, or `both`, and `chainlog` is declared as a dependency. For all other skills, the file is absent. |
 | CL-02 | A `consumer` or `both` skill documents how it checks observation freshness before reuse. | Warning | `artifact-freshness` is declared as a dependency and the freshness rule is documented. |
 | CL-03 | Observations do not contain secret values. | Blocker | No tokens, keys, or passwords appear in sample observations, templates, or chainlog payloads. |
-| CL-04 | A skill classified as `neither` does not collect or consume observable data. | Blocker if violated. | The workflow does not query or append to `chainlog` and does not synthesize views from tool-collected data. |
+| CL-04 | A skill without a producer/consumer/both classification (no `references/CHAINLOG.md`, or a legacy explicit `neither`) does not collect or consume observable data. | Blocker if violated. | The workflow does not query or append to `chainlog` and does not synthesize views from tool-collected data. |
 
 ## Category: Portability
 
