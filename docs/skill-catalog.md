@@ -293,7 +293,7 @@ Check whether a context report or chainlog entry is fresh enough to reuse. Evalu
 
 - **Invocation:** `model-invoked`
 - **Location:** `../skills/blocks/project/artifact-freshness/`
-- **Dependencies:** None.
+- **Dependencies:** **Required:** worker-contract, context-reports
 - **Details:** [artifact-freshness/SKILL.md](../skills/blocks/project/artifact-freshness/SKILL.md)
 
 #### `chainlog`
@@ -302,7 +302,9 @@ Append-only storage for observations collected by tools. Lets skills reuse prior
 
 - **Invocation:** `model-invoked`
 - **Location:** `../skills/blocks/project/chainlog/`
-- **Dependencies:** None.
+- **Dependencies:**
+  - **Required:** worker-contract, context-reports
+  - **Recommended:** artifact-freshness
 - **Details:** [chainlog/SKILL.md](../skills/blocks/project/chainlog/SKILL.md)
 
 #### `challenge-assumptions`
@@ -320,7 +322,7 @@ Maintain phase checklists, current focus, and resume state for long-running cond
 
 - **Invocation:** `model-invoked`
 - **Location:** `../skills/blocks/project/checkpoint/`
-- **Dependencies:** None.
+- **Dependencies:** **Required:** context-reports
 - **Details:** [checkpoint/SKILL.md](../skills/blocks/project/checkpoint/SKILL.md)
 
 #### `context-reports`
@@ -329,12 +331,12 @@ Provide the canonical vocabulary for shared context reports. Use when a skill pr
 
 - **Invocation:** `model-invoked`
 - **Location:** `../skills/blocks/project/context-reports/`
-- **Dependencies:** None.
+- **Dependencies:** **Recommended:** artifact-freshness
 - **Details:** [context-reports/SKILL.md](../skills/blocks/project/context-reports/SKILL.md)
 
 #### `detect-project-context`
 
-Detect the project root, harness, skill directories, config directories, and conventions for any workspace.
+Detect the project root, skill/context/config directories, and the skill-standards path for any workspace.
 
 - **Invocation:** `model-invoked`
 - **Location:** `../skills/blocks/project/detect-project-context/`
@@ -365,7 +367,7 @@ CI source adapter that fetches GitHub Actions check runs and job-log summaries a
 
 - **Invocation:** `model-invoked`
 - **Location:** `../skills/blocks/project/github-actions-adapter/`
-- **Dependencies:** None.
+- **Dependencies:** **Required:** pr-adapter-contract, worker-contract, token-resolver
 - **Details:** [github-actions-adapter/SKILL.md](../skills/blocks/project/github-actions-adapter/SKILL.md)
 
 #### `github-pr-adapter`
@@ -374,7 +376,7 @@ GitHub PR source adapter that fetches PR metadata, changed files, reviews, and i
 
 - **Invocation:** `model-invoked`
 - **Location:** `../skills/blocks/project/github-pr-adapter/`
-- **Dependencies:** None.
+- **Dependencies:** **Required:** pr-adapter-contract, worker-contract, token-resolver
 - **Details:** [github-pr-adapter/SKILL.md](../skills/blocks/project/github-pr-adapter/SKILL.md)
 
 #### `identity-resolver`
@@ -383,7 +385,7 @@ Resolve a work item from user input. Given a number, URL, branch, ticket key, or
 
 - **Invocation:** `model-invoked`
 - **Location:** `../skills/blocks/project/identity-resolver/`
-- **Dependencies:** None.
+- **Dependencies:** **Required:** worker-contract, context-reports, detect-project-context, tool-discovery
 - **Details:** [identity-resolver/SKILL.md](../skills/blocks/project/identity-resolver/SKILL.md)
 
 #### `initialize-skill`
@@ -392,7 +394,7 @@ First-run config initializer for any skill. Detects the project environment, loa
 
 - **Invocation:** `model-invoked`
 - **Location:** `../skills/blocks/project/initialize-skill/`
-- **Dependencies:** None.
+- **Dependencies:** **Required:** detect-project-context
 - **Details:** [initialize-skill/SKILL.md](../skills/blocks/project/initialize-skill/SKILL.md)
 
 #### `jira-adapter`
@@ -401,7 +403,7 @@ Issue-tracker source adapter that resolves Jira tickets and fetches ticket scope
 
 - **Invocation:** `model-invoked`
 - **Location:** `../skills/blocks/project/jira-adapter/`
-- **Dependencies:** None.
+- **Dependencies:** **Required:** pr-adapter-contract, worker-contract, token-resolver
 - **Details:** [jira-adapter/SKILL.md](../skills/blocks/project/jira-adapter/SKILL.md)
 
 #### `manual-pr-adapter`
@@ -410,7 +412,7 @@ Manual PR source adapter that collects PR metadata, changed files, and review fe
 
 - **Invocation:** `model-invoked`
 - **Location:** `../skills/blocks/project/manual-pr-adapter/`
-- **Dependencies:** None.
+- **Dependencies:** **Required:** pr-adapter-contract, worker-contract
 - **Details:** [manual-pr-adapter/SKILL.md](../skills/blocks/project/manual-pr-adapter/SKILL.md)
 
 #### `map-ticket-relationships`
@@ -419,7 +421,7 @@ Map all relationships surrounding a ticket: parent, children, siblings, duplicat
 
 - **Invocation:** `model-invoked`
 - **Location:** `../skills/blocks/project/map-ticket-relationships/`
-- **Dependencies:** None.
+- **Dependencies:** **Required:** context-reports, worker-contract, research-ticket
 - **Details:** [map-ticket-relationships/SKILL.md](../skills/blocks/project/map-ticket-relationships/SKILL.md)
 
 #### `pr-adapter-contract`
@@ -428,7 +430,7 @@ Defines the normalized adapter interface contract for conductor skills that cons
 
 - **Invocation:** `model-invoked`
 - **Location:** `../skills/blocks/project/pr-adapter-contract/`
-- **Dependencies:** None.
+- **Dependencies:** **Required:** worker-contract, context-reports, token-resolver
 - **Details:** [pr-adapter-contract/SKILL.md](../skills/blocks/project/pr-adapter-contract/SKILL.md)
 
 #### `research-ticket`
@@ -455,7 +457,7 @@ Challenge a list of findings against a scope (ticket acceptance criteria, change
 
 - **Invocation:** `model-invoked`
 - **Location:** `../skills/blocks/project/scope-checker/`
-- **Dependencies:** None.
+- **Dependencies:** **Required:** worker-contract
 - **Details:** [scope-checker/SKILL.md](../skills/blocks/project/scope-checker/SKILL.md)
 
 #### `sonarcloud-adapter`
@@ -464,7 +466,7 @@ Static-analysis source adapter that fetches SonarCloud findings and returns the 
 
 - **Invocation:** `model-invoked`
 - **Location:** `../skills/blocks/project/sonarcloud-adapter/`
-- **Dependencies:** None.
+- **Dependencies:** **Required:** pr-adapter-contract, worker-contract, token-resolver
 - **Details:** [sonarcloud-adapter/SKILL.md](../skills/blocks/project/sonarcloud-adapter/SKILL.md)
 
 #### `tool-discovery`
