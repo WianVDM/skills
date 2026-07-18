@@ -37,7 +37,9 @@ Merge the latest upstream branch into the correct target branch safely. Classifi
 
 - **Invocation:** `/merge-latest`
 - **Location:** `../skills/main/workflow/merge-latest/`
-- **Dependencies:** **Recommended:** context-reports, checkpoint
+- **Dependencies:**
+  - **Required:** checkpoint
+  - **Recommended:** context-reports
 - **Details:** [merge-latest/SKILL.md](../skills/main/workflow/merge-latest/SKILL.md)
 
 #### `orchestrate`
@@ -46,7 +48,7 @@ Move a ticket from context to completed implementation by running other skills a
 
 - **Invocation:** `/orchestrate`
 - **Location:** `../skills/main/workflow/orchestrate/`
-- **Dependencies:** None.
+- **Dependencies:** **Required:** checkpoint, context-reports
 - **Details:** [orchestrate/SKILL.md](../skills/main/workflow/orchestrate/SKILL.md)
 
 #### `plan-next`
@@ -55,7 +57,7 @@ Analyze context, discover available skills, build deep skill capability profiles
 
 - **Invocation:** `/plan-next`
 - **Location:** `../skills/main/workflow/plan-next/`
-- **Dependencies:** None.
+- **Dependencies:** **Required:** checkpoint
 - **Details:** [plan-next/SKILL.md](../skills/main/workflow/plan-next/SKILL.md)
 
 #### `pr-report`
@@ -65,7 +67,7 @@ Build an actionable understanding of a pull request. Gather PR metadata, review 
 - **Invocation:** `model-invoked`
 - **Location:** `../skills/main/workflow/pr-report/`
 - **Dependencies:**
-  - **Required:** detect-project-context, initialize-skill, artifact-freshness, context-reports, worker-contract, token-resolver, tool-discovery, identity-resolver, pr-adapter-contract
+  - **Required:** detect-project-context, initialize-skill, identity-resolver, tool-discovery, pr-adapter-contract, worker-contract, token-resolver, scope-checker, scan-context, checkpoint, chainlog, artifact-freshness, context-reports
   - **Recommended:** github-pr-adapter, github-actions-adapter, sonarcloud-adapter, jira-adapter, manual-pr-adapter
   - **Optional:** baseline, debrief
 - **Details:** [pr-report/SKILL.md](../skills/main/workflow/pr-report/SKILL.md)
@@ -76,7 +78,7 @@ Compare the current branch to the repository's default branch and verify that ch
 
 - **Invocation:** `/verify-branch`
 - **Location:** `../skills/main/workflow/verify-branch/`
-- **Dependencies:** None.
+- **Dependencies:** **Required:** checkpoint
 - **Details:** [verify-branch/SKILL.md](../skills/main/workflow/verify-branch/SKILL.md)
 
 ### Product
@@ -372,7 +374,7 @@ CI source adapter that fetches GitHub Actions check runs and job-log summaries a
 
 #### `github-pr-adapter`
 
-GitHub PR source adapter that fetches PR metadata, changed files, reviews, and inline review threads via the GitHub API and returns the normalized pr-source shape.
+GitHub PR source adapter that fetches PR metadata, changed files, reviews, inline review threads, and conversation comments via the GitHub API and returns the normalized pr-source shape.
 
 - **Invocation:** `model-invoked`
 - **Location:** `../skills/blocks/project/github-pr-adapter/`
