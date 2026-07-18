@@ -1,7 +1,6 @@
 ---
 name: scope-checker
 description: Challenge a list of findings against a scope (ticket acceptance criteria, changed files, PR intent, or project conventions) and classify each one as in-scope, out-of-scope, or ambiguous. Use when a conductor needs to triage findings by whether they belong to the current work item.
-version: 1.0.0
 invocation: model-invoked
 depends:
   - worker-contract
@@ -55,6 +54,7 @@ The parent skill passes the following in the subagent prompt:
 - `scope`: object describing the scope.
 - `findings`: array of findings to classify.
 - `project_conventions`: optional list of convention references to consider.
+- `strictness`: optional, `strict` or `lenient` (default `lenient`). `strict` flags findings not explicitly covered by acceptance criteria or changed files; `lenient` flags only clearly unrelated findings.
 
 See [references/INTERFACE.md](references/INTERFACE.md) for the full schema.
 

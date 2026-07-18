@@ -2,10 +2,6 @@
 name: token-resolver
 description: Resolve secure tokens for adapters from environment variables, MCP config files, or a one-time user prompt. Return a reference without exposing the secret value.
 invocation: model-invoked
-metadata:
-  tags: [security, tokens, adapters, building-block]
-  author: Wian van der Merwe
-  version: "1.0.1"
 ---
 
 # Token Resolver
@@ -48,11 +44,11 @@ Tool building block.
 ```yaml
 ---
 token_config:
-  value: ${GITHUB_TOKEN}      # optional literal or env-var reference
-  env_var: GITHUB_TOKEN       # optional preferred env-var name
-  mcp_config_sources: []       # optional list of local MCP config file paths to inspect
-  mcp_server_key: github      # optional MCP server key
-  mcp_token_keys:             # optional token key names in MCP server env
+  value: ${GITHUB_TOKEN} # optional literal or env-var reference
+  env_var: GITHUB_TOKEN # optional preferred env-var name
+  mcp_config_sources: [] # optional list of local MCP config file paths to inspect
+  mcp_server_key: github # optional MCP server key
+  mcp_token_keys: # optional token key names in MCP server env
     - GITHUB_TOKEN
     - GITHUB_PERSONAL_ACCESS_TOKEN
 ---
@@ -87,11 +83,11 @@ Token resolved from env var `GITHUB_TOKEN`.
 
 ## Completion criteria
 
-| Status | When to return |
-|---|---|
-| `complete` | A non-empty token was found and returned to the caller without being logged. |
-| `needs_input` | The token is missing and the caller has authorized prompting the user once. |
-| `blocked` | The token is missing, prompting is not authorized, or the configured source is unreachable. |
+| Status        | When to return                                                                              |
+| ------------- | ------------------------------------------------------------------------------------------- |
+| `complete`    | A non-empty token was found and returned to the caller without being logged.                |
+| `needs_input` | The token is missing and the caller has authorized prompting the user once.                 |
+| `blocked`     | The token is missing, prompting is not authorized, or the configured source is unreachable. |
 
 ## Rules
 

@@ -2,10 +2,8 @@
 name: plan-next
 description: Analyze context, discover available skills, build deep skill capability profiles, and create a phased action plan with explicit dependencies. Evaluates skills not only on direct relevance but on how they ensure the plan is correct and prevent missed complexity. Interactively refines with the user before finalizing. Use when the user wants to know what to do next, which skills to run, how to address findings, or says 'plan-next', 'what should I do', 'recommend skills', or 'create a plan'.
 invocation: user-invoked
-metadata:
-  tags: [workflow, conductor, planning, discovery]
-  author: Wian van der Merwe
-  version: "1.0.0"
+depends:
+  - checkpoint
 ---
 
 # Plan Next
@@ -41,7 +39,7 @@ Conductor skill. It consumes context and other skill reports, then recommends wh
 
 1. **Load config and state** — read `.agents/config/plan-next.yaml` and `.agents/context/plan-next/{key}/state.md` if they exist.
 2. **Ingest context** — summarize session, document, or freeform text. Delegate to `context-auditor`.
-3. **Update draft and checkpoint** — write the context summary into the draft plan and ask `checkpoint-manager` to update phase state.
+3. **Update draft and checkpoint** — write the context summary into the draft plan and invoke `checkpoint/update` to mark phase state.
 4. **Assess readiness** — audit for gaps, ambiguity, unknown unknowns, and hidden complexity. Update the draft plan.
 5. **Discover skills** — delegate to `skill-discovery-agent` to find all available skills and read frontmatter.
 6. **Profile skills** — delegate to `skill-profiler`. On first pass, read full references to build capability profiles. On later passes, use curated subsets to avoid staleness.
@@ -61,7 +59,7 @@ At the start, create a skeleton draft with section headers and `<!-- STATUS: pen
 After every subagent returns, and after any context compaction:
 
 1. Update the draft plan with new findings.
-2. Ask the `checkpoint-manager` to update the phase checklist and current focus.
+2. Invoke `checkpoint/update` to refresh the phase checklist and current focus.
 3. Re-read the state file and draft plan before deciding the next action.
 
 See [references/CHECKPOINTING.md](references/CHECKPOINTING.md) for phase definitions.
@@ -72,7 +70,7 @@ If the session context is compacted:
 
 1. Read `.agents/context/plan-next/{key}/state.md`.
 2. Read `.agents/context/plan-next/{key}-plan-draft.md`.
-3. Ask the `checkpoint-manager` to summarize completed phases, pending phases, current focus, and recommended next action.
+3. Invoke `checkpoint/resume` for completed phases, pending phases, current focus, and the next pending phase.
 4. Resume from the first pending phase.
 
 ## Skill evaluation principles
@@ -89,11 +87,11 @@ A skill that scores low on direct relevance but high on risk reduction or depth 
 
 ## Verdict taxonomy
 
-| Verdict | Meaning |
-|---------|---------|
-| **Essential** | Directly addresses a core need and significantly reduces risk. Must be in the plan. |
-| **Recommended** | Strongly relevant or valuable for verification. Should be in the plan. |
-| **Optional** | Could help but not on the critical path. Mention in notes or alternatives. |
+| Verdict            | Meaning                                                                                |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| **Essential**      | Directly addresses a core need and significantly reduces risk. Must be in the plan.    |
+| **Recommended**    | Strongly relevant or valuable for verification. Should be in the plan.                 |
+| **Optional**       | Could help but not on the critical path. Mention in notes or alternatives.             |
 | **Not applicable** | Out of scope for this specific context. Explain what context would make it applicable. |
 
 ## Phase design

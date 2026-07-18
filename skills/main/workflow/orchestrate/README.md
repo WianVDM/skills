@@ -40,8 +40,7 @@ orchestrate/
     ├── challenge-gate.md           # challenge understanding
     ├── plan-drafter.md             # draft the implementation plan
     ├── phase-executor.md           # execute one phase
-    ├── implementer.md              # generic implementation fallback
-    └── checkpoint-manager.md       # maintain checkpoints and state
+    └── implementer.md              # generic implementation fallback
 ```
 
 ## Config file

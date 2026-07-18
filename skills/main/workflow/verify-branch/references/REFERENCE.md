@@ -208,7 +208,7 @@ consumed_context:
 
 ### Resuming after interruption
 - Read the state file `.agents/context/verify-branch/{branch-name}-state.md`.
-- Call `checkpoint-manager` to recover pending gates.
+- Invoke `checkpoint/resume` to recover pending gates.
 - Resume from the first pending gate; do not re-run completed gates unless git state changed.
 
 ## Rules

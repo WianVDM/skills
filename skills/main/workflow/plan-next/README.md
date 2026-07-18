@@ -33,8 +33,7 @@ plan-next/
     ├── skill-discovery-agent.md    # discover available skills
     ├── skill-profiler.md           # build capability profiles from references
     ├── skill-evaluator.md          # score each skill
-    ├── plan-builder.md             # group skills into phases
-    └── checkpoint-manager.md       # track planning iterations and state
+    └── plan-builder.md             # group skills into phases
 ```
 
 ## Key conventions

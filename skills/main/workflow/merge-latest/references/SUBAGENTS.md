@@ -35,6 +35,7 @@ Status values: `complete`, `in-progress`, `blocked`.
 | `conflict-investigator` | Deep analysis of complex conflicts; produces per-file briefs and safe recommendations. |
 | `validation-runner` | Run the user-configured validation command pipeline. |
 | `report-writer` | Compile the merge report and chat summary. |
-| `checkpoint-manager` | Track state, phase checklist, and resume state. |
+
+State, phase checklist, and resume are delegated to the `checkpoint` block; no private worker is needed.
 
 Workers do not modify the working tree unless explicitly instructed. They return findings and recommendations.

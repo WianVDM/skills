@@ -68,4 +68,4 @@ Review cadence: validate on every minor/major version bump and at least quarterl
 
 - Keep `SKILL.md` focused on intent and delegation; detail lives in `references/`.
 - Preserve existing user preferences when updating config.
-- Keep report `version` in sync with the skill's version.
+- Keep report `version` in sync with the report schema.

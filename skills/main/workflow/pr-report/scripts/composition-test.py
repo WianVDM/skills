@@ -31,8 +31,18 @@ ADAPTER_NAMES = {
     "sonarcloud-adapter",
     "jira-adapter",
     "manual-pr-adapter",
-    "pr-adapter-contract",
 }
+
+# The validator ships with the validate-skill-frontmatter building block.
+# Resolve it relative to this skill's location in the bundle, never a hardcoded path.
+VALIDATOR = (
+    SKILL_DIR.parents[2]
+    / "blocks"
+    / "authoring"
+    / "validate-skill-frontmatter"
+    / "scripts"
+    / "validate-skill-frontmatter.py"
+)
 
 REQUIRED_CONFIG_KEYS = {
     "pr-report.tools.pr.provider",
@@ -44,19 +54,20 @@ REQUIRED_CONFIG_KEYS = {
     "pr-report.tooling.degraded_mode",
     "pr-report.scope_mode",
     "pr-report.task_list.enabled",
-    "pr-report.test_mode",
 }
 
 
 def validate_frontmatter() -> dict:
     try:
         import subprocess
+        if not VALIDATOR.exists():
+            return {
+                "check": "SKILL.md frontmatter validates",
+                "status": "FAIL",
+                "detail": f"Validator not found at {VALIDATOR}; is validate-skill-frontmatter installed?",
+            }
         result = subprocess.run(
-            [
-                sys.executable,
-                "skills/tooling/validate-skill-frontmatter/scripts/validate-skill-frontmatter.py",
-                str(SKILL_MD),
-            ],
+            [sys.executable, str(VALIDATOR), str(SKILL_MD)],
             capture_output=True,
             text=True,
             check=False,
@@ -126,36 +137,39 @@ def validate_evals() -> dict:
         evals = json.loads(EVALS_JSON.read_text(encoding="utf-8"))
         assert "tests" in evals
         assert len(evals["tests"]) > 0
-        behavioral = [t for t in evals["tests"] if t.get("type") == "behavioral"]
-        assert len(behavioral) > 0
-        return {"check": "evals/evals.json includes behavioral evals", "status": "PASS"}
+        types = {t.get("type") for t in evals["tests"]}
+        missing = {"behavior", "pressure"} - types
+        if missing:
+            return {
+                "check": "evals/evals.json includes behavior and pressure evals",
+                "status": "FAIL",
+                "detail": f"Missing eval types: {', '.join(sorted(missing))}",
+            }
+        return {"check": "evals/evals.json includes behavior and pressure evals", "status": "PASS"}
     except Exception as e:
-        return {"check": "evals/evals.json includes behavioral evals", "status": "FAIL", "detail": str(e)}
+        return {"check": "evals/evals.json includes behavior and pressure evals", "status": "FAIL", "detail": str(e)}
 
 
 def validate_no_adapter_names() -> dict:
+    """Config provider values must use provider names, never adapter skill names."""
     try:
+        import yaml
+        config = yaml.safe_load(CONFIG_YAML.read_text(encoding="utf-8"))
         found = []
-        migration_files = {
-            (REFERENCES_DIR / "VERSIONING.md").resolve(),
-            (REFERENCES_DIR / "WORKFLOW.md").resolve(),
-            (REFERENCES_DIR / "DEPENDENCIES.md").resolve(),
-        }
-        for path in [SKILL_MD, CONFIG_YAML] + list(REFERENCES_DIR.glob("*.md")) + list(SUBAGENTS_DIR.glob("*.md")):
-            text = path.read_text(encoding="utf-8")
+        for item in config.get("skill", []):
+            value = str(item.get("default", ""))
             for name in ADAPTER_NAMES:
-                if name in text:
-                    if path.resolve() not in migration_files:
-                        found.append(f"{name} in {path.relative_to(SKILL_DIR)}")
+                if name in value:
+                    found.append(f"{name} in default for {item.get('key')}")
         if found:
             return {
-                "check": "No adapter names remain in skill files",
+                "check": "config.yaml provider values use provider names",
                 "status": "FAIL",
                 "detail": "; ".join(found[:20]),
             }
-        return {"check": "No adapter names remain in skill files", "status": "PASS"}
+        return {"check": "config.yaml provider values use provider names", "status": "PASS"}
     except Exception as e:
-        return {"check": "No adapter names remain in skill files", "status": "FAIL", "detail": str(e)}
+        return {"check": "config.yaml provider values use provider names", "status": "FAIL", "detail": str(e)}
 
 
 def run() -> dict:

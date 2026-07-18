@@ -1,6 +1,6 @@
 # Reference
 
-PR report state management, internal normalization model, delta computation, and report generation for `pr-report`.
+PR report state management, normalization, delta computation, and report generation for `pr-report`.
 
 ## Configuration
 
@@ -29,9 +29,9 @@ If `identity-resolver` returns `needs_input`, ask the user for a PR number or UR
 
 Path: `{context_dir}/pr-report/{key}/state.md`
 
-Frontmatter: `skill`, `version`, `key`, `pr_number`, `repo`, `branch`, `base`, `report_status`, `updated_at`, `commit_hash`.
+The state file follows the [`checkpoint`](../../../../blocks/project/checkpoint/SKILL.md) state schema: frontmatter (`skill`, `version`, `state_schema`, `owner`, `key`, `updated_at`) plus body sections Phase Checklist, Current Focus, Last Completed Action, and Session History. `owner` is `pr-report`.
 
-Sections: Phase Checklist, Current Focus, Last Completed Action, PR Info, Detected Tools, Session History, Reviews Tracked, Comment History, Static Analysis Findings, CI / Build Status, Triage Decisions, Scope Flags, Files Changed.
+`pr-report` adds frontmatter fields `pr_number`, `repo`, `branch`, `base`, `report_status`, `generated_at`, and `commit_hash`, and the following owner sections: PR Info, Detected Tools, Reviews Tracked, Comment History, Static Analysis Findings, CI / Build Status, Triage Decisions, Scope Flags, Files Changed.
 
 Rules:
 
@@ -42,24 +42,26 @@ Rules:
 - Confidence values: `high`, `medium`, `low`.
 - Update `Last Seen` on every iteration for findings and checks.
 
-## Internal normalization model
+## Normalization
 
-All tool output is normalized into a common internal model before triage. The model is an internal schema, not a shared skill contract.
+All tool output is normalized into the [`pr-adapter-contract`](../../../../blocks/project/pr-adapter-contract/SKILL.md) shapes before triage. The conductor delegates mapping to the `normalize-observation` worker; each capability uses the contract shape for its adapter role (`pr-source`, `ci-source`, `static-analysis-source`, `issue-tracker-source`).
 
 ### Envelope
 
-Every normalized capability result has:
+The envelope uses the contract's status vocabulary with two `pr-report` extension fields:
 
 ```yaml
-capability: string        # e.g., pr_metadata, ci, static_analysis, issue_tracker
-status: complete | partial | missing | degraded
-tool: string             # the tool that produced the data, e.g., github_mcp, gh_cli, sonarcloud_api
-source: string           # provider name, e.g., github, github-actions, sonarcloud, jira
+capability: string        # e.g., pr_metadata, ci_build, static_analysis, issue_tracker_scope
+status: complete | partial | needs_input | blocked | skipped
+tool: string              # extension: the tool that produced the data, e.g., github_mcp, gh_cli
+source_type: string       # provider name, e.g., github, sonarcloud, jira
 confidence: high | medium | low
-findings: []             # list of normalized findings
-errors: []               # list of errors, warnings, or degradation notes
-better_tool: string | null  # name of a better tool that was available but unused
+findings: []              # normalized findings in the contract shape
+errors: []                # errors, warnings, or degradation notes
+better_tool: string | null  # extension: better tool that was available but unused
 ```
+
+Status semantics follow the contract. An inconclusive result (silently empty, unverifiable) is reported as `partial` with `low` confidence — never `complete` with empty findings.
 
 ### Normalized findings
 
@@ -69,11 +71,12 @@ better_tool: string | null  # name of a better tool that was available but unuse
 | Changed files | `path`, `status` (added/removed/modified), `patch` (optional), `previous_path` |
 | Reviews | `id`, `author`, `body`, `state` (APPROVED/CHANGES_REQUESTED/COMMENTED), `submitted_at` |
 | Threads / comments | `id`, `thread_id`, `author`, `body`, `path`, `line`, `created_at`, `status` |
+| Conversation comments | `id`, `author`, `body`, `created_at`, `source_type`, `channel`, `url` |
 | CI / build | `name`, `conclusion` (success/failure/skipped/neutral), `required`, `url`, `log_summary` |
 | Static analysis | `rule`, `message`, `severity`, `path`, `line`, `effort`, `status` |
 | Issue tracker scope | `key`, `title`, `description`, `acceptance_criteria`, `status`, `linked_prs` |
 
-Missing or partial fields are handled gracefully. The `confidence` reflects the quality of the mapping.
+Missing or partial fields are handled gracefully. The `confidence` reflects the quality of the mapping. The canonical field definitions live in `pr-adapter-contract/references/INTERFACE.md`; the table above is a summary only.
 
 ## Delta computation
 
@@ -102,12 +105,7 @@ If the scope source is stale or missing, the conductor notes the limitation and 
 
 ## Report template
 
-The report template schema is documented in [CONTEXT_REPORTS.md](CONTEXT_REPORTS.md). This section covers the state and delta logic only.
-
-The report uses the following sections and status markers:
-
-- Sections: PR Summary, Changed Files, CI / Build Status, Static Analysis Findings, Issues Requiring Action, Resolved Since Last Check, Threads with Unclear Status, Addressed by Us — Pending Resolve, Rebuttals Requiring Response, Reviewer Status, Scope Flags, Dismissed / No Action Needed, Data Sources, Task List.
-- Mark each section with `<!-- STATUS: pending -->` initially and `<!-- STATUS: completed -->` when filled.
+The canonical report section list is the skeleton in [CHECKPOINTING.md](CHECKPOINTING.md); the full report schema is in [CONTEXT_REPORTS.md](CONTEXT_REPORTS.md). Each section carries a `<!-- STATUS: pending -->` marker until filled.
 
 ## Chat delivery
 

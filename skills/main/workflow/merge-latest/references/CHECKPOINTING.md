@@ -28,30 +28,12 @@ Checkpointing is always used, but it is especially important when:
 
 ## State file
 
+The state file at `.agents/context/merge-latest/{target}/state.md` follows the [`checkpoint`](../../../../blocks/project/checkpoint/SKILL.md) state schema and is maintained through its `create`, `update`, `resume`, and `validate` operations. `merge-latest` supplies the phases above and:
+
+- **Owner frontmatter**: `target`, `upstream`, `status`.
+- **Owner sections**: Branch Inference, Conflicts, Resolutions, Build.
+
 ```markdown
----
-skill: merge-latest
-version: 1.0.0
-target: OC-4964
-upstream: OC-3626
-status: in-progress
-updated_at: 2026-06-26T08:00:00Z
----
-
-# Merge State: OC-4964
-
-## Phase Checklist
-- [x] 1. Resolve branches
-- [x] 2. Pre-flight checks
-- [x] 3. Reconnaissance
-- [x] 4. Backup
-- [ ] 5. Merge attempt
-- [ ] 6. Conflict classification
-...
-
-## Current Focus
-Phase 5 — attempt merge.
-
 ## Branch Inference
 | Branch | Inferred Base | Confidence | Confirmed By | Date |
 |--------|---------------|------------|--------------|------|
@@ -72,8 +54,7 @@ Phase 5 — attempt merge.
 
 ## Resume rules
 
-1. Read state.
-2. Read report if it exists.
-3. Call `checkpoint-manager` for status summary.
-4. Resume from first pending phase.
-5. Do not restart completed phases unless the user asks.
+1. Invoke `checkpoint/resume` on the state file.
+2. Read the merge report if it exists.
+3. Resume from the first pending phase.
+4. Do not restart completed phases unless the user asks.

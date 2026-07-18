@@ -41,7 +41,7 @@ The initialization phase follows the lazy-loading pattern from the skill standar
 5. Offer a single "Use detected defaults" confirmation step instead of interrogating the user for every config key.
 6. Persist resolved config and continue.
 
-The conductor detects the repo from `git remote`, the issue tracker from the remote domain or existing config, and the preferred PR provider from the same signals. It only asks when there are multiple plausible remotes or when no remote exists.
+The conductor detects the repo from `git remote`, the issue tracker from the remote domain or existing config, and the preferred PR provider from the same signals. When `shared.yaml` declares a shared `issue_tracker` key, `pr-report.tools.issue_tracker.provider` defaults from it instead of asking again. It only asks when there are multiple plausible remotes or when no remote exists.
 
 ## Tool and provider detection
 
@@ -91,51 +91,7 @@ The skill does not write updates back to these legacy paths. Once migrated, `{co
 
 ## Config schema
 
-```yaml
-# Shared keys (resolved by detect-project-context, stored in {config_dir}/shared.yaml)
-agents:
-  context_dir: .agents/context
-  config_dir: .agents/config
-
-# Skill-specific keys (stored in {config_dir}/pr-report.yaml)
-pr-report:
-  tools:
-    pr:
-      provider: auto          # auto | github | manual | direct
-      repo: null            # default owner/repo; null means detect from git remote
-      endpoint: null        # direct API endpoint; only used with provider: direct
-    ci:
-      provider: auto          # auto | github-actions | none | direct
-      endpoint: null
-    static_analysis:
-      provider: auto          # auto | sonarcloud | none | direct
-      endpoint: null
-    issue_tracker:
-      provider: auto          # auto | jira | none | direct
-      endpoint: null
-  tooling:
-    preference: auto          # auto | mcp | cli | manual
-    degraded_mode: ask        # ask | accept | reject
-  scope_mode: lenient         # strict | lenient
-  task_list:
-    enabled: true
-  test_mode: false
-  bots:
-    sonarqube:
-      usernames: [sonarqubecloud]
-      source_type: static_analysis
-      default_severity: required
-    coderabbit:
-      usernames: [coderabbitai, coderabbit[bot]]
-      source_type: automated_reviewer
-      default_severity: recommended
-    tate:
-      usernames: [T876]
-      source_type: hybrid_reviewer
-      default_severity: required_to_resolve
-
-notes: []
-```
+The canonical schema is [`config.yaml`](../config.yaml), which declares every shared and skill-specific key with defaults and descriptions, including the `pr-report.bots` author-classification map. The instance file written to `{config_dir}/pr-report.yaml` follows that schema.
 
 ## Self-updates
 

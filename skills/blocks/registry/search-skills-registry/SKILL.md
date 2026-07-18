@@ -1,7 +1,6 @@
 ---
 name: search-skills-registry
 description: Search configured skill registries for third-party skills that could cover a given need.
-version: 1.0.1
 invocation: model-invoked
 depends:
   - parse-skill-frontmatter

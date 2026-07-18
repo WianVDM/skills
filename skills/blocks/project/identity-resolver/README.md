@@ -48,4 +48,3 @@ identity-resolver/
 
 - Keep parsing rules deterministic and testable.
 - Preserve backward compatibility for existing key formats.
-- Bump the skill version when the envelope or normalization changes.

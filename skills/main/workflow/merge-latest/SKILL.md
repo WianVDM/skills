@@ -1,7 +1,6 @@
 ---
 name: merge-latest
 description: Merge the latest upstream branch into the correct target branch safely. Classifies conflicts as trivial, semantic, or review; resolves only trivial ones automatically; validates the merge with a user-configured command pipeline; and produces a report. Use when the user says '/merge-latest', 'merge latest', 'merge upstream', or wants to sync a feature branch before opening a PR.
-version: 1.1.0
 invocation: user-invoked
 depends:
   - context-reports
@@ -147,7 +146,7 @@ STOP and ask the user if any of these are true:
 
 ## Incremental output and checkpointing
 
-For large merges with many conflicts, the skill checkpoints progress in state. The state file tracks:
+For large merges with many conflicts, the skill checkpoints progress in state via the `checkpoint` block (`create`, `update`, `resume`, `validate`). The owner sections track:
 
 - Target and upstream refs.
 - Inferred base branch history.

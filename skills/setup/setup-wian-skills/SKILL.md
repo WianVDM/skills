@@ -1,7 +1,6 @@
 ---
 name: setup-wian-skills
 description: Set up or update Wian's skills in the workspace. Use the Vercel skills CLI to install or update the WianVDM/skills bundle, then resolve shared configuration once and present the initialization checklist.
-version: 1.1.0
 invocation: user-invoked
 depends:
   - detect-project-context

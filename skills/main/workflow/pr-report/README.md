@@ -27,28 +27,25 @@ pr-report/
 │   └── composition-test.py     # validates conductor wiring without live PRs
 ├── references/                 # disclosed detail
 │   ├── TOOL_SELECTION.md       # capability-to-tool mapping and selection rules
-│   ├── REFERENCE.md            # state spec, report schema, internal normalization model, delta rules
+│   ├── REFERENCE.md            # state spec, report schema, normalization, delta rules
 │   ├── CONFIG_PATTERN.md       # detect/ask/persist/reuse flow
 │   ├── CONTEXT_REPORTS.md      # output schemas and locations
-│   ├── COMPOSITION_TEST.md     # composition test documentation
+│   ├── COMPOSITION_TEST.md     # composition test and pre-flight checklist
 │   ├── DEPENDENCIES.md         # required/recommended skills and tools
 │   ├── COMMENT_TRIAGE.md       # source weighting and challenge rules
 │   ├── CHECKPOINTING.md        # incremental output and resume rules
+│   ├── CHAINLOG.md             # chainlog classification and produced/consumed capabilities
 │   ├── WORKFLOW.md             # detailed step sequence
-│   ├── VALIDATION.md           # pre-flight checklist
 │   ├── EXAMPLES.md             # example reports and states
 │   └── VERSIONING.md           # skill and schema version policy
-└── subagents/                  # worker prompts
-    ├── checkpoint-manager.md
-    ├── context-scout.md
-    ├── issue-synthesizer.md
-    ├── report-writer.md
-    ├── html-renderer.md
-    ├── scope-checker.md
-    ├── normalize-pr.md
-    ├── normalize-ci.md
-    ├── normalize-static-analysis.md
-    └── normalize-issue-tracker.md
+├── subagents/                  # worker prompts
+│   ├── normalize-observation.md
+│   ├── issue-synthesizer.md
+│   ├── report-writer.md
+│   └── html-renderer.md
+└── assets/
+    └── templates/
+        └── report-dashboard.html   # optional HTML dashboard template
 ```
 
 ## Key conventions
@@ -58,7 +55,7 @@ pr-report/
 - All provider-specific data comes from the best available tool for each capability; no tool category is treated as the default.
 - Tool selection is documented in `references/TOOL_SELECTION.md` and recorded in the report's **Data sources** section.
 - The report is written incrementally with `<!-- STATUS: pending/completed -->` markers.
-- The `checkpoint-manager` maintains phase state and current focus after every subagent call and after context compaction.
+- The `checkpoint` block maintains phase state and current focus after every worker call and after context compaction.
 - The skill does not recommend next skills, implement fixes, or resolve threads.
 
 ## Tool dependencies
@@ -75,11 +72,20 @@ The capability matrix and selection hierarchy are in `references/TOOL_SELECTION.
 ## Shared building blocks
 
 - `detect-project-context` — project root, config directory, and context directory detection.
-- `context-reports` — shared context report conventions.
+- `initialize-skill` — first-run config creation and migration.
+- `identity-resolver` — normalized PR/ticket/branch/commit resolution.
+- `tool-discovery` — capability-first tool discovery and ranking.
+- `pr-adapter-contract` — canonical normalized shapes for collected data.
 - `worker-contract` — canonical worker return format.
 - `token-resolver` — secure token resolution.
-- `tool-discovery` — capability-first tool discovery and ranking.
-- `identity-resolver` — normalized PR/ticket/branch/commit resolution.
+- `scope-checker` — in-scope / out-of-scope / ambiguous classification.
+- `scan-context` — related context report discovery.
+- `checkpoint` — phase checklist and resume state.
+- `chainlog` — append-only observation store (producer and consumer).
+- `artifact-freshness` — freshness judgment for prior observations and reports.
+- `context-reports` — shared context report conventions.
+
+Recommended provider adapters (documented fallback recipes): `github-pr-adapter`, `github-actions-adapter`, `sonarcloud-adapter`, `jira-adapter`, `manual-pr-adapter`.
 
 ## Optional context producers
 
@@ -91,4 +97,4 @@ The capability matrix and selection hierarchy are in `references/TOOL_SELECTION.
 - Keep `SKILL.md` focused on intent, scope, workflow, and hard stops. Push deep detail into `references/`.
 - Prefer updating provider-specific tooling or normalization subagents over changing the conductor when the change is provider-specific.
 - Preserve existing user preferences by pre-populating first-run questions with previous defaults.
-- Bump `version` when orchestration or the internal normalization model changes; bump the report/state schema version in `references/VERSIONING.md` when artifact structure changes.
+- Bump the report/state schema version in `references/VERSIONING.md` when artifact structure changes.

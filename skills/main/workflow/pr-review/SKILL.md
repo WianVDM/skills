@@ -1,7 +1,6 @@
 ---
 name: pr-review
 description: Help the user review a pull request by gathering context, checking the branch locally in a worktree, running targeted checks on changed files, drafting a review that does not duplicate existing comments, and posting it only after explicit user approval. If posting confidence is not high, it hands back an exact manual payload.
-version: 1.0.0
 invocation: model-invoked
 depends:
   - detect-project-context
@@ -13,10 +12,16 @@ depends:
   - tool-discovery
   - artifact-freshness
   - chainlog
-  - artifact-freshness
   - git-worktree-inspector
   - scope-checker
   - pr-adapter-contract
+  - verify-branch
+  - github-pr-adapter
+  - github-actions-adapter
+  - jira-adapter
+  - sonarcloud-adapter
+  - manual-pr-adapter
+  - post-github-pr-review
 ---
 
 # pr-review

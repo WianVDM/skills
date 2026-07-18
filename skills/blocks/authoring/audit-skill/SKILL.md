@@ -1,7 +1,6 @@
 ---
 name: audit-skill
 description: Check a skill against the skill fundamentals and report blockers, warnings, and suggestions with a structured remediation plan.
-version: 1.0.1
 invocation: model-invoked
 
 ---

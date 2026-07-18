@@ -44,4 +44,3 @@ artifact-freshness/
 
 - Keep `SKILL.md` focused on intent and dimensions. Push deep detail into `references/INTERFACE.md`.
 - Preserve backward compatibility for existing consumers.
-- Bump the skill version when the interface or dimension rules change.

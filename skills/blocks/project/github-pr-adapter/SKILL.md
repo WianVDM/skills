@@ -1,6 +1,6 @@
 ---
 name: github-pr-adapter
-description: GitHub PR source adapter that fetches PR metadata, changed files, reviews, and inline review threads via the GitHub API and returns the normalized pr-source shape.
+description: GitHub PR source adapter that fetches PR metadata, changed files, reviews, inline review threads, and conversation comments via the GitHub API and returns the normalized pr-source shape.
 invocation: model-invoked
 depends:
   - pr-adapter-contract
@@ -29,6 +29,7 @@ Tool building block. Implements the `pr-source` adapter interface.
 - Fetch changed files with status, additions, and deletions.
 - Fetch top-level reviews.
 - Fetch inline review threads with resolution state and comments.
+- Fetch conversation (issue-level) PR comments, including bot decorations from tools such as SonarCloud, Codecov, or deploy bots.
 - Normalize all data to the `pr-source` adapter shape.
 
 ## Out of scope
@@ -63,6 +64,7 @@ Standard worker return contract with the `pr-source` adapter shape.
 - `fetch_changed_files(pr_id)` → list of files with status, additions, deletions, previous path.
 - `fetch_reviews(pr_id)` → list of top-level reviews with id, reviewer, state, body, submitted_at.
 - `fetch_review_threads(pr_id)` → list of inline threads with path, line, is_resolved, resolution, source_type, comments.
+- `fetch_issue_comments(pr_id)` → list of conversation comments with id, author, body, created_at, source_type, url. Note: GitHub exposes three comment surfaces (issue comments, review comments, reviews); this operation covers the issue-comments surface via `GET /repos/{owner}/{repo}/issues/{pr}/comments`.
 
 ## Completion criteria
 

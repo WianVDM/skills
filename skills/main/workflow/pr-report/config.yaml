@@ -81,9 +81,4 @@ skill:
     default: true
     description: Whether to include a generated task list at the end of the report.
 
-  - key: pr-report.test_mode
-    required: false
-    default: false
-    description: When true, load PR data from local fixtures instead of live tools. Useful for testing and demos.
-
 requires_setup: true

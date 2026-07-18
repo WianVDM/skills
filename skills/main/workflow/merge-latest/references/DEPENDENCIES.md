@@ -12,12 +12,11 @@
 
 ## Required skills
 
-None. The skill delegates to subagents and scripts rather than consuming other skills.
+- `checkpoint` — owns the state file schema and phase-checklist operations for pause/resume.
 
-## Recommended patterns
+## Recommended skills
 
 - `context-reports` — the skill produces structured merge reports that follow the context-reports conventions.
-- `checkpoint` — the skill checkpoints state for resumption, which aligns with the checkpointing pattern.
 
 ## Optional MCP servers
 

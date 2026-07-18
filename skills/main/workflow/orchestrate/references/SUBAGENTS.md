@@ -14,7 +14,8 @@ Orchestrate delegates focused work to subagents. Each subagent has a narrow scop
 | plan-drafter | `subagents/plan-drafter.md` | Draft the implementation plan. |
 | phase-executor | `subagents/phase-executor.md` | Execute one phase of the plan. |
 | implementer | `subagents/implementer.md` | Generic implementation fallback. |
-| checkpoint-manager | `subagents/checkpoint-manager.md` | Maintain checkpoints and state. |
+
+State, checkpoints, and resume summaries are delegated to the `checkpoint` block; no private worker is needed.
 
 ## Return contract
 

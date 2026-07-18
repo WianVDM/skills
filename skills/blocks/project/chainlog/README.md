@@ -46,4 +46,3 @@ chainlog/
 
 - Keep `SKILL.md` focused on intent and the envelope. Push storage details into `references/STORAGE.md`.
 - Preserve backward compatibility for existing chains; new fields should be optional.
-- Bump the skill version when the envelope or operations change.

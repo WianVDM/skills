@@ -62,6 +62,16 @@ Output: array of thread objects with:
 
 - `path`, `line`, `is_resolved`, `resolution`, `source_type`, `comments`
 
+### `fetch_issue_comments(pr_id)`
+
+Fetches conversation (issue-level) PR comments via `GET /repos/{owner}/{repo}/issues/{pr}/comments`. This is a different surface from review comments: SonarCloud decorations, Codecov, and deploy bots post here.
+
+Output: array of comment objects with:
+
+- `id`, `author`, `body`, `created_at`, `source_type`, `url`
+
+`source_type` is `bot` when the author is a GitHub App or ends in `[bot]`, otherwise `human`.
+
 ## Output envelope
 
 The adapter returns the standard `pr-adapter-contract` envelope with `Findings` containing the `pr-source` data.

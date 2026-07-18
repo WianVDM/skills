@@ -1,7 +1,6 @@
 ---
 name: parse-skill-frontmatter
 description: Extract canonical frontmatter fields from a SKILL.md file.
-version: 1.0.1
 invocation: model-invoked
 
 ---

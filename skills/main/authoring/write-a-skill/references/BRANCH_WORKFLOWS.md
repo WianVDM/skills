@@ -100,7 +100,7 @@ Record the user's choice in `{context}/skill-design/{skill-name}-decisions.md`. 
 
 **Why:** a confirmed identity is the contract that prevents scope creep and naming drift.
 
-Produce a frontmatter skeleton: name, description, invocation. Add `version` only if the user requires it or the skill will be shared or consumed. Add harness hints such as `depends` only if the target harness requires them.
+Produce a frontmatter skeleton: name, description, invocation. Add harness hints such as `depends` only if the target harness requires them.
 
 **Completion criterion:** the design draft contains an identity section and the user has confirmed it.
 

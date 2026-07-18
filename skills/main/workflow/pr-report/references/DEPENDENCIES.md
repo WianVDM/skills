@@ -1,60 +1,58 @@
 # Dependencies
 
+The dependency taxonomy follows `docs/skill-standards/fundamentals/architecture/dependencies-and-bundling.md`: **required** (the skill cannot function without it), **recommended** (improves output; the skill runs degraded without it), **optional** (side branches or advanced features).
+
 ## Required skills
 
 - `detect-project-context` — locates the project root, config directory, and context directory.
 - `initialize-skill` — creates, migrates, and loads `{config_dir}/pr-report.yaml`.
-- `artifact-freshness` — checks whether prior reports and evidence entries are fresh before reuse.
-- `context-reports` — provides the canonical vocabulary and conventions for context reports.
-- `pr-adapter-contract` — normalized adapter envelope and operation shapes for PR, CI, static-analysis, issue-tracker, notification, and context-report adapters.
-- `worker-contract` — provides the canonical subagent return contract.
-- `token-resolver` — resolves tokens from env vars, MCP config, or user input without leaking secrets.
-- `tool-discovery` — discovers and ranks available tools for each capability.
 - `identity-resolver` — resolves a PR number, ticket key, branch, or commit from user input.
+- `tool-discovery` — discovers and ranks available tools for each capability.
+- `pr-adapter-contract` — canonical normalized shapes and envelope that `normalize-observation` maps tool output into.
+- `worker-contract` — canonical subagent return contract.
+- `token-resolver` — resolves tokens from env vars, MCP config, or user input without leaking secrets.
+- `scope-checker` — classifies findings as in-scope, out-of-scope, or ambiguous.
+- `scan-context` — discovers related context reports by ticket key, branch, or type.
+- `checkpoint` — owns the state file schema and phase checklist operations.
+- `chainlog` — append-only observation store; `pr-report` is a producer and consumer (see [CHAINLOG.md](CHAINLOG.md)).
+- `artifact-freshness` — judges whether prior observations and reports are fresh enough to reuse.
+- `context-reports` — canonical vocabulary and envelope for the produced report.
 
-## Internal subagents
+## Recommended skills
 
-The following workers are defined inside `pr-report/subagents/` and are not separate skills:
+Provider adapters. The conductor prefers the best available tool per capability, which may be an MCP server, CLI, or direct API; these adapters are the documented fallback recipes and normalized-shape producers for their providers.
 
-- `checkpoint-manager` — maintains phase checklist and resume state.
-- `context-scout` — scans context reports for related ticket/issue keys.
+- `github-pr-adapter` — PR source for GitHub.
+- `github-actions-adapter` — CI source for GitHub Actions.
+- `sonarcloud-adapter` — static-analysis source for SonarCloud.
+- `jira-adapter` — issue-tracker source for Jira.
+- `manual-pr-adapter` — manual PR source fallback.
+
+Community or future providers (GitLab, Bitbucket, Azure DevOps, SonarQube Server, CodeQL, Semgrep, Linear, GitHub Issues) may be added as direct tools or separate skills when they are needed by more than one consumer.
+
+## Optional skills
+
+- `debrief` — produces ticket-scope context reports consumed as scope input.
+- `baseline` — produces pre-change UI or system-state evidence.
+
+## Internal workers
+
+Defined inside `pr-report/subagents/`; not separate skills:
+
+- `normalize-observation` — maps raw tool output into the `pr-adapter-contract` shapes.
 - `issue-synthesizer` — groups, challenges, and weights feedback into an actionable issue board.
-- `scope-checker` — compares feedback against ticket scope or PR intent.
 - `report-writer` — fills pending report sections.
 - `html-renderer` — renders the optional HTML dashboard.
-- `normalize-pr` — normalizes PR metadata, changed files, reviews, and threads.
-- `normalize-ci` — normalizes check runs and log summaries.
-- `normalize-static-analysis` — normalizes code-quality findings.
-- `normalize-issue-tracker` — normalizes ticket scope and acceptance criteria.
-
-## Tool providers
-
-The conductor discovers the best available tool for each capability. Out-of-box providers include:
-
-- **PR source** — GitHub (via MCP or `gh` CLI), manual fallback, or the `github-pr-adapter` / `manual-pr-adapter` building blocks.
-- **CI / build** — GitHub Actions (via MCP or `gh` CLI) or the `github-actions-adapter` building block.
-- **Static analysis** — SonarCloud (via MCP or API) or the `sonarcloud-adapter` building block.
-- **Issue tracker** — Jira (via MCP or API) or the `jira-adapter` building block.
-
-Repository adapter skills:
-
-- `github-pr-adapter`
-- `github-actions-adapter`
-- `sonarcloud-adapter`
-- `jira-adapter`
-- `manual-pr-adapter`
-
-Community or future providers (GitLab, Bitbucket, Azure DevOps, SonarQube, CodeQL, Semgrep, Linear, GitHub Issues) may be added as direct tools or separate skills when they are needed by more than one consumer.
 
 ## Consumed context reports
 
-The skill scans `{context_dir}/` for reports matching the ticket or PR key. Relevant reports include, but are not limited to:
+The skill consumes reports matching the ticket or PR key, discovered via `scan-context`. Relevant reports include, but are not limited to:
 
 - `{context_dir}/debrief/{key}.md` — ticket scope, acceptance criteria, assumptions.
 - `{context_dir}/baseline/{key}.md` — UI evidence or pre-change state.
 - Any `{context_dir}/{type}/{key}.md` report whose frontmatter references the ticket or PR.
 
-Any matching report type may be consumed if it adds useful context. The skill handles absence gracefully.
+Reports under the `pr-report` subdirectory are excluded to avoid circular self-reference. The skill handles absence gracefully.
 
 ## Required tools and capabilities
 
@@ -73,13 +71,4 @@ No environment variables are hardcoded. Token references are resolved through th
 - `SONAR_TOKEN` / `SONARQUBE_TOKEN` / `SONARCLOUD_TOKEN`
 - `JIRA_TOKEN` / `JIRA_API_TOKEN`
 
-The skill references these only by name in config; it never writes secret values to report or state files.
-
-## Optional enhancements
-
-Other skills may produce useful context reports, but none are required:
-
-- `debrief` — produces ticket-scope context.
-- `baseline` — produces pre-change UI or system-state evidence.
-
-These are treated as optional enhancements, not dependencies.
+The skill references these only by name in config; it never writes secret values to report, state, or chainlog files.

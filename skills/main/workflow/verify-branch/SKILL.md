@@ -2,10 +2,8 @@
 name: verify-branch
 description: Compare the current branch to the repository's default branch and verify that changed code will pass CI gates. Acts as a gatekeeper — it runs configured tests, audits, and standards checks, then delivers an unfiltered PASS or FAIL verdict. Reports only; does not fix. Use when the user says 'verify branch', 'check my PR', 'are there tests for this', or before completing implementation.
 invocation: user-invoked
-metadata:
-  tags: [workflow, building-block, git, ci, quality]
-  author: Wian van der Merwe
-  version: "1.0.0"
+depends:
+  - checkpoint
 consumes:
   - any report in `.agents/context/` whose filename or frontmatter matches the current branch or ticket key
 requires:
@@ -47,11 +45,11 @@ Conductor skill. It coordinates focused workers that run verification gates and 
    - `standards` → `standards-gate` for project standards.
    - `custom` → `custom-gate` for any adapter-backed gate.
    - Legacy `static-analysis` gates with `sub_gates` may still be delegated to `static-analysis-gate` for backwards compatibility.
-   - After each gate returns, call the `checkpoint-manager` subagent to record progress, update the state file, and determine the next pending gate.
+   - After each gate returns, invoke `checkpoint/update` to record progress, update the state file, and determine the next pending gate.
 5. **Aggregate** — collect gate results, evaluate them against the configured `verdict_policy`, and compute the overall PASS or FAIL verdict. The default policy requires all required gates to pass; projects can configure alternative policies.
-6. **Report** — delegate to the `report-writer` subagent to write the verification report, then call `checkpoint-manager` one final time to mark the run complete.
+6. **Report** — delegate to the `report-writer` subagent to write the verification report, then invoke `checkpoint/update` one final time to mark the run complete.
 
-If the skill is resumed after an interruption, read the existing state file and call `checkpoint-manager` to recover completed gates and resume from the first pending gate. Do not re-run completed gates unless the git state has changed or the user explicitly asks.
+If the skill is resumed after an interruption, read the existing state file and invoke `checkpoint/resume` to recover completed gates and resume from the first pending gate. Do not re-run completed gates unless the git state has changed or the user explicitly asks.
 
 For the detailed gate procedures, adapter contract, and config schema, see the references below.
 

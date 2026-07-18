@@ -48,8 +48,7 @@ merge-latest/
     ├── conflict-classifier.md      # classify conflicts
     ├── conflict-investigator.md    # deep conflict investigation
     ├── validation-runner.md        # run the validation command pipeline
-    ├── report-writer.md            # compile report
-    └── checkpoint-manager.md       # track state and resume
+    └── report-writer.md            # compile report
 ```
 
 ## Key conventions

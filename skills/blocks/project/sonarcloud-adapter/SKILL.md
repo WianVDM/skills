@@ -1,7 +1,6 @@
 ---
 name: sonarcloud-adapter
 description: Static-analysis source adapter that fetches SonarCloud findings and returns the normalized static-analysis shape.
-version: 1.0.0
 invocation: model-invoked
 depends:
   - pr-adapter-contract
@@ -70,6 +69,15 @@ Standard worker return contract with the `static-analysis-source` adapter shape.
 - Map `source_type` to `static_analysis` for every finding.
 - Include the SonarCloud issue URL when available.
 - Distinguish `complete`, `partial`, `needs_input`, `blocked`, and `skipped` clearly.
+
+## Provider limitations
+
+SonarCloud behaviors that produce false negatives if unhandled:
+
+- **PR analyses are not branches.** Querying issues by `branch` for a pull request analysis is inconclusive. Query with `pullRequest=<n>` instead. An empty branch-query result does not mean zero findings.
+- **Project keys are case-sensitive and fail silently.** A wrong-cased `project_key` returns an empty result with no error. Verify the key casing (for example, against the SonarCloud project URL) before trusting an empty result.
+- **A passed Quality Gate can still carry new issues.** Gate conditions may not block on lower-severity findings. Never use gate status as a proxy for findings; always fetch the findings themselves.
+- **Empty result handling.** An empty result where the analysis's existence is unverified is inconclusive: return `partial` with `low` confidence and an explanatory note — never `complete` with zero findings. If the project key itself is unverified, return `blocked`.
 
 ## Dependencies
 

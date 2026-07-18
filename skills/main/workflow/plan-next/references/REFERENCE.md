@@ -78,7 +78,7 @@ For each skill, build a capability profile. On first encounter, read:
 - `references/CHECKPOINTING.md` — how heavy/long it is
 - `references/VALIDATION.md` — when it is considered complete
 
-On subsequent encounters, use a curated subset to refresh without re-reading everything. Re-read the full references periodically (e.g., after a skill version change or when the evaluator is uncertain).
+On subsequent encounters, use a curated subset to refresh without re-reading everything. Re-read the full references periodically (e.g., after a skill changes or when the evaluator is uncertain).
 
 The profile should capture:
 

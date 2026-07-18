@@ -1,7 +1,6 @@
 ---
 name: artifact-freshness
 description: Check whether a context report or chainlog entry is fresh enough to reuse. Evaluates branch, commit, source timestamp, schema version, and age dimensions and returns a structured reason for any staleness.
-version: 1.0.0
 invocation: model-invoked
 depends:
   - worker-contract

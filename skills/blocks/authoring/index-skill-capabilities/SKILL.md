@@ -1,7 +1,6 @@
 ---
 name: index-skill-capabilities
 description: Generate a structured, deterministic capability index from skill files so other skills can discover, rank, and compare capabilities across the skill catalog.
-version: 1.0.0
 invocation: model-invoked
 type: building-block
 depends:

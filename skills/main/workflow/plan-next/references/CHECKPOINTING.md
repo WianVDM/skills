@@ -41,30 +41,12 @@ updated_at: 2026-06-26T08:00:00Z
 
 ## State file
 
+The state file at `.agents/context/plan-next/{key}/state.md` follows the [`checkpoint`](../../../../blocks/project/checkpoint/SKILL.md) state schema and is maintained through its `create`, `update`, `resume`, and `validate` operations. `plan-next` supplies the phases above and:
+
+- **Owner frontmatter**: `status`, `revision`.
+- **Owner sections**: Revision History, Skills Evaluated.
+
 ```markdown
----
-skill: plan-next
-version: 1.0.0
-key: OC-1234
-status: awaiting-confirmation
-revision: 2
-updated_at: 2026-06-26T08:00:00Z
----
-
-# Plan State: OC-1234
-
-## Phase Checklist
-- [x] 1. Ingest context
-- [x] 2. Discover skills
-- [x] 3. Profile skills
-- [x] 4. Evaluate skills
-- [x] 5. Build phased plan
-- [ ] 6. Present and confirm
-- [ ] 7. Finalize
-
-## Current Focus
-Phase 6 — present plan to user and collect feedback.
-
 ## Revision History
 | # | Timestamp | User Feedback | Main Change |
 |---|-----------|---------------|-------------|
@@ -78,11 +60,10 @@ Phase 6 — present plan to user and collect feedback.
 
 ## Resume rules
 
-1. Read state.
-2. Read draft plan.
-3. Call `checkpoint-manager` for status summary.
-4. Resume from first pending phase.
-5. Do not restart completed phases unless user asks for a full replan.
+1. Invoke `checkpoint/resume` on the state file.
+2. Read the draft plan.
+3. Resume from the first pending phase.
+4. Do not restart completed phases unless the user asks for a full replan.
 
 ## Finalization
 

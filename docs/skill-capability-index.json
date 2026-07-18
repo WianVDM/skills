@@ -1,9 +1,9 @@
 {
   "version": "1.0.0",
-  "generated_at": "2026-07-15T14:04:59.553645+00:00",
+  "generated_at": "2026-07-18T00:02:57.794851+00:00",
   "source_check": {
-    "skills_json_hash": "sha256:2044a1771cf0a2ac1999901c3084e6cff2552f36ecc03315a73eb9b615d496dc",
-    "latest_skill_mtime": "2026-07-15T14:04:55.368485+00:00"
+    "skills_json_hash": "sha256:ce5d4271b83ffb60bd2297e5cd19c4f5efa30159b1e52b294e5a5fdd7ea91e42",
+    "latest_skill_mtime": "2026-07-18T00:02:21.415867+00:00"
   },
   "skills": [
     {
@@ -746,15 +746,6 @@
           ]
         },
         {
-          "id": "merge-latest:subagent-checkpoint-manager",
-          "name": "Checkpoint Manager",
-          "category": "state-management",
-          "description": "Subagent role for merge-latest.",
-          "sources": [
-            "subagents/checkpoint-manager.md"
-          ]
-        },
-        {
           "id": "merge-latest:subagent-conflict-classifier",
           "name": "Conflict Classifier",
           "category": "uncategorized",
@@ -878,7 +869,6 @@
       ],
       "subagents": [
         "branch-researcher.md",
-        "checkpoint-manager.md",
         "conflict-classifier.md",
         "conflict-investigator.md",
         "latest-fetcher.md",
@@ -920,15 +910,6 @@
           "description": "Stress-test understanding before allowing the conductor to exit the loop and draft a plan.",
           "sources": [
             "subagents/challenge-gate.md"
-          ]
-        },
-        {
-          "id": "orchestrate:subagent-checkpoint-manager",
-          "name": "Checkpoint Manager",
-          "category": "state-management",
-          "description": "Maintain the orchestration state, checkpoints, and resume summaries.",
-          "sources": [
-            "subagents/checkpoint-manager.md"
           ]
         },
         {
@@ -997,6 +978,8 @@
       ],
       "references": [
         "baseline",
+        "checkpoint",
+        "context-reports",
         "debrief",
         "diagnose",
         "grill-me",
@@ -1009,7 +992,6 @@
       ],
       "subagents": [
         "challenge-gate.md",
-        "checkpoint-manager.md",
         "confidence-assessor.md",
         "context-loader.md",
         "implementer.md",
@@ -1024,7 +1006,10 @@
         "Context Loader"
       ],
       "consumes": [],
-      "depends": []
+      "depends": [
+        "checkpoint",
+        "context-reports"
+      ]
     },
     {
       "name": "plan-next",
@@ -1034,15 +1019,6 @@
       "invocation": "user-invoked",
       "description": "Analyze context, discover available skills, build deep skill capability profiles, and create a phased action plan with explicit dependencies. Evaluates skills not only on direct relevance but on how they ensure the plan is correct and prevent missed complexity. Interactively refines with the user before finalizing. Use when the user wants to know what to do next, which skills to run, how to address findings, or says 'plan-next', 'what should I do', 'recommend skills', or 'create a plan'.",
       "capabilities": [
-        {
-          "id": "plan-next:subagent-checkpoint-manager",
-          "name": "Checkpoint Manager",
-          "category": "state-management",
-          "description": "Subagent role for plan-next.",
-          "sources": [
-            "subagents/checkpoint-manager.md"
-          ]
-        },
         {
           "id": "plan-next:subagent-context-auditor",
           "name": "Context Auditor",
@@ -1091,6 +1067,7 @@
       ],
       "references": [
         "baseline",
+        "checkpoint",
         "debrief",
         "diagnose",
         "grill-with-docs",
@@ -1100,7 +1077,6 @@
         "verify-branch"
       ],
       "subagents": [
-        "checkpoint-manager.md",
         "context-auditor.md",
         "plan-builder.md",
         "skill-discovery-agent.md",
@@ -1111,7 +1087,9 @@
       "config_keys": [],
       "produces": [],
       "consumes": [],
-      "depends": []
+      "depends": [
+        "checkpoint"
+      ]
     },
     {
       "name": "pr-report",
@@ -1143,7 +1121,7 @@
           "id": "pr-report:discover-tools",
           "name": "Discover tools",
           "category": "tool-discovery",
-          "description": "Discover tools \u2014 for each load-bearing capability (PR source, top-level reviews, inline threads, changed files, CI/build, static analysis, issue tracker), invoke...",
+          "description": "Discover tools \u2014 for each load-bearing capability (PR source, top-level reviews, inline threads, conversation comments, changed files, CI/build, static analysis, issue tracker), invoke...",
           "sources": [
             "SKILL.md:Workflow"
           ]
@@ -1152,7 +1130,7 @@
           "id": "pr-report:collect",
           "name": "Collect",
           "category": "tool-discovery",
-          "description": "Collect \u2014 invoke the preferred tool for each capability.",
+          "description": "Collect \u2014 invoke the preferred tool for each capability, normalize the result into the pr-adapter-contract shape, and append it to chainlog as an observation.",
           "sources": [
             "SKILL.md:Workflow"
           ]
@@ -1176,24 +1154,6 @@
           ]
         },
         {
-          "id": "pr-report:subagent-checkpoint-manager",
-          "name": "Checkpoint Manager",
-          "category": "state-management",
-          "description": "Subagent role for pr-report.",
-          "sources": [
-            "subagents/checkpoint-manager.md"
-          ]
-        },
-        {
-          "id": "pr-report:subagent-context-scout",
-          "name": "Context Scout",
-          "category": "uncategorized",
-          "description": "Subagent role for pr-report.",
-          "sources": [
-            "subagents/context-scout.md"
-          ]
-        },
-        {
           "id": "pr-report:subagent-html-renderer",
           "name": "Html Renderer",
           "category": "uncategorized",
@@ -1212,39 +1172,12 @@
           ]
         },
         {
-          "id": "pr-report:subagent-normalize-ci",
-          "name": "Normalize Ci",
+          "id": "pr-report:subagent-normalize-observation",
+          "name": "Normalize Observation",
           "category": "data-normalization",
           "description": "Subagent role for pr-report.",
           "sources": [
-            "subagents/normalize-ci.md"
-          ]
-        },
-        {
-          "id": "pr-report:subagent-normalize-issue-tracker",
-          "name": "Normalize Issue Tracker",
-          "category": "data-collection",
-          "description": "Subagent role for pr-report.",
-          "sources": [
-            "subagents/normalize-issue-tracker.md"
-          ]
-        },
-        {
-          "id": "pr-report:subagent-normalize-pr",
-          "name": "Normalize Pr",
-          "category": "data-normalization",
-          "description": "Subagent role for pr-report.",
-          "sources": [
-            "subagents/normalize-pr.md"
-          ]
-        },
-        {
-          "id": "pr-report:subagent-normalize-static-analysis",
-          "name": "Normalize Static Analysis",
-          "category": "data-normalization",
-          "description": "Subagent role for pr-report.",
-          "sources": [
-            "subagents/normalize-static-analysis.md"
+            "subagents/normalize-observation.md"
           ]
         },
         {
@@ -1254,15 +1187,6 @@
           "description": "Subagent role for pr-report.",
           "sources": [
             "subagents/report-writer.md"
-          ]
-        },
-        {
-          "id": "pr-report:subagent-scope-checker",
-          "name": "Scope Checker",
-          "category": "scope-checking",
-          "description": "Subagent role for pr-report.",
-          "sources": [
-            "subagents/scope-checker.md"
           ]
         },
         {
@@ -1279,6 +1203,8 @@
         "artifact-freshness",
         "audit-skill",
         "baseline",
+        "chainlog",
+        "checkpoint",
         "context-reports",
         "debrief",
         "detect-project-context",
@@ -1290,26 +1216,20 @@
         "jira-adapter",
         "manual-pr-adapter",
         "pr-adapter-contract",
-        "review-skill",
+        "scan-context",
         "scope-checker",
         "sonarcloud-adapter",
         "token-resolver",
         "tool-discovery",
+        "triage",
         "validate-skill-frontmatter",
-        "worker-contract",
-        "write-a-skill"
+        "worker-contract"
       ],
       "subagents": [
-        "checkpoint-manager.md",
-        "context-scout.md",
         "html-renderer.md",
         "issue-synthesizer.md",
-        "normalize-ci.md",
-        "normalize-issue-tracker.md",
-        "normalize-pr.md",
-        "normalize-static-analysis.md",
-        "report-writer.md",
-        "scope-checker.md"
+        "normalize-observation.md",
+        "report-writer.md"
       ],
       "scripts": [
         "composition-test.py"
@@ -1328,21 +1248,28 @@
         "pr-report.tooling.degraded_mode",
         "pr-report.bots",
         "pr-report.scope_mode",
-        "pr-report.task_list.enabled",
-        "pr-report.test_mode"
+        "pr-report.task_list.enabled"
       ],
       "produces": [
         "Report"
       ],
-      "consumes": [
-        "data-collection"
-      ],
+      "consumes": [],
       "depends": [
         "artifact-freshness",
+        "chainlog",
+        "checkpoint",
         "context-reports",
         "detect-project-context",
+        "github-actions-adapter",
+        "github-pr-adapter",
         "identity-resolver",
         "initialize-skill",
+        "jira-adapter",
+        "manual-pr-adapter",
+        "pr-adapter-contract",
+        "scan-context",
+        "scope-checker",
+        "sonarcloud-adapter",
         "token-resolver",
         "tool-discovery",
         "worker-contract"
@@ -1363,15 +1290,6 @@
           "description": "Subagent role for verify-branch.",
           "sources": [
             "subagents/bootstrap.md"
-          ]
-        },
-        {
-          "id": "verify-branch:subagent-checkpoint-manager",
-          "name": "Role",
-          "category": "identity-resolution",
-          "description": "Subagent role for verify-branch.",
-          "sources": [
-            "subagents/checkpoint-manager.md"
           ]
         },
         {
@@ -1873,12 +1791,12 @@
       "references": [
         "artifact-freshness",
         "baseline",
+        "checkpoint",
         "debrief",
         "write-a-skill"
       ],
       "subagents": [
         "bootstrap.md",
-        "checkpoint-manager.md",
         "context-scout.md",
         "custom-gate.md",
         "report-writer.md",
@@ -1942,7 +1860,9 @@
       "consumes": [
         "context-scanning"
       ],
-      "depends": []
+      "depends": [
+        "checkpoint"
+      ]
     },
     {
       "name": "to-issues",
@@ -2037,12 +1957,30 @@
           ]
         },
         {
+          "id": "baseline:script-check-target-reachable-cpython-314",
+          "name": "Run check target reachable.cpython 314",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: check-target-reachable.cpython-314.pyc",
+          "sources": [
+            "scripts/check-target-reachable.cpython-314.pyc"
+          ]
+        },
+        {
           "id": "baseline:script-check-target-reachable",
           "name": "Run check target reachable",
           "category": "uncategorized",
           "description": "Deterministic helper script: check-target-reachable.py",
           "sources": [
             "scripts/check-target-reachable.py"
+          ]
+        },
+        {
+          "id": "baseline:script-detect-baseline-method-cpython-314",
+          "name": "Run detect baseline method.cpython 314",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: detect-baseline-method.cpython-314.pyc",
+          "sources": [
+            "scripts/detect-baseline-method.cpython-314.pyc"
           ]
         },
         {
@@ -2055,6 +1993,15 @@
           ]
         },
         {
+          "id": "baseline:script-detect-project-type-cpython-314",
+          "name": "Run detect project type.cpython 314",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: detect-project-type.cpython-314.pyc",
+          "sources": [
+            "scripts/detect-project-type.cpython-314.pyc"
+          ]
+        },
+        {
           "id": "baseline:script-detect-project-type",
           "name": "Run detect project type",
           "category": "uncategorized",
@@ -2064,12 +2011,30 @@
           ]
         },
         {
+          "id": "baseline:script-resolve-git-scope-cpython-314",
+          "name": "Run resolve git scope.cpython 314",
+          "category": "identity-resolution",
+          "description": "Deterministic helper script: resolve-git-scope.cpython-314.pyc",
+          "sources": [
+            "scripts/resolve-git-scope.cpython-314.pyc"
+          ]
+        },
+        {
           "id": "baseline:script-resolve-git-scope",
           "name": "Run resolve git scope",
           "category": "identity-resolution",
           "description": "Deterministic helper script: resolve-git-scope.py",
           "sources": [
             "scripts/resolve-git-scope.py"
+          ]
+        },
+        {
+          "id": "baseline:script-scan-related-context-cpython-314",
+          "name": "Run scan related context.cpython 314",
+          "category": "context-scanning",
+          "description": "Deterministic helper script: scan-related-context.cpython-314.pyc",
+          "sources": [
+            "scripts/scan-related-context.cpython-314.pyc"
           ]
         },
         {
@@ -2093,10 +2058,15 @@
         "scope-resolver.md"
       ],
       "scripts": [
+        "check-target-reachable.cpython-314.pyc",
         "check-target-reachable.py",
+        "detect-baseline-method.cpython-314.pyc",
         "detect-baseline-method.py",
+        "detect-project-type.cpython-314.pyc",
         "detect-project-type.py",
+        "resolve-git-scope.cpython-314.pyc",
         "resolve-git-scope.py",
+        "scan-related-context.cpython-314.pyc",
         "scan-related-context.py"
       ],
       "config_keys": [],
@@ -2573,6 +2543,15 @@
           ]
         },
         {
+          "id": "audit-skill:script-audit-skill-cpython-314",
+          "name": "Run audit skill.cpython 314",
+          "category": "validation",
+          "description": "Deterministic helper script: audit-skill.cpython-314.pyc",
+          "sources": [
+            "scripts/audit-skill.cpython-314.pyc"
+          ]
+        },
+        {
           "id": "audit-skill:script-audit-skill",
           "name": "Run audit skill",
           "category": "validation",
@@ -2586,11 +2565,11 @@
         "chainlog",
         "detect-skill-overlap",
         "run-trigger-evals",
-        "validate-skill-frontmatter",
-        "write-a-skill"
+        "validate-skill-frontmatter"
       ],
       "subagents": [],
       "scripts": [
+        "audit-skill.cpython-314.pyc",
         "audit-skill.py"
       ],
       "config_keys": [],
@@ -3038,12 +3017,30 @@
           ]
         },
         {
+          "id": "index-skill-capabilities:script-index-skill-capabilities-cpython-314",
+          "name": "Run index skill capabilities.cpython 314",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: index-skill-capabilities.cpython-314.pyc",
+          "sources": [
+            "scripts/index-skill-capabilities.cpython-314.pyc"
+          ]
+        },
+        {
           "id": "index-skill-capabilities:script-index-skill-capabilities",
           "name": "Run index skill capabilities",
           "category": "uncategorized",
           "description": "Deterministic helper script: index-skill-capabilities.py",
           "sources": [
             "scripts/index-skill-capabilities.py"
+          ]
+        },
+        {
+          "id": "index-skill-capabilities:script-test-index-skill-capabilities-cpython-314-pytest-9-0",
+          "name": "Run test_index_skill_capabilities.cpython 314 pytest 9.0.3",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: testindexskillcapabilities.cpython-314-pytest-9.0.3.pyc",
+          "sources": [
+            "scripts/test_index_skill_capabilities.cpython-314-pytest-9.0.3.pyc"
           ]
         },
         {
@@ -3074,7 +3071,9 @@
       ],
       "subagents": [],
       "scripts": [
+        "index-skill-capabilities.cpython-314.pyc",
         "index-skill-capabilities.py",
+        "test_index_skill_capabilities.cpython-314-pytest-9.0.3.pyc",
         "test_index_skill_capabilities.py"
       ],
       "config_keys": [],
@@ -3141,6 +3140,15 @@
           ]
         },
         {
+          "id": "parse-skill-frontmatter:script-parse-skill-frontmatter-cpython-314",
+          "name": "Run parse skill frontmatter.cpython 314",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: parse-skill-frontmatter.cpython-314.pyc",
+          "sources": [
+            "scripts/parse-skill-frontmatter.cpython-314.pyc"
+          ]
+        },
+        {
           "id": "parse-skill-frontmatter:script-parse-skill-frontmatter",
           "name": "Run parse skill frontmatter",
           "category": "uncategorized",
@@ -3153,6 +3161,7 @@
       "references": [],
       "subagents": [],
       "scripts": [
+        "parse-skill-frontmatter.cpython-314.pyc",
         "parse-skill-frontmatter.py"
       ],
       "config_keys": [],
@@ -3633,8 +3642,7 @@
       "references": [
         "chainlog",
         "context-reports",
-        "worker-contract",
-        "write-a-skill"
+        "worker-contract"
       ],
       "subagents": [],
       "scripts": [
@@ -3742,6 +3750,15 @@
           ]
         },
         {
+          "id": "challenge-assumptions:script-challenge-assumptions-cpython-314",
+          "name": "Run challenge assumptions.cpython 314",
+          "category": "assumption-management",
+          "description": "Deterministic helper script: challenge-assumptions.cpython-314.pyc",
+          "sources": [
+            "scripts/challenge-assumptions.cpython-314.pyc"
+          ]
+        },
+        {
           "id": "challenge-assumptions:script-challenge-assumptions",
           "name": "Run challenge assumptions",
           "category": "assumption-management",
@@ -3758,6 +3775,7 @@
       ],
       "subagents": [],
       "scripts": [
+        "challenge-assumptions.cpython-314.pyc",
         "challenge-assumptions.py"
       ],
       "config_keys": [],
@@ -3855,12 +3873,30 @@
           ]
         },
         {
+          "id": "checkpoint:script-checkpoint-cpython-314",
+          "name": "Run checkpoint.cpython 314",
+          "category": "state-management",
+          "description": "Deterministic helper script: checkpoint.cpython-314.pyc",
+          "sources": [
+            "scripts/checkpoint.cpython-314.pyc"
+          ]
+        },
+        {
           "id": "checkpoint:script-checkpoint",
           "name": "Run checkpoint",
           "category": "state-management",
           "description": "Deterministic helper script: checkpoint.py",
           "sources": [
             "scripts/checkpoint.py"
+          ]
+        },
+        {
+          "id": "checkpoint:script-frontmatter-cpython-314",
+          "name": "Run frontmatter.cpython 314",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: frontmatter.cpython-314.pyc",
+          "sources": [
+            "scripts/frontmatter.cpython-314.pyc"
           ]
         },
         {
@@ -3871,6 +3907,24 @@
           "sources": [
             "scripts/frontmatter.py"
           ]
+        },
+        {
+          "id": "checkpoint:script-test-checkpoint-cpython-314-pytest-9-0-3",
+          "name": "Run test_checkpoint.cpython 314 pytest 9.0.3",
+          "category": "state-management",
+          "description": "Deterministic helper script: testcheckpoint.cpython-314-pytest-9.0.3.pyc",
+          "sources": [
+            "scripts/test_checkpoint.cpython-314-pytest-9.0.3.pyc"
+          ]
+        },
+        {
+          "id": "checkpoint:script-test-checkpoint",
+          "name": "Run test_checkpoint",
+          "category": "state-management",
+          "description": "Deterministic helper script: testcheckpoint.py",
+          "sources": [
+            "scripts/test_checkpoint.py"
+          ]
         }
       ],
       "references": [
@@ -3880,8 +3934,12 @@
       ],
       "subagents": [],
       "scripts": [
+        "checkpoint.cpython-314.pyc",
         "checkpoint.py",
-        "frontmatter.py"
+        "frontmatter.cpython-314.pyc",
+        "frontmatter.py",
+        "test_checkpoint.cpython-314-pytest-9.0.3.pyc",
+        "test_checkpoint.py"
       ],
       "config_keys": [],
       "produces": [],
@@ -3926,27 +3984,19 @@
           ]
         },
         {
-          "id": "context-reports:define-freshness-and-staleness-rules",
-          "name": "Define freshness and staleness rules",
+          "id": "context-reports:define-freshness-and-missing-report-handling",
+          "name": "Define freshness and missing-report handling",
           "category": "freshness-checking",
-          "description": "Define freshness and staleness rules.",
-          "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "context-reports:define-how-to-handle-missing-required-and-optional-reports",
-          "name": "Define how to handle missing required and optional reports",
-          "category": "uncategorized",
-          "description": "Define how to handle missing required and optional reports.",
+          "description": "Define freshness and missing-report handling.",
           "sources": [
             "SKILL.md:In scope"
           ]
         }
       ],
       "references": [
-        "baseline",
-        "debrief"
+        "artifact-freshness",
+        "chainlog",
+        "detect-project-context"
       ],
       "subagents": [],
       "scripts": [],
@@ -3965,42 +4015,42 @@
       "origin": "bundle",
       "type": "building-block",
       "invocation": "model-invoked",
-      "description": "Detect the project root, harness, skill directories, config directories, and conventions for any workspace.",
+      "description": "Detect the project root, skill/context/config directories, and the skill-standards path for any workspace.",
       "capabilities": [
         {
-          "id": "detect-project-context:search-upward-from-a-starting-directory-for-a-known-project",
-          "name": "Search upward from a starting directory for a known project marker directory",
+          "id": "detect-project-context:upward-marker-search",
+          "name": "Upward marker search (",
           "category": "uncategorized",
-          "description": "Search upward from a starting directory for a known project marker directory.",
+          "description": "Upward marker search (.agents, .pi, harness markers), bounded by the VCS root.",
           "sources": [
             "SKILL.md:In scope"
           ]
         },
         {
-          "id": "detect-project-context:recommend-skills-context-and-config-directory-candidates",
-          "name": "Recommend skills, context, and config directory candidates",
+          "id": "detect-project-context:candidate-ranking-existing-directories-win",
+          "name": "Candidate ranking; existing directories win",
+          "category": "uncategorized",
+          "description": "Candidate ranking; existing directories win.",
+          "sources": [
+            "SKILL.md:In scope"
+          ]
+        },
+        {
+          "id": "detect-project-context:confidence-reporting-with-a-note-when-the-answer-is-weakened",
+          "name": "Confidence reporting, with a note when the answer is weakened",
+          "category": "uncategorized",
+          "description": "Confidence reporting, with a note when the answer is weakened.",
+          "sources": [
+            "SKILL.md:In scope"
+          ]
+        },
+        {
+          "id": "detect-project-context:script-detect-project-context-cpython-314",
+          "name": "Run detect project context.cpython 314",
           "category": "config-initialization",
-          "description": "Recommend skills, context, and config directory candidates.",
+          "description": "Deterministic helper script: detect-project-context.cpython-314.pyc",
           "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "detect-project-context:report-confidence-based-on-which-expected-directories-alread",
-          "name": "Report confidence based on which expected directories already exist",
-          "category": "uncategorized",
-          "description": "Report confidence based on which expected directories already exist.",
-          "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "detect-project-context:output-results-as-structured-json-or-human-readable-text",
-          "name": "Output results as structured JSON or human-readable text",
-          "category": "uncategorized",
-          "description": "Output results as structured JSON or human-readable text.",
-          "sources": [
-            "SKILL.md:In scope"
+            "scripts/detect-project-context.cpython-314.pyc"
           ]
         },
         {
@@ -4013,6 +4063,15 @@
           ]
         },
         {
+          "id": "detect-project-context:script-resolve-standards-path-cpython-314",
+          "name": "Run resolve standards path.cpython 314",
+          "category": "identity-resolution",
+          "description": "Deterministic helper script: resolve-standards-path.cpython-314.pyc",
+          "sources": [
+            "scripts/resolve-standards-path.cpython-314.pyc"
+          ]
+        },
+        {
           "id": "detect-project-context:script-resolve-standards-path",
           "name": "Run resolve standards path",
           "category": "identity-resolution",
@@ -4020,13 +4079,35 @@
           "sources": [
             "scripts/resolve-standards-path.py"
           ]
+        },
+        {
+          "id": "detect-project-context:script-test-detect-project-context-cpython-314-pytest-9-0-3",
+          "name": "Run test_detect_project_context.cpython 314 pytest 9.0.3",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: testdetectprojectcontext.cpython-314-pytest-9.0.3.pyc",
+          "sources": [
+            "scripts/test_detect_project_context.cpython-314-pytest-9.0.3.pyc"
+          ]
+        },
+        {
+          "id": "detect-project-context:script-test-detect-project-context",
+          "name": "Run test_detect_project_context",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: testdetectprojectcontext.py",
+          "sources": [
+            "scripts/test_detect_project_context.py"
+          ]
         }
       ],
       "references": [],
       "subagents": [],
       "scripts": [
+        "detect-project-context.cpython-314.pyc",
         "detect-project-context.py",
-        "resolve-standards-path.py"
+        "resolve-standards-path.cpython-314.pyc",
+        "resolve-standards-path.py",
+        "test_detect_project_context.cpython-314-pytest-9.0.3.pyc",
+        "test_detect_project_context.py"
       ],
       "config_keys": [],
       "produces": [],
@@ -4087,12 +4168,39 @@
           ]
         },
         {
+          "id": "chainlog:script-chainlog-cpython-314",
+          "name": "Run chainlog.cpython 314",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: chainlog.cpython-314.pyc",
+          "sources": [
+            "scripts/chainlog.cpython-314.pyc"
+          ]
+        },
+        {
           "id": "chainlog:script-chainlog",
           "name": "Run chainlog",
           "category": "uncategorized",
           "description": "Deterministic helper script: chainlog.py",
           "sources": [
             "scripts/chainlog.py"
+          ]
+        },
+        {
+          "id": "chainlog:script-test-chainlog-cpython-314-pytest-9-0-3",
+          "name": "Run test_chainlog.cpython 314 pytest 9.0.3",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: testchainlog.cpython-314-pytest-9.0.3.pyc",
+          "sources": [
+            "scripts/test_chainlog.cpython-314-pytest-9.0.3.pyc"
+          ]
+        },
+        {
+          "id": "chainlog:script-test-chainlog",
+          "name": "Run test_chainlog",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: testchainlog.py",
+          "sources": [
+            "scripts/test_chainlog.py"
           ]
         }
       ],
@@ -4103,7 +4211,10 @@
       ],
       "subagents": [],
       "scripts": [
-        "chainlog.py"
+        "chainlog.cpython-314.pyc",
+        "chainlog.py",
+        "test_chainlog.cpython-314-pytest-9.0.3.pyc",
+        "test_chainlog.py"
       ],
       "config_keys": [],
       "produces": [],
@@ -4194,12 +4305,39 @@
           ]
         },
         {
+          "id": "explore-code:script-explore-code-cpython-314",
+          "name": "Run explore code.cpython 314",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: explore-code.cpython-314.pyc",
+          "sources": [
+            "scripts/explore-code.cpython-314.pyc"
+          ]
+        },
+        {
           "id": "explore-code:script-explore-code",
           "name": "Run explore code",
           "category": "uncategorized",
           "description": "Deterministic helper script: explore-code.py",
           "sources": [
             "scripts/explore-code.py"
+          ]
+        },
+        {
+          "id": "explore-code:script-test-explore-code-cpython-314-pytest-9-0-3",
+          "name": "Run test_explore_code.cpython 314 pytest 9.0.3",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: testexplorecode.cpython-314-pytest-9.0.3.pyc",
+          "sources": [
+            "scripts/test_explore_code.cpython-314-pytest-9.0.3.pyc"
+          ]
+        },
+        {
+          "id": "explore-code:script-test-explore-code",
+          "name": "Run test_explore_code",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: testexplorecode.py",
+          "sources": [
+            "scripts/test_explore_code.py"
           ]
         }
       ],
@@ -4209,7 +4347,10 @@
       ],
       "subagents": [],
       "scripts": [
-        "explore-code.py"
+        "explore-code.cpython-314.pyc",
+        "explore-code.py",
+        "test_explore_code.cpython-314-pytest-9.0.3.pyc",
+        "test_explore_code.py"
       ],
       "config_keys": [],
       "produces": [],
@@ -4277,6 +4418,24 @@
           "sources": [
             "scripts/inspect-worktree.py"
           ]
+        },
+        {
+          "id": "git-worktree-inspector:script-test-inspect-worktree-cpython-314-pytest-9-0-3",
+          "name": "Run test_inspect_worktree.cpython 314 pytest 9.0.3",
+          "category": "checkout",
+          "description": "Deterministic helper script: testinspectworktree.cpython-314-pytest-9.0.3.pyc",
+          "sources": [
+            "scripts/test_inspect_worktree.cpython-314-pytest-9.0.3.pyc"
+          ]
+        },
+        {
+          "id": "git-worktree-inspector:script-test-inspect-worktree",
+          "name": "Run test_inspect_worktree",
+          "category": "checkout",
+          "description": "Deterministic helper script: testinspectworktree.py",
+          "sources": [
+            "scripts/test_inspect_worktree.py"
+          ]
         }
       ],
       "references": [
@@ -4286,16 +4445,14 @@
       ],
       "subagents": [],
       "scripts": [
-        "inspect-worktree.py"
+        "inspect-worktree.py",
+        "test_inspect_worktree.cpython-314-pytest-9.0.3.pyc",
+        "test_inspect_worktree.py"
       ],
       "config_keys": [],
       "produces": [],
       "consumes": [],
-      "depends": [
-        "context-reports",
-        "detect-project-context",
-        "worker-contract"
-      ]
+      "depends": []
     },
     {
       "name": "identity-resolver",
@@ -4358,6 +4515,24 @@
           "sources": [
             "scripts/resolve-identity.py"
           ]
+        },
+        {
+          "id": "identity-resolver:script-test-resolve-identity-cpython-314-pytest-9-0-3",
+          "name": "Run test_resolve_identity.cpython 314 pytest 9.0.3",
+          "category": "identity-resolution",
+          "description": "Deterministic helper script: testresolveidentity.cpython-314-pytest-9.0.3.pyc",
+          "sources": [
+            "scripts/test_resolve_identity.cpython-314-pytest-9.0.3.pyc"
+          ]
+        },
+        {
+          "id": "identity-resolver:script-test-resolve-identity",
+          "name": "Run test_resolve_identity",
+          "category": "identity-resolution",
+          "description": "Deterministic helper script: testresolveidentity.py",
+          "sources": [
+            "scripts/test_resolve_identity.py"
+          ]
         }
       ],
       "references": [
@@ -4368,7 +4543,9 @@
       ],
       "subagents": [],
       "scripts": [
-        "resolve-identity.py"
+        "resolve-identity.py",
+        "test_resolve_identity.cpython-314-pytest-9.0.3.pyc",
+        "test_resolve_identity.py"
       ],
       "config_keys": [],
       "produces": [],
@@ -4389,138 +4566,12 @@
       "description": "First-run config initializer for any skill. Detects the project environment, loads skill-level defaults, merges them with existing project config, handles schema migration, proposes the result to the user, and persists it only after explicit approval.",
       "capabilities": [
         {
-          "id": "initialize-skill:load-skill-level-defaults-from-the-consuming-skill-s-config",
-          "name": "Load skill-level defaults from the consuming skill's config",
+          "id": "initialize-skill:script-initialize-cpython-314",
+          "name": "Run initialize.cpython 314",
           "category": "config-initialization",
-          "description": "Load skill-level defaults from the consuming skill's config.yaml.",
+          "description": "Deterministic helper script: initialize.cpython-314.pyc",
           "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "initialize-skill:load-configdir-shared",
-          "name": "Load {configdir}/shared",
-          "category": "config-initialization",
-          "description": "Load {configdir}/shared.yaml if present.",
-          "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "initialize-skill:load-configdir-skill",
-          "name": "Load {configdir}/{skill}",
-          "category": "config-initialization",
-          "description": "Load {configdir}/{skill}.yaml if present.",
-          "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "initialize-skill:merge-configs-with-the-precedence-defaults-shared-skill-spec",
-          "name": "Merge configs with the precedence: defaults < shared < skill-specific",
-          "category": "config-initialization",
-          "description": "Merge configs with the precedence: defaults < shared < skill-specific.",
-          "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "initialize-skill:add-missing-default-keys-when-the-existing-config-is-older-o",
-          "name": "Add missing default keys when the existing config is older or incomplete",
-          "category": "config-initialization",
-          "description": "Add missing default keys when the existing config is older or incomplete.",
-          "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "initialize-skill:propose-the-final-config-without-writing-it",
-          "name": "Propose the final config without writing it",
-          "category": "config-initialization",
-          "description": "Propose the final config without writing it.",
-          "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "initialize-skill:write-the-config-only-when-explicit-approval-is-provided",
-          "name": "Write the config only when explicit approval is provided",
-          "category": "config-initialization",
-          "description": "Write the config only when explicit approval is provided.",
-          "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "initialize-skill:type-check-merged-values-against-defaults",
-          "name": "Type-check merged values against defaults",
-          "category": "uncategorized",
-          "description": "Type-check merged values against defaults.",
-          "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "initialize-skill:the-caller-detects-the-project-context-with-detect-project-c",
-          "name": "The caller detects the project context with detect-project-context and obtains markerdir",
-          "category": "uncategorized",
-          "description": "The caller detects the project context with detect-project-context and obtains markerdir.",
-          "sources": [
-            "SKILL.md:Workflow"
-          ]
-        },
-        {
-          "id": "initialize-skill:the-caller-invokes-initialize",
-          "name": "The caller invokes initialize",
-          "category": "config-initialization",
-          "description": "The caller invokes initialize.py with the skill name and optional defaults.",
-          "sources": [
-            "SKILL.md:Workflow"
-          ]
-        },
-        {
-          "id": "initialize-skill:the-block-loads-existing-config-files-and-merges-them-with-d",
-          "name": "The block loads existing config files and merges them with defaults",
-          "category": "config-initialization",
-          "description": "The block loads existing config files and merges them with defaults.",
-          "sources": [
-            "SKILL.md:Workflow"
-          ]
-        },
-        {
-          "id": "initialize-skill:the-block-returns-the-proposed-config-with-status",
-          "name": "The block returns the proposed config with status",
-          "category": "config-initialization",
-          "description": "The block returns the proposed config with status: needsapproval.",
-          "sources": [
-            "SKILL.md:Workflow"
-          ]
-        },
-        {
-          "id": "initialize-skill:the-caller-shows-the-proposed-config-to-the-user-and-asks-fo",
-          "name": "The caller shows the proposed config to the user and asks for approval",
-          "category": "config-initialization",
-          "description": "The caller shows the proposed config to the user and asks for approval.",
-          "sources": [
-            "SKILL.md:Workflow"
-          ]
-        },
-        {
-          "id": "initialize-skill:if-approved-the-caller-invokes-initialize",
-          "name": "If approved, the caller invokes initialize",
-          "category": "config-initialization",
-          "description": "If approved, the caller invokes initialize.py again with --approve.",
-          "sources": [
-            "SKILL.md:Workflow"
-          ]
-        },
-        {
-          "id": "initialize-skill:the-block-writes-configdir-skill-yaml-and-returns-status",
-          "name": "The block writes {configdir}/{skill}.yaml and returns status",
-          "category": "config-initialization",
-          "description": "The block writes {configdir}/{skill}.yaml and returns status: written.",
-          "sources": [
-            "SKILL.md:Workflow"
+            "scripts/initialize.cpython-314.pyc"
           ]
         },
         {
@@ -4533,6 +4584,15 @@
           ]
         },
         {
+          "id": "initialize-skill:script-load-skill-config-cpython-314",
+          "name": "Run load skill config.cpython 314",
+          "category": "config-initialization",
+          "description": "Deterministic helper script: load-skill-config.cpython-314.pyc",
+          "sources": [
+            "scripts/load-skill-config.cpython-314.pyc"
+          ]
+        },
+        {
           "id": "initialize-skill:script-load-skill-config",
           "name": "Run load skill config",
           "category": "config-initialization",
@@ -4540,29 +4600,44 @@
           "sources": [
             "scripts/load-skill-config.py"
           ]
+        },
+        {
+          "id": "initialize-skill:script-test-initialize-cpython-314-pytest-9-0-3",
+          "name": "Run test_initialize.cpython 314 pytest 9.0.3",
+          "category": "config-initialization",
+          "description": "Deterministic helper script: testinitialize.cpython-314-pytest-9.0.3.pyc",
+          "sources": [
+            "scripts/test_initialize.cpython-314-pytest-9.0.3.pyc"
+          ]
+        },
+        {
+          "id": "initialize-skill:script-test-initialize",
+          "name": "Run test_initialize",
+          "category": "config-initialization",
+          "description": "Deterministic helper script: testinitialize.py",
+          "sources": [
+            "scripts/test_initialize.py"
+          ]
         }
       ],
       "references": [
-        "context-reports",
         "detect-project-context",
-        "token-resolver",
-        "worker-contract"
+        "token-resolver"
       ],
       "subagents": [],
       "scripts": [
+        "initialize.cpython-314.pyc",
         "initialize.py",
-        "load-skill-config.py"
+        "load-skill-config.cpython-314.pyc",
+        "load-skill-config.py",
+        "test_initialize.cpython-314-pytest-9.0.3.pyc",
+        "test_initialize.py"
       ],
-      "config_keys": [
-        "initialize-skill.backup_existing",
-        "initialize-skill.write_shared"
-      ],
+      "config_keys": [],
       "produces": [],
       "consumes": [],
       "depends": [
-        "context-reports",
-        "detect-project-context",
-        "worker-contract"
+        "detect-project-context"
       ]
     },
     {
@@ -4673,12 +4748,39 @@
           ]
         },
         {
+          "id": "map-ticket-relationships:script-map-ticket-relationships-cpython-314",
+          "name": "Run map ticket relationships.cpython 314",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: map-ticket-relationships.cpython-314.pyc",
+          "sources": [
+            "scripts/map-ticket-relationships.cpython-314.pyc"
+          ]
+        },
+        {
           "id": "map-ticket-relationships:script-map-ticket-relationships",
           "name": "Run map ticket relationships",
           "category": "uncategorized",
           "description": "Deterministic helper script: map-ticket-relationships.py",
           "sources": [
             "scripts/map-ticket-relationships.py"
+          ]
+        },
+        {
+          "id": "map-ticket-relationships:script-test-map-ticket-relationships-cpython-314-pytest-9-0",
+          "name": "Run test_map_ticket_relationships.cpython 314 pytest 9.0.3",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: testmapticketrelationships.cpython-314-pytest-9.0.3.pyc",
+          "sources": [
+            "scripts/test_map_ticket_relationships.cpython-314-pytest-9.0.3.pyc"
+          ]
+        },
+        {
+          "id": "map-ticket-relationships:script-test-map-ticket-relationships",
+          "name": "Run test_map_ticket_relationships",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: testmapticketrelationships.py",
+          "sources": [
+            "scripts/test_map_ticket_relationships.py"
           ]
         }
       ],
@@ -4690,7 +4792,10 @@
       ],
       "subagents": [],
       "scripts": [
-        "map-ticket-relationships.py"
+        "map-ticket-relationships.cpython-314.pyc",
+        "map-ticket-relationships.py",
+        "test_map_ticket_relationships.cpython-314-pytest-9.0.3.pyc",
+        "test_map_ticket_relationships.py"
       ],
       "config_keys": [],
       "produces": [],
@@ -4854,12 +4959,39 @@
           ]
         },
         {
+          "id": "research-ticket:script-research-ticket-cpython-314",
+          "name": "Run research ticket.cpython 314",
+          "category": "data-collection",
+          "description": "Deterministic helper script: research-ticket.cpython-314.pyc",
+          "sources": [
+            "scripts/research-ticket.cpython-314.pyc"
+          ]
+        },
+        {
           "id": "research-ticket:script-research-ticket",
           "name": "Run research ticket",
           "category": "data-collection",
           "description": "Deterministic helper script: research-ticket.py",
           "sources": [
             "scripts/research-ticket.py"
+          ]
+        },
+        {
+          "id": "research-ticket:script-test-research-ticket-cpython-314-pytest-9-0-3",
+          "name": "Run test_research_ticket.cpython 314 pytest 9.0.3",
+          "category": "data-collection",
+          "description": "Deterministic helper script: testresearchticket.cpython-314-pytest-9.0.3.pyc",
+          "sources": [
+            "scripts/test_research_ticket.cpython-314-pytest-9.0.3.pyc"
+          ]
+        },
+        {
+          "id": "research-ticket:script-test-research-ticket",
+          "name": "Run test_research_ticket",
+          "category": "data-collection",
+          "description": "Deterministic helper script: testresearchticket.py",
+          "sources": [
+            "scripts/test_research_ticket.py"
           ]
         }
       ],
@@ -4870,17 +5002,17 @@
       ],
       "subagents": [],
       "scripts": [
-        "research-ticket.py"
+        "research-ticket.cpython-314.pyc",
+        "research-ticket.py",
+        "test_research_ticket.cpython-314-pytest-9.0.3.pyc",
+        "test_research_ticket.py"
       ],
       "config_keys": [],
       "produces": [],
       "consumes": [
         "data-collection"
       ],
-      "depends": [
-        "context-reports",
-        "worker-contract"
-      ]
+      "depends": []
     },
     {
       "name": "scan-context",
@@ -4945,6 +5077,15 @@
           ]
         },
         {
+          "id": "scan-context:script-scan-context-cpython-314",
+          "name": "Run scan context.cpython 314",
+          "category": "context-scanning",
+          "description": "Deterministic helper script: scan-context.cpython-314.pyc",
+          "sources": [
+            "scripts/scan-context.cpython-314.pyc"
+          ]
+        },
+        {
           "id": "scan-context:script-scan-context",
           "name": "Run scan context",
           "category": "context-scanning",
@@ -4962,6 +5103,7 @@
       ],
       "subagents": [],
       "scripts": [
+        "scan-context.cpython-314.pyc",
         "scan-context.py"
       ],
       "config_keys": [],
@@ -5112,6 +5254,24 @@
           "sources": [
             "scripts/discover-tools.py"
           ]
+        },
+        {
+          "id": "tool-discovery:script-test-discover-tools-cpython-314-pytest-9-0-3",
+          "name": "Run test_discover_tools.cpython 314 pytest 9.0.3",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: testdiscovertools.cpython-314-pytest-9.0.3.pyc",
+          "sources": [
+            "scripts/test_discover_tools.cpython-314-pytest-9.0.3.pyc"
+          ]
+        },
+        {
+          "id": "tool-discovery:script-test-discover-tools",
+          "name": "Run test_discover_tools",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: testdiscovertools.py",
+          "sources": [
+            "scripts/test_discover_tools.py"
+          ]
         }
       ],
       "references": [
@@ -5126,17 +5286,14 @@
       "subagents": [],
       "scripts": [
         "capability-registry.yaml",
-        "discover-tools.py"
+        "discover-tools.py",
+        "test_discover_tools.cpython-314-pytest-9.0.3.pyc",
+        "test_discover_tools.py"
       ],
       "config_keys": [],
       "produces": [],
       "consumes": [],
-      "depends": [
-        "context-reports",
-        "initialize-skill",
-        "token-resolver",
-        "worker-contract"
-      ]
+      "depends": []
     },
     {
       "name": "worker-contract",
@@ -5206,7 +5363,7 @@
       "origin": "bundle",
       "type": "building-block",
       "invocation": "model-invoked",
-      "description": "GitHub PR source adapter that fetches PR metadata, changed files, reviews, and inline review threads via the GitHub API and returns the normalized pr-source shape.",
+      "description": "GitHub PR source adapter that fetches PR metadata, changed files, reviews, inline review threads, and conversation comments via the GitHub API and returns the normalized pr-source shape.",
       "capabilities": [
         {
           "id": "github-pr-adapter:resolve-a-pr-from-user-input-ticket-key-branch-or-repo-conte",
@@ -5249,6 +5406,15 @@
           "name": "Fetch inline review threads with resolution state and comments",
           "category": "data-collection",
           "description": "Fetch inline review threads with resolution state and comments.",
+          "sources": [
+            "SKILL.md:In scope"
+          ]
+        },
+        {
+          "id": "github-pr-adapter:fetch-conversation-issue-level-pr-comments-including-bot-dec",
+          "name": "Fetch conversation (issue-level) PR comments, including bot decorations from tools such as SonarCloud, Codecov, or deploy bots",
+          "category": "data-collection",
+          "description": "Fetch conversation (issue-level) PR comments, including bot decorations from tools such as SonarCloud, Codecov, or deploy bots.",
           "sources": [
             "SKILL.md:In scope"
           ]

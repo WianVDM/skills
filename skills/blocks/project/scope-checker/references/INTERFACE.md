@@ -35,6 +35,10 @@ The parent skill embeds the following in the subagent prompt.
 
 Optional array of strings or convention references to consider as part of the scope.
 
+### `strictness`
+
+Optional. One of `strict` or `lenient` (default `lenient`). `strict` classifies any finding not explicitly covered by acceptance criteria or changed files as `out-of-scope` or `ambiguous`; `lenient` classifies only clearly unrelated findings as `out-of-scope`.
+
 ## Output
 
 The subagent returns the standard `worker-contract` format. The `Findings` section contains:

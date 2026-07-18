@@ -1,10 +1,6 @@
 # Versioning
 
-> **Version reset.** This skill has been reset to v1.0.0 under the project-wide versioning scheme in `AGENT.md`. Historical migration notes below are preserved for reference but no longer reflect the current version number.
-
-## Current version
-
-`verify-branch` v1.0.0
+Migration and schema history for `verify-branch`. Skill versioning is being refactored across the repo and is intentionally not declared in frontmatter for now; the notes below are preserved as migration guidance and no longer track a current skill version number.
 
 ## Version history
 

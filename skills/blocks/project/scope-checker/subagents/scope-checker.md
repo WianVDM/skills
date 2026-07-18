@@ -50,6 +50,7 @@ The parent skill provides:
   - `line`: optional line number.
   - `rule`: optional rule or convention reference.
 - `project_conventions`: optional list of convention strings or references to consider.
+- `strictness`: optional, one of `strict` or `lenient` (default `lenient`). When `strict`, classify any finding not explicitly covered by the scope's acceptance criteria or changed files as `out-of-scope` or `ambiguous`. When `lenient`, classify only clearly unrelated findings as `out-of-scope`.
 
 ## Outputs
 

@@ -48,4 +48,3 @@ git-worktree-inspector/
 
 - Keep worktree lifecycle logic deterministic and testable.
 - Preserve the guarantee that the user's current branch is untouched.
-- Bump the skill version when the interface or lifecycle changes.

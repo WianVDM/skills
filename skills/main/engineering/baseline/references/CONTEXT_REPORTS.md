@@ -68,7 +68,7 @@ summary: "Auth guard redirects to login during token refresh."  # required one-s
 | Field | Required | Description |
 |-------|----------|-------------|
 | `skill` | yes | Always `baseline`. |
-| `version` | yes | The skill version that produced the report. |
+| `version` | yes | The report schema version. |
 | `scope` | yes | The feature, module, route, bug, or endpoint being baselined. |
 | `branch` | yes | The branch being baselined. |
 | `commit` | yes | The current commit hash at capture time. |
@@ -93,7 +93,7 @@ summary: "Auth guard redirects to login during token refresh."  # required one-s
 
 ### Versioning
 
-The report `version` follows the producing skill's version. When the skill version changes, report consumers should check the version field and handle older schemas if needed. The skill should document breaking changes in the changelog or migration notes.
+The report `version` is the report schema version, independent of any skill version. When the report schema changes, bump this field; consumers should check it and handle older schemas if needed. Document breaking schema changes in migration notes.
 
 ---
 

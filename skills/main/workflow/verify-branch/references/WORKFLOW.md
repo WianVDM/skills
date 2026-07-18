@@ -15,7 +15,7 @@ A verification run has six phases:
 | 3 | Plan execution | Filter and order gates by mode, tags, and dependencies | `scripts/lib/plan-execution.js` |
 | 4 | Execute gates | Run each planned gate in order | gate subagents (see dispatch table) |
 | 5 | Aggregate | Compute the overall PASS/FAIL verdict using `verdict_policy` | main skill |
-| 6 | Report | Write the verification report and update state | `report-writer`, `checkpoint-manager` |
+| 6 | Report | Write the verification report and update state | `report-writer`, `checkpoint` block |
 
 The main skill never runs project commands, tests, or static analysis directly. It delegates those tasks to subagents and only combines the returned statuses.
 
@@ -65,7 +65,7 @@ The scout returns `fresh_matches` and `stale_matches`. Fresh matches may be pass
 3. **Run auto-detection for `enabled: auto` gates.** Use the detection scripts to determine whether a tool is available. `auto` means "run if a tool is available, otherwise treat as optional."
 4. **Run bootstrap if config is missing.** If the config file is missing, or if a required gate has no command, mapping, or source, delegate to the `bootstrap` subagent. The subagent proposes a config and returns `status: needs_input` if the user must confirm or provide values.
 5. **Ask the user on-the-fly for missing values.** If a specific value is missing during execution, pause, ask, persist the answer, and resume. See [Config on-the-fly rules](#config-on-the-fly-rules) below.
-6. **Record resolved config in state.** Before moving to Phase 3, the checkpoint-manager writes the resolved gate checklist to the state file.
+6. **Record resolved config in state.** Before moving to Phase 3, record the resolved gate checklist in the state file via `checkpoint/update`.
 
 **Hard stops in Phase 2:**
 
@@ -128,7 +128,7 @@ Gates run one at a time unless the user explicitly configures `max_concurrent_ga
 
 ### Checkpointing after each gate
 
-After each gate returns, the main skill calls `checkpoint-manager` to:
+After each gate returns, the main skill invokes `checkpoint/update` to:
 
 - Mark the gate as complete in the state file.
 - Append the gate result to the collected results.
@@ -161,7 +161,7 @@ The verdict is computed by the main skill, not delegated, because it is a simple
    - `fresh_matches` and `stale_matches` from the context scout
    - The computed verdict and counts
 2. **The report writer writes** `.agents/context/verify-branch/{branch-name}.md` using the report template.
-3. **Delegate state finalization to `checkpoint-manager`.** The checkpoint manager writes or updates `.agents/context/verify-branch/{branch-name}-state.md` with:
+3. **Finalize state via `checkpoint/update`.** Write or update `.agents/context/verify-branch/{branch-name}-state.md` with:
    - All gates marked complete
    - The final verdict
    - A `Next Action` of `complete` or `user review required`
@@ -173,7 +173,7 @@ If the main skill is resumed after an interruption or context compaction, it fol
 
 1. **Read the state file** `.agents/context/verify-branch/{branch-name}-state.md`.
 2. **Read the report file** if it exists, to recover already-recorded results.
-3. **Call `checkpoint-manager`** to get the current status, completed gates, pending gates, and recommended next action.
+3. **Invoke `checkpoint/resume`** to get the current status, completed gates, pending gates, and the next pending gate.
 4. **Handle a corrupted state file.** If the state file exists but cannot be parsed, the main skill discards it and treats the run as a fresh verification. It restarts from Phase 1, re-detecting the branch, diff, and context.
 5. **Verify git state matches.** If the current branch or commit has changed since the state file was written, the skill warns the user and may restart the run from Phase 1.
 6. **Resume from the first pending gate.** Do not re-run completed gates unless the user explicitly asks or the git state has changed.

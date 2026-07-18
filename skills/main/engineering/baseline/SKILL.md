@@ -2,11 +2,6 @@
 name: baseline
 description: "Capture a reproducible snapshot of a feature, module, route, API, or bug. Invoked by baseline, reproduce, verify UI, check the app, capture state, or snapshot."
 argument-hint: "Scope, ticket key, or feature/bug to baseline"
-metadata:
-  tags: [core, building-block, initialization, shared-config]
-  author: Wian van der Merwe
-  version: "1.0.1"
-  scope: global
 invocation: model-invoked
 ---
 

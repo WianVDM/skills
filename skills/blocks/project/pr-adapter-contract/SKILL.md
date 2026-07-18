@@ -1,7 +1,6 @@
 ---
 name: pr-adapter-contract
 description: Defines the normalized adapter interface contract for conductor skills that consume PR metadata, reviews, CI status, static-analysis findings, issue-tracker scope, notifications, and context reports. Use when authoring or reviewing an adapter, implementing the adapter envelope, or mapping a new source into the normalized shape.
-version: 1.0.0
 invocation: model-invoked
 depends:
   - worker-contract

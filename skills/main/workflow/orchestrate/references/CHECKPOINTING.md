@@ -19,26 +19,29 @@ Update the state file after:
 - Every validation run.
 - Any context compaction.
 
-## Checkpoint manager duties
+## State operations
 
-The checkpoint-manager subagent:
+State maintenance is delegated to the [`checkpoint`](../../../../blocks/project/checkpoint/SKILL.md) block:
 
-1. Tracks completed and pending phases.
-2. Updates the phase checklist.
-3. Records the current focus.
-4. Links each checkpoint to the previous one.
-5. Produces a compact resume summary after compaction.
+1. `checkpoint/create` at run start with the orchestration phases.
+2. `checkpoint/update` after every cadence event above: mark completed phases, record the current focus and last completed action.
+3. `checkpoint/resume` after compaction for completed phases, pending phases, current focus, and the next pending phase.
+4. `checkpoint/validate` before final handoff.
+
+The state file follows the checkpoint schema with `owner: orchestrate`; orchestrate-specific sections (plan status, confidence history, open questions) live as owner sections.
 
 ## Checkpoint chain
 
-Each checkpoint references the previous checkpoint in `previous_checkpoint`. If this is the first checkpoint, write `none`.
+The conductor writes a checkpoint file per phase boundary at `.agents/context/handoff/{key}-checkpoint.md`. Each checkpoint references the previous checkpoint in `previous_checkpoint`. If this is the first checkpoint, write `none`.
 
 ## Resume summary
 
-After compaction, the checkpoint-manager should return:
+After compaction, `checkpoint/resume` returns:
 
 - Completed phases.
 - Pending phases.
 - Current focus.
-- Recommended next action.
-- Any detected deviations from expected state.
+- Next pending phase.
+- Preserved owner sections.
+
+The conductor checks the returned state for deviations from expected state before resuming.

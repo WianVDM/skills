@@ -4,9 +4,11 @@ The goal of triage is to turn raw PR feedback into a concise, actionable issue b
 
 ## Source types
 
+Authors are classified via the `pr-report.bots` config map: match the comment or review author against each entry's `usernames`, then apply that entry's `source_type` and `default_severity`. Authors matching no entry whose name ends in `[bot]` (or is a known GitHub App) default to `automated_reviewer` at `recommended` severity with `low` confidence. All other unmapped authors are `human_reviewer`. This applies to every feedback surface: reviews, inline threads, and conversation comments.
+
 | Source type | Description | Examples |
 |-------------|-------------|----------|
-| `static_analysis` | Automated code-quality enforcement | SonarQube |
+| `static_analysis` | Automated code-quality enforcement | SonarQube, SonarCloud decorations |
 | `automated_reviewer` | Bot that posts review-style comments | CodeRabbit |
 | `hybrid_reviewer` | Automated tool running under a human account | Tate's T876 bot |
 | `human_reviewer` | Human colleague | Any human reviewer |

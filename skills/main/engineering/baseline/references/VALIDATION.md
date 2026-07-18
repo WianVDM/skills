@@ -6,8 +6,8 @@ Checklist for validating the `baseline` skill after changes or before release.
 
 ## Structure checks
 
-- [x] `SKILL.md` frontmatter is complete: `name`, `description`, `version`, `scope`, `invocation`, `metadata`.
-- [x] The skill version matches the report `version` declared in `CONTEXT_REPORTS.md` and `REFERENCE.md` (skill 1.0.1, report 1.0.1).
+- [x] `SKILL.md` frontmatter is complete: `name`, `description`, `scope`, `invocation`, `metadata`.
+- [x] The report `version` declared in `CONTEXT_REPORTS.md` and `REFERENCE.md` matches the current report schema.
 - [x] All reference links resolve: `CONFIG_PATTERN.md`, `CAPABILITIES.md`, `CONTEXT_REPORTS.md`, `REFERENCE.md`, `AUTH.md`, `WORKFLOW.md`, `DEPENDENCIES.md`, `EXAMPLES.md`.
 - [x] `SKILL.md` is concise and does not duplicate deep detail from `references/`.
 - [x] Progressive disclosure is followed: overview in `SKILL.md`, detail in `references/`.

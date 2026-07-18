@@ -1,7 +1,6 @@
 ---
 name: run-trigger-evals
 description: Generate and update trigger evals for model-invoked skills in evals/evals.json.
-version: 1.0.1
 invocation: model-invoked
 depends:
   - parse-skill-frontmatter

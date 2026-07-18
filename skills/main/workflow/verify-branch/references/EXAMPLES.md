@@ -240,7 +240,7 @@ The skill verifies the branch `feature/OC-1234` against the detected default bra
 
 ## Example 5: Resume after interruption
 
-If a previous run was interrupted, the state file `.agents/context/verify-branch/{branch-name}-state.md` records completed gates. The skill reads this file, calls `checkpoint-manager`, and resumes from the first pending gate.
+If a previous run was interrupted, the state file `.agents/context/verify-branch/{branch-name}-state.md` records completed gates. The skill reads this file, invokes `checkpoint/resume`, and resumes from the first pending gate.
 
 ## Example 6: Fresh advisory context
 

@@ -17,7 +17,7 @@ Follow the `worker-contract` return contract. Authorized to fill pending section
 
 - Path to the report document (typically `{context_dir}/pr-report/{key}-report.md`)
 - Path to the state file (typically `{context_dir}/pr-report/{key}/state.md`)
-- Normalized findings from the `normalize-*` subagents
+- Normalized findings from the `normalize-observation` worker
 - Issue board and generated task list from `issue-synthesizer`
 
 ## Outputs
@@ -28,7 +28,7 @@ Return the standard worker contract with the report artifact path and a summary 
 
 - Preserve completed sections; only fill pending ones.
 - Replace `<!-- STATUS: pending -->` with `<!-- STATUS: completed -->` as sections are filled.
-- Understand the internal normalization model documented in `references/REFERENCE.md`.
+- Understand the normalization shapes documented in `references/REFERENCE.md` and the `pr-adapter-contract` block.
 - Include the generated task list in the **Task List** section when `pr-report.task_list.enabled` is true.
 - Update `report_status` to `complete` when all sections are filled.
 - Do not invent information not provided by previous subagents.

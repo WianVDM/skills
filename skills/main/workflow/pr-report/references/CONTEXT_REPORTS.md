@@ -12,6 +12,8 @@
 
 Canonical report. Contains PR summary, changed files, CI status, static analysis, triaged issues, resolved items, unclear items, scope flags, a generated task list, and a **Data sources** section listing the tool used for each capability.
 
+The report frontmatter follows the `context-reports` envelope: `skill`, `version`, `key`, `generated_at` (ISO 8601, required), `summary`, plus `pr-report` fields (`pr_number`, `repo`, `branch`, `base`, `report_status`, `updated_at`) and `consumed_context`.
+
 ### HTML dashboard
 
 ```text
@@ -26,7 +28,7 @@ Optional human-facing dashboard rendered from the Markdown report. The Markdown 
 {context_dir}/pr-report/{key}/state.md
 ```
 
-Working memory: phase checklist, comment history, review tracking, CI history, triage decisions.
+Working memory: phase checklist, comment history, review tracking, CI history, triage decisions. Frontmatter includes `generated_at` alongside the `checkpoint` schema fields and `pr-report` owner fields.
 
 `{context_dir}` is discovered by `detect-project-context`. The default is `{project-root}/.agents/context`, but the skill does not assume that path.
 
@@ -39,26 +41,7 @@ Working memory: phase checklist, comment history, review tracking, CI history, t
 
 ## Consumed context
 
-The skill scans `{context_dir}/` for reports that relate to the current PR or ticket. It does not assume that any specific report type exists.
-
-### Scanning behavior
-
-1. Derive `{key}` from the PR (ticket key if available, otherwise `pr-{pr_number}`).
-2. Walk `{context_dir}/` recursively.
-3. Consider any file whose basename contains `{key}` a candidate report.
-4. Read the frontmatter of each candidate.
-
-### Relevance from frontmatter
-
-A candidate report is treated as relevant when its frontmatter contains any of the following:
-
-- `ticket: {key}`
-- `key: {key}`
-- `pr_number: {pr_number}`
-- `repo: {owner/repo}`
-- `branch: {branch}`
-
-The skill also treats reports as relevant when their `summary`, `description`, or `artifacts` fields mention the PR number, branch, or ticket key.
+Related reports are discovered with the `scan-context` block (matching, ranking, and freshness rules live there). Results whose `type` is `pr-report` (this skill's own subdirectory) are excluded to avoid circular self-reference.
 
 ### Using scanned context
 
@@ -78,15 +61,7 @@ The skill also treats reports as relevant when their `summary`, `description`, o
 
 ## Data sources section
 
-The canonical report must include a **Data sources** section (after the triaged sections and before finalization) that lists, for every capability, the tool that was used and any alternatives that were available:
-
-- Capability name (e.g., PR metadata, CI / build status, static analysis findings).
-- Tool used (e.g., GitHub MCP, `gh`, SonarCloud API, Jira MCP).
-- Alternative tools detected.
-- Whether a degraded source was accepted, and if so, why and what better tool was available.
-- Confidence assigned to the data from that source.
-
-This section makes the tool-selection process transparent and auditable. It is generated during the collect phase and finalized before the report is presented.
+The canonical report must include a **Data sources** section. The canonical specification is in [TOOL_SELECTION.md](TOOL_SELECTION.md#data-sources-section). It is generated during the collect phase and finalized before the report is presented.
 
 ## Report freshness
 

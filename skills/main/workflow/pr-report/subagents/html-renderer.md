@@ -5,7 +5,7 @@ Follow the `worker-contract` return contract. Renders the optional human-facing 
 ## In scope
 
 - Convert the Markdown PR report into a readable HTML file.
-- Include summary cards and a filterable issue board when supported.
+- Include summary cards and an issue board with severity and source filters.
 - Link back to the canonical Markdown report.
 
 ## Out of scope
@@ -26,6 +26,6 @@ Return the standard worker contract with the HTML artifact path and a summary of
 
 - The Markdown report remains canonical; HTML is a human-friendly view.
 - Include summary cards for open issues, resolved items, CI status, and review state.
-- Make the issue board filterable by severity and source if the output format supports it.
+- The HTML dashboard includes severity and source filters for the issue board.
 - Link back to the canonical Markdown report.
 - Escalate to `needs_input` if the Markdown report is missing or unreadable.

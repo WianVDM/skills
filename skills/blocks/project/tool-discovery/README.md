@@ -51,4 +51,3 @@ tool-discovery/
 
 - Keep the capability registry in `references/CAPABILITY_REGISTRY.md` and the bundled YAML registry up to date.
 - Preserve backward compatibility for existing capability names.
-- Bump the skill version when the interface or ranking changes.

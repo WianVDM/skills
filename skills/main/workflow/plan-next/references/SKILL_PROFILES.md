@@ -39,7 +39,7 @@ To avoid staleness without re-reading everything:
 
 - Re-read `SKILL.md` frontmatter and `references/CHANGELOG.md` if it exists.
 - Check if version in metadata changed.
-- Re-read full references if the evaluator is uncertain or if the skill version changed.
+- Re-read full references if the evaluator is uncertain or if the skill changed.
 - Otherwise use the cached profile from state.
 
 ## Profile fields

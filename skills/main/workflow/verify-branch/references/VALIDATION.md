@@ -52,7 +52,7 @@ Checklist for reviewing the `verify-branch` skill before releasing a new version
 - [ ] Every subagent declares escalation rules (`needs_input`, `blocked`, `partial`).
 - [ ] `bootstrap` does not run gates or tests.
 - [ ] `context-scout` does not depend on specific skill names.
-- [ ] `checkpoint-manager` is invoked after each gate and after context compaction.
+- [ ] The `checkpoint` block is invoked after each gate and after context compaction.
 - [ ] `report-writer` does not compute the verdict or run gates.
 - [ ] Gate subagents route work through `scripts/run-gate.js` where applicable.
 
@@ -79,7 +79,7 @@ Checklist for reviewing the `verify-branch` skill before releasing a new version
 ## Reports and state
 
 - [ ] The report schema in `references/CONTEXT_REPORTS.md` matches the output of `report-writer`.
-- [ ] The state file schema in `references/CONTEXT_REPORTS.md` matches the output of `checkpoint-manager`.
+- [ ] The state file schema in `references/CONTEXT_REPORTS.md` matches the `checkpoint` block state schema.
 - [ ] Reports are written to `.agents/context/verify-branch/`.
 - [ ] Stale context reports never influence the verdict.
 - [ ] Fresh context reports are consumed generically, not tied to specific skills.

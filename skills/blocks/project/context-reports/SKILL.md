@@ -61,7 +61,7 @@ Reports use YAML frontmatter (the shared envelope) and a markdown body (skill-sp
 
 ## Freshness and staleness
 
-A report is fresh enough when its timestamp is recent for the domain, the underlying source has not changed since generation, and the producing skill's version is compatible. It is stale when it predates significant changes, comes from an incompatible schema version, or describes a source that no longer exists or has changed materially.
+A report is fresh enough when its timestamp is recent for the domain, the underlying source has not changed since generation, and the producing skill's report schema version is compatible. It is stale when it predates significant changes, comes from an incompatible schema version, or describes a source that no longer exists or has changed materially.
 
 `artifact-freshness` is the operational check: it evaluates branch, commit, timestamps, schema version, and age, and returns a structured verdict. Consumers use it rather than re-implementing freshness heuristics.
 

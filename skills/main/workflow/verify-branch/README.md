@@ -21,7 +21,7 @@ verify-branch/
 │   ├── CONFIG_REFERENCE.md   # all settings
 │   ├── ADAPTERS.md           # adapter contract
 │   └── ...
-├── subagents/                # gate, report, and checkpoint subagents
+├── subagents/                # gate and report subagents (state delegated to the `checkpoint` block)
 ├── scripts/                  # reusable scripts and adapters
 │   ├── adapters/             # tool-specific gate adapters
 │   └── lib/                  # shared helper utilities

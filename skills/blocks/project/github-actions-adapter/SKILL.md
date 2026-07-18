@@ -1,7 +1,6 @@
 ---
 name: github-actions-adapter
 description: CI source adapter that fetches GitHub Actions check runs and job-log summaries and returns the normalized ci-source shape.
-version: 1.0.0
 invocation: model-invoked
 depends:
   - pr-adapter-contract
@@ -73,6 +72,7 @@ Standard worker return contract with the `ci-source` adapter shape.
 - Distinguish `complete`, `partial`, `needs_input`, `blocked`, and `skipped` clearly.
 - Mark `is_required: true` only for checks listed in `required_checks` config.
 - Keep `error_lines` short and relevant.
+- Fetch GitHub Actions results from the check-runs API only. Commit statuses (the legacy statuses API, exposed by tools like `get_pull_request_status`) are a different channel and do not include Actions checks; a tool that only exposes statuses will miss them.
 
 ## Dependencies
 

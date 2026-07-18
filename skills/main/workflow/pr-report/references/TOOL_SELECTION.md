@@ -12,10 +12,20 @@ The conductor considers MCP tools/servers, native binaries, direct provider APIs
 | Changed files | GitHub MCP, `gh` CLI | `git diff` against base branch | User-provided file list |
 | Top-level reviews | GitHub MCP (`github_get_pull_request_reviews`) | `gh` CLI, GitHub REST API | User-provided review text |
 | Inline threads | GitHub MCP, `gh` CLI | GitHub REST API | User-provided thread text |
+| Conversation comments | GitHub MCP (`github_get_issue_comments`), `gh api` | GitHub REST API (`/issues/{pr}/comments`) | User-provided comment text |
 | CI / build status | GitHub MCP (`github_get_check_runs`), `gh` CLI | GitHub Checks API, commit-status API | User-provided CI summary |
 | Static analysis | SonarCloud/SonarQube MCP, SonarCloud API | SonarQube API, Semgrep MCP, CodeQL CLI | User-provided findings CSV |
 | Issue tracker scope | Jira MCP, Jira API | Linear MCP, GitHub Issues MCP | User-provided scope text |
-| Related context reports | Direct file scan of `{context_dir}` | None | Skip if absent |
+| Related context reports | `scan-context` block | Direct file scan of `{context_dir}` | Skip if absent |
+
+## Known tool limits
+
+Per-tool limitations the conductor must account for when selecting and interpreting tools:
+
+- **GitHub comments are three surfaces, not one.** Issue comments (`/issues/{pr}/comments`), review comments (inline threads), and top-level reviews are separate API calls. `github_get_pull_request_comments` returns review threads only, despite the name. SonarCloud decorations, Codecov, and deploy bots post to the issue-comments surface — collect all three.
+- **`get_pull_request_status` covers the legacy commit-statuses API only.** GitHub Actions results live in check runs (`github_get_check_runs` / Checks API). A tool that only exposes statuses will miss Actions checks.
+- **SonarQube MCP branch queries are inconclusive for PR analyses.** PR analyses are not branches; query with `pullRequest=<n>`. An empty branch-query result does not mean zero findings. See the `sonarcloud-adapter` limitations.
+- **A passed gate is not zero findings.** A green check or passed Quality Gate answers "did the gate pass?", not "what did it find?". Never let one capability's gate status satisfy another capability's findings.
 
 ## Tool categories
 
@@ -131,7 +141,7 @@ The conductor evaluates recommended and optional tooling only when the branch th
 
 ## Out of scope
 
-- This file does not define the internal normalization model. See `references/REFERENCE.md` for that.
+- This file does not define the normalization shapes. See `references/REFERENCE.md` and the `pr-adapter-contract` block for those.
 - This file does not define the config schema. See `references/CONFIG_PATTERN.md` for that.
 - This file does not define the report schema. See `references/CONTEXT_REPORTS.md` for that.
 
@@ -142,4 +152,4 @@ The conductor evaluates recommended and optional tooling only when the branch th
 - `worker-contract` — shared subagent return format
 - [CONFIG_PATTERN.md](CONFIG_PATTERN.md) — config schema and first-run flow
 - [WORKFLOW.md](WORKFLOW.md) — detailed workflow steps
-- [REFERENCE.md](REFERENCE.md) — internal normalization model and state schema
+- [REFERENCE.md](REFERENCE.md) — normalization, state schema, and delta rules

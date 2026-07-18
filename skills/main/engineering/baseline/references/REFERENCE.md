@@ -218,4 +218,4 @@ Generated alongside the Markdown report when `output.default_format` is `html-bo
 
 ## Versioning
 
-Reports include `version: 1.0.1` to match the skill's version. When the skill version changes, report consumers should check the version field and handle older schemas if needed. Treat older reports as potentially stale and prefer re-capturing.
+Reports carry `version: 1` as the report schema version. When the report schema changes, consumers should check the version field and handle older schemas if needed. Treat older reports as potentially stale and prefer re-capturing.

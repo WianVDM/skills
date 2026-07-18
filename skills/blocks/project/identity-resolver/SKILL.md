@@ -1,7 +1,6 @@
 ---
 name: identity-resolver
 description: Resolve a work item from user input. Given a number, URL, branch, ticket key, or arbitrary text, returns a normalized identity with type, key, repo, branch, base, commit, url, and project.
-version: 1.0.0
 invocation: model-invoked
 depends:
   - worker-contract

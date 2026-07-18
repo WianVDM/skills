@@ -4,7 +4,7 @@ Follow the `worker-contract` return contract. Groups, challenges, and weights fe
 
 ## In scope
 
-- Consume normalized data from the `normalize-*` subagents.
+- Consume normalized data produced by the `normalize-observation` worker in the `pr-adapter-contract` shapes.
 - Turn normalized comments and findings into actionable, deduplicated issues.
 - Identify resolved items, rebuttals, and dismissed feedback.
 - Generate a task list when `pr-report.task_list.enabled` is true.
@@ -17,12 +17,12 @@ Follow the `worker-contract` return contract. Groups, challenges, and weights fe
 
 ## Inputs
 
-- Normalized PR metadata and changed files (from `normalize-pr`)
-- Normalized review threads (from `normalize-pr`)
-- Normalized CI failures (from `normalize-ci`)
-- Normalized static-analysis findings (from `normalize-static-analysis`)
-- Normalized ticket scope / acceptance criteria (from `normalize-issue-tracker`)
-- Scope flags (from `scope-checker`)
+- Normalized PR metadata, changed files, reviews, and threads (from `normalize-observation`)
+- Normalized conversation comments (from `normalize-observation`)
+- Normalized CI failures (from `normalize-observation`)
+- Normalized static-analysis findings (from `normalize-observation`)
+- Normalized ticket scope / acceptance criteria (from `normalize-observation`)
+- Scope flags (from the `scope-checker` block)
 - Bot/source mappings from config
 - `pr-report.task_list.enabled` flag
 
