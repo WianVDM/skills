@@ -4,7 +4,7 @@ A model-invoked building block that extracts canonical frontmatter fields from a
 
 ## When to use
 
-Use this skill when you need to read the canonical frontmatter fields such as `name`, `description`, `invocation`, and `version` from a `SKILL.md` file. `version` is returned if present, but it is not required.
+Use this skill when you need to read the canonical frontmatter fields (`name`, `description`, `invocation`) from a `SKILL.md` file. `version` and `depends` are returned when present, but are not part of the required frontmatter.
 
 ## How to use
 
@@ -22,7 +22,7 @@ The skill returns a JSON object with:
 - `description`: skill description.
 - `version`: skill version, or `null` if absent.
 - `invocation`: invocation mode.
-- `version`: skill version, or `null` if absent.
+- `depends`: declared dependencies, or `null` if absent.
 
 ## Directory layout
 

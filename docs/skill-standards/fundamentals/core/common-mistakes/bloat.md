@@ -1,5 +1,7 @@
 # Bloat
 
+**Layer:** universal fundamentals. **Mode:** rule.
+
 Bloat is the class of mistakes that make a skill too large or too repetitive. The agent has to wade through excess, or the same meaning is repeated in multiple places.
 
 ---

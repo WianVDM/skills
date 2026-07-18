@@ -1,5 +1,7 @@
 # Trigger Evaluation Guide
 
+**Layer:** proposed architecture. **Mode:** guide.
+
 A trigger eval tests whether a skill's `description` causes it to load at the right times. A weak description makes a skill invisible; a strong description front-loads the leading words and domain signals the agent should match against.
 
 This guide covers how to write and run trigger evals in practice.
@@ -292,7 +294,7 @@ Use this as a starting point for any model-invoked skill. Replace the bracketed 
 
 ## Iteration and common pitfalls
 
-For description-writing guidance — leading words, trigger phrases, reach clauses, and common pitfalls — see [`FORMAT.md`](./format.md).
+For description-writing guidance — leading words, trigger phrases, reach clauses, and common pitfalls — see [`FORMAT.md`](../reference/format.md).
 
 ---
 
@@ -312,7 +314,14 @@ Keep a human-readable summary in `references/EVAL.md` for reviewers who do not r
 
 ## Related documents
 
-- [`EVALUATION.md`](./evaluation-framework.md) — full evaluation framework, baselines, and composition tests.
+- [`evaluation-framework.md`](../reference/evaluation-framework.md) — full evaluation framework, baselines, and composition tests.
 - [`fundamentals/architecture/evaluation.md`](../fundamentals/architecture/evaluation.md) — review checklists and fundamentals.
 - [`fundamentals/core/form-and-style/`](../fundamentals/core/form-and-style/) — leading words, completion criteria, and description craft.
-- [`FORMAT.md`](./format.md) — the `description` field and frontmatter schema.
+- [`format.md`](../reference/format.md) — the `description` field and frontmatter schema.
+
+---
+
+## Research basis
+
+- The 10/10 trigger-eval target and the should-trigger / should-not-trigger method: original to this repo, strongly supported by the research finding that description quality is the primary determinant of skill routing (see [`../reference/sources.md`](../reference/sources.md)).
+- The `evals/evals.json` artifact shape draws on [aws-samples/sample-agent-skill-eval](https://github.com/aws-samples/sample-agent-skill-eval) and the research synthesis in [`../reference/evaluation-framework.md`](../reference/evaluation-framework.md).

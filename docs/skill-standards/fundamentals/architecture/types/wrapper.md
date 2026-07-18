@@ -1,14 +1,14 @@
 # Wrapper
 
+**Layer:** proposed architecture. **Mode:** rule.
+
 A wrapper skill is a thin layer that adapts a building block or conductor for human interaction. It adds prompts, presentation, confirmation, and user-facing language.
 
 ---
 
 ## When to use
 
-- A building block or conductor exists but needs user-facing prompts or confirmation.
-- The user should see a curated summary rather than raw output.
-- The workflow needs explicit human gates between phases.
+Use a wrapper when a building block or conductor needs user-facing prompts, curated presentation, or explicit human gates between phases. See [`../../../patterns/wrapper.md`](../../../patterns/wrapper.md) for the full wrapper pattern.
 
 ---
 
@@ -33,7 +33,7 @@ A wrapper skill is a thin layer that adapts a building block or conductor for hu
 
 Letting the wrapper grow into a conductor by adding phases, state, or complex coordination. If that happens, promote it to a conductor.
 
-See [`../common-mistakes/tooling-and-shape-mistakes.md`](../common-mistakes/tooling-and-shape-mistakes.md) for wrong type for the job and [`../../../patterns/wrapper.md`](../../../patterns/wrapper.md) for the full wrapper pattern.
+See [`../common-mistakes/tooling-and-shape-mistakes.md`](../../core/common-mistakes/tooling-and-shape-mistakes.md) for wrong type for the job and [`../../../patterns/wrapper.md`](../../../patterns/wrapper.md) for the full wrapper pattern.
 
 ---
 

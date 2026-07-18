@@ -1,5 +1,7 @@
 # Skill vs script
 
+**Layer:** universal fundamentals. **Mode:** rule.
+
 A script is deterministic: same input, same output, no reasoning. A skill is judgment-shaped: it guides how the agent reasons.
 
 | Use a script | Use a skill |

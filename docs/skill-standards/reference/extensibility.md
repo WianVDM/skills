@@ -2,6 +2,8 @@
 
 ## At a glance
 
+**Layer:** proposed architecture. **Mode:** reference.
+
 This document extends the core standard to **non-coding skills** and **multi-agent coordination**. It covers asset-heavy skills, output-format triggers, verification artifacts, subjective-output evaluation, and file-based handoffs.
 
 **Read this if:** you are writing a design, writing, data, or visual skill, or coordinating multiple agents.
@@ -69,12 +71,7 @@ Recommend producing verification artifacts for complex outputs:
 
 ### Subjective-output evaluation
 
-Non-coding outputs are often evaluated subjectively. Use the subjective-output hierarchy from `EVALUATION.md`:
-
-1. Deterministic checks.
-2. Visual QA or reader testing.
-3. Structured-rubric LLM judge.
-4. Human review.
+Non-coding outputs are often evaluated subjectively. Use the subjective-output hierarchy: deterministic checks first, an LLM judge only when deterministic checks are impossible, human review as the final arbiter. See [`evaluation-framework.md`](./evaluation-framework.md) for the full hierarchy.
 
 Individual verdicts are capped at medium-high confidence.
 
@@ -195,16 +192,17 @@ The following extensibility concerns are **limited** and are documented as such:
 
 ---
 
-## Key takeaways
+## Related documents
 
-- Non-coding skills use the **same `SKILL.md` core** as coding skills; differences are in assets, outputs, and evaluation.
-- Ship large static resources in **`assets/`** and reference them with relative paths.
-- Include **output-format triggers** in the `description` when the skill produces a specific file type.
-- Produce **verification artifacts** (previews, recalc logs, validation reports) for complex outputs.
-- Use the **subjective-output hierarchy** from `EVALUATION.md` for non-coding outputs.
-- Coordinate agents through **file-based handoffs** and shared ledgers, not shared mutable memory.
-- Declare **MCP dependencies** by name and capability, not by host config path.
-- Agent envelopes and peer-to-peer semantics remain **harness-specific** and are intentionally not standardized in v1.
+- [`format.md`](./format.md) — the `SKILL.md` core and sibling directories.
+- [`package.md`](./package.md) — dependency declaration.
+- [`evaluation-framework.md`](./evaluation-framework.md) — evaluation framework, including subjective-output hierarchy and multi-agent evaluation.
+- [`governance.md`](./governance.md) — governance and audit.
+- [`patterns/conductor.md`](../patterns/conductor.md) — coordination and delegation.
+- [`patterns/conductor-implementer-split.md`](../patterns/conductor-implementer-split.md) — reasoning/execution split.
+- [`patterns/context-reports.md`](../patterns/context-reports.md) — structured shared artifacts.
+
+---
 
 ## Research basis
 
@@ -214,16 +212,6 @@ The following extensibility concerns are **limited** and are documented as such:
 - **Verification artifacts** and **subjective-output hierarchy** are drawn from the research evaluation framework.
 - The **multi-agent coordination** vocabulary and **file-based handoff** pattern are drawn from the research on multi-agent coordination, obra/superpowers durable progress ledgers, and Claude Code worktree isolation.
 - The recommendation to leave **agent envelopes** (tools, model, MCP, sandbox) harness-specific is drawn from the research finding that no convergence exists on a shared subagent format.
-- **MCP dependency declaration** is drawn from the research on MCP governance and the dependency model in `PACKAGE.md`.
+- **MCP dependency declaration** is drawn from the research on MCP governance and the dependency model in [`package.md`](./package.md).
 
 ---
-
-## Related documents
-
-- [`FORMAT.md`](./format.md) — the `SKILL.md` core and sibling directories.
-- [`PACKAGE.md`](./package.md) — dependency declaration.
-- [`EVALUATION.md`](./evaluation-framework.md) — evaluation framework, including subjective-output hierarchy and multi-agent evaluation.
-- [`GOVERNANCE.md`](./governance.md) — governance and audit.
-- [`patterns/conductor.md`](../patterns/conductor.md) — coordination and delegation.
-- [`patterns/conductor-implementer-split.md`](../patterns/conductor-implementer-split.md) — reasoning/execution split.
-- [`patterns/context-reports.md`](../patterns/context-reports.md) — structured shared artifacts.

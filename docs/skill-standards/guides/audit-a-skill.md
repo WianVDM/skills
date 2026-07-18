@@ -1,5 +1,7 @@
 # Audit a skill
 
+**Layer:** proposed architecture. **Mode:** guide.
+
 Use this guide to check a skill against the fundamentals and standards.
 
 1. Read the skill's `SKILL.md` and identify its type and invocation mode.

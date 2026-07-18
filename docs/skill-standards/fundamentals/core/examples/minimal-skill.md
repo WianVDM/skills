@@ -1,5 +1,7 @@
 # Minimal skill
 
+**Layer:** universal fundamentals. **Mode:** reference.
+
 A narrow, model-invoked building block that returns structured output.
 
 ```text
@@ -13,7 +15,6 @@ find-skills/
 ```markdown
 ---
 name: find-skills
-version: 1.0.0
 invocation: model-invoked
 description: Discover available skills for the current project and return structured results. Use when a skill or conductor needs to know what skills are available, or when the user asks to find skills.
 ---
@@ -26,7 +27,7 @@ Return a structured list of skills available in the project and user skill direc
 
 - Scan `.agents/skills/` and `~/.agents/skills/`.
 - Read each skill's `SKILL.md` frontmatter.
-- Return name, description, version, and type.
+- Return name, description, and type.
 
 ## Out of scope
 
@@ -44,7 +45,6 @@ count: 3
 
 - name: review-ui
   description: Review UI code for design-system compliance.
-  version: 1.0.0
   type: building_block
   invocation: model-invoked
 

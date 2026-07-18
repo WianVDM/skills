@@ -1,5 +1,7 @@
 # Split, prune, or retire
 
+**Layer:** universal fundamentals. **Mode:** rule.
+
 Not every failing skill can be saved. Sometimes the right move is to split it, prune it, or remove it.
 
 ---
@@ -13,7 +15,9 @@ Splitting is the right move when a branch of the skill has become a distinct res
 - The branch is **long and independent** enough that hiding its post-completion steps improves the parent skill.
 - The description is becoming too broad because it must cover two very different tasks.
 
-Do not split just for organization. If the split skill would rarely be used on its own, keep it as a reference or sub-step. See [`../../../reference/context-budget.md`](../../../reference/context-budget.md) for splitting guidance.
+Do not split just for organization. If the split skill would rarely be used on its own, keep it as a reference or sub-step. See [`../../architecture/types/choosing-a-type.md`](../../architecture/types/choosing-a-type.md) for the splitting rule.
+
+A `pr-report` skill whose review-triage branch grew its own triggers ("triage this feedback", "check CI") is a split candidate: the branch has distinct leading words and consumers that reach it by name. Splitting `pr-report` into "section 1, section 2" because the file feels long is not — the branches share one trigger and one consumer.
 
 ---
 

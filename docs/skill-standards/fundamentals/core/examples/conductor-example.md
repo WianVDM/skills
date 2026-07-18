@@ -1,5 +1,7 @@
 # Conductor example
 
+**Layer:** universal fundamentals. **Mode:** reference.
+
 A conductor skill that coordinates research, state capture, and planning for a ticket.
 
 ```text
@@ -18,7 +20,6 @@ ticket-planning/
 ```markdown
 ---
 name: ticket-planning
-version: 1.0.0
 invocation: user-invoked
 description: Plan implementation for a ticket by researching its scope, capturing current state, and producing a structured plan. Use when the user asks to "plan this ticket", "scope this work", or "prepare an implementation plan".
 ---

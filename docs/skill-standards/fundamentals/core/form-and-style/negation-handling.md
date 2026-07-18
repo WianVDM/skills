@@ -1,5 +1,7 @@
 # Negation handling
 
+**Layer:** universal fundamentals. **Mode:** rule.
+
 LLMs handle negation weakly. A rule that says "do not X" may still prime the agent toward X. Pair every prohibition with a positive directive.
 
 | Weak | Strong |

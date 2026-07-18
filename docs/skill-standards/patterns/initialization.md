@@ -1,5 +1,7 @@
 # Initialization
 
+**Layer:** proposed architecture. **Mode:** rule.
+
 Initialization is the first-run phase that prepares a global, configurable, or pluggable skill for use in a new project. It detects the environment, creates or migrates configuration, validates required capabilities, asks the user for required preferences, and writes initial notes.
 
 Initialization is not a separate skill type. It is a phase that some skills run before their main work.

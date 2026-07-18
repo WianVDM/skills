@@ -1,5 +1,7 @@
 # Workflow mistakes
 
+**Layer:** universal fundamentals. **Mode:** rule.
+
 Workflow mistakes are the class of mistakes that make the agent follow the skill mechanically or rush through it. The skill is either too prescriptive about mechanics or too easy to complete early.
 
 ---
@@ -17,8 +19,6 @@ A skill that lists every keystroke and command. The agent becomes a slow script 
 **Cure**
 
 State intent, not mechanics. Use scripts for deterministic steps that must be repeated exactly.
-
-See [`../form-and-style/anti-patterns.md`](../form-and-style/anti-patterns.md) for the full manual-in-disguise anti-pattern.
 
 ---
 

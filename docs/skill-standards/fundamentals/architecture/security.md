@@ -1,5 +1,7 @@
 # Security
 
+**Layer:** proposed architecture. **Mode:** rule.
+
 A skill should be safe to use in an untrusted project by default. Security is not a separate concern; it shapes how a skill handles secrets, destructive actions, external access, and required capabilities.
 
 ---
@@ -77,10 +79,6 @@ Examples:
 
 ---
 
-## Research basis
-
-See [SOURCES.md](../../reference/sources.md).
-
 ## Security checklist
 
 Use this when designing or reviewing a skill.
@@ -93,3 +91,9 @@ Use this when designing or reviewing a skill.
 - [ ] The skill documents what data leaves the local machine.
 - [ ] The skill fails closed when a required capability is missing.
 - [ ] The skill is safe to run in an untrusted project by default.
+
+---
+
+## Research basis
+
+See [SOURCES.md](../../reference/sources.md).

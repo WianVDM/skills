@@ -1,6 +1,8 @@
 # Frontmatter
 
-A skill declares its identity in the frontmatter of `SKILL.md`. See [`../../../reference/format.md`](../../../reference/format.md) for the full portable frontmatter schema and [`../../../reference/package.md`](../../../reference/package.md) for package-level metadata. The rest of this document covers the structural role of frontmatter and how to write a strong description.
+**Layer:** universal fundamentals. **Mode:** explanation.
+
+A skill declares its identity in the frontmatter of `SKILL.md`. See [`../../../reference/format.md`](../../../reference/format.md) for the full portable frontmatter schema and [`../../../reference/package.md`](../../../reference/package.md) for package-level metadata. The rest of this document covers naming conventions and how to choose an invocation mode.
 
 ```yaml
 ---
@@ -9,8 +11,6 @@ description: What this skill does and when to trigger it.
 invocation: model-invoked
 ---
 ```
-
-`version` is optional; add it once the skill is shared, consumed, or versioned.
 
 ---
 
@@ -24,16 +24,6 @@ invocation: model-invoked
 
 ---
 
-## Requirements
-
-- `name` matches the directory name.
-- `description` is under 1024 characters.
-- `invocation` is required and must be `model-invoked` or `user-invoked`.
-- The description states what the skill does and when to use it, with trigger keywords.
-- `version` is optional; if used, it should follow semantic meaning for schema or behavior changes once the skill is shared or consumed.
-
----
-
 ## Invocation mode
 
 A skill is either **model-invoked** or **user-invoked**. The choice trades two loads:
@@ -43,21 +33,15 @@ A skill is either **model-invoked** or **user-invoked**. The choice trades two l
 
 Choose model-invocation only when the agent or another skill must reach the skill on its own. If it only ever fires by hand, make it user-invoked and pay no context load.
 
-When user-invoked skills multiply past what the user can remember, the cure is a **router skill**: a single user-invoked skill that names the others and when to reach for each. A router skill can only hint; it cannot invoke user-invoked skills on the user's behalf.
+When user-invoked skills multiply past what the user can remember, the cure is a **router skill**: a single user-invoked skill that names the others and when to reach for each. A router skill can only hint; it cannot invoke user-invoked skills on the user's behalf. See [`../../../patterns/wrapper.md`](../../../patterns/wrapper.md) for the router pattern.
 
----
-
-### Declaring the invocation mode
-
-The frontmatter must declare the invocation mode explicitly. Use `invocation: model-invoked` or `invocation: user-invoked`. For harnesses that only recognize the boolean flag, `disable-model-invocation: true` is equivalent to `invocation: user-invoked`. If both fields are present, they must agree.
-
-If a harness encounters a `SKILL.md` without an explicit `invocation`, it may fall back to a default, but that behavior is harness-specific and not guaranteed by this standard. Always declare `invocation` explicitly for portability.
+`invocation` is required. Declare it explicitly, and make sure it agrees with `disable-model-invocation` if both are present. [`../../../reference/format.md`](../../../reference/format.md) has the declaration rules and harness fallback behavior.
 
 ---
 
 ## Description as a context pointer
 
-The `description` is the most important field in `SKILL.md`. It is the context pointer that causes the agent to load the skill. See [`../../../reference/format.md`](../../../reference/format.md) for the full portable frontmatter description guidance, and [`../../../reference/trigger-evals.md`](../../../reference/trigger-evals.md) for how to test descriptions with trigger evals.
+The `description` is the most important field in `SKILL.md`. It is the context pointer that causes the agent to load the skill. See [`../../../reference/format.md`](../../../reference/format.md) for the full portable frontmatter description guidance, and [`../../../guides/trigger-evals.md`](../../../guides/trigger-evals.md) for how to test descriptions with trigger evals.
 
 ---
 

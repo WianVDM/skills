@@ -1,6 +1,8 @@
 # Context Budget and Performance
 
-Model-invoked skills live in the agent's context window. Every such skill pays a **context cost** on every turn: its description, and sometimes key excerpts from its body, compete for limited space and attention. This document gives practical guidance for keeping that cost low while keeping skills useful.
+**Layer:** universal fundamentals. **Mode:** rule.
+
+Model-invoked skills live in the agent's context window. Every such skill pays **context load** on every turn: its description, and sometimes key excerpts from its body, compete for limited space and attention. This document gives practical guidance for keeping that cost low while keeping skills useful.
 
 ---
 
@@ -17,27 +19,15 @@ User-invoked skills pay **cognitive load** instead: the user must remember they 
 
 ## Description length
 
-Aim for **under 1024 characters** for every model-invoked description. Some harnesses impose shorter limits or penalize long descriptions in routing quality. For the full description craft guidance — leading words, distinct triggers, and reach clauses — see [`FORMAT.md`](./format.md).
+Aim for **under 1024 characters** for every model-invoked description. Some harnesses impose shorter limits or penalize long descriptions in routing quality. For the full description craft guidance — leading words, distinct triggers, and reach clauses — see [`FORMAT.md`](../../reference/format.md).
 
 ---
 
 ## When to split a skill
 
-Splitting a skill creates a new model-invoked description and therefore a new context cost. Split only when the new description earns its place.
+Splitting a skill creates a new model-invoked description and therefore new context load. Split only when the new description earns its place: a distinct leading word, a consumer that must reach the skill by name, or a branch long enough to hide its post-completion steps. Do not split for organization alone.
 
-Split when:
-
-- The new skill has a **distinct leading word** that should trigger it on its own.
-- Another skill or conductor **must reach it** by name.
-- A branch of the current skill is **long and independent** enough to hide its post-completion steps from the main flow.
-
-Do not split when:
-
-- The two skills would share the same description and only differ in minor parameters.
-- The split would create a skill that is rarely used on its own.
-- The only reason is organization; use `references/` or headings instead.
-
-See `fundamentals/core/types/` for the invocation-based splitting rule and the premature-completion problem.
+See [`../architecture/types/choosing-a-type.md`](../architecture/types/choosing-a-type.md) for the splitting rule and [`./failure-recovery/split-prune-retire.md`](./failure-recovery/split-prune-retire.md) for the operational side.
 
 ---
 
@@ -59,17 +49,7 @@ A large library of model-invoked skills can crowd the context window. Strategies
 
 ### 1. Make rarely-used skills user-invoked
 
-If a skill only fires when the user explicitly asks, make it user-invoked. The cost shifts from context to human memory. Use a **router skill** to reduce that memory load:
-
-```markdown
-# Tools router
-
-This router points to user-invoked tools for design, testing, and deployment. Use it when you need one of these but cannot remember the exact name.
-
-- `review-ui` — review UI code for design-system compliance.
-- `run-tests` — run the project's test command and report results.
-- `deploy-preview` — deploy a preview build.
-```
+If a skill only fires when the user explicitly asks, make it user-invoked. The cost shifts from context to human memory. A **router skill** — one user-invoked skill that names the others and when to reach for each — reduces that memory load. See [`../../patterns/wrapper.md`](../../patterns/wrapper.md) for the router pattern.
 
 ### 2. Use namespacing and packages
 
@@ -110,7 +90,19 @@ See `patterns/stateful.md` and `patterns/context-reports.md` for the stateful an
 
 ## Example: trimming a description
 
-See [`FORMAT.md`](./format.md) for a full before-and-after example and the description craft checklist.
+Before:
+
+```yaml
+description: This skill is a helpful utility that assists users with the task of reviewing their UI code in order to check for any potential accessibility issues and design-system violations that may exist.
+```
+
+After:
+
+```yaml
+description: Review UI code for accessibility and design-system compliance. Use when asked to "review my UI", "check accessibility", or "audit design".
+```
+
+The trimmed version drops the throat-clearing ("This skill is a helpful utility"), names the domain in the first three words, and replaces vague scope ("any potential issues") with triggers the router can match. See [`../../reference/format.md`](../../reference/format.md) for the description craft rules and [`../../guides/trigger-evals.md`](../../guides/trigger-evals.md) for how to test the result.
 
 ---
 
@@ -124,12 +116,19 @@ See [`FORMAT.md`](./format.md) for a full before-and-after example and the descr
 
 ## Related documents
 
-- [`fundamentals/core/types/`](../fundamentals/core/types/) — choosing invocation mode and splitting rules.
-- [`fundamentals/core/common-mistakes/`](../fundamentals/core/common-mistakes/) — bloat, duplication, and premature completion.
-- [`fundamentals/core/structure/`](../fundamentals/core/structure/) — progressive disclosure and the information hierarchy.
-- [`FORMAT.md`](./format.md) — the `description` field and frontmatter schema.
-- [`patterns/building-block.md`](../patterns/building-block.md) — narrow, reusable skills that reduce duplication.
-- [`patterns/conductor.md`](../patterns/conductor.md) — composing skills without multiplying descriptions.
-- [`patterns/wrapper.md`](../patterns/wrapper.md) — user-invoked adaptation layer.
-- [`patterns/stateful.md`](../patterns/stateful.md) — surviving context compaction.
-- [`patterns/context-reports.md`](../patterns/context-reports.md) — resumable structured outputs.
+- [`../architecture/types/`](../architecture/types/) — choosing invocation mode and splitting rules.
+- [`common-mistakes/`](./common-mistakes/) — bloat, duplication, and premature completion.
+- [`structure/`](./structure/) — progressive disclosure and the information hierarchy.
+- [`format.md`](../../reference/format.md) — the `description` field and frontmatter schema.
+- [`patterns/building-block.md`](../../patterns/building-block.md) — narrow, reusable skills that reduce duplication.
+- [`patterns/conductor.md`](../../patterns/conductor.md) — composing skills without multiplying descriptions.
+- [`patterns/wrapper.md`](../../patterns/wrapper.md) — user-invoked adaptation layer.
+- [`patterns/stateful.md`](../../patterns/stateful.md) — surviving context compaction.
+- [`patterns/context-reports.md`](../../patterns/context-reports.md) — resumable structured outputs.
+
+---
+
+## Research basis
+
+- Context load and description-budget framing, from the [Claude Code skills documentation](https://code.claude.com/docs/en/skills) and the context-stack analysis across harnesses, consolidated in [`../../reference/sources.md`](../../reference/sources.md).
+- The 1024-character target and the "first 10–15 words" heuristic: original to this repo. Exact harness limits and trigger thresholds are proprietary, so these are safe heuristics, not universal constants (see Limitations).

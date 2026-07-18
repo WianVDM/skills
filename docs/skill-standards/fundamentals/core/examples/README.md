@@ -1,5 +1,7 @@
 # Examples
 
+**Layer:** universal fundamentals. **Mode:** reference.
+
 These examples show how the fundamentals apply to real skill shapes. They are illustrative, not exhaustive. For pattern-specific examples, see the relevant pattern document:
 
 - [Building-block examples](../../../patterns/building-block.md)

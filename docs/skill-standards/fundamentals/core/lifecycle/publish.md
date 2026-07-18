@@ -1,5 +1,7 @@
 # Publish
 
+**Layer:** universal fundamentals. **Mode:** guide.
+
 Once the skill is stable, publish or install it.
 
 - Bump the version if the schema, config, or behavior changed.

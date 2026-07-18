@@ -1,5 +1,7 @@
 # Wrapper example
 
+**Layer:** universal fundamentals. **Mode:** reference.
+
 A wrapper skill that adapts a building block for human interaction.
 
 ```text
@@ -13,7 +15,6 @@ run-ui-review/
 ```markdown
 ---
 name: run-ui-review
-version: 1.0.0
 invocation: user-invoked
 description: Run a UI review for the user. Use when the user asks to "review my UI", "check my UI", or "audit the design of this page".
 ---

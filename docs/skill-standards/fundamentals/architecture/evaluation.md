@@ -1,5 +1,7 @@
 # Evaluation
 
+**Layer:** proposed architecture. **Mode:** rule.
+
 Use these checklists and questions when designing or reviewing a skill. A skill does not have to pass every item perfectly, but it should fail knowingly, not accidentally.
 
 ---
@@ -8,16 +10,7 @@ Use these checklists and questions when designing or reviewing a skill. A skill 
 
 A skill is not finished when it is written. It is finished when it reliably improves the agent's behavior. Test the skill against representative prompts and iterate.
 
-### The basic loop
-
-1. **Draft** the skill.
-2. **Write test prompts** — 2–3 realistic tasks a user would actually ask.
-3. **Run with-skill and baseline** in parallel:
-   - **With-skill**: the agent has access to the skill.
-   - **Baseline**: the agent has no skill (or the old version, if improving an existing skill).
-4. **Evaluate** the outputs qualitatively and with objective assertions where possible.
-5. **Iterate** on the skill based on what fails.
-6. **Expand** the test set once the skill is stable.
+The basic loop: draft the skill, write 2–3 realistic test prompts, run with-skill and baseline in parallel, evaluate the outputs, iterate on what fails, and expand the test set once the skill is stable. See [`../../reference/evaluation-framework.md`](../../reference/evaluation-framework.md) for the full loop and the eval artifact format.
 
 ### Objective assertions
 
@@ -32,16 +25,9 @@ Subjective skills (writing style, design quality) are better evaluated qualitati
 
 ### Trigger evals
 
-Test the description separately from the body:
+Test the description separately from the body. Model-invoked skills need a trigger-eval set: at least 10 should-trigger and 10 should-not-trigger queries, re-run after any description rewrite. See [`../../guides/trigger-evals.md`](../../guides/trigger-evals.md) for the full method.
 
-- Collect 10 **should-trigger** queries that should cause the agent to load the skill.
-- Collect 10 **should-not-trigger** queries that should not load it, focusing on near-misses.
-- Run them and measure trigger accuracy.
-- Rewrite the description if the wrong skills fire or the right skill does not fire.
-
-See [structure/frontmatter.md](../core/structure/frontmatter.md) for description optimization guidance.
-
-For user-invoked skills, the description is primarily human-facing, but a clarity eval still helps: collect realistic prompts that should and should not lead a human to reach for the skill. The 10/10 numeric target is most critical for model-invoked skills.
+See [reference/format.md](../../reference/format.md) for description craft.
 
 ### What to watch for
 
@@ -135,7 +121,7 @@ See [when-to-create-a-skill/](../core/when-to-create-a-skill/).
 - Does it adapt another skill for human interaction? → Wrapper.
 - Does it combine layers with a clear primary role? → Multi-layer / hybrid.
 
-See [types/](../core/types/).
+See [types/](./types/).
 
 ### Is every line load-bearing?
 
@@ -169,24 +155,14 @@ See [building-block.md](../../patterns/building-block.md).
 
 ---
 
-## The predictability test
+## The three tests
 
-Imagine running the skill ten times on similar inputs. Would the agent follow the same process each time? If the answer is no, the skill is too vague.
-
-## The minimalism test
-
-Remove one paragraph at a time from `SKILL.md`. If the skill still works, that paragraph was sediment. Prune it.
-
-## The litmus test
-
-Complete this sentence:
-
-> This skill makes the agent more predictable at ______ by enforcing ______.
-
-If both blanks are hard to fill, the skill is not yet well-defined.
+- **Predictability test** — would the agent follow the same process ten times out of ten? See [`../core/what-is-a-skill/root-virtues.md`](../core/what-is-a-skill/root-virtues.md).
+- **Minimalism test** — remove a paragraph; if the skill still works, it was sediment. See [`../core/form-and-style/pruning.md`](../core/form-and-style/pruning.md).
+- **Litmus test** — "This skill makes the agent more predictable at ______ by enforcing ______." See [`../core/lifecycle/design.md`](../core/lifecycle/design.md).
 
 ---
 
 ## Research basis
 
-See [SOURCES.md](../../reference/sources.md).
+See [`sources.md`](../../reference/sources.md).

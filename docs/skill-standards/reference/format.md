@@ -2,7 +2,9 @@
 
 ## At a glance
 
-This document specifies the **portable core** of a skill: the `SKILL.md` file with YAML frontmatter and a markdown body, plus optional sibling directories. It defines required and recommended frontmatter fields, the `description` as routing surface, invocation modes, and the conventional layout.
+**Layer:** universal fundamentals. **Mode:** reference.
+
+This document specifies the **portable core** of a skill: the `SKILL.md` file with YAML frontmatter and a markdown body, plus optional sibling directories. It defines the required frontmatter fields, the `description` as routing surface, invocation modes, and the conventional layout.
 
 **Read this if:** you are writing a `SKILL.md` or building a harness loader.
 
@@ -26,7 +28,6 @@ A harness that does not parse YAML frontmatter can fall back to the markdown bod
 ```markdown
 ---
 name: review-ui
-version: 1.0.0
 invocation: model-invoked
 ---
 
@@ -65,13 +66,7 @@ Review UI code for design-system compliance, accessibility, and responsive behav
 | `description` | string | Required. Min 1, max 1024 characters. | One-sentence routing surface. Tells the agent when to load the skill. |
 | `invocation` | string | Enum: `model-invoked`, `user-invoked`. Required. | Determines how the skill is reached and whether it pays context load or cognitive load. |
 
-### Optional fields
-
-| Field | Type | Constraints | Purpose |
-|-------|------|-------------|---------|
-| `version` | string | Semantic version (`MAJOR.MINOR.PATCH[-prerelease][+build]`). | Version of the skill. Consider adding one once the skill is shared, consumed, or versioned. |
-
-`version` is optional for personal, experimental, or local skills. Add it once a skill is shared, consumed, versioned, or otherwise needs a compatibility signal.
+These three fields are the entire portable core. Versioning, once a skill has consumers, lives at the package level — see [`package.md`](./package.md) and [`../patterns/versioning.md`](../patterns/versioning.md).
 
 ### Harness hints
 
@@ -93,43 +88,7 @@ Harnesses should ignore unknown top-level frontmatter fields rather than fail. T
 
 ## Formal frontmatter schema
 
-A JSON Schema for the portable frontmatter surface is maintained at `schemas/skill-frontmatter.schema.json`. The schema declares required fields, value constraints, harness hints, and forward-compatibility rules. Harnesses may use it for validation, but should still ignore unknown fields at runtime.
-
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "required": ["name", "description", "invocation"],
-  "properties": {
-    "name": {
-      "type": "string",
-      "pattern": "^[a-z0-9-]+$",
-      "minLength": 1,
-      "maxLength": 128
-    },
-    "description": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 1024
-    },
-    "version": {
-      "type": "string",
-      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*))?(?:\\+([a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*))?$"
-    },
-    "invocation": {
-      "type": "string",
-      "enum": ["model-invoked", "user-invoked"]
-    },
-    "allowed-tools": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-    "disallowed-tools": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-    "disable-model-invocation": { "type": "boolean" },
-    "globs": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-    "paths": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-    "depends": { "type": "array", "items": { "type": "string", "minLength": 1 } }
-  },
-  "additionalProperties": true
-}
-```
+A JSON Schema for the portable frontmatter surface is maintained at [`../schemas/skill-frontmatter.schema.json`](../schemas/skill-frontmatter.schema.json). The schema declares required fields, value constraints, harness hints, and forward-compatibility rules. Harnesses may use it for validation, but should still ignore unknown fields at runtime.
 
 ---
 
@@ -137,17 +96,29 @@ A JSON Schema for the portable frontmatter surface is maintained at `schemas/ski
 
 The `description` is the most important field in `SKILL.md`. It is the **context pointer** that causes the agent to load the skill. A weak description makes the skill invisible; a strong description front-loads the leading words and domain signals that the agent should match against.
 
+The canonical shape:
+
+```text
+<What the skill does, leading word or domain first>. Use when <trigger 1>, <trigger 2>, <trigger 3>. <Reach clause if other skills consume it>.
+```
+
 A good description:
 
 - States what the skill does.
-- Front-loads the **leading word** or domain.
+- Front-loads the **leading word** or domain. The first 10–15 words decide routing.
 - Lists one trigger per distinct branch. Synonyms that rename the same branch are duplication — collapse them.
-- Includes a reach clause for when another skill needs it, if applicable.
+- Adds a **reach clause** when another skill needs it: a sentence naming the consuming situation, so a conductor or building block can route to the skill without the user naming it. "Lets adapters resolve tokens without exposing secrets" is a reach clause; "Use when asked to review UI" is a user trigger.
 
 Example:
 
 ```yaml
 description: Review UI code for Web Interface Guidelines compliance. Use when asked to "review my UI", "check accessibility", "audit design", "review UX", or "check my site against best practices".
+```
+
+Example with a reach clause:
+
+```yaml
+description: Resolve secure tokens from environment variables, MCP config files, or a one-time user prompt. Use when an adapter needs credentials. Lets skills reference a token without exposing the secret value.
 ```
 
 Weak example:
@@ -156,22 +127,17 @@ Weak example:
 description: Helps with UI reviews.
 ```
 
-Keep the description under 1024 characters when possible. Some harnesses impose context budgets on descriptions.
+Keep the description under 1024 characters. The schema enforces this cap, and some harnesses impose shorter budgets — see [`context-budget.md`](../fundamentals/core/context-budget.md).
 
-See `fundamentals/core/structure/` for trigger evals and description optimization.
+Test descriptions with trigger evals in [`trigger-evals.md`](../guides/trigger-evals.md). Craft guidance — leading words, pruning, the no-op test — lives in [`../fundamentals/core/form-and-style/`](../fundamentals/core/form-and-style/).
 
 ---
 
 ## The `invocation` field
 
-`invocation` is a **required** field. A skill is either **model-invoked** or **user-invoked**. The choice trades two loads:
+`invocation` is a **required** field. A skill is either **model-invoked** (the agent and other skills can reach it, at the cost of context load on every turn) or **user-invoked** (reachable only by name, at the cost of cognitive load). See [`../fundamentals/core/structure/frontmatter.md`](../fundamentals/core/structure/frontmatter.md) for the full trade-off and how to choose.
 
-- **Model-invoked**: the description stays in the agent's context, so the skill can fire autonomously and other skills can reach it. This pays **context load** on every turn. A model-invoked skill is still reachable by the user typing its name.
-- **User-invoked**: the description is not kept in the agent's context for routing. Only the user can invoke it by name. This pays **cognitive load** — the user must remember it exists. No other skill can reach it.
-
-Choose model-invocation only when the agent or another skill must reach the skill on its own. If it only ever fires by hand, make it user-invoked and pay no context load.
-
-If a harness encounters a `SKILL.md` without an explicit `invocation`, it may fall back to a default (often model-invoked), but that behavior is harness-specific and not guaranteed by this standard. Always declare `invocation` explicitly for portability.
+Always declare `invocation` explicitly. If a harness encounters a `SKILL.md` without one, it may fall back to a default (often model-invoked), but that behavior is harness-specific and not guaranteed by this standard.
 
 When both `invocation` and `disable-model-invocation` are present, they must agree. `disable-model-invocation: true` is equivalent to `invocation: user-invoked`.
 
@@ -179,33 +145,26 @@ When both `invocation` and `disable-model-invocation` are present, they must agr
 
 ## The markdown body
 
-The body is the actual guidance. It should answer:
+The body is the actual guidance: what the skill does, when it runs, the contract, the scope, and where detailed reference lives. It can be instruction-heavy, guideline-heavy, or a hybrid of the two.
 
-- What does this skill do?
-- When should it run?
-- What is the core contract?
-- What is in and out of scope?
-- Where does detailed reference live?
-
-The body can take one of three forms:
-
-1. **Instruction-heavy** — ordered steps for sequential processes.
-2. **Guideline-heavy** — principles and rules for domain-shaped judgment.
-3. **Hybrid** — steps for the sequence and guidelines for the decisions inside each step.
-
-See `fundamentals/core/form-and-style/` for choosing the right form and writing strong completion criteria.
+See [`../fundamentals/core/structure/skill-md.md`](../fundamentals/core/structure/skill-md.md) for the body's job and [`../fundamentals/core/form-and-style/`](../fundamentals/core/form-and-style/) for choosing the form and writing strong completion criteria.
 
 ---
 
 ## Sibling directories
 
-These directories are optional. Include them only when they add value.
+These directories are optional. Include them only when they add value, and never empty.
 
-### `references/`
+| Directory | Purpose |
+|-----------|---------|
+| `references/` | Deep detail: schemas, edge cases, examples, config patterns, dependency declarations. Every reference file is reachable from `SKILL.md` or another reference file. |
+| `subagents/` | Worker personas for delegation. Each worker prompt states role, scope, allowed tools, forbidden actions, and return format. |
+| `scripts/` | Deterministic helpers: documented, safe, isolated, failure-explicit. |
+| `assets/` | Templates and static resources: fonts, images, sample files, document templates. |
 
-Deep detail: schemas, edge cases, examples, config patterns, context report schemas, and dependency declarations. Every reference file should be reachable from `SKILL.md` or another reference file.
+See [`../fundamentals/core/structure/optional-directories.md`](../fundamentals/core/structure/optional-directories.md) for the rules each directory must satisfy.
 
-Common files:
+Common `references/` files:
 
 - `references/REFERENCE.md` — general reference.
 - `references/CONFIG_PATTERN.md` — config schema.
@@ -215,18 +174,6 @@ Common files:
 - `references/DEPENDENCIES.md` — required skills, tools, MCP servers, environment variables.
 - `references/CHAINLOG.md` — chainlog classification for producers, consumers, or both. Absent means `neither`.
 - `references/VERSIONING.md` — versioning policy and migration paths.
-
-### `subagents/`
-
-Worker personas for delegation. Each worker prompt must state role, scope, allowed tools, forbidden actions, and return format. Workers should be shorter than the parent skill and should not duplicate shared context.
-
-### `scripts/`
-
-Deterministic helpers. Scripts are documented, safe, isolated, and failure-explicit. Prefer read-only inspection unless the script is explicitly designed to mutate state. Scripts should not ask the user for input; the skill should collect input and pass it as arguments or environment variables.
-
-### `assets/`
-
-Templates and static resources. Especially useful for non-coding skills that ship fonts, images, sample files, or document templates.
 
 ### File naming
 
@@ -262,17 +209,9 @@ Principles:
 
 ## Harness-agnostic and project-agnostic language
 
-The portable core must not assume a specific agent harness, tool name, slash command, or vendor API.
+The portable core must not assume a specific agent harness, tool name, slash command, or vendor API. Write "spawn a focused worker," not "call the `Agent` tool"; write "run the project's test command," not "`npm test`". The skill should detect the environment, consult config, or ask the user.
 
-| Project-specific | Global |
-|------------------|--------|
-| Run `/ticket OC-1234`. | Invoke the ticket-research skill for ticket OC-1234. |
-| Call the `Agent` tool. | Spawn a focused worker. |
-| Use `git status`. | Check the current working state. |
-| Open Jira ticket PROJ-123. | Open the configured issue tracker for ticket PROJ-123. |
-| Run `npm test`. | Run the project's test command. |
-
-The skill should detect the environment, consult config, or ask the user.
+See [`../fundamentals/core/structure/harness-agnostic-language.md`](../fundamentals/core/structure/harness-agnostic-language.md) for the full translation table.
 
 ---
 
@@ -287,16 +226,6 @@ For harnesses that do not parse YAML frontmatter, a skill can be exported in pla
 This is the recommended degradation path for minimal harnesses like Aider. See [patterns/portability.md](../patterns/portability.md) for the full degradation model.
 
 ---
-
-## Key takeaways
-
-- `SKILL.md` is the **only required file**; everything else is optional and must earn its place.
-- The **`description`** is the most important field; it is the context pointer that decides when the skill loads.
-- `invocation` is a **required** field. Choose **model-invoked** only when the agent or another skill must reach the skill on its own; otherwise prefer **user-invoked**.
-- Keep the **body** focused on contract, scope, steps, and guidelines; push deep detail into `references/`.
-- Use **harness-agnostic and project-agnostic language** in the portable core.
-- Optional directories (`references/`, `subagents/`, `scripts/`, `assets/`) should be non-empty and reachable.
-- **Plain-markdown export** lets minimal harnesses use the body even when they cannot parse YAML frontmatter.
 
 ## Research basis
 

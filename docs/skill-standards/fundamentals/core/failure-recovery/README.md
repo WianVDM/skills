@@ -1,5 +1,7 @@
 # Failure recovery and iteration
 
+**Layer:** universal fundamentals. **Mode:** reference.
+
 A skill failure is not always a stack trace. Most failures are silent: the agent does not load the skill, loads it but ignores the contract, or follows the steps in a way that looks correct but misses the intent.
 
 Read this if a skill is not firing, is being ignored, is producing inconsistent output, or has grown too large to maintain.

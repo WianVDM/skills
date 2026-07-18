@@ -1,5 +1,7 @@
 # Multi-layer and hybrid skills
 
+**Layer:** proposed architecture. **Mode:** rule.
+
 A skill may participate in more than one layer, but its primary role should be clear.
 
 ---

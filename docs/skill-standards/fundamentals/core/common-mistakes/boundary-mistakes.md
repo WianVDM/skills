@@ -1,5 +1,7 @@
 # Boundary mistakes
 
+**Layer:** universal fundamentals. **Mode:** rule.
+
 Boundary mistakes are the class of mistakes that make the skill's edges unclear. Dependencies, scope, and invocation mode are not declared, so the agent either stalls or drifts into neighboring work.
 
 ---

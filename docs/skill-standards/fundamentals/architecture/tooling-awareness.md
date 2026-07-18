@@ -1,5 +1,7 @@
 # Tooling awareness
 
+**Layer:** proposed architecture. **Mode:** rule.
+
 A skill must be **capability-first and tool-aware**, not adapter-first and closed-loop. For every capability it needs, the skill must discover the tools that could fulfill it, select the best available one, and disclose the choice.
 
 ## Capabilities come first

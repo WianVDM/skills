@@ -1,5 +1,7 @@
 # Tooling and shape mistakes
 
+**Layer:** universal fundamentals. **Mode:** rule.
+
 Tooling and shape mistakes are the class of mistakes where the skill uses the wrong tool or the wrong abstraction. The skill either reaches for its own built-in adapters when better tools are available, or it is forced into a shape that does not match the problem.
 
 ---
@@ -24,7 +26,7 @@ Forcing a skill into a shape that does not match the problem.
 
 **Cure**
 
-Revisit [`../types/`](../types/). Choose the type that matches the work.
+Revisit [`../types/`](../../architecture/types/). Choose the type that matches the work.
 
 ---
 

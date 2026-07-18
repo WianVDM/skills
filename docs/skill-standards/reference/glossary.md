@@ -1,5 +1,7 @@
 # Glossary
 
+**Layer:** universal fundamentals. **Mode:** reference.
+
 This glossary defines the terms used across the skill standards. Use consistent terminology when writing or reviewing skills. The model reads meaning from how words are used, so precision matters.
 
 ---
@@ -9,6 +11,18 @@ This glossary defines the terms used across the skill standards. Use consistent 
 ### Skill
 
 The smallest load-bearing shape that makes an agent reliably do the right thing for a specific domain. A contract between author and agent, not a script or manual.
+
+### Delegation boundary
+
+What a skill is: a contract that lets a team encode "how this kind of work is done here" and have that guidance travel with the agent across sessions and tasks. The skill sets the boundary; the agent still decides the exact actions inside it.
+
+### Invocation mode
+
+How a skill is reached. **Model-invoked** skills keep their description in the agent's context so the agent and other skills can route to them, paying context load on every turn. **User-invoked** skills are reachable only by name, paying cognitive load instead. Declared in frontmatter as `invocation`.
+
+### Context stack
+
+The layered context model a skill sits in: always-on context files (`AGENTS.md`), scoped rules, skills, MCP servers and tools, and subagents. A skill may call lower layers but must not blur into them.
 
 ### Determinism device
 
@@ -53,6 +67,10 @@ Moving reference material out of `SKILL.md` and behind a pointer, so the top lev
 ### Context pointer
 
 A reference in the agent's context that names out-of-context material and encodes when to reach for it. The **description** of a model-invoked skill is the top-level context pointer. The wording of the pointer matters more than the target.
+
+### Reach clause
+
+The sentence in a skill's **description** that tells other skills when to reach for it. User triggers cover prompts; the reach clause covers consumers, naming the situation in which a conductor or building block should route to the skill. Example: "Lets adapters reference a token without exposing the secret value."
 
 ### Information hierarchy
 
@@ -109,6 +127,10 @@ Stale layers of content that accumulate because adding feels safe and removing f
 ### Duplication
 
 The same meaning expressed in more than one place. Costs maintenance, tokens, and inflates a concept's prominence.
+
+### Guideline soup
+
+A skill that says many true things but gives the agent no purchase point. Caused by weak or missing leading words and completion criteria. Cured by turning vague guidance into specific principles, leading words, or checkable criteria.
 
 ### No-op instruction
 
@@ -218,6 +240,26 @@ Always-on guidance that lives in the project context, not a skill. Examples: `AG
 
 A transient behavior switch that changes how the agent behaves for a session or task. Not a skill.
 
+### Chainlog
+
+Append-only storage for observations collected by tools and skills. Producers append; consumers query. Lets skills reuse prior work, build reports as views over observations, and check freshness per capability rather than per report. See `patterns/chainlog.md` and `reference/chainlog-contract.md`.
+
+### Context report
+
+A structured, shared artifact that one skill produces and other skills consume: baselines, handoffs, debriefs, ticket research. Reports carry freshness metadata (branch, commit, timestamps) so consumers can tell whether they are safe to reuse. See `patterns/context-reports.md`.
+
+### Standards path
+
+The resolved location of the canonical skill-standards wiki. Skills must resolve it through configuration, project-context detection, or explicit user consent rather than hardcoding relative paths. See `fundamentals/architecture/standards-path.md`.
+
+### Lazy dependency evaluation
+
+Checking **recommended** and **optional** dependencies only when the feature or branch that needs them is selected, instead of checking everything at initialization. Required dependencies are still checked eagerly. Keeps skills lightweight in projects that exercise only a subset of their capabilities.
+
+### Worker return contract
+
+The fixed envelope a worker or subagent returns to its conductor: a `status` plus structured artifacts (summary, findings, decisions). Lets conductors integrate worker output without parsing free prose. See `schemas/worker-return-contract.schema.json`.
+
 ### Conductor/implementer split
 
 The pattern of separating reasoning and orchestration (conductor) from execution (implementer).
@@ -277,6 +319,10 @@ The parts of a skill that are guaranteed to work across harnesses: the `SKILL.md
 ### Package envelope
 
 The metadata, dependency, and distribution layer that sits around the portable core: `skills.json`, `skills.lock`, versioning, namespacing, and dependency declarations. Required when a skill has consumers, dependencies, or distribution; optional for a lone `SKILL.md`.
+
+### Capability bundle
+
+A named group of skills declared in a package's `skills.json` that installs together to enable a workflow.
 
 ### Namespacing
 

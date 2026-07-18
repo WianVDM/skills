@@ -1,5 +1,7 @@
 # Dependencies reference
 
+**Layer:** universal fundamentals. **Mode:** reference.
+
 A `references/DEPENDENCIES.md` file makes a skill's dependencies explicit.
 
 ```markdown

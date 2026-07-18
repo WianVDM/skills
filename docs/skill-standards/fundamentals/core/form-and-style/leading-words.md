@@ -1,5 +1,7 @@
 # Leading words and priors
 
+**Layer:** universal fundamentals. **Mode:** rule.
+
 A **leading word** is a compact concept already present in the model's pretraining. Using it anchors behavior in fewer tokens.
 
 | Instead of | Leading word |

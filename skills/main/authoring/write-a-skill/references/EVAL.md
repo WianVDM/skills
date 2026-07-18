@@ -4,7 +4,7 @@ This file keeps only the `write-a-skill`-specific test cases and scenarios. For 
 
 - `eval-format` skill (located via the detected skills directory)
 - `docs/skill-standards/reference/evaluation-framework.md`
-- `docs/skill-standards/reference/trigger-evals.md`
+- `docs/skill-standards/guides/trigger-evals.md`
 
 ## Trigger evals
 

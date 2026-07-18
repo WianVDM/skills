@@ -1,5 +1,7 @@
 # Progressive disclosure
 
+**Layer:** universal fundamentals. **Mode:** rule.
+
 Progressive disclosure means putting detail where it belongs on the information hierarchy. The hierarchy ranks content by how immediately the agent needs it:
 
 1. **In-skill step** — an ordered action in `SKILL.md`, the primary tier. What the agent does, in order. Each step ends on a **completion criterion**.

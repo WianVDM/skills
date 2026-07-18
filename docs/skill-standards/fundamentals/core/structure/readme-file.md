@@ -1,5 +1,7 @@
 # `README.md`
 
+**Layer:** universal fundamentals. **Mode:** rule.
+
 `README.md` is for human maintainers. It should explain:
 
 - What the skill does in plain language.

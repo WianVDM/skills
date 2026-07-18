@@ -2,13 +2,15 @@
 
 ## At a glance
 
+**Layer:** proposed architecture. **Mode:** reference.
+
 This document specifies the **package envelope** around the portable core: `skills.json`, `skills.lock`, versioning, namespacing, dependencies, and lifecycle stages. It defines when a skill needs a package and how to move from idea to retirement.
 
 **Read this if:** you are distributing a skill, adding dependencies, or managing a skill lifecycle.
 
 A skill is a reusable unit of process guidance. A **skill package** wraps one or more skills with metadata, dependencies, and versioning so they can be discovered, installed, and distributed.
 
-This document specifies the package envelope and the lifecycle stages a skill moves through. The package layer sits around the portable core defined in `FORMAT.md`; it does not change the core format.
+This document specifies the package envelope and the lifecycle stages a skill moves through. The package layer sits around the portable core defined in [`format.md`](./format.md); it does not change the core format.
 
 ---
 
@@ -109,7 +111,7 @@ A single skill with no consumers and no dependencies can live as a lone `SKILL.m
 
 Runtime tool scoping stays in `SKILL.md` frontmatter (e.g., `allowed-tools`). The `requirements` object is for dependency declaration and policy gates, not for runtime behavior.
 
-See `GOVERNANCE.md` for governance and audit rules.
+See [`governance.md`](./governance.md) for governance and audit rules.
 
 ## Formal package schemas
 
@@ -119,148 +121,11 @@ The package layer is formalized by JSON Schema files in `schemas/`:
 - `schemas/evals.json.schema.json` — `evals/evals.json` evaluation artifact.
 - `schemas/skills.lock.schema.json` — generated `skills.lock` lock file.
 
-These schemas enable tooling, validation, and forward compatibility. The schemas declare required fields, value constraints, and harness hints, but they do not change the portable core defined in `FORMAT.md`.
+These schemas enable tooling, validation, and forward compatibility. The schemas declare required fields, value constraints, and harness hints, but they do not change the portable core defined in [`format.md`](./format.md).
 
-### `skills.json` schema
+The schema files are the machine-readable source of truth for tooling and validation. They are not restated here; the tables above describe intent, [`../schemas/`](../schemas/) carries the constraints.
 
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "required": ["name", "version", "skills"],
-  "properties": {
-    "name": { "type": "string", "pattern": "^[a-z0-9-]+$", "maxLength": 128 },
-    "version": { "type": "string", "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*))?(?:\\+([a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*))?$" },
-    "description": { "type": "string", "maxLength": 1024 },
-    "compatibility": {
-      "type": "object",
-      "properties": {
-        "harnesses": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
-        "min_aider_version": { "type": "string" }
-      }
-    },
-    "skills": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9-]+$" }, "minItems": 1, "uniqueItems": true },
-    "namespaces": { "type": "object", "additionalProperties": { "type": "string", "pattern": "^[a-z0-9-]+:[a-z0-9-]+$" } },
-    "bundles": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["name", "skills"],
-        "properties": {
-          "name": { "type": "string", "pattern": "^[a-z0-9-]+$", "maxLength": 128 },
-          "description": { "type": "string", "maxLength": 1024 },
-          "skills": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9-]+$" }, "minItems": 1, "uniqueItems": true }
-        }
-      }
-    },
-    "skill_dependencies": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "object",
-        "properties": {
-          "required": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9-]+$" }, "uniqueItems": true },
-          "recommended": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9-]+$" }, "uniqueItems": true },
-          "optional": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9-]+$" }, "uniqueItems": true }
-        }
-      }
-    },
-    "requirements": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "skills": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
-        "tools": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
-        "mcp_servers": {
-          "type": "array",
-          "items": { "type": "object", "required": ["name"], "properties": { "name": { "type": "string" }, "capabilities": { "type": "array", "items": { "type": "string" }, "uniqueItems": true } } }
-        },
-        "binaries": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
-        "environment_variables": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
-        "sandbox_features": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
-      }
-    }
-  },
-  "additionalProperties": true
-}
-```
-
-### `evals.json` schema
-
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "required": ["version", "skill", "tests"],
-  "properties": {
-    "version": { "type": "string", "enum": ["1"] },
-    "skill": { "type": "string", "pattern": "^[a-z0-9-:]+$", "maxLength": 128 },
-    "tests": {
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "type": "object",
-        "required": ["id", "type", "prompt"],
-        "properties": {
-          "id": { "type": "string", "pattern": "^[a-z0-9-]+$", "maxLength": 128 },
-          "type": { "type": "string", "enum": ["trigger", "behavior", "composition", "pressure", "security"] },
-          "category": { "type": "string", "enum": ["should-trigger", "should-not-trigger"] },
-          "prompt": { "type": "string", "minLength": 1, "maxLength": 4096 },
-          "expected": { "type": "string" },
-          "baseline_type": { "type": "string", "enum": ["no_skill", "previous_version", "failure_documentation"] },
-          "available_skills": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
-          "expected_selection": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
-          "assertions": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "required": ["type"],
-              "properties": {
-                "type": { "type": "string", "enum": ["file_read", "file_write", "command", "output_contains", "output_excludes", "output_format", "regex_match", "regex_exclude"] },
-                "path": { "type": "string" },
-                "value": { "type": "string" },
-                "pattern": { "type": "string" }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-```
-
-### `skills.lock` schema
-
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "required": ["version"],
-  "properties": {
-    "version": { "type": "string", "enum": ["1"] },
-    "skills": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "object",
-        "required": ["version"],
-        "properties": {
-          "version": { "type": "string", "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*))?(?:\\+([a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*))?$" },
-          "hash": { "type": "string", "pattern": "^sha256:[a-fA-F0-9]{64}$" }
-        }
-      }
-    },
-    "dependencies": {
-      "type": "object",
-      "properties": {
-        "skills": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
-        "mcp_servers": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
-      }
-    }
-  }
-}
-```
-
-See `EVALUATION.md` for the runner interface, assertion semantics, and baseline types. The lock file is generated at install or publish time and should not be hand-edited.
+See [`evaluation-framework.md`](./evaluation-framework.md) for the runner interface, assertion semantics, and baseline types. The lock file is generated at install or publish time and should not be hand-edited.
 
 ---
 
@@ -304,15 +169,7 @@ A standalone skill can be promoted to a package later. Its name becomes its name
 
 ## Versioning
 
-Versioning matters when a skill has consumers. A version number is a promise about compatibility. Use semantic meaning for version changes:
-
-- **Major version bump** — breaking change. Consumers must update.
-- **Minor version bump** — new capability, behavior, or schema field added. Existing consumers continue to work.
-- **Patch version bump** — bug fix, clarification, or non-behavioral change. Existing consumers are unaffected.
-
-The exact scheme is less important than consistency. Pick a scheme and document it in `references/VERSIONING.md` or `skills.json`.
-
-See `patterns/versioning.md` for migration paths and deprecation.
+Versioning matters when a skill has consumers: a version number is a promise about compatibility. The package `version` in `skills.json` follows semantic meaning — major for breaking changes, minor for additions, patch for fixes. See [`../patterns/versioning.md`](../patterns/versioning.md) for the full policy, migration paths, and deprecation.
 
 ---
 
@@ -322,7 +179,7 @@ A skill must declare what it needs. Dependencies are not bad; hidden dependencie
 
 ### Skill dependencies
 
-Declare skill dependencies in the structured `skill_dependencies` object, using `required`, `recommended`, and `optional` arrays per skill. The flat `requirements.skills` array is a compatibility surface for harnesses that only understand a single list. See `fundamentals/architecture/dependencies-and-bundling.md` for the dependency taxonomy and how `skill_dependencies` and `requirements.skills` relate.
+Declare skill dependencies in the structured `skill_dependencies` object, using `required`, `recommended`, and `optional` arrays per skill. The flat `requirements.skills` array is a compatibility surface for harnesses that only understand a single list. See [`../fundamentals/architecture/dependencies-and-bundling.md`](../fundamentals/architecture/dependencies-and-bundling.md) for the dependency taxonomy and how `skill_dependencies` and `requirements.skills` relate.
 
 ### External tools and MCP servers
 
@@ -335,97 +192,15 @@ A harness maps the portable requirements to its native configuration files (e.g.
 
 ### Environment variables
 
-If a skill needs credentials, declare the variable name in `requirements.environment_variables`. Never store the secret value in `SKILL.md`, `references/`, or config files. See `fundamentals/architecture/security.md`.
+If a skill needs credentials, declare the variable name in `requirements.environment_variables`. Never store the secret value in `SKILL.md`, `references/`, or config files. See [`../fundamentals/architecture/security.md`](../fundamentals/architecture/security.md).
 
 ---
 
 ## Lifecycle stages
 
-A skill moves through intentional stages. Each stage has entry and exit criteria.
+A skill moves through intentional stages, each with entry and exit criteria: decide → design → draft → validate → test → iterate → publish → maintain → deprecate or retire. At publish time, bump the package version if the schema, config, or behavior changed, and declare compatibility and dependencies in `skills.json`.
 
-### 1. Decide
-
-Confirm that a skill is the right solution. Ask:
-
-- Is the task repeated?
-- Does the agent vary without guidance?
-- Could a script, MCP server, prompt template, or documentation change solve it instead?
-
-See `fundamentals/core/when-to-create-a-skill/`.
-
-### 2. Design
-
-Choose the skill type, form, invocation, and scope before writing files.
-
-- Type: building block, conductor, wrapper, or multi-layer.
-- Form: instruction-heavy, guideline-heavy, or hybrid.
-- Invocation: model-invoked or user-invoked.
-- Scope: what is in and what is out.
-- Dependencies: other skills, tools, APIs, environment variables.
-
-Write a one-sentence intent statement:
-
-> This skill makes the agent more predictable at ______ by enforcing ______.
-
-If both blanks are hard to fill, the design is not ready.
-
-### 3. Draft
-
-Write the minimal `SKILL.md` plus only the supporting files that are needed. Keep `SKILL.md` focused. Push deep detail into `references/` and worker prompts into `subagents/`.
-
-### 4. Validate
-
-Check the draft against structure and style standards before testing behavior:
-
-- Does the description include what and when?
-- Are reference links resolvable?
-- Is every line load-bearing?
-- Are dependencies declared?
-- Is the language harness-agnostic and project-agnostic where required?
-
-### 5. Test
-
-Run the skill against representative prompts:
-
-- **Trigger evals** — does the description fire at the right times?
-- **Behavioral evals** — does the skill improve the agent's output compared to no skill?
-- **Edge cases** — missing config, missing context report, ambiguous input, user rejection.
-
-See `EVALUATION.md` and `fundamentals/architecture/evaluation.md`.
-
-### 6. Iterate
-
-Improve the skill based on test results and real usage. Remove instructions that do not change behavior. Sharpen completion criteria. Rewrite the description if triggering is unreliable.
-
-### 7. Publish
-
-Once the skill is stable, publish or install it. At publish time:
-
-- Bump the version if the schema, config, or behavior changed.
-- Document breaking changes and migration paths.
-- Add or update `README.md` for human maintainers.
-- Declare compatibility and dependencies in `skills.json`.
-
-### 8. Maintain
-
-Skills rot without attention. Maintenance tasks:
-
-- Review after significant real-world usage.
-- Remove sediment — guidance that no longer applies.
-- Update framework-specific advice when the target technology changes.
-- Add notes to config when user preferences or workarounds emerge.
-- Re-run trigger evals if the agent harness or model changes.
-
-### 9. Deprecate or retire
-
-Retire a skill when:
-
-- It is no longer used.
-- Its job is better handled by a script, MCP server, or another skill.
-- It has grown too many unrelated concerns and should be split.
-- A newer version replaces it.
-
-When deprecating, document the replacement path and update any skills that depended on it.
+See [`../fundamentals/core/lifecycle/`](../fundamentals/core/lifecycle/) for the full stage model.
 
 ---
 
@@ -448,19 +223,9 @@ See [patterns/portability.md](../patterns/portability.md) for the full degradati
 
 Governance lives outside the package manifest. The `skills.json` file should declare only identity, versioning, compatibility, and dependencies so that policy gates and harnesses can reason about the package without loading its contents.
 
-See `GOVERNANCE.md` for the governance and audit model.
+See [`governance.md`](./governance.md) for the governance and audit model.
 
 ---
-
-## Key takeaways
-
-- A **package** is needed when a skill has dependencies, consumers, distribution, or multiple related skills.
-- **`skills.json`** is the manifest; **`skills.lock`** records the resolved dependency graph and content hashes.
-- Use **semantic versioning** consistently; bump major for breaking changes, minor for additions, patch for fixes or clarifications.
-- **Namespacing** (`package-name:skill-name`) prevents collisions when skills are shared.
-- Declare all **dependencies** (skills, tools, MCP servers, binaries, environment variables) so policy gates can validate them.
-- The **lifecycle** stages have clear entry and exit criteria: decide → design → draft → validate → test → iterate → publish → maintain → deprecate.
-- Governance is handled outside the package manifest; keep `skills.json` focused on identity, versioning, compatibility, and dependencies.
 
 ## Research basis
 

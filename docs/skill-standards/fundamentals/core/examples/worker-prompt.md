@@ -1,5 +1,7 @@
 # Worker prompt
 
+**Layer:** universal fundamentals. **Mode:** reference.
+
 A focused worker for a conductor or multi-layer skill.
 
 ```markdown

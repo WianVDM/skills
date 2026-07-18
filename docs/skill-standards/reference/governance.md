@@ -2,6 +2,8 @@
 
 ## At a glance
 
+**Layer:** proposed architecture. **Mode:** reference.
+
 This document specifies **governance and audit** for skills, with special attention to agent-authored skills. It covers staging, immutability in-session, dependency parity, and security scanning.
 
 **Read this if:** you distribute skills, let agents write or modify skills, or need to meet trust and compliance requirements.

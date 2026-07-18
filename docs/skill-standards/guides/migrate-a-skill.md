@@ -1,12 +1,14 @@
 # Migration Guide
 
+**Layer:** proposed architecture. **Mode:** guide.
+
 Skills change shape as they mature: a local helper becomes a global reusable block, a context file grows into a workflow, or the standard itself moves to a new version. This guide provides safe paths for the most common migrations.
 
 ## Quick guide
 
 1. See the sections below for the common shape changes.
-2. Update the `version` metadata if the contract or schema changed and the skill is shared or consumed. See [`reference/governance.md`](../reference/governance.md) for governance rules.
-3. Re-run trigger and behavioral evals after the migration. See [`reference/trigger-evals.md`](../reference/trigger-evals.md) and [`reference/evaluation-framework.md`](../reference/evaluation-framework.md).
+2. If the contract or schema changed and the skill is shared or consumed, bump the package version in `skills.json` (see [`patterns/versioning.md`](../patterns/versioning.md)). See [`reference/governance.md`](../reference/governance.md) for governance rules.
+3. Re-run trigger and behavioral evals after the migration. See [`reference/trigger-evals.md`](./trigger-evals.md) and [`reference/evaluation-framework.md`](../reference/evaluation-framework.md).
 
 A good migration preserves the **core contract** while changing how the skill is discovered, invoked, or packaged. Do not migrate for its own sake; migrate when the new shape solves a real problem.
 
@@ -59,7 +61,6 @@ If the skill cannot detect its environment and the user does not provide config,
 ```markdown
 ---
 name: ticket-research
-version: 1.0.0
 invocation: model-invoked
 description: Understand a ticket in Jira project PROJ.
 ---
@@ -76,7 +77,6 @@ description: Understand a ticket in Jira project PROJ.
 ```markdown
 ---
 name: ticket-research
-version: 1.0.0
 invocation: model-invoked
 description: Understand a ticket or task and build confidence in it. Use when asked to investigate, understand, or summarize a ticket, task, or issue.
 ---
@@ -119,7 +119,6 @@ Give the skill identity, a routing description, and an invocation mode.
 ```yaml
 ---
 name: test-driven-development
-version: 1.0.0
 invocation: model-invoked
 description: Implement behavior using test-driven development. Use when asked to write code, add a feature, or fix a bug, and the user wants strict TDD discipline.
 ---
@@ -131,7 +130,7 @@ Do not delete the original context file. Keep it as a lightweight baseline. The 
 
 ### 5. Add evaluation
 
-Because the skill is now triggered, write trigger evals to confirm it fires at the right times. See [reference/trigger-evals.md](../reference/trigger-evals.md) and [reference/evaluation-framework.md](../reference/evaluation-framework.md).
+Because the skill is now triggered, write trigger evals to confirm it fires at the right times. See [reference/trigger-evals.md](./trigger-evals.md) and [reference/evaluation-framework.md](../reference/evaluation-framework.md).
 
 ### Example: from `CONVENTIONS.md` to `tdd-discipline/SKILL.md`
 
@@ -149,7 +148,6 @@ Because the skill is now triggered, write trigger evals to confirm it fires at t
 ```markdown
 ---
 name: test-driven-development
-version: 1.0.0
 invocation: model-invoked
 description: Implement behavior using test-driven development. Use when asked to write code, add a feature, or fix a bug, and the user wants strict TDD discipline.
 ---
@@ -207,14 +205,14 @@ This standard is versioned. When the format or package schema changes, skills ma
 2. Update all `SKILL.md` frontmatter to match the new schema.
 3. Update all `skills.json` manifests to match the new package schema.
 4. Re-run the `evals/evals.json` suite.
-5. Bump the skill version if the schema change affects consumers.
+5. Bump the package version in `skills.json` if the schema change affects consumers.
 6. Document the migration path in `references/VERSIONING.md`.
 
 ### Common v1 → v2 changes to watch for
 
 | v1 pattern | v2 pattern | Action |
 |------------|------------|--------|
-| `version` inside `metadata` | `version` top-level | Move `version` out of `metadata`. |
+| `version` in frontmatter | package version in `skills.json` | Drop frontmatter `version`; version at the package level. |
 | `requires` / `consumes` in frontmatter | `requirements` in `skills.json` | Use the package-level dependency model. |
 | Harness hints as core fields | harness hints separated | Move `allowed-tools` and similar to harness hints. |
 
@@ -231,8 +229,8 @@ If a harness does not yet support the v2 schema, maintain a v1-compatible copy a
 - [ ] Hardcoded project details are replaced by detection, config, or explicit user input.
 - [ ] Dependencies are declared in `skills.json` or `references/DEPENDENCIES.md`.
 - [ ] The skill is still portable and harness-agnostic where required.
-- [ ] Trigger evals are updated if the invocation model changed.
-- [ ] The version is bumped if consumers are affected.
+- [ ] Trigger evals are updated if the invocation mode changed.
+- [ ] The package version in `skills.json` is bumped if consumers are affected.
 - [ ] The original artifact (context file, old skill directory) is deprecated, not silently deleted.
 
 ---
@@ -245,6 +243,6 @@ If a harness does not yet support the v2 schema, maintain a v1-compatible copy a
 - [`patterns/context-file.md`](../patterns/context-file.md) — when to use a context file instead of a skill.
 - [`patterns/discipline-skill.md`](../patterns/discipline-skill.md) — converting advice into enforceable discipline.
 - [`patterns/versioning.md`](../patterns/versioning.md) — version bumps and deprecation.
-- [`reference/trigger-evals.md`](../reference/trigger-evals.md) — how to test routing after a migration.
+- [`reference/trigger-evals.md`](./trigger-evals.md) — how to test routing after a migration.
 - [`reference/evaluation-framework.md`](../reference/evaluation-framework.md) — full evaluation framework.
 - [`patterns/portability.md`](../patterns/portability.md) — degradation and cross-harness compatibility.

@@ -1,5 +1,7 @@
 # What is a skill?
 
+**Layer:** universal fundamentals. **Mode:** explanation.
+
 A skill is the **smallest load-bearing shape** that makes an agent reliably do the right thing for a specific domain.
 
 It is not:
@@ -17,11 +19,9 @@ The most useful framing is that a skill is a **delegation boundary**: it lets a 
 
 ## The root virtue: predictability
 
-A skill exists to wrangle determinism out of a stochastic system. The root virtue is **predictability**: the agent should follow the same *process* every time the skill runs. The output may vary — a brainstorming skill should produce different ideas — but the behavior should be stable.
+Every concept in these standards serves **predictability**: the agent should follow the same *process* every time the skill runs, even when the output varies. Cost, maintainability, and clarity are symptoms of it, not rivals.
 
-Every other concept in these standards serves predictability. Cost, maintainability, and clarity are symptoms of it, not rivals.
-
-See [`../../architecture/evaluation.md`](../../architecture/evaluation.md) for the predictability test.
+See [`root-virtues.md`](./root-virtues.md) for the five virtues and the predictability test.
 
 ---
 

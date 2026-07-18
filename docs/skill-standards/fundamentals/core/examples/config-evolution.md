@@ -1,5 +1,7 @@
 # Config evolution
 
+**Layer:** universal fundamentals. **Mode:** reference.
+
 A skill's config should adapt to what it learns.
 
 ## Initial config

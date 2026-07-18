@@ -18,7 +18,7 @@ Building block.
 ## In scope
 
 - Parse a single `SKILL.md` file.
-- Extract `name`, `description`, `version`, `invocation`, and `depends`.
+- Extract `name`, `description`, and `invocation`; return `version` and `depends` when present.
 - Optionally extract harness hints: `allowed-tools`, `disallowed-tools`, `globs`, `paths`, `disable-model-invocation`.
 - Prefer PyYAML when available; fall back to a minimal regex parser.
 - Return JSON or human-readable output.

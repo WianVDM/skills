@@ -1,5 +1,7 @@
 # JSON Schemas
 
+**Layer:** proposed architecture. **Mode:** reference.
+
 This directory contains JSON Schema files for the portable skill standards. They are intended for tooling, validation, and reference. Each schema is a draft 2020-12 schema.
 
 | File | Describes |

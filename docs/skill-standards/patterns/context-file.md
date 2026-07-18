@@ -1,5 +1,7 @@
 # Context-file pattern
 
+**Layer:** proposed architecture. **Mode:** rule.
+
 A **context file** is always-on guidance that lives in the project context, not a skill. It is loaded once at the start of a session and remains in the agent's context throughout. It is not invoked on demand like a skill.
 
 Context files and skills are complementary. Context files set the baseline; skills provide reusable, on-demand workflows.
@@ -112,6 +114,6 @@ This project uses TypeScript, React, and Vitest.
 
 ## Related documents
 
-- [`../fundamentals/core/types/`](../fundamentals/core/types/) — choosing the right skill type.
+- [`../fundamentals/architecture/types/`](../fundamentals/architecture/types/) — choosing the right skill type.
 - [`../README.md`](../README.md) — the context stack and how skills fit into it.
 - [`../fundamentals/architecture/`](../fundamentals/architecture/) — architecture fundamentals for shared and composed skills.

@@ -1,5 +1,7 @@
 # Global / pluggable
 
+**Layer:** proposed architecture. **Mode:** rule.
+
 A skill can be built for one project or built to work across any project, user, and harness. The difference is not just portability — it is pluggability. A global skill must drop into an unknown environment and still behave correctly.
 
 > **Relationship to portability:** [`portability.md`](portability.md) defines the portability contract — the portable core, canonical install paths, and degradation rules. The **global / pluggable** pattern defines the behavior a skill must adopt to satisfy that contract: detect the environment, declare dependencies, avoid hardcoded paths, and fail closed.
@@ -46,27 +48,11 @@ Pluggability is not the absence of assumptions. It is the explicit handling of a
 
 ### 1. Harness-agnostic language
 
-The skill must not assume a specific agent harness, tool name, slash command, or vendor API.
-
-| Project-specific | Global |
-|-----------------|--------|
-| Run `/ticket OC-1234`. | Invoke the ticket-research skill for ticket OC-1234. |
-| Call the `Agent` tool. | Spawn a focused worker. |
-| Use `git status`. | Check the current working state. |
-
-If a harness-specific detail is unavoidable, isolate it in a clearly labeled reference file.
+The skill must not assume a specific agent harness, tool name, slash command, or vendor API. Write "spawn a focused worker," not "call the `Agent` tool." If a harness-specific detail is unavoidable, isolate it in a clearly labeled reference file. See [`../fundamentals/core/structure/harness-agnostic-language.md`](../fundamentals/core/structure/harness-agnostic-language.md) for the full translation table.
 
 ### 2. Project-agnostic conventions
 
-The skill must not hardcode project-specific tools, paths, or APIs.
-
-| Project-specific | Global |
-|-----------------|--------|
-| Open Jira ticket PROJ-123. | Open the configured issue tracker for ticket PROJ-123. |
-| Run `npm test`. | Run the project's test command. |
-| Read `src/app/config.ts`. | Read the project's configuration entry point. |
-
-The skill should detect the environment, consult config, or ask the user.
+The skill must not hardcode project-specific tools, paths, or APIs. Write "run the project's test command," not "`npm test`"; "the configured issue tracker," not "Jira"; "the project's configuration entry point," not "`src/app/config.ts`". The skill should detect the environment, consult config, or ask the user.
 
 ### 3. Explicit dependencies
 

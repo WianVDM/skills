@@ -1,5 +1,7 @@
 # Detecting failures
 
+**Layer:** universal fundamentals. **Mode:** guide.
+
 Failures come in two shapes. Loud failures are easy to spot. Silent failures are common and dangerous.
 
 ---
@@ -40,7 +42,7 @@ To detect silent failures early, watch for:
 - **Trace and tool calls.** Did the agent read the files the skill told it to read? Did it run the expected commands?
 - **Output shape.** Does the output match the contract the skill defines? (Format, scope, depth, style.)
 - **Completion criteria.** Did the agent stop at the checkable condition defined in the skill, or did it stop early?
-- **Trigger coverage.** Do representative user prompts actually load the skill? (See [`../../../reference/trigger-evals.md`](../../../reference/trigger-evals.md).)
+- **Trigger coverage.** Do representative user prompts actually load the skill? (See [`../../../guides/trigger-evals.md`](../../../guides/trigger-evals.md).)
 - **Comparison.** Run the same task with and without the skill. If the output is the same, the skill is not changing behavior.
 
 ---

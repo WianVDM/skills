@@ -1,5 +1,7 @@
 # Stateful
 
+**Layer:** proposed architecture. **Mode:** rule.
+
 Skills can be stateless or stateful. The choice depends on whether the skill needs memory across invocations, context compactions, or long-running processes.
 
 ---

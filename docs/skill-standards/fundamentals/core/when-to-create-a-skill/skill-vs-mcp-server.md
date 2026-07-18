@@ -1,5 +1,7 @@
 # Skill vs MCP server
 
+**Layer:** universal fundamentals. **Mode:** rule.
+
 An MCP server exposes a structured interface to an external system. A skill guides how the agent uses tools.
 
 | Use an MCP server | Use a skill |

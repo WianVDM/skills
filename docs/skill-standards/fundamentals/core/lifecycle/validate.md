@@ -1,5 +1,7 @@
 # Validate
 
+**Layer:** universal fundamentals. **Mode:** guide.
+
 Check the draft against structure and style standards before testing behavior.
 
 - Does the description include what and when?

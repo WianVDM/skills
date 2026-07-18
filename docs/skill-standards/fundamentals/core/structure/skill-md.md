@@ -1,5 +1,7 @@
 # SKILL.md
 
+**Layer:** universal fundamentals. **Mode:** rule.
+
 `SKILL.md` is the skill's public interface. It should contain only what the agent needs on every invocation.
 
 A good `SKILL.md` answers:

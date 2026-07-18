@@ -1,5 +1,7 @@
 # When a skill stops being useful
 
+**Layer:** universal fundamentals. **Mode:** rule.
+
 A skill has failed when:
 
 - The agent ignores it because it is too long or too vague.

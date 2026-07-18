@@ -1,5 +1,7 @@
 # Patterns
 
+**Layer:** proposed architecture. **Mode:** reference.
+
 Opt-in architecture shapes: reusable ways to solve recurring skill-design problems.
 
 ---
@@ -13,7 +15,6 @@ Opt-in architecture shapes: reusable ways to solve recurring skill-design proble
 - [`context-file.md`](./context-file.md) — always-on guidance that is not a skill.
 - [`configurable.md`](./configurable.md) — skills that adapt to project preferences.
 - [`initialization.md`](./initialization.md) — setup and first-run behavior.
-- [`mode.md`](./mode.md) — transient behavior switches.
 - [`conductor-implementer-split.md`](./conductor-implementer-split.md) — separating reasoning from execution.
 - [`portability.md`](./portability.md) — degradation and cross-harness behavior.
 - [`global-pluggable.md`](./global-pluggable.md) — what pluggability requires.

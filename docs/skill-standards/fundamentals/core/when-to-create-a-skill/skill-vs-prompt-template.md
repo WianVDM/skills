@@ -1,5 +1,7 @@
 # Skill vs prompt template
 
+**Layer:** universal fundamentals. **Mode:** rule.
+
 A prompt template is a reusable snippet of user input. A skill is reusable agent guidance.
 
 | Use a prompt template | Use a skill |

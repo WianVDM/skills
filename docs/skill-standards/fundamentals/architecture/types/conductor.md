@@ -1,15 +1,14 @@
 # Conductor
 
+**Layer:** proposed architecture. **Mode:** rule.
+
 A conductor skill coordinates other skills, subagents, or tools to run a multi-phase process. It does not do the deep work itself.
 
 ---
 
 ## When to use
 
-- The work is too large or cross-cutting for one building block.
-- Sequencing matters and the agent would otherwise skip phases.
-- State must be maintained across invocations or context compactions.
-- Multiple building blocks must be composed into a larger workflow.
+Use a conductor when the work is too large or cross-cutting for one building block, sequencing matters, state must survive across phases, or several building blocks must be composed into one workflow. See [`../../../patterns/conductor.md`](../../../patterns/conductor.md) for the full conductor pattern.
 
 ---
 
@@ -35,7 +34,7 @@ A conductor skill coordinates other skills, subagents, or tools to run a multi-p
 
 Doing the work inline instead of delegating, which bloats context and causes the agent to rush. A conductor is defined by orchestration, not by the number of tools it uses.
 
-See [`../common-mistakes/tooling-and-shape-mistakes.md`](../common-mistakes/tooling-and-shape-mistakes.md) for wrong type for the job.
+See [`../common-mistakes/tooling-and-shape-mistakes.md`](../../core/common-mistakes/tooling-and-shape-mistakes.md) for wrong type for the job.
 
 ---
 

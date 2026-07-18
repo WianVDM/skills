@@ -1,5 +1,7 @@
 # Form and style
 
+**Layer:** universal fundamentals. **Mode:** reference.
+
 A skill can be written as step-by-step instructions, as a set of guidelines and principles, or as a hybrid of both. The right form depends on what makes the agent more reliable for that specific domain.
 
 There is no universal best form. The goal is predictability, not stylistic purity.

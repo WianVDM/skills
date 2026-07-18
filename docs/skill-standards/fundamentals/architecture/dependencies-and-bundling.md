@@ -1,5 +1,7 @@
 # Dependencies and bundling
 
+**Layer:** proposed architecture. **Mode:** rule.
+
 A skill must declare what it needs, and a harness must be able to install those needs reliably. This document defines the dependency taxonomy, the surfaces where dependencies are declared, the transitive closure rule for installing skills, named capability bundles, and the self-diagnostics contract a skill uses to report its own readiness.
 
 ---
@@ -45,7 +47,7 @@ Use `optional` for:
 
 Optional dependencies are surfaced in the install output and in documentation. The skill must work without them on the main path.
 
-### Summary
+### The three kinds at a glance
 
 | Kind | Installed by default? | Missing behavior | Example |
 |------|---------------------|------------------|---------|
@@ -57,18 +59,7 @@ Optional dependencies are surfaced in the install output and in documentation. T
 
 ## Tool categories
 
-Dependencies are not limited to other skills. A skill may depend on any of the following tool categories:
-
-| Category | Examples |
-|---|---|
-| **Provider-specific adapters** | GitHub PR adapter, SonarCloud adapter, Jira adapter |
-| **MCP tools / servers** | `github_get_pull_request_reviews`, SonarQube MCP, Jira MCP |
-| **Native binaries** | `gh`, `git`, `curl`, `jq` |
-| **Direct APIs** | Provider REST or GraphQL endpoints |
-| **Harness tools** | Built-in browser, file system, search, shell |
-| **Manual fallback** | User input, CSV, markdown files |
-
-Each category should be declared in `references/DEPENDENCIES.md` and, where applicable, in `skills.json`. A skill must not report a source as "unavailable" if a configured tool in any of these categories could fulfill the same capability. See [tooling-awareness.md](./tooling-awareness.md) for the capability-first approach to tool selection.
+Dependencies are not limited to other skills: a skill may depend on provider adapters, MCP tools or servers, native binaries, direct APIs, harness tools, shared storage adapters, or manual fallbacks. Declare each category in `references/DEPENDENCIES.md` and, where applicable, in `skills.json`. A skill must not report a source as "unavailable" if a configured tool in any of these categories could fulfill the same capability. See [`tooling-awareness.md`](./tooling-awareness.md) for the full tool catalog and the capability-first approach to tool selection.
 
 ---
 
@@ -239,7 +230,7 @@ Plugin manifests are a presentation layer, not a replacement for dependency decl
 
 ### Frontmatter and `config.yaml` hints
 
-Harness-specific dependency hints can live in `SKILL.md` frontmatter or in a `config.yaml` file. These are **envelope hints**, not the portable core. They tell a specific harness how to wire tools, MCP servers, or sandbox features, but they do not replace the declaration in `skills.json` or `references/DEPENDENCIES.md`.
+Harness-specific dependency hints can live in `SKILL.md` frontmatter or in a `config.yaml` file. These are **harness hints**, not the portable core. They tell a specific harness how to wire tools, MCP servers, or sandbox features, but they do not replace the declaration in `skills.json` or `references/DEPENDENCIES.md`.
 
 Examples of harness hints:
 
@@ -361,18 +352,9 @@ The skill must explain what is missing, why it matters, and how to fix it. It ma
 
 ### Reporting format
 
-When a skill reports its state, it should include:
+When a skill reports its state, it includes `status`, `scope`, `missing`, `impact`, and `remediation`, plus `better_tool_available` for tool-aware skills that are using a weaker source while a better tool is configured. The JSON Schema for the report is maintained at [`../../schemas/self-diagnostics.schema.json`](../../schemas/self-diagnostics.schema.json).
 
-- `status`: `full`, `degraded`, or `blocked`.
-- `scope`: `initialization` or the specific method/branch the check applies to (e.g., `ui-browser`).
-- `missing`: a list of missing dependencies and their kind.
-- `better_tool_available`: a list of configured-but-unused tools that could improve a specific capability (optional but recommended for tool-aware skills).
-- `impact`: a brief explanation of how behavior changes.
-- `remediation`: the recommended next step for the user or harness.
-
-A JSON Schema for the self-diagnostics frontmatter is maintained at `schemas/self-diagnostics.schema.json`.
-
-For tool-aware skills, include `better_tool_available` when the skill is using a weaker source for a capability while a better tool is configured. For example, a PR-report skill using a custom provider adapter while `github_get_pull_request_reviews` via MCP is available should report the better tool and offer to switch.
+For example, a PR-report skill using a custom provider adapter while `github_get_pull_request_reviews` via MCP is available should report the better tool and offer to switch.
 
 Example — eager check at initialization:
 
@@ -466,7 +448,7 @@ Remediation: Install `worker-contract` before using `write-a-skill`.
 - [`patterns/building-block.md`](../../patterns/building-block.md) — reusable skills and dependency declaration.
 - [`patterns/conductor.md`](../../patterns/conductor.md) — how conductors compose building blocks.
 - [`fundamentals/core/structure/`](../core/structure/) — skill layout and reference conventions.
-- [`fundamentals/core/types/`](../core/types/) — choosing skill types and their dependency patterns.
+- [`types/`](./types/) — choosing skill types and their dependency patterns.
 - [`evaluation.md`](./evaluation.md) — testing skills, including dependency failure cases.
 - [`PORTABILITY.md`](../../patterns/portability.md) — cross-harness degradation model.
 

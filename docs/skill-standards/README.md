@@ -4,6 +4,8 @@ This wiki defines the core rules, patterns, and reference material for writing p
 
 ## At a glance
 
+**Layer:** proposed architecture. **Mode:** reference.
+
 A **skill** is the smallest load-bearing shape that makes an agent reliably do the right thing for a specific domain. It is a **delegation boundary**: a contract that tells the agent what matters, what to watch for, and what shape the work should take. It is not a script, manual, prompt template, or configuration file.
 
 The **root virtue** of a skill is **predictability**: the agent should follow the same *process* every time the skill runs. Output may vary, but behavior should not.
@@ -32,11 +34,11 @@ A context file is always-on guidance. A rule is scoped guidance. A skill is a re
 
 To write a skill:
 
-1. Decide whether the task should be a **building block**, **conductor**, **wrapper**, or context file. See [`fundamentals/core/types/`](./fundamentals/core/types) and [`patterns/context-file.md`](./patterns/context-file.md).
+1. Decide whether the task should be a **building block**, **conductor**, **wrapper**, or context file. See [`fundamentals/architecture/types/`](./fundamentals/architecture/types) and [`patterns/context-file.md`](./patterns/context-file.md).
 2. Create a directory named after the skill (lowercase, hyphen-separated) and add a `SKILL.md` with required frontmatter (`name`, `description`, `invocation`) and a body that states purpose, scope, and contract. See [`reference/format.md`](./reference/format.md).
 3. Push deep detail into `references/` and worker prompts into `subagents/`.
 4. Declare dependencies in `references/DEPENDENCIES.md` or `skills.json`.
-5. Write trigger and behavioral evals in `evals/evals.json`. See [`reference/evaluation-framework.md`](./reference/evaluation-framework.md) and [`reference/trigger-evals.md`](./reference/trigger-evals.md).
+5. Write trigger and behavioral evals in `evals/evals.json`. See [`reference/evaluation-framework.md`](./reference/evaluation-framework.md) and [`guides/trigger-evals.md`](./guides/trigger-evals.md).
 
 For a complete walkthrough, see [`guides/write-a-skill.md`](./guides/write-a-skill.md).
 
@@ -59,7 +61,7 @@ For a complete walkthrough, see [`guides/write-a-skill.md`](./guides/write-a-ski
 If you are new, start with this README, then read:
 
 1. [`fundamentals/core/what-is-a-skill/`](./fundamentals/core/what-is-a-skill) — what a skill is and is not.
-2. [`fundamentals/core/types/`](./fundamentals/core/types) — building block, conductor, wrapper, and multi-layer skills.
+2. [`fundamentals/architecture/types/`](./fundamentals/architecture/types) — building block, conductor, wrapper, and multi-layer skills.
 3. [`reference/format.md`](./reference/format.md) — the `SKILL.md` format and frontmatter.
 4. [`fundamentals/architecture/`](./fundamentals/architecture) — once you are writing a shared or composable skill.
 

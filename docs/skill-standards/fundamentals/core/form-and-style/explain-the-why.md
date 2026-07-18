@@ -1,5 +1,7 @@
 # Explain the why
 
+**Layer:** universal fundamentals. **Mode:** rule.
+
 A skill should explain the reasoning behind its guidance, not just issue commands. Today's models have strong theory of mind and generalize better when they understand intent. This applies to steps and phases too: a one-line rationale for why a phase exists ("why this step before the next") reduces premature completion and helps the agent judge how much legwork is required.
 
 | Rigid command | Explain-the-why |

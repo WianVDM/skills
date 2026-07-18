@@ -1,5 +1,7 @@
 # Completion criteria
 
+**Layer:** universal fundamentals. **Mode:** rule.
+
 Whenever a skill has steps, each step should end on a **completion criterion**: a checkable condition that tells the agent the step is done.
 
 A strong criterion is:

@@ -1,5 +1,7 @@
 # Audit rubric
 
+**Layer:** proposed architecture. **Mode:** reference.
+
 This is the contract that `audit-skill` uses to evaluate any skill. Each check has a severity and a clear pass condition. The rubric is aligned with `docs/skill-standards/fundamentals/` and `docs/skill-standards/patterns/`.
 
 ## Severity definitions
@@ -21,7 +23,7 @@ This is the contract that `audit-skill` uses to evaluate any skill. Each check h
 | F02 | `description` is present and ≤ 1024 chars. | Blocker | Present, 1–1024 chars. |
 | F03 | `description` front-loads the leading word or domain. | Warning | The first 10–15 words name the skill’s core action or domain. |
 | F04 | `description` lists distinct triggers, not synonyms. | Warning | Each trigger maps to a distinct branch or intent. |
-| F05 | `version` is valid SemVer if present, especially once shared or consumed. | Warning | Absent is acceptable for personal/local skills. If present, matches `MAJOR.MINOR.PATCH`. |
+| F05 | Versioning lives at the package level, not in frontmatter. | Warning | Frontmatter omits `version`; `skills.json` carries the SemVer package version once the skill is distributed. |
 | F06 | `invocation` is `model-invoked` or `user-invoked`. | Blocker | Declared and consistent with `disable-model-invocation`. |
 | F07 | Frontmatter contains only load-bearing fields. | Warning | No `metadata`, `author`, or `tags` fields are present in frontmatter. |
 | F08 | Frontmatter validates against JSON schema. | Blocker | No schema errors. |
@@ -141,3 +143,9 @@ This is the contract that `audit-skill` uses to evaluate any skill. Each check h
 ## Remediation plan
 - {finding ID}: {action to take}
 ```
+
+---
+
+## Research basis
+
+- Original to this repo: the check IDs, severities, and pass conditions are operationalizations of [`format.md`](./format.md), [`../fundamentals/architecture/evaluation.md`](../fundamentals/architecture/evaluation.md), and the schemas in [`../schemas/`](../schemas/).

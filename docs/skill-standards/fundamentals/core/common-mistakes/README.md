@@ -1,5 +1,7 @@
 # Common mistakes
 
+**Layer:** universal fundamentals. **Mode:** reference.
+
 These are the failure modes that make skills unreliable, bloated, or ineffective. They are grouped by the kind of problem they create. Avoid them. When reviewing a skill, check it against this list.
 
 ---

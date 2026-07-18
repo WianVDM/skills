@@ -1,5 +1,7 @@
 # Standards path
 
+**Layer:** proposed architecture. **Mode:** rule.
+
 A skill must not hardcode a relative path to the canonical skill-standards wiki or to any other project convention that is not a declared dependency. It must resolve the `standards_path` through configuration, project-context detection, or explicit user consent, and it must disclose degraded behavior when the canonical docs are unavailable.
 
 ## Why this rule exists
@@ -81,4 +83,11 @@ The script returns JSON with `standards_path`, `status`, `source`, and `degraded
 - [`dependencies-and-bundling.md`](./dependencies-and-bundling.md) — dependency declaration and lazy evaluation.
 - [`../../patterns/context-reports.md`](../../patterns/context-reports.md) — shared artifacts and freshness rules.
 - [`../../reference/audit-rubric.md`](../../reference/audit-rubric.md) — `P-04` and the portability checks.
-- [`../../../skills/blocks/project/detect-project-context/scripts/resolve-standards-path.py`](../../../skills/blocks/project/detect-project-context/scripts/resolve-standards-path.py) — the shared resolver script.
+- [`../../../../skills/blocks/project/detect-project-context/scripts/resolve-standards-path.py`](../../../../skills/blocks/project/detect-project-context/scripts/resolve-standards-path.py) — the shared resolver script.
+
+---
+
+## Research basis
+
+- Original to this repo: the standards-path rule, resolution order, lazy loading, and degraded-mode disclosure, synthesized from the path-resolution problems observed when skills run outside their home repository.
+- The resolver behavior is implemented by `resolve-standards-path.py` (linked above).

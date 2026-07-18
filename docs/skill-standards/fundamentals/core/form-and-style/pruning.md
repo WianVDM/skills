@@ -1,5 +1,7 @@
 # Pruning
 
+**Layer:** universal fundamentals. **Mode:** rule.
+
 A skill should be kept lean. Three disciplines help.
 
 ---
@@ -17,6 +19,12 @@ See [`../common-mistakes/bloat.md`](../common-mistakes/bloat.md) for duplication
 Does this line still bear on what the skill does? If a line is stale, off-topic, or belongs to a branch the skill no longer handles, remove it. A shorter skill is easier to keep relevant.
 
 See [`../common-mistakes/bloat.md`](../common-mistakes/bloat.md) for sediment as a failure mode.
+
+---
+
+## Minimalism test
+
+Remove one paragraph at a time from `SKILL.md`. If the skill still works, that paragraph was sediment. Prune it.
 
 ---
 

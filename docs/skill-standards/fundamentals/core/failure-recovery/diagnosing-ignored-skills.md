@@ -1,5 +1,7 @@
 # Diagnosing ignored skills
 
+**Layer:** universal fundamentals. **Mode:** guide.
+
 When the model loads the skill but does not follow it, start by diagnosing the cause before adding more text. The failure modes themselves are defined in [`../common-mistakes/`](../common-mistakes/); this section focuses on how to diagnose and remediate them.
 
 ---
@@ -8,7 +10,7 @@ When the model loads the skill but does not follow it, start by diagnosing the c
 
 | Symptom | Diagnosis | Remediation |
 |---|---|---|
-| The skill only fires when the user names it explicitly. | Weak description. | Front-load the leading word and add realistic trigger phrases. See [`../../../reference/trigger-evals.md`](../../../reference/trigger-evals.md). |
+| The skill only fires when the user names it explicitly. | Weak description. | Front-load the leading word and add realistic trigger phrases. See [`../../../guides/trigger-evals.md`](../../../guides/trigger-evals.md). |
 | The agent misses the key instruction in a wall of text. | Body too long. | Move detail to `references/`; keep the body focused on contract and steps. See [`../structure/`](../structure/). |
 | The agent stops when it *feels* done, not when the skill says it is done. | Vague completion criteria. | Rewrite every step to end with a checkable condition. See [`../form-and-style/completion-criteria.md`](../form-and-style/completion-criteria.md). |
 | The agent rushes to the visible post-completion steps. | Premature completion. | Sharpen the current step's criterion first; split or delegate the later work if the rush persists. See [`../form-and-style/completion-criteria.md`](../form-and-style/completion-criteria.md). |

@@ -1,5 +1,7 @@
 # Chainlog contract
 
+**Layer:** proposed architecture. **Mode:** reference.
+
 This document defines the machine-readable contract for the [`chainlog`](../patterns/chainlog.md) pattern. It specifies the storage model, observation envelope, operations, and adapter requirements that any `chainlog` implementation must satisfy.
 
 ---

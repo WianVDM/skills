@@ -1,8 +1,10 @@
 # Design
 
+**Layer:** universal fundamentals. **Mode:** guide.
+
 Choose the skill type and form before writing files.
 
-- **Type**: building block, conductor, wrapper, or multi-layer. See [`../types/`](../types/).
+- **Type**: building block, conductor, wrapper, or multi-layer. See [`../types/`](../../architecture/types/).
 - **Form**: instruction-heavy, guideline-heavy, or hybrid. See [`../form-and-style/`](../form-and-style/).
 - **Invocation**: model-invoked or user-invoked. See [`../structure/frontmatter.md`](../structure/frontmatter.md).
 - **Scope**: what is in and what is out.

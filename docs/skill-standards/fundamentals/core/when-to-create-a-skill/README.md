@@ -1,5 +1,7 @@
 # When to create a skill
 
+**Layer:** universal fundamentals. **Mode:** reference.
+
 Not every problem deserves a skill. A skill is one option among several. Choose the right tool for the job.
 
 ---
@@ -86,7 +88,7 @@ If you cannot fill in both blanks clearly, the skill is not well-defined enough.
 
 ## Related documents
 
-- [`../types/`](../types/) — choosing the right skill type once you have decided a skill is the answer.
+- [`../types/`](../../architecture/types/) — choosing the right skill type once you have decided a skill is the answer.
 - [`../lifecycle/`](../lifecycle/) — the full skill lifecycle from decision to retirement.
 - [`../common-mistakes/`](../common-mistakes/) — failure modes that often follow from choosing the wrong shape.
 

@@ -1,5 +1,7 @@
 # Reference
 
+**Layer:** proposed architecture. **Mode:** reference.
+
 Format, package, evaluation, glossary, and lookup tables for skill authors and maintainers.
 
 ---
@@ -9,8 +11,6 @@ Format, package, evaluation, glossary, and lookup tables for skill authors and m
 - [`format.md`](./format.md) — portable `SKILL.md` frontmatter schema.
 - [`package.md`](./package.md) — package envelope and `skills.json` conventions.
 - [`evaluation-framework.md`](./evaluation-framework.md) — the full evaluation framework.
-- [`trigger-evals.md`](./trigger-evals.md) — how to test whether a skill fires at the right times.
-- [`context-budget.md`](./context-budget.md) — when to split or merge skills for context efficiency.
 - [`config-keys.md`](./config-keys.md) — common config key conventions.
 - [`governance.md`](./governance.md) — governance rules for shared skills.
 - [`extensibility.md`](./extensibility.md) — how the standard extends to new harnesses and tools.

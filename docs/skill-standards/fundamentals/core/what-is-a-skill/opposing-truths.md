@@ -1,5 +1,7 @@
 # Opposing truths in skill design
 
+**Layer:** universal fundamentals. **Mode:** explanation.
+
 Several tensions run through skill design. Both sides are true.
 
 | Tension | Both are true |

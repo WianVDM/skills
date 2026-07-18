@@ -1,5 +1,7 @@
 # Iterating without over-correcting
 
+**Layer:** universal fundamentals. **Mode:** rule.
+
 The natural reaction to a failing skill is to add more instructions. That usually makes the skill longer, noisier, and less reliable. Iterate with discipline instead.
 
 ---

@@ -19,11 +19,6 @@
       "maxLength": 1024,
       "description": "One-sentence routing surface. Tells the agent when to load the skill."
     },
-    "version": {
-      "type": "string",
-      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*))?(?:\\+([a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*))?$",
-      "description": "Optional semantic version. Add one once the skill is shared, consumed, or versioned."
-    },
     "invocation": {
       "type": "string",
       "enum": ["model-invoked", "user-invoked"],

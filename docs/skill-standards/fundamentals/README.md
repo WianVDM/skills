@@ -1,5 +1,7 @@
 # Skill fundamentals
 
+**Layer:** proposed architecture. **Mode:** reference.
+
 The `fundamentals/` directory is split into two groups. The split matches the architecture manifesto: some ideas are universal to every skill, and others are opt-in rules for skills that participate in the architecture (portability, composition, distribution, trust).
 
 ## `core/` — universal fundamentals

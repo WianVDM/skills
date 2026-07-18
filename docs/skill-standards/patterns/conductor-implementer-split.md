@@ -1,5 +1,7 @@
 # Conductor/implementer split
 
+**Layer:** proposed architecture. **Mode:** rule.
+
 The **conductor/implementer split** is a cross-cutting pattern that separates **reasoning and orchestration** from **execution**. A conductor skill decides what to do and delegates to an implementer worker or skill that does it.
 
 This pattern is a **cross-cutting specialization** of the conductor pattern. It is useful when the reasoning layer needs to stay clean and high-level while the execution layer needs to be focused and mechanical.
@@ -97,7 +99,6 @@ plan-and-implement/
 ```markdown
 ---
 name: plan-and-implement
-version: 1.0.0
 invocation: user-invoked
 description: Plan a change and then delegate implementation to a focused worker. Use when a task requires judgment about approach before any files are changed.
 ---

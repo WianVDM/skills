@@ -1,5 +1,7 @@
 # Context reports
 
+**Layer:** proposed architecture. **Mode:** rule.
+
 Skills share context by reading and writing reports in a well-known location. A shared context layer lets skills compose without being tightly coupled.
 
 ---

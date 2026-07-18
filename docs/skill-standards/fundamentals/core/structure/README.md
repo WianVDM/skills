@@ -1,5 +1,7 @@
 # Structure
 
+**Layer:** universal fundamentals. **Mode:** reference.
+
 These documents describe the physical and organizational structure of a skill: the `SKILL.md` file, its frontmatter, optional sibling directories, progressive disclosure, and harness-agnostic language.
 
 ## Topics

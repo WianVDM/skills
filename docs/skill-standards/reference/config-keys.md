@@ -1,5 +1,7 @@
 # Shared configuration keys
 
+**Layer:** proposed architecture. **Mode:** reference.
+
 This registry defines the canonical shared keys that skills can declare in their `config.yaml` files. Shared keys are written to `.agents/config/shared.yaml` once per workspace and read by every skill that needs them.
 
 ## Registering a new key

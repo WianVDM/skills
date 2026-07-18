@@ -1,5 +1,7 @@
 # Decide
 
+**Layer:** universal fundamentals. **Mode:** guide.
+
 Before writing anything, confirm that a skill is the right solution.
 
 - Is the task repeated?

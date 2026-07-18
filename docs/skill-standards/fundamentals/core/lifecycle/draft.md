@@ -1,5 +1,7 @@
 # Draft
 
+**Layer:** universal fundamentals. **Mode:** guide.
+
 Write the minimal `SKILL.md` plus only the supporting files that are needed.
 
 - Frontmatter with name, description, and invocation.

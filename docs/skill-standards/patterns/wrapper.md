@@ -1,5 +1,7 @@
 # Wrapper
 
+**Layer:** proposed architecture. **Mode:** rule.
+
 A wrapper skill is a thin layer that adapts a building block or conductor for human interaction. It adds prompts, presentation, confirmation, and user-facing language without containing the core logic of the wrapped skill.
 
 Wrappers are the third layer of the architecture. They sit between the user and the reusable machinery underneath.
@@ -95,11 +97,21 @@ If the wrapper is growing, reconsider whether the underlying skill should be spl
 
 ---
 
-## Invocation model
+## Invocation mode
 
 Wrappers are almost always **user-invoked**. Their descriptions are human-facing, so context load is low.
 
 A wrapper may be used as a **router**: a single user-invoked skill that names several related skills and tells the user when to reach for each. A router cannot invoke the other skills; it can only guide the user.
+
+```markdown
+# Tools router
+
+This router points to user-invoked tools for design, testing, and deployment. Use it when you need one of these but cannot remember the exact name.
+
+- `review-ui` — review UI code for design-system compliance.
+- `run-tests` — run the project's test command and report results.
+- `deploy-preview` — deploy a preview build.
+```
 
 ---
 
@@ -169,5 +181,5 @@ The wrapper does not invoke other skills; it names them and explains when to use
 
 - [`building-block.md`](./building-block.md) — the layer a wrapper usually sits on top of.
 - [`conductor.md`](./conductor.md) — the layer a wrapper should not become.
-- [`../fundamentals/core/types/`](../fundamentals/core/types/) — choosing the right skill type.
+- [`../fundamentals/architecture/types/`](../fundamentals/architecture/types/) — choosing the right skill type.
 - [`../fundamentals/architecture/security.md`](../fundamentals/architecture/security.md) — destructive actions and confirmation.

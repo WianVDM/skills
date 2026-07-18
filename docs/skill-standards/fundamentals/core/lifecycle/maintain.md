@@ -1,5 +1,7 @@
 # Maintain
 
+**Layer:** universal fundamentals. **Mode:** guide.
+
 Skills rot without attention. Maintenance is where the principle of **continuous refinement** becomes visible. The same discipline that removes no-ops during drafting applies after shipping.
 
 - Review after significant real-world usage.

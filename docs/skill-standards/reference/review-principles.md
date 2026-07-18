@@ -1,5 +1,7 @@
 # Review principles
 
+**Layer:** proposed architecture. **Mode:** reference.
+
 A skill review is a judgment, not a checklist. The reviewer applies the skill fundamentals to decide whether the skill is the right shape, the right scope, and the right token load.
 
 ## Core questions
@@ -43,3 +45,9 @@ The verdict is a conclusion supported by the findings. It is not a substitute fo
 ## Incomplete review
 
 If the core questions cannot be answered, the report is **Incomplete**. It does not issue a verdict. It lists the open questions needed to complete the review.
+
+---
+
+## Research basis
+
+- Original to this repo: the core questions, severity posture, and verdict table, synthesized from skill-review practice against these standards.

@@ -1,5 +1,7 @@
 # Weak guidance
 
+**Layer:** universal fundamentals. **Mode:** rule.
+
 Weak guidance is the class of mistakes that say something without giving the agent enough purchase to act. The result is either no change in behavior or behavior that varies unpredictably.
 
 ---
@@ -10,7 +12,7 @@ A line that changes nothing because the model already does it by default. Common
 
 **Cure**
 
-Run the no-op test on every line: *does this change behavior versus the default?* If not, delete it or replace it with a stronger leading word or a checkable completion criterion.
+Delete the line, or replace it with a stronger leading word or a checkable completion criterion.
 
 See [`../form-and-style/pruning.md`](../form-and-style/pruning.md) for the no-op test and [`../form-and-style/leading-words.md`](../form-and-style/leading-words.md) for how to use leading words instead.
 
@@ -54,7 +56,7 @@ A skill that says many true things but gives the agent no purchase point. Often 
 
 **Cure**
 
-Turn vague guidance into specific principles, leading words, or checkable criteria. See [`../form-and-style/anti-patterns.md`](../form-and-style/anti-patterns.md) for the full guideline-soup anti-pattern.
+Turn vague guidance into specific principles, leading words, or checkable criteria.
 
 ---
 

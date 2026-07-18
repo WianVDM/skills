@@ -1,5 +1,7 @@
 # Conductor
 
+**Layer:** proposed architecture. **Mode:** rule.
+
 A conductor skill coordinates other skills, scripts, subagents, or tools through a multi-phase process to reach a larger goal. It does not do the deep work itself; it delegates.
 
 Conductors are the composition layer of the architecture. They turn building blocks into workflows, integrate findings from workers, maintain state across phases, and decide what to do next.

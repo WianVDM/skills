@@ -2,6 +2,8 @@
 
 ## At a glance
 
+**Layer:** proposed architecture. **Mode:** reference.
+
 This document defines the **harness-neutral evaluation framework** built around `evals/evals.json` and a pluggable runner interface. It covers eval-driven development, trigger/behavior/composition/pressure/security tests, deterministic assertions, and minimal-harness runs.
 
 **Read this if:** you are testing a skill, choosing baselines, or setting up a CI evaluation pipeline.
@@ -139,12 +141,9 @@ Individual subjective verdicts are capped at **medium-high** confidence. The met
 
 ## Trigger evals
 
-Trigger evals test whether the skill description causes it to load at the right times.
+Trigger evals test whether the skill description causes it to load at the right times: at least 10 should-trigger and 10 should-not-trigger queries, with near-misses doing the real work. Essential for model-invoked skills.
 
-- **10 should-trigger queries** — realistic prompts that should load the skill. Include varied phrasing, casual speech, and cases where the user does not name the skill explicitly.
-- **10 should-not-trigger queries** — near-miss prompts that share keywords but should *not* load the skill. These are the most valuable cases.
-
-For user-invoked skills, the description is primarily human-facing, but a clarity eval still helps. The 10/10 target is most critical for model-invoked skills.
+See [`../guides/trigger-evals.md`](../guides/trigger-evals.md) for the full method, query-writing guidance, and the eval template.
 
 ---
 
@@ -164,15 +163,9 @@ Composition testing is required for building blocks and conductors. It is recomm
 
 ## Pressure testing
 
-Discipline skills need **pressure tests** that try to make the agent rationalize its way around the rule. The baseline is the documented failure pattern, not a successful no-skill run.
+Discipline skills need **pressure tests** that try to make the agent rationalize its way around the rule. The baseline is the documented failure pattern, not a successful no-skill run. The skill should either refuse, produce the required evidence, or escalate to the user.
 
-For example, a TDD discipline skill should be tested with prompts like:
-
-- "Add this feature quickly."
-- "The test is obvious, just implement it."
-- "Can you skip the test and come back to it?"
-
-The skill should either refuse, produce the required evidence, or escalate to the user.
+See [`../patterns/discipline-skill.md`](../patterns/discipline-skill.md) for a worked pressure-test example.
 
 ---
 
@@ -186,7 +179,7 @@ Skills that involve multi-agent coordination should be tested on:
 - **Ledger fidelity** — are shared task lists, plans, or reports accurate?
 - **Distractor resistance** — do agents stay focused under irrelevant input?
 
-See `patterns/conductor-implementer-split.md` for the conductor/implementer pattern and its handoff contract.
+See [`../patterns/conductor-implementer-split.md`](../patterns/conductor-implementer-split.md) for the conductor/implementer pattern and its handoff contract.
 
 ---
 
@@ -199,7 +192,7 @@ Agent-authored skills need the same functional tests as human-authored skills, p
 - **Mutation test** — the skill does not try to modify itself or other skills without approval.
 - **Consolidation test** — the skill does not silently merge or replace human-authored content.
 
-See `GOVERNANCE.md` for the agent-authored skills governance model.
+See [`governance.md`](./governance.md) for the agent-authored skills governance model.
 
 ---
 
@@ -235,17 +228,17 @@ The following evaluation concerns are **limited** and are documented as such:
 
 ---
 
-## Key takeaways
+## Related documents
 
-- A skill is finished when it **reliably improves the agent's behavior**, not when it is written.
-- Prefer **deterministic assertions** (file read/write, commands, output contains/excludes, format) over LLM-as-judge.
-- **Trigger evals** are essential for model-invoked skills: aim for 10 should-trigger and 10 should-not-trigger queries.
-- **Composition tests** are required for building blocks and conductors; they check selection, following, composition, and distractor resistance.
-- **Pressure tests** try to make discipline skills rationalize their way around the rule.
-- **Discipline skills** use the documented failure pattern as a baseline, not a successful no-skill run.
-- **Agent-authored skills** need extra tests: anti-rationalization, scope, mutation, and consolidation.
-- **Security scanning** is a separate audit dimension from functional evaluation.
-- Run a **minimal-harness test** for portable skills to confirm degraded behavior is still useful.
+- [`../fundamentals/architecture/evaluation.md`](../fundamentals/architecture/evaluation.md) — the fundamental evaluation checklists and review questions.
+- [`../guides/trigger-evals.md`](../guides/trigger-evals.md) — the trigger-eval method.
+- [`package.md`](./package.md) — formal `evals.json`, `skills.json`, and lock-file schemas.
+- [`governance.md`](./governance.md) — governance and audit for agent-authored skills.
+- [`../patterns/portability.md`](../patterns/portability.md) — minimal-harness degradation and portable core.
+- [`../patterns/discipline-skill.md`](../patterns/discipline-skill.md) — pressure testing and guardrail baselines.
+- [`../patterns/conductor-implementer-split.md`](../patterns/conductor-implementer-split.md) — multi-agent handoff patterns.
+
+---
 
 ## Research basis
 
@@ -259,13 +252,3 @@ The following evaluation concerns are **limited** and are documented as such:
 - **Minimal-harness run** is drawn from the research on Aider compatibility and minimal-harness skill injection.
 - The **limitations** are drawn from the research gaps checklist and are explicitly documented.
 
----
-
-## Related documents
-
-- [`fundamentals/architecture/evaluation.md`](../fundamentals/architecture/evaluation.md) — the fundamental evaluation checklists and review questions.
-- [`PACKAGE.md`](./package.md) — formal `evals.json`, `skills.json`, and lock-file schemas.
-- [`GOVERNANCE.md`](./governance.md) — governance and audit for agent-authored skills.
-- [`PORTABILITY.md`](../patterns/portability.md) — minimal-harness degradation and portable core.
-- [`patterns/discipline-skill.md`](../patterns/discipline-skill.md) — pressure testing and guardrail baselines.
-- [`patterns/conductor-implementer-split.md`](../patterns/conductor-implementer-split.md) — multi-agent handoff patterns.

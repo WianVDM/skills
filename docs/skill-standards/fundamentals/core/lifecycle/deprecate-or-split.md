@@ -1,5 +1,7 @@
 # Deprecate or split
 
+**Layer:** universal fundamentals. **Mode:** guide.
+
 Retire a skill when:
 
 - It is no longer used.

@@ -2,6 +2,8 @@
 
 ## At a glance
 
+**Layer:** proposed architecture. **Mode:** rule.
+
 This document defines portability as **contract plus degradation rules**: a portable core, canonical install paths, and fallback behavior for harnesses that only support a subset of the standard. It covers plain-markdown export, convention-file fallback, dependency mapping, and minimal-harness injection.
 
 **Read this if:** you want a skill to work across Claude Code, Cursor, Codex, Aider, and future harnesses.

@@ -1,5 +1,7 @@
 # Building block
 
+**Layer:** proposed architecture. **Mode:** rule.
+
 A building block is a narrow, reusable skill with a clear interface and structured output. Other skills — usually conductors — consume it to compose larger workflows without duplicating capability.
 
 There are two common shapes of building block:

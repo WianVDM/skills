@@ -1,5 +1,7 @@
 # Harness-agnostic language
 
+**Layer:** universal fundamentals. **Mode:** rule.
+
 Skills must not assume a specific agent harness, tool name, slash command, or vendor API.
 
 | Bad | Good |
@@ -9,6 +11,7 @@ Skills must not assume a specific agent harness, tool name, slash command, or ve
 | Use `git status`. | Check the current working state. |
 | Open Jira ticket PROJ-123. | Open the configured issue tracker for ticket PROJ-123. |
 | Run `npm test`. | Run the project's test command. |
+| Read `src/app/config.ts`. | Read the project's configuration entry point. |
 
 The skill should detect the environment, consult config, or ask the user.
 

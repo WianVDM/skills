@@ -1,5 +1,7 @@
 # Versioning
 
+**Layer:** proposed architecture. **Mode:** rule.
+
 Versioning matters when a skill has consumers — other skills, conductors, or external systems — that depend on its behavior or output schema. A versioned skill documents breaking changes, migration paths, and compatibility guarantees.
 
 Versioning is not a fundamental. Simple, local skills do not need it. It is an architecture and library concern.
@@ -68,18 +70,15 @@ A versioned skill should document:
 - How long old versions are supported.
 - How consumers migrate.
 
-Document this in `references/VERSIONING.md` or in the `SKILL.md` frontmatter.
+Document this in `references/VERSIONING.md` or in the `SKILL.md` body. The version itself lives in the package envelope:
 
-Example frontmatter:
-
-```yaml
----
-name: context-reports
-version: "2.1.0"
----
+```json
+{
+  "name": "context-reports",
+  "version": "2.1.0",
+  "skills": ["context-reports"]
+}
 ```
-
-Document the versioning policy in `references/VERSIONING.md` or in the `SKILL.md` body.
 
 ---
 
@@ -152,7 +151,7 @@ Deprecation periods are a trade-off. Longer periods reduce consumer breakage; sh
 - [ ] Report schemas are versioned if consumed by other skills.
 - [ ] Consumers declare which versions they support.
 - [ ] Deprecated behavior is documented and removed on a schedule.
-- [ ] The versioning policy is stored in `references/VERSIONING.md` or frontmatter.
+- [ ] The versioning policy is stored in `references/VERSIONING.md` or the `SKILL.md` body.
 
 ---
 

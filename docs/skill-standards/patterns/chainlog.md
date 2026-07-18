@@ -1,5 +1,7 @@
 # Chainlog
 
+**Layer:** proposed architecture. **Mode:** rule.
+
 A **chainlog** is a shared, append-only ledger of observations that skills produce and consume across runs. It lets skills reuse prior work without treating reports as the source of truth.
 
 For the full machine-readable contract, see [`chainlog-contract.md`](../reference/chainlog-contract.md).
@@ -52,24 +54,50 @@ It is a peer to [`context-reports`](./context-reports.md), not a replacement. `c
 
 `chainlog` also reinforces other architecture patterns:
 
-- [`tooling-awareness`](../../fundamentals/architecture/tooling-awareness.md) — the storage adapter itself is a capability discovered through the same tooling-awareness rules.
+- [`tooling-awareness`](../fundamentals/architecture/tooling-awareness.md) — the storage adapter itself is a capability discovered through the same tooling-awareness rules.
 - [`stateful`](./stateful.md) — state files hold working memory for one skill; the chainlog holds durable observations shared across skills.
 - [`building-block`](./building-block.md) — a `chainlog` implementation is itself a narrow, reusable building block.
 - [`conductor`](./conductor.md) — conductor skills are the most common producers and consumers of chainlog observations.
 
 ## Storage model
 
-The default `chainlog` adapter stores observations as a chain of linked segments. Each segment holds a consecutive slice of observations for one work item. When a segment reaches its threshold, the adapter starts a new segment and links it to the previous one. Old segments are read-only; only the head segment accepts new observations.
+The default `chainlog` adapter stores observations as a chain of linked, append-only segments for one work item. Old segments are read-only; only the head segment accepts new observations. This preserves the full history without compaction, which would contradict the append-only property.
 
-This design avoids compaction, which would delete history and contradict the append-only property. It keeps files manageable while preserving the full chain for audit and replay.
-
-For the full file layout, segment frontmatter, observation envelope, and storage adapter contract, see [`chainlog-contract.md`](../reference/chainlog-contract.md).
+For the full storage model, file layout, segment frontmatter, observation envelope, and storage adapter contract, see [`chainlog-contract.md`](../reference/chainlog-contract.md).
 
 ## Operations
 
 A `chainlog` implementation exposes `append`, `query_latest`, `query_all`, `query_since`, `exists`, and `mark_stale`. The contract is fixed across adapters; only the invocation mechanism varies by harness.
 
 See [`chainlog-contract.md`](../reference/chainlog-contract.md) for the full operation schemas, input/output shapes, and error contract.
+
+## A worked observation
+
+A `pr-report` skill that just collected CI status for a pull request appends:
+
+```yaml
+---
+observation_id: 9f2c1a7e
+work_item_type: pr
+work_item_key: 42@acme-shop
+capability: ci-source
+source: github-actions-adapter
+source_version: 1.0.0
+schema_version: 1.0.0
+collected_at: 2026-07-18T09:30:00Z
+branch: feature/PROJ-1234-retry
+commit: abc1234def5678
+confidence: high
+producing_skill: pr-report
+---
+
+## Payload
+
+conclusion: failure
+failed_jobs: [lint, unit-tests]
+```
+
+The next `pr-report` run queries the latest `ci-source` observation for `42@acme-shop`, checks whether a newer commit made it stale, and re-runs the adapter only if it is. The full envelope and operation schemas are defined in [`chainlog-contract.md`](../reference/chainlog-contract.md).
 
 ## Producer and consumer responsibilities
 
@@ -137,7 +165,7 @@ A chainlog implementation should not reject old observations. It should store th
 |---------|------|------------------------|
 | [`context-reports`](./context-reports.md) | Shared human-readable reports. | `chainlog` holds machine-readable observations; reports are views over them. |
 | [`stateful`](./stateful.md) | Working memory across invocations. | `chainlog` is shared across skills; state is private to one skill. |
-| [`tooling-awareness`](../../fundamentals/architecture/tooling-awareness.md) | Capability-first tool selection. | `chainlog` uses tooling-awareness to discover its storage adapter. |
+| [`tooling-awareness`](../fundamentals/architecture/tooling-awareness.md) | Capability-first tool selection. | `chainlog` uses tooling-awareness to discover its storage adapter. |
 | [`building-block`](./building-block.md) | Narrow, reusable capabilities. | A `chainlog` implementation is a building block; the pattern defines how to use it. |
 
 ## Open decisions

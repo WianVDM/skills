@@ -1,5 +1,7 @@
 # One-way pattern consistency
 
+**Layer:** proposed architecture. **Mode:** rule.
+
 A reusable skill should encode exactly one canonical way to solve each recurring problem. When a skill offers multiple valid approaches, the agent faces decision paralysis and output becomes inconsistent.
 
 | Inconsistent skill | Consistent skill |

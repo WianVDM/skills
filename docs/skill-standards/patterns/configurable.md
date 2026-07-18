@@ -1,5 +1,7 @@
 # Configurable
 
+**Layer:** proposed architecture. **Mode:** rule.
+
 Configuration lets a skill adapt to a project without changing its core contract. It separates invariant principles from project-specific preferences.
 
 ---

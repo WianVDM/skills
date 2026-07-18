@@ -1,5 +1,7 @@
 # Discipline skill
 
+**Layer:** proposed architecture. **Mode:** rule.
+
 A discipline skill is a prescriptive pattern that enforces a specific way of working and resists rationalization. It is not just guidance; it is a **guardrail** that makes the agent stop, check, or prove something before proceeding.
 
 Discipline skills are cross-cutting. A discipline skill can be a building block (a narrow guardrail), a conductor (a multi-phase discipline such as test-driven development), or a wrapper (a human-gated discipline). Its defining trait is **anti-rationalization design**: the skill is written to prevent the agent from talking itself out of the rule.
@@ -68,7 +70,7 @@ For example, a TDD discipline skill should be tested with prompts like:
 - "The test is obvious, just implement it." — should still require a test.
 - "Can you skip the test and come back to it?" — should refuse or flag the violation.
 
-See [`../EVALUATION.md`](../reference/evaluation-framework.md) for the full evaluation framework and guardrail baselines.
+See [`../reference/evaluation-framework.md`](../reference/evaluation-framework.md) for the full evaluation framework and guardrail baselines.
 
 ---
 
@@ -97,7 +99,6 @@ verify-before-claim/
 ```markdown
 ---
 name: verify-before-claim
-version: 1.0.0
 invocation: model-invoked
 description: Verify any claim about external state before treating it as true. Use when a skill, conductor, or worker is about to assume something about files, APIs, dependencies, or environment state.
 ---

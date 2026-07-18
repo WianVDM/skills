@@ -1,5 +1,7 @@
 # The four axes of skill design
 
+**Layer:** universal fundamentals. **Mode:** explanation.
+
 Skill design is the deliberate tuning of four axes. Each axis is a set of levers that makes the agent more predictable.
 
 ---

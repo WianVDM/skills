@@ -1,5 +1,7 @@
 # Skill lifecycle
 
+**Layer:** universal fundamentals. **Mode:** reference.
+
 A skill is a living document. It moves through distinct phases from initial idea to retirement. Treat each phase as intentional, not accidental.
 
 ---

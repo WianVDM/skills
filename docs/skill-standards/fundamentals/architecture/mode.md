@@ -1,5 +1,7 @@
 # Mode pattern
 
+**Layer:** proposed architecture. **Mode:** explanation.
+
 A **mode** is a transient behavior switch that changes how the agent behaves for a session or a task, without loading a full skill. It is not a skill, but it is related enough that skill authors should understand it.
 
 Modes are useful when the same agent needs to operate in different stances — for example, coding vs. asking, or reasoning vs. executing — but the stance is too lightweight to justify a dedicated skill.
@@ -86,6 +88,13 @@ A skill can *recommend* planning mode, but it must not *depend* on it. If the ha
 
 ---
 
+## Related documents
+
+- [`types/`](./types/) — choosing the right skill type.
+- [`discipline-skill.md`](../../patterns/discipline-skill.md) — prescriptive guidance that can act like a mode but is a skill.
+
+---
+
 ## Research basis
 
 - The **mode pattern** is drawn from the research on Aider's `code`/`ask`/`architect` modes and similar transient behavior switches in other agent tools.
@@ -93,8 +102,3 @@ A skill can *recommend* planning mode, but it must not *depend* on it. If the ha
 - The recommendation that skills should not rely on modes for essential behavior is our own, based on the portability goal: a skill should be self-contained enough to work even when the user's current mode is different.
 
 ---
-
-## Related documents
-
-- [`../fundamentals/core/types/`](../fundamentals/core/types/) — choosing the right skill type.
-- [`discipline-skill.md`](./discipline-skill.md) — prescriptive guidance that can act like a mode but is a skill.
