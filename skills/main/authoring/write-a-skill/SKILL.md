@@ -1,6 +1,6 @@
 ---
 name: write-a-skill
-description: Design, review, and update skills that follow the skill standards. Coordinates creation, audit, remediation, and first-run initialization.
+description: Design, review, and update skills that follow the skill standards. Use when creating a new skill, auditing or refining an existing one, clarifying a vague skill idea, or deciding what shape an idea should take.
 invocation: user-invoked
 depends:
   - audit-skill
@@ -67,10 +67,11 @@ Classify the user's intent into one top-level branch. If the intent is unclear, 
 | Branch         | Trigger                                                                 | Internal gate                | Outcome                                                                   |
 | -------------- | ----------------------------------------------------------------------- | ---------------------------- | ------------------------------------------------------------------------- |
 | **initialize** | No `write-a-skill.yaml` config exists, or the user asks to reconfigure. | `config`                     | A persisted `write-a-skill.yaml` with project paths and standards source. |
-| **create**     | User wants to produce a new skill or is unsure what shape to build.     | `full`, `quick`, or `decide` | A designed and audited new skill, or a recommendation report.             |
+| **explore**    | User has a vague idea or rough draft and wants clarity before building. | none                         | A confirmed objective map and a recommendation; no files written.          |
+| **create**     | User wants to produce a new skill.                                      | `full` or `quick`            | A designed and audited new skill.                                          |
 | **change**     | User wants to audit or refine an existing skill.                        | `review` or `update`         | An audit report, or a remediation plan with optional changes.             |
 
-**Completion criterion:** the branch is one of {create, change, initialize} and the user has confirmed or corrected the default.
+**Completion criterion:** the branch is one of {initialize, explore, create, change} and the user has confirmed or corrected the default.
 
 ## Workflow
 
