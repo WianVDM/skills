@@ -1,9 +1,9 @@
 {
   "version": "1.0.0",
-  "generated_at": "2026-07-18T00:39:27.077908+00:00",
+  "generated_at": "2026-07-18T11:11:32.955044+00:00",
   "source_check": {
     "skills_json_hash": "sha256:d60576d1b40d5d94e36e6e14ee9624cc7ce851f081b0b7284d545b2dd081fdb7",
-    "latest_skill_mtime": "2026-07-18T00:39:22.678335+00:00"
+    "latest_skill_mtime": "2026-07-18T11:11:28.525805+00:00"
   },
   "skills": [
     {
@@ -3024,10 +3024,10 @@
           ]
         },
         {
-          "id": "parse-skill-frontmatter:extract-name-description-version-invocation-and-depends",
-          "name": "Extract name, description, version, invocation, and depends",
+          "id": "parse-skill-frontmatter:extract-name-description-and-invocation-return-version-and-d",
+          "name": "Extract name, description, and invocation; return version and depends when present",
           "category": "uncategorized",
-          "description": "Extract name, description, version, invocation, and depends.",
+          "description": "Extract name, description, and invocation; return version and depends when present.",
           "sources": [
             "SKILL.md:In scope"
           ]
