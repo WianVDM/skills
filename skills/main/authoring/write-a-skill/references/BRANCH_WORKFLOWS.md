@@ -9,6 +9,7 @@ Top-level branches:
 
 ## Conventions
 
+- Every branch starts at **phase 0: objective map** (see [OBJECTIVE_MAP.md][objective-map]). Nothing downstream runs on an unconfirmed map.
 - Each phase ends with a **completion criterion**.
 - The conductor does not advance to the next phase until the criterion is met or the user explicitly overrides it.
 - Destructive actions (writing, overwriting, installing) always require explicit approval.
@@ -30,6 +31,7 @@ Invoke the `subagents/initialize` worker with the detected project context. It r
 - `config_dir`: where to write `write-a-skill.yaml`.
 - `context_dir`: where context reports are written.
 - `standards_path`: path to the canonical skill standards directory.
+- `capability_index_path`: path to the machine-readable capability index (project-local override or bundle default).
 - `registries`: list of skill registries to search.
 
 **Completion criterion:** a config proposal exists and the worker has reported standards availability (`found`, `missing`, or `incomplete`).
@@ -37,7 +39,7 @@ Invoke the `subagents/initialize` worker with the detected project context. It r
 ### 3. Resolve standards source
 
 - If `standards_path` points to an existing directory with expected files, use it.
-- If the directory is missing or incomplete, offer to fetch only the canonical skill standards directory from `github.com/wianvdm/skills`.
+- If the directory is missing or incomplete, offer to fetch only the canonical skill standards directory from `github.com/wianvdm/skills`. Show the user the exact source (repository, ref or commit, and directory) before downloading; record the fetched ref in the persisted config for later drift checks.
 - If the user declines or the fetch fails, use the degraded-mode warning template from [PLUGGABILITY.md][pluggability] and fall back to embedded fundamentals and pattern hints.
 
 **Completion criterion:** the standards source is confirmed by the user and the degraded-mode warning (if any) is recorded.
@@ -56,15 +58,15 @@ Ask the user to confirm each proposed value. Only after explicit approval, run `
 
 This is the full design workflow for a new skill from scratch.
 
-#### 1. Clarify intent
+#### 0. Objective map
 
-**Why:** designing the wrong skill is expensive. Clarifying intent first prevents building a solution for the wrong problem.
+**Why:** designing the wrong skill is expensive. The objective map is the confirmed foundation every later phase reads from.
 
-Understand the problem, trigger, success criteria, and whether a skill is warranted. Use grill-me-style questions with proposed defaults.
+Build the objective map with the user via the `map-objective` worker: prefill the nine fields from the request, present the whole map, and grill only the gaps. See [OBJECTIVE_MAP.md][objective-map] for the fields and protocol.
 
-**Completion criterion:** the intent note contains the problem, trigger, success criteria, and the chosen gate `full`.
+**Completion criterion:** the map is confirmed by the user and persisted to the intent note.
 
-#### 2. Explore alternatives
+#### 1. Explore alternatives
 
 **Why:** a new skill should be the last resort, not the first.
 
@@ -80,7 +82,7 @@ Write the report to `{context}/skill-design/{skill-name}-overlap-findings.md` an
 
 **Completion criterion:** the alternatives report lists existing options, the overlap findings report exists, and the user knows whether to build new, reuse/extend existing, or install.
 
-#### 3. Decide shape and colocation
+#### 2. Decide shape and colocation
 
 **Why:** the shape of the solution determines every later decision, and whether the capability should live inside an existing skill determines whether a new skill is warranted at all.
 
@@ -96,7 +98,7 @@ Record the user's choice in `{context}/skill-design/{skill-name}-decisions.md`. 
 
 **Completion criterion:** the user confirms the chosen shape is a new skill and the reuse/colocate/extract decision for each significant overlap; any extraction candidates have interface sketches and a recorded rationale.
 
-#### 4. Define identity
+#### 3. Define identity
 
 **Why:** a confirmed identity is the contract that prevents scope creep and naming drift.
 
@@ -104,13 +106,21 @@ Produce a frontmatter skeleton: name, description, invocation. Add harness hints
 
 **Completion criterion:** the design draft contains an identity section and the user has confirmed it.
 
-#### 5. Define scope
+#### 4. Define scope
 
 **Why:** clear boundaries prevent bloat and hidden assumptions.
 
 Write one core objective, explicit in-scope items, and explicit out-of-scope items.
 
 **Completion criterion:** the scope boundaries are explicit and do not contradict each other.
+
+#### 5. Description design
+
+**Why:** the description is the routing surface — the most important field in `SKILL.md`. It is designed, not filled in.
+
+Draft the description from the objective map: leading word or domain first, one trigger per distinct branch from the map's triggers field, a reach clause if other skills consume the skill, ≤ 1024 characters. Present it to the user for confirmation before any drafting begins.
+
+**Completion criterion:** the description follows the canonical shape and the user has confirmed it.
 
 #### 6. Select patterns
 
@@ -189,31 +199,51 @@ Present the design, audit, and alternatives summary. Write files only after expl
 
 A compressed version of the full gate for minimal skills.
 
-1. **Clarify intent** (minimal) — capture problem, trigger, and success criteria.
+1. **Objective map** (minimal) — prefill the nine fields from the brief, confirm with the user.
 2. **Explore alternatives** (light) — check existing skills and simple alternatives; run `detect-skill-overlap` for any close match and write the findings to `{context}/skill-design/{skill-name}-overlap-findings.md`.
-3. **Decide shape and colocation** — name, description, invocation; decide whether to colocate inside an existing skill or extract as a new reusable skill; invoke `detect-skill-overlap` to flag extraction opportunities; present the user with reuse/colocate/extract options and record decisions in the decision log.
+3. **Decide shape and colocation** — name and invocation; decide whether to colocate inside an existing skill or extract as a new reusable skill; invoke `detect-skill-overlap` to flag extraction opportunities; present the user with reuse/colocate/extract options and record decisions in the decision log.
 4. **Define scope** — one objective, in-scope, out-of-scope.
-5. **Select patterns** — apply fundamentals.
-6. **Pattern adherence** — confirm pattern mappings or deviations; warn if canonical docs are unavailable.
-7. **Token justification** — defend the minimal artifact set; remove duplicates.
-8. **Design capability-to-tool strategy** — for each load-bearing capability, note the preferred tool, fallback, and degraded-output disclosure.
-9. **Draft** — write the skill files.
-10. **Audit** — run `audit-skill` and `validate-skill-frontmatter`.
-11. **Confirm and write** — get approval before writing.
+5. **Description design** — leading word, distinct triggers, reach clause, ≤ 1024 characters, confirmed.
+6. **Select patterns** — apply fundamentals.
+7. **Pattern adherence** — confirm pattern mappings or deviations; warn if canonical docs are unavailable.
+8. **Token justification** — defend the minimal artifact set; remove duplicates.
+9. **Design capability-to-tool strategy** — for each load-bearing capability, note the preferred tool, fallback, and degraded-output disclosure.
+10. **Draft** — write the skill files.
+11. **Audit** — run `audit-skill` and `validate-skill-frontmatter`.
+12. **Confirm and write** — get approval before writing.
 
-### Create branch — decide gate
+## Explore branch
 
-For the full decide workflow, invoke the `decide-skill-shape` skill. Pass the overlap findings report from `detect-skill-overlap` so the recommendation can account for existing capabilities and extraction opportunities. `decide-skill-shape` will:
+The entry point for vague ideas and rough drafts. The output is a confirmed objective map and a recommendation — never files.
 
-1. Capture the problem.
-2. Explore existing solutions using `list-available-skills` and `search-skills-registry`.
-3. Ask classification questions.
-4. Apply the decision rules from [decide-skill-shape/references/DECISION_RULES.md][decision-rules].
-5. Consider reuse/colocate/extract options for any significant overlaps.
-6. Present a recommendation with alternatives, trade-offs, and a summary of the overlap evidence.
-7. Write a decision report to `{context}/decide-skill-shape/{key}-decision-report.md`.
+### 1. Objective map
 
-`write-a-skill` consumes the decision report and offers the user the next step. The `decide` gate does not write skill files.
+Build the map with the user via `map-objective` (prefill-and-confirm; grill the gaps). See [OBJECTIVE_MAP.md][objective-map].
+
+**Completion criterion:** the map is confirmed and persisted to the intent note.
+
+### 2. Explore what exists
+
+Run `list-available-skills`, `search-skills-registry`, and `detect-skill-overlap`. Write overlap findings to `{context}/skill-design/{skill-name}-overlap-findings.md`.
+
+**Completion criterion:** the alternatives report exists and the user has seen the top findings.
+
+### 3. Resolve the shape (if unclear)
+
+If the open question is shape — skill, script, MCP server, context file, or existing skill — invoke `decide-skill-shape` and consume its decision report. Do not leave the branch.
+
+**Completion criterion:** the shape is confirmed, or the user accepts a recommendation to revisit later.
+
+### 4. Recommend
+
+Present one of four outcomes with reasoning:
+
+- **Build it** — hand the confirmed map to the `create` branch.
+- **Reuse or extend** — name the existing skill and show the fit.
+- **Simpler answer** — a script, MCP server, context file, or rule.
+- **Not worth it** — record why; nothing is written.
+
+**Completion criterion:** the user has confirmed the recommendation; no files were written.
 
 ## Change branch
 
@@ -227,13 +257,15 @@ After the comprehension step is complete, the `review-skill` conductor runs the 
 
 1. Read the skill files.
 2. Comprehend the skill using the review principles.
-3. Produce an incomplete report if the core questions cannot be answered.
-4. Run `audit-skill` and `validate-skill-frontmatter`.
-5. Produce a structured, verdict-led audit report that incorporates the review principles.
-6. For the `update` gate, produce a remediation plan, confirm each change, apply approved changes, and run a final audit.
+3. Confirm the comprehension brief with the user — scoring does not start on an unconfirmed understanding.
+4. Produce an incomplete report if the core questions cannot be answered.
+5. Run `audit-skill` and `validate-skill-frontmatter`.
+6. Produce a structured, verdict-led audit report that incorporates the review principles.
+7. For the `update` gate, produce a remediation plan, confirm each change, apply approved changes, and run a final audit.
 
 `write-a-skill` delegates the `change` branch to `review-skill` through `subagents/change-branch.md` and consumes the resulting comprehension brief, verdict-led audit report, incomplete report, or remediation plan. When reviewing an existing skill, pay special attention to whether the skill is a separate skill only because it was extracted prematurely. Apply the **Contain** core question from the review principles: *"Should this capability be colocated inside an existing skill, or is extraction into a separate skill justified by reuse?"*
 
+[objective-map]: OBJECTIVE_MAP.md
 [fundamentals]: FUNDAMENTALS.md
 [pattern-hints]: PATTERN_HINTS.md
 [decision-rules]: ../decide-skill-shape/references/DECISION_RULES.md

@@ -10,7 +10,7 @@ Decide whether the skill being designed is a building block, conductor, wrapper,
 
 ### In scope
 - Reading the design draft and intent note.
-- Applying the type definitions from `references/FUNDAMENTALS.md`.
+- Applying the type definitions from `references/FUNDAMENTALS.md`, or from the canonical types taxonomy at `{standards_path}/fundamentals/architecture/types/` when the canonical standards are available.
 - Proposing a primary type and secondary roles.
 - Asking for clarification when the type is ambiguous.
 

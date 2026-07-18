@@ -1,6 +1,6 @@
 {
   "name": "write-a-skill",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Skill-design conductor for creating, reviewing, and updating skills that follow the skill standards.",
   "compatibility": {
     "harnesses": ["pi"]
@@ -23,11 +23,15 @@
         "parse-skill-frontmatter"
       ],
       "recommended": [
+        "artifact-freshness",
+        "chainlog",
         "list-available-skills",
+        "map-skill-flow",
         "search-skills-registry",
         "detect-skill-overlap",
         "install-skill",
-        "run-trigger-evals"
+        "run-trigger-evals",
+        "token-resolver"
       ],
       "optional": [
         "prototype"
@@ -36,13 +40,17 @@
   },
   "requirements": {
     "skills": [
+      "artifact-freshness",
+      "chainlog",
       "detect-project-context",
       "list-available-skills",
+      "map-skill-flow",
       "search-skills-registry",
       "detect-skill-overlap",
       "install-skill",
       "decide-skill-shape",
       "audit-skill",
+      "token-resolver",
       "validate-skill-frontmatter",
       "review-skill",
       "run-trigger-evals",

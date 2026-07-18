@@ -23,9 +23,9 @@ A one-line explanation of each ID emitted by `audit-skill`:
 | F02 | Identity | `description` is present and no longer than 1024 characters. |
 | F03 | Identity | Description front-loads the core action or domain. |
 | F04 | Identity | Description lists distinct triggers, not synonyms. |
-| F05 | Identity | `version` is valid SemVer if present. |
+| F05 | Identity | Versioning lives at the package level in `skills.json`, not in frontmatter. |
 | F06 | Identity | `invocation` is `model-invoked` or `user-invoked`. |
-| F07 | Identity | `metadata` includes `author` and `tags`. |
+| F07 | Identity | Frontmatter contains only load-bearing fields; no `metadata`, `author`, or `tags`. |
 | F08 | Identity | Frontmatter validates against the JSON schema. |
 | T01 | Type | Skill type is declared or clearly implied. |
 | T02 | Type | Content matches the declared type. |

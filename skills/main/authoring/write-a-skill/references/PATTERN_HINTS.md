@@ -1,7 +1,7 @@
 # Pattern hints (condensed)
 
 > **This is a condensed fallback.** The canonical pattern documents live in `docs/skill-standards/patterns/`. If that directory is available, prefer it and treat this file as a degraded copy for projects that ship without the full standards wiki.
-> Last synced: 2026-07-08.
+> Last synced: 2026-07-18 (source ref: faf4e5f).
 
 Use these decision rules to decide which Layer 2 architecture patterns apply to a skill.
 
@@ -15,10 +15,10 @@ Use these decision rules to decide which Layer 2 architecture patterns apply to 
 | **Versioning** | Other skills or consumers depend on the skill's behavior or schema. | The skill has no consumers and no schema contract. |
 | **Discipline skill** | The skill enforces a rule that the model would otherwise rationalize around. | The rule is optional advice, not a guardrail. |
 | **Context-file** | The guidance should be always-on and has no clear trigger. | There is a clear on-demand workflow. |
+| **Chainlog** | The skill collects or consumes observable data other skills could reuse. | The skill has no reusable observations. |
+| **Portability** | The skill must run across harnesses, including minimal ones. | The skill only ever runs in one harness. |
 | **Mode** | The user wants a transient behavior switch. | The behavior should be encoded persistently in the skill. |
 | **Conductor/implementer split** | The skill needs to separate reasoning from execution. | The skill is small enough to reason and execute inline. |
-| **Capability matrix** | The skill has multiple load-bearing capabilities and each may be fulfilled by more than one tool category. | The skill has only one happy path with one obvious tool. |
-| **Colocation vs extraction** | The capability should be extracted as a separate skill because it is cross-cutting, has multiple consumers, has a stable narrow interface, or solves a generic-domain problem. | The capability belongs inside the skill that owns it. |
 
 ## Pattern adherence is not optional
 
@@ -52,18 +52,23 @@ For every load-bearing capability, document:
 
 For the full, maintained version of these patterns, see `docs/skill-standards/patterns/`:
 
+<!-- BEGIN GENERATED: pattern-inventory -->
 - `building-block.md`
-- `conductor.md`
-- `wrapper.md`
-- `discipline-skill.md`
-- `context-file.md`
-- `mode.md`
+- `chainlog.md`
 - `conductor-implementer-split.md`
-- `global-pluggable.md`
+- `conductor.md`
 - `configurable.md`
-- `initialization.md`
-- `stateful.md`
+- `context-file.md`
 - `context-reports.md`
+- `discipline-skill.md`
+- `global-pluggable.md`
+- `initialization.md`
+- `portability.md`
+- `stateful.md`
 - `versioning.md`
+- `wrapper.md`
+<!-- END GENERATED: pattern-inventory -->
 
-Update this fallback only after the canonical docs change, and only to the minimum needed for self-contained operation.
+The `mode` pattern's canonical doc lives outside `patterns/` at `docs/skill-standards/fundamentals/architecture/mode.md`.
+
+Update this fallback only through `scripts/sync-fallbacks.py`, and only to the minimum needed for self-contained operation.

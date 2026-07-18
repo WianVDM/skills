@@ -37,52 +37,74 @@ The skill is **user-invoked**: type `write-a-skill` or mention it by name when d
 write-a-skill/
 ├── SKILL.md                          # conductor: workflow, branches, and gates
 ├── README.md                         # this file
+├── config.yaml                       # shared and skill-specific config keys
+├── skills.json                       # package manifest: version, dependencies, requirements
 ├── references/                       # condensed standards and guidance
-│   ├── FUNDAMENTALS.md               # condensed skill fundamentals
-│   ├── PATTERN_HINTS.md              # condensed Layer 2 pattern decision rules
+│   ├── OBJECTIVE_MAP.md              # the 9-field objective map and confirmation protocol
+│   ├── FUNDAMENTALS.md               # condensed skill fundamentals (generated fallback)
+│   ├── PATTERN_HINTS.md              # condensed Layer 2 pattern decision rules (generated fallback)
 │   ├── BRANCH_WORKFLOWS.md           # detailed per-branch workflows
 │   ├── PLUGGABILITY.md               # detection rules and global portability
 │   ├── DEPENDENCIES.md               # required building blocks and capabilities
-│   ├── STATE_SCHEMA.md               # skill-specific artifact schemas; shared conventions in `context-reports`
-│   ├── WORKER_CONTRACT.md            # pointer to the `worker-contract` skill + skill-specific addendum
-│   ├── GUIDE_SCRIPT_CURATION.md      # pointer to script guidance + skill-specific addendum
+│   ├── STATE_SCHEMA.md               # skill-specific artifact schemas
+│   ├── WORKER_CONTRACT.md            # pointer to the `worker-contract` skill + addendum
+│   ├── GUIDE_SCRIPT_CURATION.md      # pointer to script guidance + addendum
 │   ├── GUIDE_EXAMPLES.md             # example skill structures
-│   ├── EVAL.md                       # skill-specific trigger, behavioral, and composition eval cases
-│   └── GOVERNANCE.md                 # versioning, migration, and maintenance notes for human maintainers
+│   ├── EVAL.md                       # skill-specific eval cases
+│   ├── GOVERNANCE.md                 # versioning, migration, and maintenance notes
+│   ├── CHAINLOG_DESIGN.md            # chainlog design checklist
+│   ├── INTEGRATION_TESTS.md          # dependency invocation interfaces, drift prevention
+│   ├── COMPOSITION_TEST.md           # composition test for script-based dependencies
+│   ├── chainlog-template-producer.md # chainlog declaration templates
+│   ├── chainlog-template-consumer.md
+│   └── chainlog-template-both.md
 ├── subagents/                        # internal worker prompts
 │   ├── _TEMPLATE.md                  # shared worker contract, forbidden actions, return format
 │   ├── classify-intent.md
-│   ├── clarify-scope.md
+│   ├── map-objective.md                # objective map builder (was clarify-scope)
 │   ├── classify-skill-type.md
 │   ├── suggest-patterns.md
+│   ├── check-chainlog-needs.md
 │   ├── initialize.md                 # first-run configuration proposal
 │   ├── draft-skill-md.md
-│   └── change-branch.md              # change branch coordinator; resolves standards path and invokes review-skill
+│   └── change-branch.md              # change branch coordinator; invokes review-skill
 ├── scripts/                          # deterministic helpers
-│   └── initialize-config.py          # writes write-a-skill.yaml after user approval
-└── assets/templates/                 # starter templates for new skills
-    ├── SKILL.md
-    ├── README.md
-    └── worker-prompt.md
+│   ├── initialize-config.py          # writes write-a-skill.yaml after user approval
+│   ├── composition-test.py           # composition test runner
+│   ├── sync-dependency-surfaces.py   # regenerates dependency surfaces from skills.json
+│   └── sync-fallbacks.py             # regenerates and drift-checks fallback docs
+├── assets/templates/                 # starter templates for new skills
+│   ├── SKILL.md
+│   ├── README.md
+│   └── worker-prompt.md
+└── evals/
+    └── evals.json                    # behavior evals
 ```
 
 ## Dependencies
 
 This conductor delegates to the following building blocks:
 
-- `detect-project-context` — project layout detection.
-- `list-available-skills` — inventory of existing skills.
-- `search-skills-registry` — search for third-party skills.
-- `install-skill` — install an existing skill into the project or user scope.
-- `decide-skill-shape` — recommend whether a problem should be a new skill, script, MCP, context file, or mode.
+<!-- BEGIN GENERATED: dependencies -->
 - `audit-skill` — standards compliance check.
-- `validate-skill-frontmatter` — frontmatter schema validation.
-- `review-skill` — audit and remediate an existing skill.
-- `run-trigger-evals` — generate trigger evals for model-invoked skills.
+- `context-reports` — shared context-report conventions and schemas.
+- `decide-skill-shape` — recommend whether a problem should be a new skill, script, MCP, context file, or mode.
+- `detect-project-context` — project layout detection.
 - `eval-format` — shared `evals/evals.json` schema and evaluation conventions.
 - `parse-skill-frontmatter` — extract canonical frontmatter fields from a `SKILL.md` file.
+- `review-skill` — audit and remediate an existing skill.
+- `validate-skill-frontmatter` — frontmatter schema validation.
 - `worker-contract` — shared subagent return contract used when composing worker prompts.
-- `context-reports` — shared context-report conventions and schemas.
+- `artifact-freshness` — TODO: rationale
+- `chainlog` — TODO: rationale
+- `detect-skill-overlap` — TODO: rationale
+- `install-skill` — install an existing skill into the project or user scope.
+- `list-available-skills` — inventory of existing skills.
+- `map-skill-flow` — flow-model generation for design gates and review comprehension.
+- `run-trigger-evals` — generate trigger evals for model-invoked skills.
+- `search-skills-registry` — search for third-party skills.
+- `token-resolver` — secure token resolution for drafted skills that need credentials.
+<!-- END GENERATED: dependencies -->
 
 See [DEPENDENCIES.md](references/DEPENDENCIES.md) for the full declaration.
 

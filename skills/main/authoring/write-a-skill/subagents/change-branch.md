@@ -40,11 +40,7 @@ Given the following inputs, produce the change-branch coordination result:
 
 1. **Resolve standards path.**
    - If `standards_path` is provided and points to an existing directory, use it.
-   - If it is missing or invalid, detect it in this order:
-     - `{marker}/docs/skill-standards/`
-     - `{project_root}/docs/skill-standards/`
-     - `{project_root}/.agents/docs/skill-standards/`
-     - `{project_root}/.config/skill-standards/`
+   - Otherwise run the shared resolver `skills/blocks/project/detect-project-context/scripts/resolve-standards-path.py` with the project root and marker. Do not reimplement the resolution order.
    - Record whether the source is canonical, degraded, or missing.
 
 2. **Validate target skill.**
@@ -60,7 +56,11 @@ Given the following inputs, produce the change-branch coordination result:
    - Instruct the subagent to apply the review principles from `{standards_path}/reference/review-principles.md` (or the fallback copy in `review-skill/references/REVIEW_PRINCIPLES.md`) and to produce a verdict-led report.
    - For the `update` gate, request a remediation plan with concrete, approved changes only.
 
-5. **Return the result.**
+5. **Confirm comprehension before scoring.**
+   - Return the `review-skill` comprehension brief to the conductor as `needs_input` so the user can confirm or correct it.
+   - Scoring phases (audit, verdict) continue only after the user confirms the brief.
+
+6. **Return the result.**
    - Return the comprehension brief, verdict, findings, and (for `update`) the remediation plan exactly as produced by `review-skill`.
    - Record any degraded-mode warnings and the standards path used.
 

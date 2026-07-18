@@ -1,7 +1,7 @@
 # Skill fundamentals (condensed)
 
 > **This is a condensed fallback.** The canonical skill fundamentals live in `docs/skill-standards/fundamentals/`. If that directory is available, prefer it and treat this file as a degraded copy for projects that ship without the full standards wiki.
-> Last synced: 2026-07-08.
+> Last synced: 2026-07-18 (source ref: faf4e5f).
 
 ## What a skill is
 
@@ -20,7 +20,7 @@ A skill is not a script, MCP server, prompt template, rule, or application code.
 
 ## Non-negotiables
 
-- **Identity.** Every `SKILL.md` declares `name`, `description` (≤ 1024 chars, trigger-rich), and `invocation` (`model-invoked` or `user-invoked`). Add `version` once the skill is shared, consumed, or versioned.
+- **Identity.** Every `SKILL.md` declares `name`, `description` (≤ 1024 chars, trigger-rich), and `invocation` (`model-invoked` or `user-invoked`). Versioning lives at the package level in `skills.json`, not in frontmatter.
 - **Scope.** One core objective, explicit in-scope and out-of-scope items.
 - **Form and style.** Load-bearing minimalism; checkable completion criteria; leading words; negation pairs; harness-agnostic and project-agnostic language; progressive disclosure.
 - **Structure.** `SKILL.md` + `README.md` for non-trivial skills; optional `references/`, `subagents/`, `scripts/`, `assets/`, `config.yaml` only when needed.

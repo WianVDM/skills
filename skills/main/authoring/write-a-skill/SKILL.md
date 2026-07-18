@@ -3,22 +3,24 @@ name: write-a-skill
 description: Design, review, and update skills that follow the skill standards. Coordinates creation, audit, remediation, and first-run initialization.
 invocation: user-invoked
 depends:
-  - detect-project-context
-  - decide-skill-shape
   - audit-skill
-  - validate-skill-frontmatter
-  - review-skill
-  - eval-format
-  - worker-contract
   - context-reports
+  - decide-skill-shape
+  - detect-project-context
+  - eval-format
   - parse-skill-frontmatter
-  - list-available-skills
-  - search-skills-registry
+  - review-skill
+  - validate-skill-frontmatter
+  - worker-contract
+  - artifact-freshness
+  - chainlog
   - detect-skill-overlap
   - install-skill
+  - list-available-skills
+  - map-skill-flow
   - run-trigger-evals
-  - chainlog
-  - artifact-freshness
+  - search-skills-registry
+  - token-resolver
 ---
 
 # write-a-skill
@@ -29,6 +31,7 @@ Help the user produce a skill that satisfies the skill fundamentals and applies 
 
 ## In scope
 
+- Clarifying a vague idea or rough draft into a confirmed objective map, without writing files.
 - Creating new skills from scratch.
 - Drafting minimal skills quickly from a brief description.
 - Reviewing existing skills against the fundamentals, after first understanding their purpose, shape, scope, and token economy.
@@ -71,23 +74,26 @@ Classify the user's intent into one top-level branch. If the intent is unclear, 
 
 ## Workflow
 
-The conductor runs this pipeline. Each phase has a completion criterion and a decision gate. Phases may be compressed for the `quick` gate and skipped for the `decide` gate.
+The conductor runs this pipeline. Each phase has a completion criterion and a decision gate. Phases may be compressed for the `quick` gate. Every branch starts at phase 0; `explore` exits after its recommendation.
 
-| Phase                                      | What happens                                                                                                                                                                                                                                | Completion criterion                                                                                                     |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| 1. **Clarify intent and choose gate**      | Classify the top-level branch; resolve the internal gate; ask one question at a time if unclear. Ask the chainlog classification question: does this skill collect or consume observable data? If yes, invoke `check-chainlog-needs` to recommend producer, consumer, both, or neither. | Branch is one of {create, change, initialize}, gate is resolved, chainlog classification is recorded, and user confirmed.                                     |
-| 2. **Explore alternatives**                | Use `list-available-skills`, `search-skills-registry`, and `detect-skill-overlap` to see what exists and flag overlap with existing skills. Run `detect-skill-overlap` against the target directory or a JSON draft and write the structured overlap findings to `{context}/skill-design/{skill-name}-overlap-findings.md`. Also check whether the proposed skill duplicates a `chainlog` capability; if so, recommend reuse over private storage. | Alternatives report exists; overlap findings report exists; chainlog overlap is noted; user knows whether to create, reuse, or install. |
-| 3. **Decide shape and colocation**         | Decide whether the answer is a new skill, an existing skill, a script, an MCP server, or a context file. Then apply the colocation principle and invoke `detect-skill-overlap` to flag extraction opportunities or unjustified duplication. Use the overlap findings report to present the user with three options: **reuse** the existing skill, **colocate** the capability in the new skill, or **extract** a shared building block. | User confirms the chosen shape and the reuse/colocate/extract decision for each significant overlap; extraction candidates have interface sketches. |
-| 4. **Define identity**                     | Name, description, invocation.                                                                                                                                                                                                      | Frontmatter skeleton exists and user confirmed.                                                                          |
-| 5. **Define scope**                        | In-scope, out-of-scope, branches, assumptions.                                                                                                                                                                                              | Scope boundaries are explicit and defensible.                                                                            |
-| 6. **Select patterns**                     | Apply fundamentals; suggest Layer 2 patterns. Decide if the skill is configurable and, if so, which shared and skill-specific keys it needs. If the chainlog classification is not `neither`, confirm the work item types, produced/consumed capabilities, and storage adapter strategy. | Pattern list and config declaration (if any) exist; chainlog pattern details are confirmed; user confirmed. |
-| 6a. **Pattern adherence**                  | Compare the chosen patterns against the canonical skill-standards docs; flag deviations before drafting. Include `chainlog` in the pattern adherence check when the classification is not `neither`. | Pattern list is explicitly mapped to canonical pattern documents; chainlog deviations are recorded; deviations are recorded with rationale. |
-| 6b. **Design capability-to-tool strategy** | For each load-bearing capability, identify the preferred tool, fallback tools, and degraded-output disclosure. For each capability that feeds the chainlog, also identify the storage adapter. Document the selection rule and user-consent behavior. | A capability-to-tool mapping exists for every load-bearing capability; chainlog storage adapter is selected; the user has confirmed or corrected the strategy. |
-| 7. **Token justification**                 | Defend every proposed section, reference, subagent, and script; remove or merge unjustified items.                                                                                                                                          | Every artifact in the draft has a stated purpose; the user has confirmed the minimal set.                                |
-| 8. **Draft artifacts**                     | Generate `SKILL.md`, optional `README.md`, `references/`, `subagents/`, `scripts/`, `assets/`, and `config.yaml` if the skill is configurable. If the chainlog classification is not `neither`, copy the appropriate `references/chainlog-template-{producer,consumer,both}.md` to `references/CHAINLOG.md` and fill the placeholders. | Draft files exist and are linked correctly; `references/CHAINLOG.md` exists if applicable. |
-| 9. **Audit and validate**                  | Run `audit-skill` and `validate-skill-frontmatter`. Re-run `detect-skill-overlap` if the skill's capabilities changed during drafting and update the overlap findings report.                                                                                                                                 | Audit report exists with no blocking failures.                                                                           |
-| 10. **Generate evals**                     | Run `run-trigger-evals` for model-invoked skills.                                                                                                                                                                                           | `evals/evals.json` exists or user declined.                                                                              |
-| 11. **Confirm and write**                  | Present the full plan; write files only after explicit approval.                                                                                                                                                                            | User approved; files written; decision log updated.                                                                      |
+| Phase | What happens | Completion criterion |
+|---|---|---|
+| 0. **Objective map** | Build the objective map with the user via `map-objective` (prefill-and-confirm; grill only the gaps). See [references/OBJECTIVE_MAP.md][objective-map]. For `explore`, sketch the idea's flow with `map-skill-flow`, continue to alternatives and a recommendation, then stop. | The map is confirmed by the user and persisted to the intent note. For `explore`: a flow sketch and a recommendation exist; no files were written. |
+| 1. **Choose gate** | Classify the branch and internal gate via `classify-intent`; ask one question at a time if unclear. | Branch is one of {initialize, explore, create, change}, gate is resolved, and user confirmed. |
+| 2. **Explore alternatives** | Use `list-available-skills`, `search-skills-registry`, and `detect-skill-overlap` to see what exists and flag overlap. Write the structured overlap findings to `{context}/skill-design/{skill-name}-overlap-findings.md`. If the proposed skill duplicates a `chainlog` capability, recommend reuse over private storage. | Alternatives report exists; overlap findings report exists; chainlog overlap is noted; user knows whether to create, reuse, or install. |
+| 3. **Decide shape and colocation** | Decide whether the answer is a new skill, an existing skill, a script, an MCP server, or a context file. Use the overlap findings to present three options per significant overlap: **reuse**, **colocate**, or **extract** a shared building block. | User confirms the chosen shape and the reuse/colocate/extract decision for each significant overlap; extraction candidates have interface sketches. |
+| 4. **Define identity** | Name and invocation. | Name matches the directory, invocation is chosen deliberately, and user confirmed. |
+| 5. **Define scope** | In-scope, out-of-scope, branches, assumptions. | Scope boundaries are explicit and defensible. |
+| 6. **Description design** | Design the description as the routing surface: leading word or domain first, one trigger per distinct branch from the map's triggers field, a reach clause if other skills consume it, ≤ 1024 characters. | Description follows the canonical shape and the user confirmed it. |
+| 7. **Select patterns** | Apply fundamentals; suggest Layer 2 patterns. Ask the chainlog classification question; if not `neither`, invoke `check-chainlog-needs` and confirm work item types, capabilities, and storage adapter strategy. Decide if the skill is configurable and which config keys it needs. | Pattern list and config declaration (if any) exist; chainlog classification and details are confirmed; user confirmed. |
+| 7a. **Pattern adherence** | Compare the chosen patterns against the canonical skill-standards docs; flag deviations before drafting. | Pattern list is mapped to canonical pattern documents; deviations are recorded with rationale. |
+| 7b. **Design capability-to-tool strategy** | For each load-bearing capability, identify the preferred tool, fallback tools, and degraded-output disclosure. Document the selection rule and user-consent behavior. | A capability-to-tool mapping exists for every load-bearing capability; the user has confirmed or corrected the strategy. |
+| 8. **Token justification** | Defend every proposed section, reference, subagent, and script; remove or merge unjustified items. | Every artifact in the draft has a stated purpose; the user has confirmed the minimal set. |
+| 8a. **Flow gate** | Generate the pre-draft flow with `map-skill-flow` from the confirmed design; review the break points with the user. Silent breaks are resolved in the design or explicitly accepted. | Flow diagram exists; break points are reviewed; the user confirms the design still holds. |
+| 9. **Draft artifacts** | Generate `SKILL.md`, optional `README.md`, `references/`, `subagents/`, `scripts/`, `assets/`, and `config.yaml` if the skill is configurable. If the chainlog classification is not `neither`, copy the appropriate `references/chainlog-template-{producer,consumer,both}.md` to `references/CHAINLOG.md` and fill the placeholders. | Draft files exist and are linked correctly; `references/CHAINLOG.md` exists if applicable. |
+| 10. **Audit and validate** | Run `audit-skill` and `validate-skill-frontmatter`. Re-run `detect-skill-overlap` if capabilities changed during drafting. | Audit report exists with no blocking failures. |
+| 11. **Generate evals** | Run `run-trigger-evals` for model-invoked skills. | `evals/evals.json` exists or user declined. |
+| 12. **Confirm and write** | Present the full plan with the flow diagram rendered; write files only after explicit approval. | User approved the visible flow, not a wall of prose; files written; decision log updated. |
 
 ## Tooling-awareness design checklist
 
@@ -99,15 +105,8 @@ This checklist is load-bearing. The conductor must confirm each applicable item 
 - **Documented selection.** The preferred tool, fallback tools, and selection rule are documented.
 - **Degraded disclosure.** If a degraded source is used, the skill tells the user what better option was available and gets explicit or recorded consent.
 - **Dependency surface.** The full dependency surface is declared in `references/DEPENDENCIES.md` and `skills.json`.
-- **Chainlog classification.** The skill is classified as producer, consumer, both, or neither. A `neither` classification needs no file; anything else is recorded in `references/CHAINLOG.md`.
-- **Chainlog producer check.** If producer or both, the skill appends every load-bearing tool result to `chainlog` before synthesizing a view.
-- **Chainlog consumer check.** If consumer or both, the skill queries `chainlog` for reusable observations before invoking tools.
-- **Chainlog freshness.** If consumer or both, the skill uses `artifact-freshness` to judge whether observations are still usable.
-- **Chainlog schema.** If producer or both, the skill documents which capability contract defines the payload schema for each observation.
-- **Chainlog identity.** If producer or both, the skill normalizes the `work_item_key` before appending or querying.
-- **Chainlog storage adapter.** If producer or both, the default file adapter is confirmed and any richer adapter is discovered via `tool-discovery`.
-- **Chainlog report linkage.** If the skill generates a view, it links the view back to the observations it was built from.
-- **Chainlog secrets.** No secret values are stored in chainlog observations.
+
+For the chainlog design checklist — classification, producer/consumer checks, freshness, schema, identity, storage adapter, report linkage, secrets — see [references/CHAINLOG_DESIGN.md](references/CHAINLOG_DESIGN.md).
 
 ## Colocation and extraction checklist
 
@@ -124,9 +123,9 @@ Workers in `subagents/` are invoked by composing the canonical worker contract f
 
 Workers:
 
+- [map-objective.md](subagents/map-objective.md) — build and confirm the objective map with the user.
 - [classify-intent.md](subagents/classify-intent.md) — classify the user's request into a top-level branch.
-- [clarify-scope.md](subagents/clarify-scope.md) — clarify the skill's scope.
-- [classify-skill-type.md](subagents/classify-skill-type.md) — clas sify the skill type.
+- [classify-skill-type.md](subagents/classify-skill-type.md) — classify the skill type.
 - [suggest-patterns.md](subagents/suggest-patterns.md) — suggest patterns.
 - [check-chainlog-needs.md](subagents/check-chainlog-needs.md) — evaluate whether the skill should produce, consume, or both chainlog observations.
 - [initialize.md](subagents/initialize.md) — first-run configuration proposal.
@@ -143,13 +142,12 @@ Workers:
 | ---------- | -------------------------------------------------------------------------------------------------- | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **full**   | User wants a complete design from scratch.                                                         | Full design workflow + draft.            | A final review report exists in `{context}/skill-design/{skill-name}-design.md` and the user has explicitly approved, requested changes, or closed the branch. |
 | **quick**  | User wants a minimal skill from a brief description.                                               | Compressed design workflow + draft.      | A final review report exists in `{context}/skill-design/{skill-name}-design.md` and the user has explicitly approved, requested changes, or closed the branch. |
-| **decide** | User is unsure whether the answer should be a skill, script, MCP, context file, or existing skill. | Recommendation report; no files written. | A decision report exists and the user has confirmed or rejected the recommended next step, or asked for more options.                                          |
 
-For the full phase list per gate, including the `decide` gate delegation to `decide-skill-shape`, see [references/BRANCH_WORKFLOWS.md][branch-workflows].
+Shape uncertainty ("is a skill even the right answer?") is handled by the `explore` branch, which delegates to `decide-skill-shape`. For the full phase list per gate, see [references/BRANCH_WORKFLOWS.md][branch-workflows].
 
 ## Change branch
 
-**Why this branch exists:** Skills drift and accumulate bloat. The change branch audits an existing skill by applying the review principles from `{standards_path}/reference/review-principles.md`, then produces a verdict-led report or incomplete report. The conductor invokes `review-skill` as a subagent through [subagents](subagents/change-branch.md); it does not perform inline reviews.
+**Why this branch exists:** Skills drift and accumulate bloat. The change branch audits an existing skill by applying the review principles from `{standards_path}/reference/review-principles.md`, then produces a verdict-led report or incomplete report. The conductor invokes `review-skill` as a subagent through [subagents](subagents/change-branch.md); it does not perform inline reviews. Before scoring, the conductor rebuilds the target skill's objective map and confirms the comprehension brief with the user — scoring never starts on an unconfirmed understanding.
 
 **Internal gates**
 
@@ -168,12 +166,13 @@ The conductor invokes `subagents/change-branch.md` to coordinate the following p
 | 2. **Load target skill**                 | Read `SKILL.md`, `README.md`, references, subagents, scripts, and assets.    | All target skill files are loaded.                                               |
 | 3. **Classify gate**                     | Map user intent to `review` or `update`.                                     | Gate is one of {review, update} and user confirmed.                              |
 | 4. **Invoke `review-skill`**             | Delegate to `review-skill` with the target skill and `standards_path`.       | `review-skill` returns a comprehension brief, audit report, or remediation plan. |
-| 5. **Produce incomplete report**         | If core questions cannot be answered, stop and record open questions.        | Incomplete report exists; no verdict is issued.                                  |
-| 6. **Run `audit-skill`**                 | Evaluate the target skill against the fundamentals rubric.                   | Audit report exists with findings.                                               |
-| 7. **Run `validate-skill-frontmatter`**  | Check frontmatter schema compliance.                                         | Validation result is captured.                                                   |
-| 8. **Produce verdict-led report**        | Lead with a verdict, then findings and recommendations.                      | For `review`, the audit report is complete.                                      |
-| 9. **Produce remediation plan (update)** | List concrete changes with rationale and effort.                             | For `update`, a remediation plan exists.                                         |
-| 10. **Confirm and apply (update)**       | Present the plan; apply approved changes; run final audit.                   | Approved changes applied; final audit report exists.                             |
+| 5. **Confirm comprehension** | Present the rebuilt objective map and the `review-skill` comprehension brief; the user confirms or corrects it. | User confirmed understanding; scoring has not started. |
+| 6. **Produce incomplete report**         | If core questions cannot be answered, stop and record open questions.        | Incomplete report exists; no verdict is issued.                                  |
+| 7. **Run `audit-skill`**                 | Evaluate the target skill against the fundamentals rubric.                   | Audit report exists with findings.                                               |
+| 8. **Run `validate-skill-frontmatter`**  | Check frontmatter schema compliance.                                         | Validation result is captured.                                                   |
+| 9. **Produce verdict-led report**        | Lead with a verdict, then findings and recommendations.                      | For `review`, the audit report is complete.                                      |
+| 10. **Produce remediation plan (update)** | List concrete changes with rationale and effort.                             | For `update`, a remediation plan exists.                                         |
+| 11. **Confirm and apply (update)**       | Present the plan; apply approved changes; run final audit.                   | Approved changes applied; final audit report exists.                             |
 
 For the full phase list per gate, including the `change` branch delegation to `review-skill`, see [references/BRANCH_WORKFLOWS.md][branch-workflows].
 
@@ -190,7 +189,7 @@ On first run in a project, or when the user asks to reconfigure, execute the `in
    - `capability_index_path`: path to the machine-readable capability index (defaults to the project-local override and bundle defaults).
    - `registries`: list of skill registries to search.
 4. Report whether the canonical standards are found locally, missing, or need fetching.
-5. If standards are missing, offer to fetch only the canonical skill standards directory from [skills](https://github.com/wianvdm/skills). Every fetch must be explicitly confirmed by the user.
+5. If standards are missing, offer to fetch only the canonical skill standards directory from [skills](https://github.com/wianvdm/skills). Show the user the exact source (repository, ref or commit, and directory) before downloading. Every fetch must be explicitly confirmed by the user. Record the fetched ref in the persisted config so later drift checks can freshness-date the copy.
 6. If the user declines or the fetch fails, warn with the degraded-mode template from [references/PLUGGABILITY.md][pluggability] and fall back to embedded [references/FUNDAMENTALS.md][fundamentals] and [references/PATTERN_HINTS.md][pattern-hints].
 7. Ask the user to confirm detected paths, default registry list, and standards source.
 8. Only after explicit approval, run `scripts/initialize-config.py` to write `write-a-skill.yaml`.
@@ -260,7 +259,7 @@ The frontmatter of this skill also declares a `depends` field for harness auto-i
 
 ## Security
 
-- **No secret handling.** `write-a-skill` does not read secrets, tokens, or credentials directly. Any drafted skill that needs a secret must use the `token-resolver` building block or equivalent and must not read environment variables or files containing credentials itself.
+- **No secret handling.** `write-a-skill` does not read secrets, tokens, or credentials directly. Any drafted skill that needs a secret should use the `token-resolver` building block when available; otherwise it references the required environment variable by name. It must never read or store secret values itself.
 - **Explicit fetch.** The initializer may fetch canonical skill standards from a public repository only after explicit user approval.
 - **No silent writes.** No drafted skill is written without explicit user approval.
 - **Degraded disclosure.** The conductor must warn users when a degraded source (e.g., embedded fundamentals instead of canonical standards) is used and record the consent.
@@ -269,6 +268,7 @@ The frontmatter of this skill also declares a `depends` field for harness auto-i
 
 ## References
 
+- [Objective map][objective-map]
 - [Fundamentals (condensed)][fundamentals]
 - [Pattern hints (condensed)][pattern-hints]
 - [Pluggability and detection][pluggability]
@@ -278,6 +278,7 @@ The frontmatter of this skill also declares a `depends` field for harness auto-i
 - [Composition test][composition-test]
 - [State and artifact schemas][state-schema]
 
+[objective-map]: references/OBJECTIVE_MAP.md
 [fundamentals]: references/FUNDAMENTALS.md
 [pattern-hints]: references/PATTERN_HINTS.md
 [pluggability]: references/PLUGGABILITY.md

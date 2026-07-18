@@ -59,7 +59,11 @@
         },
         {
           "type": "output_excludes",
-          "value": "docs/skill-standards/"
+          "value": "standards not found"
+        },
+        {
+          "type": "output_excludes",
+          "value": "degraded"
         }
       ]
     },
@@ -116,7 +120,7 @@
       ]
     },
     {
-      "id": "WAS-CL-001",
+      "id": "was-cl-001",
       "type": "behavior",
       "prompt": "I want a skill that gathers ticket data from the issue tracker and codebase and writes a debrief report. Walk me through the design process.",
       "baseline_type": "no_skill",
@@ -136,7 +140,7 @@
       ]
     },
     {
-      "id": "WAS-CL-002",
+      "id": "was-cl-002",
       "type": "behavior",
       "prompt": "I want a minimal skill that reformats user input into a markdown checklist. Walk me through the design process.",
       "baseline_type": "no_skill",
@@ -152,7 +156,7 @@
       ]
     },
     {
-      "id": "WAS-CL-003",
+      "id": "was-cl-003",
       "type": "behavior",
       "prompt": "I want a skill that validates whether prior research about a ticket is still consistent with the current codebase. Walk me through the design process.",
       "baseline_type": "no_skill",
@@ -168,7 +172,7 @@
       ]
     },
     {
-      "id": "WAS-CL-004",
+      "id": "was-cl-004",
       "type": "behavior",
       "prompt": "I want a skill that stores PR metadata in a private JSON file so other skills can reuse it. Walk me through the design process.",
       "baseline_type": "no_skill",
@@ -180,6 +184,86 @@
         {
           "type": "output_contains",
           "value": "chainlog"
+        }
+      ]
+    },
+    {
+      "id": "behavior-create-frontmatter-shape",
+      "type": "behavior",
+      "prompt": "Draft a minimal skill that reformats user input into markdown checklists.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "invocation:"
+        },
+        {
+          "type": "output_excludes",
+          "value": "version: 1."
+        },
+        {
+          "type": "output_excludes",
+          "value": "version: 2."
+        }
+      ]
+    },
+    {
+      "id": "behavior-create-description-triggers",
+      "type": "behavior",
+      "prompt": "Design a new skill that reviews UI code for accessibility. Show me the description you would give it.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "Use when"
+        },
+        {
+          "type": "output_contains",
+          "value": "description"
+        }
+      ]
+    },
+    {
+      "id": "behavior-create-type-section",
+      "type": "behavior",
+      "prompt": "Create a skill that validates frontmatter of other skills. Show the SKILL.md draft.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "## Type"
+        }
+      ]
+    },
+    {
+      "id": "behavior-explore-writes-no-files",
+      "type": "behavior",
+      "prompt": "I keep renaming batches of files by hand in a messy way. Maybe there's a skill idea there, not sure.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "recommend"
+        },
+        {
+          "type": "output_excludes",
+          "value": "## SKILL.md draft"
+        }
+      ]
+    },
+    {
+      "id": "behavior-change-confirms-comprehension-first",
+      "type": "behavior",
+      "prompt": "Review the detect-project-context skill and tell me if it follows the standards.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "comprehension"
+        },
+        {
+          "type": "output_contains",
+          "value": "confirm"
         }
       ]
     }

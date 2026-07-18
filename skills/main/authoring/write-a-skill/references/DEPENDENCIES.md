@@ -12,29 +12,37 @@ This document follows the dependency taxonomy defined in the [dependencies and b
 
 ## Required skills
 
-- **detect-project-context** — project root, skills dir, context dir, and config dir detection.
-- **decide-skill-shape** — recommend whether a problem should be a new skill, script, MCP, context file, or mode.
+<!-- BEGIN GENERATED: required-skills -->
 - **audit-skill** — evaluate a skill against the fundamentals rubric.
-- **validate-skill-frontmatter** — validate `SKILL.md` frontmatter against the JSON schema.
-- **review-skill** — audit an existing skill and optionally apply remediation changes.
-- **eval-format** — shared `evals/evals.json` schema and evaluation conventions.
-- **worker-contract** — shared subagent return contract, forbidden actions, and scope boundaries used when composing worker prompts.
 - **context-reports** — shared context-report conventions, schema, freshness rules, and missing-report handling.
+- **decide-skill-shape** — recommend whether a problem should be a new skill, script, MCP, context file, or mode.
+- **detect-project-context** — project root, skills dir, context dir, and config dir detection.
+- **eval-format** — shared `evals/evals.json` schema and evaluation conventions.
 - **parse-skill-frontmatter** — extract canonical frontmatter fields from a `SKILL.md` file (used by several building blocks above).
-- **chainlog** — shared append-only observation ledger. `write-a-skill` uses it to classify skills and generate chainlog declarations.
-- **artifact-freshness** — judge whether chainlog observations are still usable. Required for consumer and both classifications.
+- **review-skill** — audit an existing skill and optionally apply remediation changes.
+- **validate-skill-frontmatter** — validate `SKILL.md` frontmatter against the JSON schema.
+- **worker-contract** — shared subagent return contract, forbidden actions, and scope boundaries used when composing worker prompts.
+<!-- END GENERATED: required-skills -->
 
 ## Recommended skills
 
-- **list-available-skills** — discover skills already available in the project and user scope. Without it, the alternatives report is limited to what the conductor can find directly.
-- **search-skills-registry** — find third-party skills in configured registries. Without it, the skill cannot check whether a similar third-party skill already exists.
+<!-- BEGIN GENERATED: recommended-skills -->
+- **artifact-freshness** — judge whether chainlog observations are still usable. Needed for consumer and both classifications.
+- **chainlog** — shared append-only observation ledger. `write-a-skill` uses it to classify skills and generate chainlog declarations.
 - **detect-skill-overlap** — flag when a skill duplicates or could be extracted from an existing building block. Without it, the alternatives and colocation phases lack overlap analysis.
 - **install-skill** — install a skill from a local path or archive URL after confirmation. Without it, the conductor can draft files but cannot install skills on the user's behalf.
+- **list-available-skills** — discover skills already available in the project and user scope. Without it, the alternatives report is limited to what the conductor can find directly.
+- **map-skill-flow** — generate the pre-draft or comprehension flow model (branches, break points) used by explore, create, and change.
 - **run-trigger-evals** — generate `evals/evals.json` for model-invoked skills. Without it, the conductor can ask the user to write evals manually or skip them.
+- **search-skills-registry** — find third-party skills in configured registries. Without it, the skill cannot check whether a similar third-party skill already exists.
+- **token-resolver** — resolve secure tokens for drafted skills that need credentials; keeps secrets out of skill files.
+<!-- END GENERATED: recommended-skills -->
 
 ## Optional skills
 
+<!-- BEGIN GENERATED: optional-skills -->
 - **prototype** — only used when the user explicitly asks to prototype a UI variation before drafting a skill. Not on the main path.
+<!-- END GENERATED: optional-skills -->
 
 ## Required harness capabilities
 

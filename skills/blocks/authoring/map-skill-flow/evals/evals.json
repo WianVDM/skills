@@ -1,0 +1,66 @@
+{
+  "version": "1",
+  "skill": "map-skill-flow",
+  "tests": [
+    {
+      "id": "behavior-maps-declared-branches",
+      "type": "behavior",
+      "prompt": "Map the flow of the write-a-skill skill from its directory.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "explore"
+        },
+        {
+          "type": "output_contains",
+          "value": "create"
+        },
+        {
+          "type": "output_contains",
+          "value": "break point"
+        }
+      ]
+    },
+    {
+      "id": "behavior-inferred-elements-labeled",
+      "type": "behavior",
+      "prompt": "Map the flow of a skill whose phases are described only in loose prose.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "inferred"
+        }
+      ]
+    },
+    {
+      "id": "behavior-silent-breaks-surface",
+      "type": "behavior",
+      "prompt": "Map the flow of a skill that has no fallback for a missing config file.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "silent"
+        }
+      ]
+    },
+    {
+      "id": "behavior-unmappable-input-blocks",
+      "type": "behavior",
+      "prompt": "Map the flow of this plain text file that is not a skill.",
+      "baseline_type": "no_skill",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "blocked"
+        },
+        {
+          "type": "output_excludes",
+          "value": "mermaid"
+        }
+      ]
+    }
+  ]
+}
