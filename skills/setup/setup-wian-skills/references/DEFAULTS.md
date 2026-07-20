@@ -22,6 +22,20 @@ npx skills@latest add WianVDM/skills --skill '*' -y
 
 Scope and agent selection are the user's choice: add `--global` for user scope, omit it for project scope, and add `-a <agent>` to target specific agents. A specific release installs as `WianVDM/skills@<tag>`.
 
+## When the interactive picker does not work
+
+The CLI's interactive picker has no usable per-skill selection indicator (upstream: vercel-labs/skills#439). Offer the checkbox wrapper instead — no clone needed:
+
+```powershell
+iwr https://raw.githubusercontent.com/WianVDM/skills/main/scripts/select-install.mjs -OutFile "$env:TEMP\select-install.mjs"; node "$env:TEMP\select-install.mjs" -g
+```
+
+```bash
+curl -sL https://raw.githubusercontent.com/WianVDM/skills/main/scripts/select-install.mjs -o /tmp/select-install.mjs && node /tmp/select-install.mjs -g
+```
+
+It fetches the catalog, pre-ticks installed skills, and runs the CLI with the user's selection. Requires Node.js 18+ and npm/npx on the PATH. From a clone of the skills repo, `node scripts/select-install.mjs -g` does the same and works offline.
+
 ## Target scope path resolution
 
 The config directory may live behind symlinks (for example, `.pi/agent/skills/` resolving to `.agents/skills/`). The skill uses `detect-project-context` to locate the canonical config and context directories for writing shared configuration and context reports.

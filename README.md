@@ -6,7 +6,7 @@ These skills work with any harness that supports the [Agent Skills standard](htt
 
 ## Main skills
 
-The main skills are the ones you invoke directly. Selecting one in the [Vercel skills CLI](https://www.npmjs.com/package/skills) automatically installs its block-skill dependencies.
+The main skills are the ones you invoke directly. They compose block skills from `skills/blocks/`; the [Vercel skills CLI](https://www.npmjs.com/package/skills) does not resolve dependencies automatically, so install the blocks a main skill needs alongside it. The mapping lives in `skills.json`.
 
 | Skill | Invocation | What it does |
 |---|---|---|
@@ -34,10 +34,10 @@ For the full list, including block skills and dependencies, see [docs/skill-cata
 
 ## Quick start
 
-1. Install the bundle with the skills CLI:
+1. Install the bundle with the [Vercel skills CLI](https://www.npmjs.com/package/skills) (the default installer):
 
    ```bash
-   npx skills@latest add WianVDM/skills
+   npx skills@latest add WianVDM/skills --skill '*' -y
    ```
 
 2. Run the setup skill in your agent:
@@ -47,6 +47,30 @@ For the full list, including block skills and dependencies, see [docs/skill-cata
    ```
 
 3. Invoke a main skill. For example, `/debrief` or `/plan-next`.
+
+### Optional: checkbox selector script
+
+The CLI's interactive picker has no usable per-skill selection indicator and disables search when groups exist (upstream: vercel-labs/skills#439, #992). If you want to pick individual skills instead of installing everything, `scripts/select-install.mjs` gives you a plain-text checklist: skills grouped by bundle with an `[x]` per row, your already-installed skills pre-ticked, and the exact CLI command printed for approval before it runs. Installation itself still goes through the Vercel skills CLI — the script only replaces the selection screen.
+
+PowerShell:
+
+```powershell
+iwr https://raw.githubusercontent.com/WianVDM/skills/main/scripts/select-install.mjs -OutFile "$env:TEMP\select-install.mjs"; node "$env:TEMP\select-install.mjs" -g
+```
+
+bash:
+
+```bash
+curl -sL https://raw.githubusercontent.com/WianVDM/skills/main/scripts/select-install.mjs -o /tmp/select-install.mjs && node /tmp/select-install.mjs -g
+```
+
+Useful flags: `-p` (project scope instead of global), `--remove` (same checklist for uninstalling), `--print` (emit the CLI command without running it), `--source <path>` (use a local `skills.json` as the catalog), `--help`.
+
+**Requirements**
+
+- Node.js 18 or newer (the script uses the built-in `fetch`; no npm dependencies).
+- npm/npx on the PATH — the script shells out to `npx skills@latest` for listing, installing, and removing.
+- Network access to GitHub for the catalog. Offline fallback: run it from a clone of this repo, where it reads `./skills.json` instead.
 
 ## How this repo is organized
 
@@ -58,6 +82,7 @@ For the full list, including block skills and dependencies, see [docs/skill-cata
 - `docs/skill-catalog.md` — full list of every skill.
 - `skills.json` — the bundle manifest and dependencies.
 - `scripts/generate-skill-catalog.py` — regenerates `docs/skill-catalog.md` from `skills.json` and each `SKILL.md`.
+- `scripts/select-install.mjs` — checkbox installer wrapper around the skills CLI.
 
 ## Documentation
 
