@@ -4,7 +4,6 @@
   },
   "plugins": [
     {
-      "name": "Main",
       "skills": [
         "./skills/main/authoring/write-a-skill",
         "./skills/main/engineering/baseline",
@@ -30,7 +29,6 @@
       ]
     },
     {
-      "name": "Blocks",
       "skills": [
         "./skills/blocks/authoring/audit-skill",
         "./skills/blocks/authoring/decide-skill-shape",
