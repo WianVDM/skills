@@ -4,8 +4,20 @@
   },
   "plugins": [
     {
-      "name": "Main Workflow",
+      "name": "Main",
       "skills": [
+        "./skills/main/authoring/write-a-skill",
+        "./skills/main/engineering/baseline",
+        "./skills/main/engineering/diagnose",
+        "./skills/main/engineering/improve-codebase-architecture",
+        "./skills/main/engineering/prototype",
+        "./skills/main/engineering/tdd",
+        "./skills/main/modes/grill-me",
+        "./skills/main/modes/grill-with-docs",
+        "./skills/main/modes/zoom-out",
+        "./skills/main/product/to-issues",
+        "./skills/main/product/to-prd",
+        "./skills/main/product/triage",
         "./skills/main/workflow/debrief",
         "./skills/main/workflow/handoff",
         "./skills/main/workflow/merge-latest",
@@ -13,43 +25,12 @@
         "./skills/main/workflow/plan-next",
         "./skills/main/workflow/pr-report",
         "./skills/main/workflow/pr-review",
-        "./skills/main/workflow/verify-branch"
+        "./skills/main/workflow/verify-branch",
+        "./skills/setup/setup-wian-skills"
       ]
     },
     {
-      "name": "Main Product",
-      "skills": [
-        "./skills/main/product/to-issues",
-        "./skills/main/product/to-prd",
-        "./skills/main/product/triage"
-      ]
-    },
-    {
-      "name": "Main Engineering",
-      "skills": [
-        "./skills/main/engineering/baseline",
-        "./skills/main/engineering/diagnose",
-        "./skills/main/engineering/improve-codebase-architecture",
-        "./skills/main/engineering/prototype",
-        "./skills/main/engineering/tdd"
-      ]
-    },
-    {
-      "name": "Modes",
-      "skills": [
-        "./skills/main/modes/grill-me",
-        "./skills/main/modes/grill-with-docs",
-        "./skills/main/modes/zoom-out"
-      ]
-    },
-    {
-      "name": "Main Authoring",
-      "skills": [
-        "./skills/main/authoring/write-a-skill"
-      ]
-    },
-    {
-      "name": "Blocks Authoring",
+      "name": "Blocks",
       "skills": [
         "./skills/blocks/authoring/audit-skill",
         "./skills/blocks/authoring/decide-skill-shape",
@@ -60,12 +41,7 @@
         "./skills/blocks/authoring/parse-skill-frontmatter",
         "./skills/blocks/authoring/review-skill",
         "./skills/blocks/authoring/run-trigger-evals",
-        "./skills/blocks/authoring/validate-skill-frontmatter"
-      ]
-    },
-    {
-      "name": "Blocks Project",
-      "skills": [
+        "./skills/blocks/authoring/validate-skill-frontmatter",
         "./skills/blocks/project/artifact-freshness",
         "./skills/blocks/project/chainlog",
         "./skills/blocks/project/challenge-assumptions",
@@ -87,28 +63,12 @@
         "./skills/blocks/project/scope-checker",
         "./skills/blocks/project/sonarcloud-adapter",
         "./skills/blocks/project/tool-discovery",
-        "./skills/blocks/project/worker-contract"
-      ]
-    },
-    {
-      "name": "Blocks Registry",
-      "skills": [
+        "./skills/blocks/project/worker-contract",
         "./skills/blocks/registry/find-skills",
         "./skills/blocks/registry/install-skill",
         "./skills/blocks/registry/list-available-skills",
-        "./skills/blocks/registry/search-skills-registry"
-      ]
-    },
-    {
-      "name": "Blocks Tokens",
-      "skills": [
+        "./skills/blocks/registry/search-skills-registry",
         "./skills/blocks/tokens/token-resolver"
-      ]
-    },
-    {
-      "name": "Setup",
-      "skills": [
-        "./skills/setup/setup-wian-skills"
       ]
     }
   ]
