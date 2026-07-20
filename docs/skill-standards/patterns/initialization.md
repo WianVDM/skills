@@ -113,7 +113,7 @@ When a workspace uses multiple skills from the same source package, a dedicated 
 
 A setup conductor:
 
-1. Installs or updates the skills from the source package.
+1. Verifies the skills from the source package are installed; installation and updates happen outside the conductor.
 2. Reads `config.yaml` from each skill to find shared and skill-specific keys.
 3. Resolves shared keys once and writes `.agents/config/shared.yaml`.
 4. Presents a checklist of skills that declare `requires_setup: true` or have an `## Initialization` section.

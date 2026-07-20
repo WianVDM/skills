@@ -1,6 +1,6 @@
 # Config declaration format
 
-Skills declare their configuration requirements in a `config.yaml` file next to `SKILL.md`.
+Skills declare their configuration requirements in a `config.yaml` file next to `SKILL.md`. The canonical schema for this format is `config-yaml.schema.json` in the skill-standards schemas directory.
 
 ## Example
 
@@ -29,7 +29,9 @@ The default value `.agents/context` is the conventional default for the `agents.
 
 - `shared`: keys that are written to `{config_dir}/shared.yaml` and shared across skills, where `{config_dir}` is the recommended config directory from `detect-project-context`.
 - `skill`: keys that are written to `{config_dir}/{skill-name}.yaml` and are private to the skill.
-- `requires_setup`: when `true`, the skill appears in the initialization checklist after sync.
+- `requires_setup`: when `true`, the skill appears in the initialization checklist after setup.
+
+A `skill` key may declare `bootstrap: true` to opt out of lazy loading. Bootstrap keys always resolve during setup, even in the **lazy** branch. Use it for private keys a skill cannot function without on its very first run.
 
 Shared keys should be registered in the project's central config key registry. The setup skill does not read the registry; it treats unregistered keys as skill-specific.
 
@@ -67,3 +69,14 @@ In this example, `jira.project_key` is only asked when `issue_tracker` is `jira`
 ## Required key handling
 
 If a key is `required: true` and has no `default` and the user provides no answer, the setup skill stops and explains what is missing. It does not continue with a partial configuration.
+
+## Lazy loading policy
+
+Bundle skills are assumed to follow the lazy-loading pattern: private configuration resolves on first use through the skill's own `## Initialization` section (which invokes `initialize-skill`), not at setup time.
+
+The setup skill applies this policy per key:
+
+- `shared` keys always resolve at setup, in every branch. They are the bindings to the global shared config, and nothing in the first-use path is allowed to write `shared.yaml`.
+- `skill` keys defer to first use in the **lazy** branch, but only when the owning skill is lazy-eligible — its `SKILL.md` contains an `## Initialization` section. A skill without that section is not lazy-eligible, and its keys resolve at setup in every branch.
+- `skill` keys with `bootstrap: true` resolve at setup in every branch.
+- In the **full** branch, every key resolves at setup regardless of eligibility.

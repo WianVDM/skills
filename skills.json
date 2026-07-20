@@ -209,7 +209,7 @@
     },
     {
       "name": "setup",
-      "description": "Bootstrap and sync skills into a workspace.",
+      "description": "Bootstrap shared configuration for Wian's skills in a workspace.",
       "skills": [
         "setup-wian-skills"
       ]
@@ -356,7 +356,8 @@
       "required": [
         "detect-project-context",
         "list-available-skills",
-        "validate-skill-frontmatter"
+        "initialize-skill",
+        "context-reports"
       ]
     },
     "to-issues": {

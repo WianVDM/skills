@@ -1,0 +1,129 @@
+{
+  "version": "1",
+  "skill": "setup-wian-skills",
+  "tests": [
+    {
+      "id": "composition-no-bundle-stop",
+      "type": "composition",
+      "category": "stop-and-report",
+      "prompt": "Set up the configuration for Wian's skills in this workspace. (Workspace state: no skills from the WianVDM/skills bundle are installed.)",
+      "available_skills": [
+        "detect-project-context",
+        "list-available-skills",
+        "initialize-skill",
+        "context-reports",
+        "install-skill"
+      ],
+      "expected_selection": [
+        "detect-project-context",
+        "list-available-skills"
+      ],
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "npx skills@latest add WianVDM/skills --skill '*' -y"
+        },
+        {
+          "type": "regex_exclude",
+          "pattern": "(?i)installing (the )?bundle"
+        }
+      ]
+    },
+    {
+      "id": "composition-lazy-classification",
+      "type": "composition",
+      "category": "lazy-policy",
+      "prompt": "/setup-wian-skills — I choose to defer to lazy loading. (Workspace state: bundle installed. debrief has an ## Initialization section and declares skill-private keys; pr-report declares requires_setup but has no Initialization section; one skill declares a private key with bootstrap: true.)",
+      "available_skills": [
+        "detect-project-context",
+        "list-available-skills",
+        "initialize-skill",
+        "context-reports"
+      ],
+      "expected_selection": [
+        "detect-project-context",
+        "list-available-skills",
+        "initialize-skill",
+        "context-reports"
+      ],
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "Will self-configure on first use"
+        },
+        {
+          "type": "output_contains",
+          "value": "Configured now"
+        }
+      ]
+    },
+    {
+      "id": "composition-full-branch",
+      "type": "composition",
+      "category": "full-branch",
+      "prompt": "/setup-wian-skills — run the full setup now. (Workspace state: bundle installed; debrief and pr-report declare config keys.)",
+      "available_skills": [
+        "detect-project-context",
+        "list-available-skills",
+        "initialize-skill",
+        "context-reports"
+      ],
+      "expected_selection": [
+        "detect-project-context",
+        "list-available-skills",
+        "initialize-skill",
+        "context-reports"
+      ],
+      "assertions": [
+        {
+          "type": "output_excludes",
+          "value": "Will self-configure on first use"
+        }
+      ]
+    },
+    {
+      "id": "composition-preview",
+      "type": "composition",
+      "category": "preview",
+      "prompt": "/setup-wian-skills --preview (Workspace state: bundle installed with configurable skills.)",
+      "available_skills": [
+        "detect-project-context",
+        "list-available-skills",
+        "initialize-skill",
+        "context-reports"
+      ],
+      "expected_selection": [
+        "detect-project-context",
+        "list-available-skills"
+      ],
+      "assertions": [
+        {
+          "type": "regex_exclude",
+          "pattern": "(?i)(wrote|written|writing)\\s+.{0,20}(shared\\.yaml|config)"
+        }
+      ]
+    },
+    {
+      "id": "composition-membership-fallback",
+      "type": "composition",
+      "category": "membership-fallback",
+      "prompt": "Set up Wian's skills config. (Workspace state: bundle skills are co-installed next to setup-wian-skills, but no installer lock metadata is available.)",
+      "available_skills": [
+        "detect-project-context",
+        "list-available-skills",
+        "initialize-skill",
+        "context-reports"
+      ],
+      "expected_selection": [
+        "detect-project-context",
+        "list-available-skills"
+      ],
+      "assertions": [
+        {
+          "type": "regex_match",
+          "pattern": "(?i)confirm"
+        }
+      ]
+    }
+  ]
+}

@@ -47,6 +47,28 @@
           "minLength": 1,
           "maxLength": 1024,
           "description": "Human-readable explanation of what the key controls."
+        },
+        "depends_on": {
+          "type": "object",
+          "properties": {
+            "key": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The other config key this key depends on."
+            },
+            "value": {
+              "description": "The value the other key must have for this key to be asked."
+            }
+          },
+          "required": [
+            "key"
+          ],
+          "additionalProperties": false,
+          "description": "Ask this key only when another resolved key has a specific value."
+        },
+        "bootstrap": {
+          "type": "boolean",
+          "description": "When true on a skill-private key, resolve the key during setup instead of deferring it to first-use lazy loading."
         }
       },
       "additionalProperties": false

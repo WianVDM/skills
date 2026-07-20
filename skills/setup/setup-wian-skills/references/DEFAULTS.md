@@ -1,4 +1,4 @@
-# Default source configuration
+# Bundle identity and install command
 
 The canonical source package for this setup skill is always:
 
@@ -8,43 +8,20 @@ WianVDM/skills
 
 This resolves to [`skills`](https://github.com/WianVDM/skills).
 
-## Installation and updates
+## Bundle membership
 
-The skill uses the Vercel skills CLI to install or update the bundle:
+Determine which installed skills belong to the bundle from the installer's lock metadata (source `WianVDM/skills`) when it is available. Otherwise treat the skills co-installed in the same scope as `setup-wian-skills` itself as candidates, and confirm the resulting set with the user before building the config graph.
 
-```text
-npx skills@latest add WianVDM/skills
-```
+## When no bundle skills are installed
 
-For updates, the CLI may also be invoked as:
+This skill never installs skills. Stop and hand the user the exact command to run themselves:
 
 ```text
-npx skills update
+npx skills@latest add WianVDM/skills --skill '*' -y
 ```
 
-The skill selects the appropriate command based on whether the bundle is already installed.
-
-## Source version
-
-By default, the skill syncs to the latest release of `WianVDM/skills`.
-
-To sync to a specific release or tag, use the `--version <tag>` argument:
-
-```text
-/setup-wian-skills --version v1.2.3
-```
-
-To preview what would be synced without applying changes, use the `--preview` argument:
-
-```text
-/setup-wian-skills --preview
-/setup-wian-skills --preview --version v1.2.3
-```
+Scope and agent selection are the user's choice: add `--global` for user scope, omit it for project scope, and add `-a <agent>` to target specific agents. A specific release installs as `WianVDM/skills@<tag>`.
 
 ## Target scope path resolution
 
-The target scope directory may be a symlink farm (for example, `.pi/agent/skills/` resolving to `.agents/skills/`). The skills CLI resolves the correct harness-specific install path. The skill uses `detect-project-context` to locate the canonical config and context directories for writing shared configuration and context reports.
-
-## Network access
-
-The skills CLI fetches the source package from GitHub. If `github.com/WianVDM/skills` is private or rate-limited, set the `GITHUB_TOKEN` environment variable.
+The config directory may live behind symlinks (for example, `.pi/agent/skills/` resolving to `.agents/skills/`). The skill uses `detect-project-context` to locate the canonical config and context directories for writing shared configuration and context reports.
