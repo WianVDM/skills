@@ -563,9 +563,9 @@ Resolve secure tokens for adapters from environment variables, MCP config files,
 
 #### `setup-wian-skills`
 
-Set up or update Wian's skills in the workspace. Use the Vercel skills CLI to install or update the WianVDM/skills bundle, then resolve shared configuration once and present the initialization checklist.
+Initialize and set up configuration for Wian's skills in the workspace. Resolve shared configuration once across installed bundle skills — fully now, or deferred to lazy first-use loading — and present the initialization checklist. Use after installing the WianVDM/skills bundle, when the user says they just installed it, when a configuration key must be resolved, or when the user asks to set up or reinitialize skill configuration.
 
 - **Invocation:** `/setup-wian-skills`
 - **Location:** `../skills/setup/setup-wian-skills/`
-- **Dependencies:** **Required:** detect-project-context, list-available-skills, validate-skill-frontmatter
+- **Dependencies:** **Required:** detect-project-context, list-available-skills, initialize-skill, context-reports
 - **Details:** [setup-wian-skills/SKILL.md](../skills/setup/setup-wian-skills/SKILL.md)
