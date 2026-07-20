@@ -72,6 +72,18 @@ Build an actionable understanding of a pull request. Gather PR metadata, review 
   - **Optional:** baseline, debrief
 - **Details:** [pr-report/SKILL.md](../skills/main/workflow/pr-report/SKILL.md)
 
+#### `pr-review`
+
+Help the user review a pull request by gathering context, checking the branch locally in a worktree, running targeted checks on changed files, drafting a review that does not duplicate existing comments, and posting it only after explicit user approval. If posting confidence is not high, it hands back an exact manual payload.
+
+- **Invocation:** `model-invoked`
+- **Location:** `../skills/main/workflow/pr-review/`
+- **Dependencies:**
+  - **Required:** detect-project-context, initialize-skill, context-reports, worker-contract, token-resolver, identity-resolver, tool-discovery, artifact-freshness, chainlog, git-worktree-inspector, scope-checker, pr-adapter-contract
+  - **Recommended:** verify-branch, github-pr-adapter, github-actions-adapter, jira-adapter, sonarcloud-adapter, manual-pr-adapter, post-github-pr-review
+  - **Optional:** debrief, baseline, research-ticket
+- **Details:** [pr-review/SKILL.md](../skills/main/workflow/pr-review/SKILL.md)
+
 #### `verify-branch`
 
 Compare the current branch to the repository's default branch and verify that changed code will pass CI gates. Acts as a gatekeeper — it runs configured tests, audits, and standards checks, then delivers an unfiltered PASS or FAIL verdict. Reports only; does not fix. Use when the user says 'verify branch', 'check my PR', 'are there tests for this', or before completing implementation.
@@ -195,8 +207,8 @@ Design, review, and update skills that follow the skill standards. Use when crea
 - **Invocation:** `/write-a-skill`
 - **Location:** `../skills/main/authoring/write-a-skill/`
 - **Dependencies:**
-  - **Required:** detect-project-context, decide-skill-shape, audit-skill, validate-skill-frontmatter, review-skill, eval-format, worker-contract, context-reports, parse-skill-frontmatter
-  - **Recommended:** list-available-skills, search-skills-registry, detect-skill-overlap, install-skill, run-trigger-evals, index-skill-capabilities, chainlog, artifact-freshness
+  - **Required:** detect-project-context, decide-skill-shape, audit-skill, validate-skill-frontmatter, review-skill, eval-format, worker-contract, context-reports, parse-skill-frontmatter, map-skill-flow
+  - **Recommended:** list-available-skills, search-skills-registry, detect-skill-overlap, install-skill, run-trigger-evals, index-skill-capabilities, chainlog, artifact-freshness, token-resolver
   - **Optional:** prototype
 - **Details:** [write-a-skill/SKILL.md](../skills/main/authoring/write-a-skill/SKILL.md)
 
@@ -250,6 +262,15 @@ Generate a structured, deterministic capability index from skill files so other 
 - **Location:** `../skills/blocks/authoring/index-skill-capabilities/`
 - **Dependencies:** None.
 - **Details:** [index-skill-capabilities/SKILL.md](../skills/blocks/authoring/index-skill-capabilities/SKILL.md)
+
+#### `map-skill-flow`
+
+Generate a skill's full flow model — branches, gates, phases, success paths, and break points with causes, handling, and confidence. Use when a skill needs its workflow mapped for design, review, comprehension, or eval generation.
+
+- **Invocation:** `model-invoked`
+- **Location:** `../skills/blocks/authoring/map-skill-flow/`
+- **Dependencies:** None.
+- **Details:** [map-skill-flow/SKILL.md](../skills/blocks/authoring/map-skill-flow/SKILL.md)
 
 #### `parse-skill-frontmatter`
 
