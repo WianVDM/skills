@@ -12,6 +12,7 @@
         "./skills/main/workflow/orchestrate",
         "./skills/main/workflow/plan-next",
         "./skills/main/workflow/pr-report",
+        "./skills/main/workflow/pr-review",
         "./skills/main/workflow/verify-branch"
       ]
     },
@@ -54,6 +55,8 @@
         "./skills/blocks/authoring/decide-skill-shape",
         "./skills/blocks/authoring/detect-skill-overlap",
         "./skills/blocks/authoring/eval-format",
+        "./skills/blocks/authoring/index-skill-capabilities",
+        "./skills/blocks/authoring/map-skill-flow",
         "./skills/blocks/authoring/parse-skill-frontmatter",
         "./skills/blocks/authoring/review-skill",
         "./skills/blocks/authoring/run-trigger-evals",
@@ -63,14 +66,27 @@
     {
       "name": "Blocks Project",
       "skills": [
+        "./skills/blocks/project/artifact-freshness",
+        "./skills/blocks/project/chainlog",
         "./skills/blocks/project/challenge-assumptions",
         "./skills/blocks/project/checkpoint",
         "./skills/blocks/project/context-reports",
         "./skills/blocks/project/detect-project-context",
         "./skills/blocks/project/explore-code",
+        "./skills/blocks/project/git-worktree-inspector",
+        "./skills/blocks/project/github-actions-adapter",
+        "./skills/blocks/project/github-pr-adapter",
+        "./skills/blocks/project/identity-resolver",
+        "./skills/blocks/project/initialize-skill",
+        "./skills/blocks/project/jira-adapter",
+        "./skills/blocks/project/manual-pr-adapter",
         "./skills/blocks/project/map-ticket-relationships",
+        "./skills/blocks/project/pr-adapter-contract",
         "./skills/blocks/project/research-ticket",
         "./skills/blocks/project/scan-context",
+        "./skills/blocks/project/scope-checker",
+        "./skills/blocks/project/sonarcloud-adapter",
+        "./skills/blocks/project/tool-discovery",
         "./skills/blocks/project/worker-contract"
       ]
     },

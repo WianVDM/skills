@@ -9,6 +9,7 @@
     "./skills/main/workflow/orchestrate",
     "./skills/main/workflow/plan-next",
     "./skills/main/workflow/pr-report",
+    "./skills/main/workflow/pr-review",
     "./skills/main/workflow/verify-branch",
     "./skills/main/product/to-issues",
     "./skills/main/product/to-prd",
@@ -27,6 +28,7 @@
     "./skills/blocks/authoring/detect-skill-overlap",
     "./skills/blocks/authoring/eval-format",
     "./skills/blocks/authoring/index-skill-capabilities",
+    "./skills/blocks/authoring/map-skill-flow",
     "./skills/blocks/authoring/parse-skill-frontmatter",
     "./skills/blocks/authoring/review-skill",
     "./skills/blocks/authoring/run-trigger-evals",
@@ -90,6 +92,7 @@
     "jira-adapter": "wian-skills:jira-adapter",
     "list-available-skills": "wian-skills:list-available-skills",
     "manual-pr-adapter": "wian-skills:manual-pr-adapter",
+    "map-skill-flow": "wian-skills:map-skill-flow",
     "map-ticket-relationships": "wian-skills:map-ticket-relationships",
     "merge-latest": "wian-skills:merge-latest",
     "orchestrate": "wian-skills:orchestrate",
@@ -97,6 +100,7 @@
     "plan-next": "wian-skills:plan-next",
     "pr-adapter-contract": "wian-skills:pr-adapter-contract",
     "pr-report": "wian-skills:pr-report",
+    "pr-review": "wian-skills:pr-review",
     "prototype": "wian-skills:prototype",
     "research-ticket": "wian-skills:research-ticket",
     "review-skill": "wian-skills:review-skill",
@@ -149,6 +153,7 @@
         "orchestrate",
         "plan-next",
         "pr-report",
+        "pr-review",
         "prototype",
         "tdd",
         "to-issues",
@@ -176,6 +181,7 @@
         "install-skill",
         "index-skill-capabilities",
         "list-available-skills",
+        "map-skill-flow",
         "map-ticket-relationships",
         "parse-skill-frontmatter",
         "research-ticket",
@@ -375,7 +381,8 @@
         "eval-format",
         "worker-contract",
         "context-reports",
-        "parse-skill-frontmatter"
+        "parse-skill-frontmatter",
+        "map-skill-flow"
       ],
       "recommended": [
         "list-available-skills",
@@ -385,7 +392,8 @@
         "run-trigger-evals",
         "index-skill-capabilities",
         "chainlog",
-        "artifact-freshness"
+        "artifact-freshness",
+        "token-resolver"
       ],
       "optional": [
         "prototype"
