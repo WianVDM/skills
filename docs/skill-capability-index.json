@@ -1,9 +1,9 @@
 {
   "version": "1.0.0",
-  "generated_at": "2026-07-20T06:58:02.288242+00:00",
+  "generated_at": "2026-07-20T10:00:39.237470+00:00",
   "source_check": {
-    "skills_json_hash": "sha256:e6893fb39a44e201e2081d85c358dbe53ed31e01573a3080f2b36d6188e4af1f",
-    "latest_skill_mtime": "2026-07-20T06:57:58.168344+00:00"
+    "skills_json_hash": "sha256:225d7224dcfdf709bc1361e2d3a77213d658c8803859a4d66b3a513eb8de93a4",
+    "latest_skill_mtime": "2026-07-20T10:00:37.363128+00:00"
   },
   "skills": [
     {
@@ -6220,49 +6220,58 @@
       "origin": "bundle",
       "type": "",
       "invocation": "user-invoked",
-      "description": "Set up or update Wian's skills in the workspace. Use the Vercel skills CLI to install or update the WianVDM/skills bundle, then resolve shared configuration once and present the initialization checklist.",
+      "description": "Initialize and set up configuration for Wian's skills in the workspace. Resolve shared configuration once across installed bundle skills \u2014 fully now, or deferred to lazy first-use loading \u2014 and present the initialization checklist. Use after installing the WianVDM/skills bundle, when the user says they just installed it, when a configuration key must be resolved, or when the user asks to set up or reinitialize skill configuration.",
       "capabilities": [
         {
-          "id": "setup-wian-skills:install-or-update-the-wianvdm-skills-bundle-via-the-vercel-s",
-          "name": "Install or update the WianVDM/skills bundle via the Vercel skills CLI",
-          "category": "uncategorized",
-          "description": "Install or update the WianVDM/skills bundle via the Vercel skills CLI.",
+          "id": "setup-wian-skills:detect-the-workspace-context-project-root-recommended-config",
+          "name": "Detect the workspace context: project root, recommended config directory, recommended context directory",
+          "category": "config-initialization",
+          "description": "Detect the workspace context: project root, recommended config directory, recommended context directory.",
           "sources": [
             "SKILL.md:In scope"
           ]
         },
         {
-          "id": "setup-wian-skills:detect-the-workspace-context-and-choose-the-target-scope",
-          "name": "Detect the workspace context and choose the target scope",
-          "category": "scope-checking",
-          "description": "Detect the workspace context and choose the target scope.",
+          "id": "setup-wian-skills:discover-installed-bundle-skills-and-read-their-config",
+          "name": "Discover installed bundle skills and read their config",
+          "category": "config-initialization",
+          "description": "Discover installed bundle skills and read their config.yaml declarations.",
           "sources": [
             "SKILL.md:In scope"
           ]
         },
         {
-          "id": "setup-wian-skills:warn-about-locally-modified-skills-before-the-cli-overwrites",
-          "name": "Warn about locally modified skills before the CLI overwrites them",
-          "category": "uncategorized",
-          "description": "Warn about locally modified skills before the CLI overwrites them.",
+          "id": "setup-wian-skills:build-the-cross-skill-configuration-graph-deduplicate-shared",
+          "name": "Build the cross-skill configuration graph: deduplicate shared keys, apply ${ref} inference, order questions through dependson",
+          "category": "config-initialization",
+          "description": "Build the cross-skill configuration graph: deduplicate shared keys, apply ${ref} inference, order questions through dependson.",
           "sources": [
             "SKILL.md:In scope"
           ]
         },
         {
-          "id": "setup-wian-skills:gather-shared-configuration-once-deduplicate-keys-and-infer",
-          "name": "Gather shared configuration once, deduplicate keys, and infer answers from previous responses",
-          "category": "data-collection",
-          "description": "Gather shared configuration once, deduplicate keys, and infer answers from previous responses.",
+          "id": "setup-wian-skills:resolve-shared-keys-the-bindings-to-the-global-shared-config",
+          "name": "Resolve shared keys \u2014 the bindings to the global shared config \u2014 in every branch",
+          "category": "identity-resolution",
+          "description": "Resolve shared keys \u2014 the bindings to the global shared config \u2014 in every branch.",
           "sources": [
             "SKILL.md:In scope"
           ]
         },
         {
-          "id": "setup-wian-skills:confirm-the-full-plan-before-applying-changes",
-          "name": "Confirm the full plan before applying changes",
-          "category": "uncategorized",
-          "description": "Confirm the full plan before applying changes.",
+          "id": "setup-wian-skills:resolve-skill-private-keys-now-full-branch-or-defer-them-to",
+          "name": "Resolve skill-private keys now (full branch) or defer them to first-use lazy loading (lazy branch) when the skill is lazy-eligible",
+          "category": "identity-resolution",
+          "description": "Resolve skill-private keys now (full branch) or defer them to first-use lazy loading (lazy branch) when the skill is lazy-eligible.",
+          "sources": [
+            "SKILL.md:In scope"
+          ]
+        },
+        {
+          "id": "setup-wian-skills:confirm-the-plan-before-writing-write-shared",
+          "name": "Confirm the plan before writing; write shared",
+          "category": "config-initialization",
+          "description": "Confirm the plan before writing; write shared.yaml directly; delegate per-skill config writes to initialize-skill.",
           "sources": [
             "SKILL.md:In scope"
           ]
@@ -6287,10 +6296,10 @@
         }
       ],
       "references": [
+        "context-reports",
         "detect-project-context",
-        "install-skill",
-        "list-available-skills",
-        "validate-skill-frontmatter"
+        "initialize-skill",
+        "list-available-skills"
       ],
       "subagents": [],
       "scripts": [],
@@ -6298,13 +6307,12 @@
       "produces": [
         "Write a context report"
       ],
-      "consumes": [
-        "data-collection"
-      ],
+      "consumes": [],
       "depends": [
+        "context-reports",
         "detect-project-context",
-        "list-available-skills",
-        "validate-skill-frontmatter"
+        "initialize-skill",
+        "list-available-skills"
       ]
     }
   ]
