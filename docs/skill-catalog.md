@@ -190,7 +190,7 @@ Tell the agent to zoom out and give broader context or a higher-level perspectiv
 
 #### `write-a-skill`
 
-Design, review, and update skills that follow the skill standards. Coordinates creation, audit, remediation, and first-run initialization.
+Design, review, and update skills that follow the skill standards. Use when creating a new skill, auditing or refining an existing one, clarifying a vague skill idea, or deciding what shape an idea should take.
 
 - **Invocation:** `/write-a-skill`
 - **Location:** `../skills/main/authoring/write-a-skill/`
