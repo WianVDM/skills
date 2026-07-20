@@ -1,9 +1,9 @@
 {
   "version": "1.0.0",
-  "generated_at": "2026-07-18T11:11:32.955044+00:00",
+  "generated_at": "2026-07-20T06:35:42.292425+00:00",
   "source_check": {
     "skills_json_hash": "sha256:d60576d1b40d5d94e36e6e14ee9624cc7ce851f081b0b7284d545b2dd081fdb7",
-    "latest_skill_mtime": "2026-07-18T11:11:28.525805+00:00"
+    "latest_skill_mtime": "2026-07-20T06:35:38.444466+00:00"
   },
   "skills": [
     {
@@ -2156,8 +2156,17 @@
       "origin": "bundle",
       "type": "conductor",
       "invocation": "user-invoked",
-      "description": "Design, review, and update skills that follow the skill standards. Coordinates creation, audit, remediation, and first-run initialization.",
+      "description": "Design, review, and update skills that follow the skill standards. Use when creating a new skill, auditing or refining an existing one, clarifying a vague skill idea, or deciding what shape an idea should take.",
       "capabilities": [
+        {
+          "id": "write-a-skill:clarifying-a-vague-idea-or-rough-draft-into-a-confirmed-obje",
+          "name": "Clarifying a vague idea or rough draft into a confirmed objective map, without writing files",
+          "category": "uncategorized",
+          "description": "Clarifying a vague idea or rough draft into a confirmed objective map, without writing files.",
+          "sources": [
+            "SKILL.md:In scope"
+          ]
+        },
         {
           "id": "write-a-skill:creating-new-skills-from-scratch",
           "name": "Creating new skills from scratch",
@@ -2249,15 +2258,6 @@
           ]
         },
         {
-          "id": "write-a-skill:subagent-clarify-scope",
-          "name": "Worker: Clarify-Scope",
-          "category": "scope-checking",
-          "description": "Subagent role for write-a-skill.",
-          "sources": [
-            "subagents/clarify-scope.md"
-          ]
-        },
-        {
           "id": "write-a-skill:subagent-classify-intent",
           "name": "Worker: Classify-Intent",
           "category": "uncategorized",
@@ -2294,6 +2294,15 @@
           ]
         },
         {
+          "id": "write-a-skill:subagent-map-objective",
+          "name": "Worker: Map-Objective",
+          "category": "uncategorized",
+          "description": "Subagent role for write-a-skill.",
+          "sources": [
+            "subagents/map-objective.md"
+          ]
+        },
+        {
           "id": "write-a-skill:subagent-suggest-patterns",
           "name": "Worker: Suggest-Patterns",
           "category": "uncategorized",
@@ -2319,6 +2328,24 @@
           "sources": [
             "scripts/initialize-config.py"
           ]
+        },
+        {
+          "id": "write-a-skill:script-sync-dependency-surfaces",
+          "name": "Run sync dependency surfaces",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: sync-dependency-surfaces.py",
+          "sources": [
+            "scripts/sync-dependency-surfaces.py"
+          ]
+        },
+        {
+          "id": "write-a-skill:script-sync-fallbacks",
+          "name": "Run sync fallbacks",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: sync-fallbacks.py",
+          "sources": [
+            "scripts/sync-fallbacks.py"
+          ]
         }
       ],
       "references": [
@@ -2334,6 +2361,7 @@
         "find-skills",
         "install-skill",
         "list-available-skills",
+        "map-skill-flow",
         "parse-skill-frontmatter",
         "review-skill",
         "run-trigger-evals",
@@ -2348,16 +2376,18 @@
         "_TEMPLATE.md",
         "change-branch.md",
         "check-chainlog-needs.md",
-        "clarify-scope.md",
         "classify-intent.md",
         "classify-skill-type.md",
         "draft-skill-md.md",
         "initialize.md",
+        "map-objective.md",
         "suggest-patterns.md"
       ],
       "scripts": [
         "composition-test.py",
-        "initialize-config.py"
+        "initialize-config.py",
+        "sync-dependency-surfaces.py",
+        "sync-fallbacks.py"
       ],
       "config_keys": [
         "write-a-skill.standards_path"
@@ -2377,10 +2407,12 @@
         "eval-format",
         "install-skill",
         "list-available-skills",
+        "map-skill-flow",
         "parse-skill-frontmatter",
         "review-skill",
         "run-trigger-evals",
         "search-skills-registry",
+        "token-resolver",
         "validate-skill-frontmatter",
         "worker-contract"
       ]
