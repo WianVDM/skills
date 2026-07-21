@@ -40,6 +40,8 @@ For the full list, including block skills and dependencies, see [docs/skill-cata
    npx skills@latest add WianVDM/skills --skill '*' -y
    ```
 
+   Prefer to pick skills individually? Run the [selector script](scripts/README.md) instead — same installer, with a real checklist.
+
 2. Run the setup skill in your agent:
 
    ```bash
@@ -48,29 +50,41 @@ For the full list, including block skills and dependencies, see [docs/skill-cata
 
 3. Invoke a main skill. For example, `/debrief` or `/plan-next`.
 
-### Optional: checkbox selector script
+## Updating
 
-The CLI's interactive picker has no usable per-skill selection indicator and disables search when groups exist (upstream: vercel-labs/skills#439, #992). If you want to pick individual skills instead of installing everything, `scripts/select-install.mjs` gives you a plain-text checklist: skills grouped by bundle with an `[x]` per row, your already-installed skills pre-ticked, and the exact CLI command printed for approval before it runs. Installation itself still goes through the Vercel skills CLI — the script only replaces the selection screen.
+Sync an installed set to the latest catalog — this refreshes your skills and installs any new dependencies they need:
 
 PowerShell:
 
 ```powershell
-iwr https://raw.githubusercontent.com/WianVDM/skills/main/scripts/select-install.mjs -OutFile "$env:TEMP\select-install.mjs"; node "$env:TEMP\select-install.mjs" -g
+iwr https://raw.githubusercontent.com/WianVDM/skills/main/scripts/select-install.mjs -OutFile "$env:TEMP\select-install.mjs"; node "$env:TEMP\select-install.mjs" --update -g
 ```
 
 bash:
 
 ```bash
-curl -sL https://raw.githubusercontent.com/WianVDM/skills/main/scripts/select-install.mjs -o /tmp/select-install.mjs && node /tmp/select-install.mjs -g
+curl -sL https://raw.githubusercontent.com/WianVDM/skills/main/scripts/select-install.mjs -o /tmp/select-install.mjs && node /tmp/select-install.mjs --update -g
 ```
 
-Useful flags: `-p` (project scope instead of global), `--remove` (same checklist for uninstalling), `--print` (emit the CLI command without running it), `--source <path>` (use a local `skills.json` as the catalog), `--help`.
+The script prints the plan for approval, then runs the official CLI. It only touches skills from this bundle. Use `-p` instead of `-g` for a project-scoped install. Afterwards, re-run `/setup-wian-skills` in your agent and restart the agent.
 
-**Requirements**
+## Removing
 
-- Node.js 18 or newer (the script uses the built-in `fetch`; no npm dependencies).
-- npm/npx on the PATH — the script shells out to `npx skills@latest` for listing, installing, and removing.
-- Network access to GitHub for the catalog. Offline fallback: run it from a clone of this repo, where it reads `./skills.json` instead.
+Uninstall bundle skills through the same script — it shows a checklist of what you have installed from this bundle:
+
+PowerShell:
+
+```powershell
+iwr https://raw.githubusercontent.com/WianVDM/skills/main/scripts/select-install.mjs -OutFile "$env:TEMP\select-install.mjs"; node "$env:TEMP\select-install.mjs" --remove -g
+```
+
+bash:
+
+```bash
+curl -sL https://raw.githubusercontent.com/WianVDM/skills/main/scripts/select-install.mjs -o /tmp/select-install.mjs && node /tmp/select-install.mjs --remove -g
+```
+
+To change which skills are installed, run the script with no flags — it opens the checklist with your installed skills pre-ticked. For every mode and flag (`--clean`, `--with-optional`, `--print`, and friends), see [scripts/README.md](scripts/README.md).
 
 ## How this repo is organized
 
@@ -82,7 +96,7 @@ Useful flags: `-p` (project scope instead of global), `--remove` (same checklist
 - `docs/skill-catalog.md` — full list of every skill.
 - `skills.json` — the bundle manifest and dependencies.
 - `scripts/generate-skill-catalog.py` — regenerates `docs/skill-catalog.md` from `skills.json` and each `SKILL.md`.
-- `scripts/select-install.mjs` — checkbox installer wrapper around the skills CLI.
+- `scripts/select-install.mjs` — install/update/remove wrapper around the skills CLI; see [scripts/README.md](scripts/README.md).
 
 ## Documentation
 

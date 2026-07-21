@@ -19,6 +19,8 @@
  *   node select-install.mjs                 # install mode, prompts for scope
  *   node select-install.mjs -g              # install, global scope
  *   node select-install.mjs --remove -g     # remove mode
+ *   node select-install.mjs --update -g     # refresh installed bundle skills + install missing deps
+ *   node select-install.mjs --update --clean -g  # remove-first clean update
  *   node select-install.mjs --print -g      # print the CLI command, don't run
  *   node select-install.mjs --source ../skills/skills.json
  *
@@ -28,6 +30,7 @@
 
 import { spawn } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { basename, dirname, join, resolve } from 'node:path';
 import * as readline from 'node:readline';
 
@@ -42,6 +45,10 @@ const flags = {
   global: args.includes('-g') || args.includes('--global'),
   project: args.includes('-p') || args.includes('--project'),
   remove: args.includes('--remove'),
+  update: args.includes('--update'),
+  clean: args.includes('--clean'),
+  withOptional: args.includes('--with-optional'),
+  noRecommended: args.includes('--no-recommended'),
   print: args.includes('--print'),
   yes: args.includes('-y') || args.includes('--yes'),
   help: args.includes('-h') || args.includes('--help'),
@@ -53,6 +60,15 @@ for (let i = 0; i < args.length; i++) {
   if (args[i] === '-a' || args[i] === '--agent') flags.agents.push(args[++i]);
 }
 
+if (flags.clean && !flags.update) {
+  console.error('--clean only makes sense with --update.');
+  process.exit(1);
+}
+if (flags.update && flags.remove) {
+  console.error('--update and --remove are mutually exclusive.');
+  process.exit(1);
+}
+
 if (flags.help) {
   console.log(`select-install — checkbox selector wrapping the Vercel skills CLI
 
@@ -62,6 +78,12 @@ Options:
   -g, --global       Global scope (~/<agent>/skills)
   -p, --project      Project scope (./<agent>/skills)
   --remove           Remove selected skills instead of installing
+  --update           Refresh installed bundle skills and install missing
+                     dependencies (required + recommended). No selector.
+  --clean            With --update: remove installed bundle skills first,
+                     then reinstall (clears files deleted upstream)
+  --with-optional    With --update: also install optional dependencies
+  --no-recommended   With --update: required dependencies only
   -a, --agent <name> Target agent (repeatable), passed to the CLI
   --print            Print the CLI command without running it
   -y, --yes          Skip the final run confirmation
@@ -137,7 +159,7 @@ function fromSkillsJson(skillsJson, capabilityIndex) {
   const all = skillsJson.skills.map((p) => basename(p));
   const other = all.filter((n) => !inBundles.has(n));
   if (other.length) bundles.push({ name: 'other', skills: other.map((n) => ({ name: n, description: desc[n] ?? '' })) });
-  return { bundles };
+  return { bundles, deps: skillsJson.skill_dependencies ?? {}, allNames: new Set(all) };
 }
 
 async function fromCliList() {
@@ -152,7 +174,7 @@ async function fromCliList() {
       skills.push({ name: m[1], description: d ? d[1].trim() : '' });
     }
   }
-  return { bundles: [{ name: 'all', skills }] };
+  return { bundles: [{ name: 'all', skills }], deps: null, allNames: new Set(skills.map((s) => s.name)) };
 }
 
 // ─── installed state (via CLI) ───────────────────────────────────────────────
@@ -165,6 +187,152 @@ async function loadInstalled(scopeFlag) {
   } catch {
     return { installed: new Set(), ok: false };
   }
+}
+
+// ─── update mode ─────────────────────────────────────────────────────────────
+
+// The CLI's lock file records which source repo each installed skill came from,
+// which lets us tell bundle skills apart from third-party installs.
+function loadLockSources(scope) {
+  const base = scope === 'global' ? homedir() : process.cwd();
+  const lockPath = join(base, '.agents', '.skill-lock.json');
+  if (!existsSync(lockPath)) return { sources: null, lockPath };
+  try {
+    const lock = JSON.parse(readFileSync(lockPath, 'utf-8'));
+    const sources = new Map();
+    for (const [name, entry] of Object.entries(lock.skills ?? {})) {
+      sources.set(name, entry.source);
+    }
+    return { sources, lockPath };
+  } catch {
+    return { sources: null, lockPath };
+  }
+}
+
+// Transitive dependency closure over the catalog's skill_dependencies.
+// Effective tier is the weakest link along the path: a required dep of a
+// recommended dep is itself recommended. Optional is only walked when asked.
+function computeClosure(roots, deps, { recommended, optional }) {
+  const rank = { required: 0, recommended: 1, optional: 2 };
+  const best = new Map();
+  const queue = roots.map((name) => ({ name, tier: 'required' }));
+  while (queue.length) {
+    const { name, tier } = queue.shift();
+    const entry = deps[name];
+    if (!entry) continue;
+    const tiers = ['required'];
+    if (recommended) tiers.push('recommended');
+    if (optional) tiers.push('optional');
+    for (const t of tiers) {
+      for (const d of entry[t] ?? []) {
+        const eff = rank[t] >= rank[tier] ? t : tier;
+        if (!best.has(d) || rank[eff] < rank[best.get(d)]) {
+          best.set(d, eff);
+          queue.push({ name: d, tier: eff });
+        }
+      }
+    }
+  }
+  best.forEach((_, k) => { if (roots.includes(k)) best.delete(k); });
+  return best;
+}
+
+async function runUpdate(scope, scopeFlag) {
+  const catalog = await loadCatalog();
+  const { installed, ok } = await loadInstalled(scopeFlag);
+  if (!ok) {
+    console.error('Could not read installed skills from the CLI. Is `npx skills` working?');
+    process.exit(1);
+  }
+
+  // Which installed skills belong to this bundle?
+  const warnings = [];
+  const { sources } = loadLockSources(scope);
+  let bundleInstalled;
+  if (sources) {
+    bundleInstalled = [...installed].filter((n) => sources.get(n) === REPO);
+  } else {
+    bundleInstalled = [...installed].filter((n) => catalog.allNames.has(n));
+    warnings.push('No CLI lock file found; matched bundle skills by name only. Orphan detection is off.');
+  }
+
+  if (bundleInstalled.length === 0) {
+    console.log(`No installed ${REPO} skills found in ${scope} scope. Nothing to update.`);
+    process.exit(0);
+  }
+
+  const refresh = bundleInstalled.filter((n) => catalog.allNames.has(n)).sort();
+  const orphans = bundleInstalled.filter((n) => !catalog.allNames.has(n)).sort();
+
+  // Missing dependencies of the refresh set.
+  let missing = new Map();
+  if (catalog.deps) {
+    const closure = computeClosure(refresh, catalog.deps, {
+      recommended: !flags.noRecommended,
+      optional: flags.withOptional,
+    });
+    for (const [name, tier] of closure) {
+      if (!installed.has(name) && catalog.allNames.has(name)) missing.set(name, tier);
+    }
+    const unmapped = refresh.filter((n) => !(n in catalog.deps));
+    if (unmapped.length) warnings.push(`No dependency entry for: ${unmapped.join(', ')} — assuming none.`);
+  } else {
+    warnings.push('Catalog has no dependency data (CLI --list fallback); refreshing without dependency resolution.');
+  }
+
+  const byTier = { required: [], recommended: [], optional: [] };
+  for (const [name, tier] of [...missing].sort()) byTier[tier].push(name);
+  const toInstall = [...missing.keys()];
+
+  console.log(`\nUpdate plan (${scope} scope) — ${REPO}`);
+  console.log(`  Refresh (${refresh.length}): ${refresh.join(', ')}`);
+  if (toInstall.length) {
+    console.log('  Install missing dependencies:');
+    for (const t of ['required', 'recommended', 'optional']) {
+      if (byTier[t].length) console.log(`    ${t}: ${byTier[t].join(', ')}`);
+    }
+  } else if (catalog.deps) {
+    console.log('  Dependencies: all satisfied.');
+  }
+  if (orphans.length) {
+    console.log(`  Orphans (${orphans.length}): ${orphans.join(', ')} — no longer in the catalog; ${flags.clean ? 'will be removed' : 'left installed (use --remove to uninstall)'}.`);
+  }
+  warnings.push('Local edits to installed skill files will be overwritten.');
+  for (const w of warnings) console.log(`  ! ${w}`);
+
+  const addSet = [...new Set([...refresh, ...toInstall])];
+  const addCmd = `npx -y ${CLI} add ${REPO} ${addSet.map((n) => `--skill ${n}`).join(' ')}${scopeFlag}${flags.agents.map((a) => ` -a ${a}`).join('')} -y`;
+  const removeSet = flags.clean ? [...new Set([...refresh, ...orphans])] : [];
+  const removeCmd = flags.clean ? `npx -y ${CLI} remove ${removeSet.join(' ')}${scopeFlag} -y` : null;
+
+  console.log('\nCommand(s):');
+  if (removeCmd) console.log(`  ${removeCmd}`);
+  console.log(`  ${addCmd}\n`);
+
+  if (flags.print) process.exit(0);
+  if (!flags.yes) {
+    const go = await ask('Run it? [Y/n] ');
+    if (go === null || go.trim().toLowerCase() === 'n') {
+      console.log('Aborted; no changes made.');
+      process.exit(0);
+    }
+  }
+  rl.close();
+
+  if (removeCmd) {
+    const { code } = await run(removeCmd);
+    if (code !== 0) {
+      console.error('Remove failed; aborting before reinstall. Re-run to retry.');
+      process.exit(code ?? 1);
+    }
+  }
+  const { code } = await run(addCmd);
+  if (code !== 0) process.exit(code ?? 1);
+
+  console.log('\nDone. Follow-up:');
+  console.log('  1. Re-run /setup-wian-skills in your agent — config keys may have been added; reinstalling does not reset existing config.');
+  console.log('  2. Restart your agent harness so it reloads the skill files.');
+  process.exit(0);
 }
 
 // ─── selector UI ─────────────────────────────────────────────────────────────
@@ -206,14 +374,16 @@ function applyToken(rows, bundles, token) {
 
 // ─── main ────────────────────────────────────────────────────────────────────
 
-const mode = flags.remove ? 'remove' : 'install';
-
 let scope = flags.global ? 'global' : flags.project ? 'project' : null;
 if (!scope) {
   const ans = await ask('Scope — [g]lobal or [p]roject? ');
   scope = ans && ans.trim().toLowerCase().startsWith('g') ? 'global' : 'project';
 }
 const scopeFlag = scope === 'global' ? ' -g' : '';
+
+if (flags.update) await runUpdate(scope, scopeFlag);
+
+const mode = flags.remove ? 'remove' : 'install';
 
 const catalog = await loadCatalog();
 const { installed, ok } = await loadInstalled(scopeFlag);

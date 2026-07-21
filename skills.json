@@ -216,6 +216,10 @@
     }
   ],
   "skill_dependencies": {
+    "baseline": {
+      "required": [],
+      "recommended": []
+    },
     "debrief": {
       "required": [
         "checkpoint",
@@ -234,6 +238,10 @@
         "baseline"
       ]
     },
+    "diagnose": {
+      "required": [],
+      "recommended": []
+    },
     "decide-skill-shape": {
       "recommended": [
         "list-available-skills"
@@ -242,11 +250,23 @@
         "search-skills-registry"
       ]
     },
+    "grill-me": {
+      "required": [],
+      "recommended": []
+    },
+    "grill-with-docs": {
+      "required": [],
+      "recommended": []
+    },
     "handoff": {
       "recommended": [
         "detect-project-context",
         "context-reports"
       ]
+    },
+    "improve-codebase-architecture": {
+      "required": [],
+      "recommended": []
     },
     "install-skill": {
       "recommended": [
@@ -258,10 +278,18 @@
         "parse-skill-frontmatter"
       ]
     },
+    "prototype": {
+      "required": [],
+      "recommended": []
+    },
     "run-trigger-evals": {
       "recommended": [
         "parse-skill-frontmatter"
       ]
+    },
+    "tdd": {
+      "required": [],
+      "recommended": []
     },
     "search-skills-registry": {
       "recommended": [
@@ -406,6 +434,10 @@
         "prototype"
       ]
     },
+    "zoom-out": {
+      "required": [],
+      "recommended": []
+    },
     "github-actions-adapter": {
       "required": [
         "pr-adapter-contract",
@@ -446,6 +478,21 @@
         "context-reports",
         "token-resolver"
       ]
+    },
+    "detect-skill-overlap": {
+      "required": [
+        "list-available-skills",
+        "parse-skill-frontmatter",
+        "index-skill-capabilities"
+      ],
+      "recommended": []
+    },
+    "index-skill-capabilities": {
+      "required": [
+        "parse-skill-frontmatter",
+        "context-reports"
+      ],
+      "recommended": []
     },
     "map-ticket-relationships": {
       "required": [
