@@ -243,7 +243,7 @@ Detect when a skill overlaps with existing building blocks or contains capabilit
 
 - **Invocation:** `model-invoked`
 - **Location:** `../skills/blocks/authoring/detect-skill-overlap/`
-- **Dependencies:** None.
+- **Dependencies:** **Required:** list-available-skills, parse-skill-frontmatter, index-skill-capabilities
 - **Details:** [detect-skill-overlap/SKILL.md](../skills/blocks/authoring/detect-skill-overlap/SKILL.md)
 
 #### `eval-format`
@@ -261,7 +261,7 @@ Generate a structured, deterministic capability index from skill files so other 
 
 - **Invocation:** `model-invoked`
 - **Location:** `../skills/blocks/authoring/index-skill-capabilities/`
-- **Dependencies:** None.
+- **Dependencies:** **Required:** parse-skill-frontmatter, context-reports
 - **Details:** [index-skill-capabilities/SKILL.md](../skills/blocks/authoring/index-skill-capabilities/SKILL.md)
 
 #### `map-skill-flow`
