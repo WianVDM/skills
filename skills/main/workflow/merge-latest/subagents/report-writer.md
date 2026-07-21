@@ -15,7 +15,9 @@ The parent skill will provide:
 - Branch inference details (inferred upstream, confidence, method)
 - Conflict classifications and resolutions
 - Conflict investigation findings (if any)
-- Build result
+- Re-review verdicts (if tier 2 ran)
+- Build result and interactive-verification result (if tier 3 ran)
+- Confidence inputs: verified claims, unverified claims, assumptions, grade + reasons
 - Output path
 
 ## Outputs
@@ -24,7 +26,7 @@ Return a structured result:
 
 ```markdown
 ---
-status: complete
+status: complete | partial | needs_input | blocked
 ---
 
 ## Report Path
@@ -47,11 +49,13 @@ status: complete
 
 ## Rules
 
-- Use the bundled report script or write directly.
+- Use the bundled report script; it is the single report generator, which keeps the frontmatter envelope consistent.
 - Include branch inference details, including confidence and method.
 - Include fetch result and whether the local target was fast-forwarded.
 - Include all trivial resolutions with reasons.
 - Include semantic conflicts requiring user action.
 - Include review-file conflicts surfaced to the user.
 - Include build output excerpt.
+- Include the confidence block (grade, verified, not verified, assumptions, reasons); apply the grade caps from [VALIDATION.md](../references/VALIDATION.md#confidence-assessment) — never inflate the grade.
 - Do not write to the state file.
+- Return `needs_input` when you need the user; never ask the user directly. Wrap role-specific output in the canonical contract sections (see [SUBAGENTS.md](../references/SUBAGENTS.md)).

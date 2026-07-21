@@ -23,7 +23,7 @@ Return a structured result:
 
 ```markdown
 ---
-status: complete
+status: complete | partial | needs_input | blocked
 ---
 
 ## Checks Passed
@@ -59,3 +59,4 @@ status: complete
 - Check local target is not diverged from its remote tracking branch.
 - If `--stash` is passed or `auto_stash: true`, note that stashing will occur.
 - Do not modify the working tree.
+- Return `needs_input` when you need the user; never ask the user directly. Wrap role-specific output in the canonical contract sections (see [SUBAGENTS.md](../references/SUBAGENTS.md)).

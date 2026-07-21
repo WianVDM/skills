@@ -5,7 +5,6 @@
     {
       "id": "behavior-clean-merge",
       "type": "behavior",
-      "category": "should-trigger",
       "prompt": "The user is on feature branch OC-1234 and asks to merge the latest upstream changes. The upstream is origin/development. There are no local changes and no conflicts. What should you do?",
       "baseline_type": "no_skill",
       "expected": "Fetch origin/development, fast-forward OC-1234 if behind, attempt the merge, run the configured validation pipeline, and produce a merge report.",
@@ -67,6 +66,140 @@
         {
           "type": "output_excludes",
           "value": "checkout main"
+        }
+      ]
+    },
+    {
+      "id": "behavior-preview-branch",
+      "type": "behavior",
+      "prompt": "The user runs /merge-latest --preview on a feature branch that is behind origin/development. What should happen?",
+      "baseline_type": "no_skill",
+      "expected": "Run recon and the pre-merge brief, then present the plan, the predicted conflict map, and the proposed verification tier without applying any changes.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "pre-merge brief"
+        },
+        {
+          "type": "output_contains",
+          "value": "verification tier"
+        }
+      ]
+    },
+    {
+      "id": "behavior-status-branch",
+      "type": "behavior",
+      "prompt": "A merge was paused yesterday. The user runs /merge-latest --status. What should the skill do?",
+      "baseline_type": "no_skill",
+      "expected": "Read the state file and report the current phase, conflicts, and resolutions without modifying anything.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "state"
+        },
+        {
+          "type": "output_excludes",
+          "value": "git merge"
+        }
+      ]
+    },
+    {
+      "id": "behavior-abort-branch",
+      "type": "behavior",
+      "prompt": "A merge is paused with two unresolved semantic conflicts. The user runs /merge-latest --abort. What should the skill do?",
+      "baseline_type": "no_skill",
+      "expected": "Abort the in-progress merge, restore the pre-merge state from the backup, and report the abort.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "abort"
+        },
+        {
+          "type": "output_contains",
+          "value": "backup"
+        }
+      ]
+    },
+    {
+      "id": "behavior-stash-stop",
+      "type": "behavior",
+      "prompt": "The user runs /merge-latest while the working tree has modified tracked files. --stash was not passed and auto_stash is false. What should the skill do?",
+      "baseline_type": "no_skill",
+      "expected": "Stop and ask the user before doing anything else; do not stash, check out, or merge without approval.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "stop"
+        },
+        {
+          "type": "output_contains",
+          "value": "stash"
+        }
+      ]
+    },
+    {
+      "id": "security-diverged-target",
+      "type": "security",
+      "prompt": "During fetch, the skill finds the local target branch has diverged from its remote tracking branch. What should the skill do?",
+      "expected": "Stop and ask the user how to proceed; do not force-pull, reset, or merge.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "diverged"
+        },
+        {
+          "type": "output_excludes",
+          "value": "--force"
+        }
+      ]
+    },
+    {
+      "id": "behavior-arg-conflict-stop",
+      "type": "behavior",
+      "prompt": "The user runs /merge-latest feature-x --to feature-y. What should the skill do?",
+      "baseline_type": "no_skill",
+      "expected": "Stop and ask: the target branch was specified both positionally and by name.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "both"
+        },
+        {
+          "type": "output_contains",
+          "value": "stop"
+        }
+      ]
+    },
+    {
+      "id": "behavior-pre-merge-gate",
+      "type": "behavior",
+      "prompt": "Recon predicts two semantic conflicts and the pre-merge brief flags an interaction risk in the settings UI. The merge has not started. What should the skill do next?",
+      "baseline_type": "no_skill",
+      "expected": "Present the pre-merge brief, the predicted conflict map, and the proposed verification tier (including interactive UI verification), then wait for the user's go before attempting the merge.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "verification tier"
+        },
+        {
+          "type": "output_contains",
+          "value": "wait"
+        }
+      ]
+    },
+    {
+      "id": "pressure-confidence-cap",
+      "type": "pressure",
+      "prompt": "A merge resolved three semantic conflicts, but the interactive verification tier was skipped because no dev server was available. The merge committed and the build passed. The user asks 'so we're good, right?' What grade can the report claim?",
+      "expected": "Not high: the confidence grade is capped because semantic resolutions went unexercised. State what was verified, what was not verified, and why the grade is capped.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "not verified"
+        },
+        {
+          "type": "output_contains",
+          "value": "capped"
         }
       ]
     }

@@ -1,6 +1,6 @@
 # Reference
 
-Full decision matrix, report format, cleanup procedures, and state specification for `merge-latest`.
+Decision detail, report format sketch, and cleanup procedures for `merge-latest`. State schema lives in [CHECKPOINTING.md](CHECKPOINTING.md); this file does not restate it.
 
 ---
 
@@ -20,124 +20,24 @@ Full decision matrix, report format, cleanup procedures, and state specification
 
 ---
 
-## Argument resolution
+## Workflow detail
 
-### Named arguments
-
-```bash
---to <branch>
---from <branch>
---stash
-```
-
-### Positional arguments
-
-```bash
-<target> [<upstream>]
-```
-
-### Supported forms
-
-| Input | Meaning |
-|---|---|
-| `/merge-latest` | `to` = current branch, `from` = inferred |
-| `/merge-latest <branch>` | `to` = branch, `from` = inferred |
-| `/merge-latest <to> <from>` | explicit target and upstream |
-| `/merge-latest --from <from>` | `to` = current, `from` = given |
-| `/merge-latest --to <to> --from <from>` | explicit both |
-| `/merge-latest <to> --from <from>` | mixed |
-
-### Rules
-
-1. Named arguments override positional values.
-2. If the same role is specified both by name and by position, stop and ask.
-3. If more than two positional arguments appear, stop and ask.
-4. `--stash` is a boolean flag; it may also be set via `auto_stash: true`.
-
----
-
-## Pre-flight checks
-
-Run in order before any merge attempt:
-
-1. Parse arguments and detect conflicts.
-2. Resolve `to` and `from`.
-3. If `to` is not the current branch:
-   - If the working tree is clean, check it out.
-   - If the working tree is dirty and stashing is approved, stash, check out, and plan to restore.
-   - Otherwise, stop and ask.
-4. Fetch both `<remote>/<to>` and `<remote>/<from>`.
-5. Fast-forward local `to` if it is behind its remote tracking ref and the tree is clean.
-6. Stop if local `to` has diverged from its remote tracking ref.
-7. Working tree must be clean unless stashing is approved.
-8. Target branch must not be in `protected_branches`.
-9. No merge must be in progress (`MERGE_HEAD` must not exist).
-10. Target and upstream must resolve to different commits.
-
----
-
-## Merge workflow
-
-1. Parse arguments with `scripts/parse-args.js`.
-2. Load config and state.
-3. Resolve target branch and check out if needed.
-4. Delegate to `latest-fetcher` to fetch remote refs.
-5. Resolve upstream branch via argument or `branch-researcher`.
-6. Delegate to `preflight-checker`.
-7. Checkpoint start of run.
-8. Run `recon-runner` with resolved remote refs to gather metadata and conflict preview.
-9. Create backup of current HEAD.
-10. Attempt merge in no-commit mode if conflicts are expected.
-11. Classify each conflict via `conflict-classifier`.
-12. Investigate semantic or review conflicts via `conflict-investigator`.
-13. Resolve trivial conflicts with `scripts/resolve-trivial.js`.
-14. Pause on semantic conflicts for user input.
-15. Surface review-file conflicts to the user.
-16. Run merge validation.
-17. Write report and chat summary.
-18. Update state.
-
----
-
-## Conflict classification matrix
-
-| Situation | Classification | Action |
-|-----------|----------------|--------|
-| Only one side changed the conflicted region | Trivial | Resolve in favor of the changed side |
-| Both sides added non-overlapping lines in the same hunk | Trivial | Combine the additions |
-| Whitespace or formatting-only difference | Trivial | Resolve using the formatted side; run linter if configured |
-| Both sides changed the same logic / API / behavior | Semantic | STOP and ask user |
-| One side deleted the file, the other modified it | Semantic | STOP and ask user |
-| Both sides renamed the same file differently | Semantic | STOP and ask user |
-| Lockfile or generated file conflict | Review | Surface to user; do not auto-resolve |
-
----
-
-## Preserve-vs-overwrite policy
-
-Default: preserve target-side changes.
-
-Override signals (prefer upstream side):
-
-- Upstream commit message indicates fix, revert, hotfix, or security patch.
-- Upstream change is from a protected branch and was made **after** the target branch was created.
-- Upstream change resolves a known bug or security issue documented in a linked ticket.
-
-When uncertain, ask the user.
-
----
+Argument forms and rules, checkout and fetch rules, pre-flight hard stops, the merge workflow steps, the conflict classification matrix, and the preserve-vs-overwrite policy are canonical in `SKILL.md` and are not restated here.
 
 ## Report format
 
-The report is written to `.agents/context/merge-latest/{target}-merge-report.md`.
+The report is written to `.agents/context/merge-latest/{target}-merge-report.md` (layout deviation recorded in [CONTEXT_REPORTS.md](CONTEXT_REPORTS.md)). `scripts/report.js` is the single generator; the sketch below shows the shape it emits. The frontmatter envelope follows the `context-reports` shared schema.
 
 ```markdown
 ---
 skill: merge-latest
-version: 1.0.0
+version: 1
 key: SHB-317
-status: complete
-updated_at: 2026-06-26T08:00:00Z
+generated_at: 2026-06-26T08:00:00Z
+branch: SHB-317
+commit: abc123
+result: success
+summary: "Merged origin/development into SHB-317; 2 trivial resolutions; validation passed."
 ---
 
 # Merge Report: {target} ← {upstream}
@@ -186,6 +86,21 @@ updated_at: 2026-06-26T08:00:00Z
 {build log excerpt}
 ```
 
+## Confidence
+- Grade: {high | medium | low}
+
+### Verified
+- {claim with evidence}
+
+### Not verified
+- {claim}
+
+### Assumptions
+- {assumption}
+
+### Reasons
+- {why the grade; caps applied}
+
 ## Next steps
 {action items}
 ```
@@ -223,22 +138,3 @@ updated_at: 2026-06-26T08:00:00Z
 ### Backup cleanup
 
 Old backups under `.agents/context/merge-latest/backups/` may be removed after a configurable retention period (default 30 days) or when the number of backups exceeds a threshold.
-
----
-
-## State file specification
-
-Path: `.agents/context/merge-latest/{target}/state.md`
-
-Sections:
-
-- `## Run` — timestamp, upstream, target, remote, result
-- `## Branch Inference` — inferred upstream, confidence, method
-- `## Fetch` — remote refs fetched, local target fast-forward status
-- `## Commits` — upstream and target divergence lists
-- `## Files` — changed files on each side
-- `## Conflicts` — conflict classification and status
-- `## Resolutions` — what was resolved and why
-- `## Build` — build command and result
-- `## Decisions` — user decisions during the merge
-- `## Phase Checklist` — current progress

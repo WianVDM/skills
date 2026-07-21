@@ -21,7 +21,7 @@ Return a structured result:
 
 ```markdown
 ---
-status: complete
+status: complete | partial | needs_input | blocked
 ---
 
 ## Fetched refs
@@ -47,3 +47,4 @@ status: complete
 - Do not fast-forward a protected branch.
 - Prefer `<remote>/<upstream>` as the upstream ref for the merge.
 - Do not modify the working tree beyond a safe fast-forward of the target branch.
+- Return `needs_input` when you need the user; never ask the user directly. Wrap role-specific output in the canonical contract sections (see [SUBAGENTS.md](../references/SUBAGENTS.md)).

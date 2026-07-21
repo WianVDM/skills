@@ -21,7 +21,7 @@ Return a structured result:
 
 ```markdown
 ---
-status: complete
+status: complete | partial | needs_input | blocked
 ---
 
 ## Inferred Upstream
@@ -48,3 +48,4 @@ status: complete
 - Require **high** confidence before proceeding. If confidence is medium or low, or if two candidates are close, stop and ask the user.
 - Consider ticket-link hints: if the target branch name contains a ticket key, and a candidate branch name or its recent commits reference the same ticket, increase confidence slightly.
 - Do not modify the working tree.
+- Return `needs_input` when you need the user; never ask the user directly. Wrap role-specific output in the canonical contract sections (see [SUBAGENTS.md](../references/SUBAGENTS.md)).

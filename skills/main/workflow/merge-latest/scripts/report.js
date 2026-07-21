@@ -47,6 +47,31 @@ function formatFileList(files) {
   return files.map(f => `- ${f}`).join('\n');
 }
 
+function renderFrontmatter(data, now) {
+  // Shared context-reports envelope (see the context-reports skill schema):
+  // required skill/key/generated_at; repo-convention branch/commit; result is
+  // merge-latest-specific (allowed via additionalProperties).
+  const key = data.key || data.ticket || data.target;
+  const lines = [
+    '---',
+    'skill: merge-latest',
+    'version: 1',
+    `key: ${JSON.stringify(String(key))}`,
+    `generated_at: ${now}`,
+    `branch: ${JSON.stringify(String(data.target))}`,
+    `commit: ${JSON.stringify(String(data.targetCommit || 'unknown'))}`,
+    `result: ${JSON.stringify(String(data.result))}`,
+  ];
+  if (data.summary) {
+    lines.push(`summary: ${JSON.stringify(String(data.summary))}`);
+  }
+  if (data.statePath) {
+    lines.push('artifacts:', `  - ${data.statePath}`);
+  }
+  lines.push('---');
+  return lines.join('\n');
+}
+
 function renderReport(data) {
   const now = new Date().toISOString();
 
@@ -67,7 +92,9 @@ function renderReport(data) {
     return `### ${b.file}\n- Recommendation: ${b.recommendation}\n- Confidence: ${b.confidence}\n- Downstream risk: ${b.downstreamRisk}\n- Reason: ${b.reason}`;
   }).join('\n\n') || '_No deep investigation_';
 
-  return `# Merge Report: ${data.target} ← ${data.upstream}
+  return `${renderFrontmatter(data, now)}
+
+# Merge Report: ${data.target} ← ${data.upstream}
 
 ## Summary
 - Result: ${data.result}
@@ -112,9 +139,30 @@ ${investigationSection}
 ${data.buildOutput || 'N/A'}
 \`\`\`
 
+${renderConfidence(data.confidence)}
+
 ## Next steps
 ${data.nextSteps || 'Review the merge and push when ready.'}
 `;
+}
+
+function renderConfidence(confidence) {
+  if (!confidence) return '_Not assessed._';
+  const list = (items) => (items && items.length ? items.map(i => `- ${i}`).join('\n') : '- _None_');
+  return `## Confidence
+- Grade: ${confidence.grade || 'unknown'}
+
+### Verified
+${list(confidence.verified)}
+
+### Not verified
+${list(confidence.notVerified)}
+
+### Assumptions
+${list(confidence.assumptions)}
+
+### Reasons
+${list(confidence.reasons)}`;
 }
 
 function renderChatSummary(data) {
@@ -124,6 +172,11 @@ function renderChatSummary(data) {
     `- Trivial resolutions: ${(data.trivialResolutions || []).length}`,
     `- Build: ${data.build || 'not run'}`,
   ];
+
+  if (data.confidence && data.confidence.grade) {
+    const firstReason = (data.confidence.reasons || [])[0];
+    lines.push(`- Confidence: ${data.confidence.grade}${firstReason ? ` — ${firstReason}` : ''}`);
+  }
 
   const semantic = (data.conflicts || []).filter(c => c.classification === 'semantic' && c.resolution !== 'resolved');
   if (semantic.length > 0) {

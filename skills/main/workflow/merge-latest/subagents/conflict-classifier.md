@@ -22,7 +22,7 @@ Return a structured result:
 
 ```markdown
 ---
-status: complete
+status: complete | partial | needs_input | blocked
 ---
 
 ## Conflicts
@@ -45,3 +45,4 @@ status: complete
 - Review conflicts: lockfiles, generated files, or files flagged in project notes.
 - Feed all `semantic` and `review` conflicts to `conflict-investigator` for deeper analysis.
 - Do not modify files.
+- Return `needs_input` when you need the user; never ask the user directly. Wrap role-specific output in the canonical contract sections (see [SUBAGENTS.md](../references/SUBAGENTS.md)).

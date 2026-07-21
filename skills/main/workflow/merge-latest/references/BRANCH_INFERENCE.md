@@ -86,26 +86,14 @@ git rev-list --count abc123..SHB-315   # → 0
 git rev-list --count abc123..SHB-317   # → 8
 ```
 
-`SHB-315` is the inferred base because it is an ancestor and has a strongly related name. The skill prefers the remote tracking ref `origin/SHB-315` for freshness.
-
-## Example with stacked features
-
-Branch `OC-4964` was branched from `OC-3626`, which is itself a feature branch:
-
-```text
-git merge-base OC-4964 OC-3626  # → abc123
-git rev-list --count abc123..OC-3626   # → 0
-git rev-list --count abc123..OC-4964   # → 5
-```
-
-`OC-3626` is the inferred base. A project note such as "stacked features for OC-3626 base on OC-3626" strengthens confidence and helps distinguish it from `origin/development`.
+`SHB-315` is the inferred base because it is an ancestor and has a strongly related name. The skill prefers the remote tracking ref `origin/SHB-315` for freshness. A project note such as "stacked features for SHB-315 base on SHB-315" strengthens confidence and helps distinguish the stacked base from the configured default base.
 
 ## Persistence
 
-Record inferred base in state:
+Record inferred bases in the state's `Branch Inference` owner section (see [CHECKPOINTING.md](CHECKPOINTING.md)):
 
 ```markdown
-## Branch Inference History
+## Branch Inference
 | Branch | Inferred Base | Confidence | Method | Date |
 |--------|---------------|------------|--------|------|
 | SHB-317 | origin/SHB-315 | high | history + name-similarity | 2026-06-29 |

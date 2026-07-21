@@ -28,15 +28,15 @@ Checkpointing is always used, but it is especially important when:
 
 ## State file
 
-The state file at `.agents/context/merge-latest/{target}/state.md` follows the [`checkpoint`](../../../../blocks/project/checkpoint/SKILL.md) state schema and is maintained through its `create`, `update`, `resume`, and `validate` operations. `merge-latest` supplies the phases above and:
+The state file at `.agents/context/merge-latest/{target}/state.md` follows the `checkpoint` skill's state schema and is maintained through its `create`, `update`, `resume`, and `validate` operations. `merge-latest` supplies the phases above and:
 
 - **Owner frontmatter**: `target`, `upstream`, `status`.
 - **Owner sections**: Branch Inference, Conflicts, Resolutions, Build.
 
 ```markdown
 ## Branch Inference
-| Branch | Inferred Base | Confidence | Confirmed By | Date |
-|--------|---------------|------------|--------------|------|
+| Branch | Inferred Base | Confidence | Method | Date |
+|--------|---------------|------------|--------|------|
 | OC-4964 | OC-3626 | high | history | 2026-06-26 |
 
 ## Conflicts

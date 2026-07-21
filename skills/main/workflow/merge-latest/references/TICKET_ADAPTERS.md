@@ -1,39 +1,24 @@
 # Ticket Adapters
 
-`merge-latest` can enrich branch and conflict context with ticket information. Adapters are modular and project-specific via config.
+`merge-latest` can enrich branch and conflict context with ticket information. Jira enrichment is consumed from the shared building blocks; other trackers use the private adapters below.
 
-## Configuring an adapter
+## Jira via the shared blocks
 
-Set the adapter in `.agents/config/merge-latest.yaml`:
-
-```yaml
-ticket_tracker_adapter: jira   # jira | github | linear | asana | custom
-ticket_key_pattern: "[A-Z]+-\\d+"
-```
-
-Each adapter reads credentials from environment variables or the harness secret store; never from the config file.
-
-## Built-in adapter examples
-
-### Jira
+When `ticket_tracker_adapter: jira`, the skill delegates to the `jira-adapter` skill, which resolves the ticket and returns the normalized issue-tracker shape (summary, status, acceptance criteria, links). Credentials are resolved through the `token-resolver` skill — never read from config files and never asked for inside this skill.
 
 ```yaml
 ticket_tracker_adapter: jira
+ticket_key_pattern: "[A-Z]+-\\d+"
 jira:
   base_url: https://your-domain.atlassian.net
   project_key: SHB
 ```
 
-Used for:
+Used for resolving ticket keys from branch names, fetching ticket summary/status/linked PRs, and enriching commit context with ticket intent.
 
-- Resolving ticket keys from branch names.
-- Fetching ticket summary, status, and linked PRs.
-- Enriching commit context with ticket intent.
+If `jira-adapter` or `token-resolver` is not installed, the skill degrades to git metadata and discloses it (see [CAPABILITIES.md](CAPABILITIES.md#degraded-enrichment-disclosure)).
 
-Required environment:
-
-- `JIRA_API_TOKEN` or `JIRA_TOKEN`
-- `JIRA_USER_EMAIL` (if using basic auth)
+## Private adapters (trackers the blocks do not cover)
 
 ### GitHub Issues
 
@@ -44,14 +29,7 @@ github:
   repo: my-repo
 ```
 
-Used for:
-
-- Mapping branch names or commit messages to issue numbers.
-- Reading issue labels, milestones, and linked PRs.
-
-Required environment:
-
-- `GITHUB_TOKEN`
+Used for mapping branch names or commit messages to issue numbers and reading labels, milestones, and linked PRs. Environment: `GITHUB_TOKEN` (resolve via `token-resolver` when available).
 
 ### Linear
 
@@ -61,14 +39,7 @@ linear:
   team_key: ENG
 ```
 
-Used for:
-
-- Resolving `ENG-123` style keys.
-- Fetching issue state and assignee.
-
-Required environment:
-
-- `LINEAR_API_KEY`
+Used for resolving `ENG-123` style keys and fetching issue state and assignee. Environment: `LINEAR_API_KEY`.
 
 ### Asana
 
@@ -78,14 +49,7 @@ asana:
   project_gid: "1200000000000000"
 ```
 
-Used for:
-
-- Resolving task URLs or custom identifiers.
-- Fetching task status, assignee, and due date.
-
-Required environment:
-
-- `ASANA_ACCESS_TOKEN`
+Used for resolving task URLs or custom identifiers and fetching task status, assignee, and due date. Environment: `ASANA_ACCESS_TOKEN`.
 
 ## Custom adapter
 
@@ -116,5 +80,5 @@ If `error` is non-null, the skill logs the failure and continues without ticket 
 
 - Adapters are read-only. They must not modify code, tickets, or state.
 - Adapters return structured JSON.
-- Missing or broken adapters are not hard stops; the skill falls back to git metadata.
-- Keep credential references out of skill files and config; use environment variables.
+- Missing or broken adapters are not hard stops; the skill falls back to git metadata and discloses the degradation (see [CAPABILITIES.md](CAPABILITIES.md#degraded-enrichment-disclosure)).
+- Keep credential references out of skill files and config; resolve them through `token-resolver` or environment variables.

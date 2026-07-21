@@ -21,7 +21,7 @@ Return a structured result:
 
 ```markdown
 ---
-status: complete
+status: complete | partial | needs_input | blocked
 ---
 
 ## Merge Metadata
@@ -58,3 +58,4 @@ status: complete
 - Use the resolved remote ref for upstream so the merge preview reflects the latest fetched state.
 - If Node.js is unavailable, return `status: blocked` and explain.
 - Do not modify the working tree.
+- Return `needs_input` when you need the user; never ask the user directly. Wrap role-specific output in the canonical contract sections (see [SUBAGENTS.md](../references/SUBAGENTS.md)).

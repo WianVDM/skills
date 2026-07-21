@@ -22,7 +22,7 @@ Return a structured result:
 
 ```markdown
 ---
-status: complete
+status: complete | partial | needs_input | blocked
 ---
 
 ## Conflict Briefs
@@ -46,6 +46,14 @@ status: complete
 {apply safe resolutions | pause and ask user}
 ```
 
+## Re-review mode (verification tier 2)
+
+When the parent calls you after resolutions have been applied, re-read each resolution against the final working tree and your original briefs:
+
+- Confirm both sides' intent survived the resolution — the target's feature still works as designed and the upstream change is still effective.
+- Flag any resolution where intent was lost, with the file and the original brief as evidence.
+- This is judgment work, not command execution; report per-resolution verdicts (`intent preserved | intent lost | unclear`).
+
 ## Rules
 
 - For each conflicted file, run `scripts/conflict-brief.js --file <file> --base <base> --target <target> --upstream <upstream>`.
@@ -56,4 +64,5 @@ status: complete
 - Recommend `combine` only for non-overlapping additions with low downstream risk.
 - Only recommend auto-resolve when **both** confidence is high **and** downstream risk is low.
 - If a ticket adapter is configured, enrich commit context with ticket titles and status; do not block if the adapter is unavailable.
-- Do not modify files.
+- Do not modify files. In re-review mode, report verdicts only.
+- Return `needs_input` when you need the user; never ask the user directly. Wrap role-specific output in the canonical contract sections (see [SUBAGENTS.md](../references/SUBAGENTS.md)).

@@ -19,16 +19,16 @@ remote: origin
 # Default base branch when inference fails or no history is available
 default_base_branch: origin/development
 
-# Branches the skill refuses to modify
+# Branches the skill refuses to modify. Behavior is always hard-refuse;
+# there is no warn/confirm override.
 protected_branches:
   - main
   - development
   - master
-protected_branch_behavior: refuse    # refuse | warn-require-confirm
 
-# Merge strategy
+# Merge strategy. `prefer_rebase` was removed; migrate `prefer_rebase: true`
+# to `merge_strategy: rebase-if-clean`.
 merge_strategy: merge                # merge | rebase-if-clean | ask
-prefer_rebase: false
 
 # Validation pipeline
 validation:
@@ -38,7 +38,15 @@ validation:
       command: npm run build
   timeout_seconds: 600
 
+# Verification tiers (see VALIDATION.md). The pipeline above is tier 1.
+verification:
+  mode: ask                          # ask | auto — confirm the tier at the pre-merge gate
+  max_tier: interactive              # pipeline | re-review | interactive (ceiling)
+  dev_server_url: null               # e.g. http://localhost:3000 — never guessed
+  ui_tool: auto                      # auto | repo-suite | playwright-mcp | manual
+
 # Legacy build command (migrated to validation.commands on first run)
+# Deprecated — removal planned in a future version.
 build_command: auto                  # auto | custom | deprecated
 custom_build_command: null
 

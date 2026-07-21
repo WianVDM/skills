@@ -31,21 +31,17 @@
  *   }
  */
 
-const { execSync } = require('child_process');
+const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-function quote(str) {
-  return '"' + String(str).replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
+function git(args, opts = {}) {
+  return execFileSync('git', args, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'], ...opts }).trim();
 }
 
-function run(cmd, opts = {}) {
-  return execSync(cmd, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'], ...opts }).trim();
-}
-
-function runSilent(cmd) {
+function gitSilent(args) {
   try {
-    return run(cmd);
+    return git(args);
   } catch (err) {
     return '';
   }
@@ -68,15 +64,15 @@ function parseArgs() {
 
 function getVersion(ref, file) {
   try {
-    return run(`git show ${quote(ref)}:${quote(file)}`);
+    return git(['show', `${ref}:${file}`]);
   } catch (err) {
     return null;
   }
 }
 
 function getCommits(base, head, file) {
-  const output = runSilent(
-    `git log --format='%H%x09%s%x09%ae' ${quote(base)}..${quote(head)} -- ${quote(file)}`
+  const output = gitSilent(
+    ['log', '--format=%H%x09%s%x09%ae', `${base}..${head}`, '--', file]
   );
   if (!output) return [];
   return output.split('\n').map(line => {

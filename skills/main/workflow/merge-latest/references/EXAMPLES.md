@@ -1,23 +1,6 @@
 # Examples
 
-## Clean merge
-
-```
-/merge-latest
-```
-
-Result:
-- Inferred base `origin/development` merges cleanly into current branch.
-- No conflicts.
-- Build passes.
-- Report saved to `.agents/context/merge-latest/{branch}-merge-report.md`.
-
-Chat summary:
-> **Merge complete: `{branch}` ← `origin/development`**
-> - Commits introduced: 12
-> - Conflicts: 0
-> - Build: passed
-> - Next: review and push
+Clean merges and validation-failure aborts are covered by the evals in `evals/evals.json`; the examples below show the branches evals do not cover.
 
 ## Inferred base branch
 
@@ -57,24 +40,6 @@ Chat summary:
 >   - Target changed: line 50–58, unmerged local work
 > - Build: not run (merge incomplete)
 > - Resolve the semantic conflict, then continue manually.
-
-## Aborted merge after build failure
-
-```
-/merge-latest
-```
-
-Result:
-- Merge applies cleanly.
-- Build fails with a TypeScript error in a merged file.
-- Skill aborts the merge.
-
-Chat summary:
-> **Merge aborted: `{branch}` ← `origin/development`**
-> - Merge applied cleanly but the build failed.
-> - Error: `TS2345: Argument of type 'X' is not assignable to parameter of type 'Y'` in `src/app/shared/baz.ts`
-> - The merge was aborted. A backup exists at `.agents/context/merge-latest/backups/{branch}-{timestamp}`.
-> - Next: inspect the upstream changes to `baz.ts`, fix the incompatibility, then retry.
 
 ## Semantic conflict with investigation pause
 

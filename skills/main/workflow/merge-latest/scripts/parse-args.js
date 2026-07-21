@@ -16,18 +16,26 @@
  *     emit an error.
  *   - More than two positional arguments is an error.
  *   - `--stash` is a boolean flag.
+ *   - Branch flags `--preview`, `--continue`, `--status`, `--abort` are
+ *     recognized and passed through as `branch`; they carry no to/from values.
+ *     Combining two branch flags is an error.
  *
  * Outputs JSON to stdout:
- *   { to: string | null, from: string | null, stash: boolean, errors: string[] }
+ *   { to: string | null, from: string | null, stash: boolean,
+ *     branch: "merge" | "preview" | "continue" | "status" | "abort",
+ *     errors: string[] }
  *
  * Exits non-zero if errors is non-empty.
  */
+
+const BRANCH_FLAGS = ['--preview', '--continue', '--status', '--abort'];
 
 function parseArgs(tokens) {
   const named = { to: null, from: null };
   const positionals = [];
   const errors = [];
   let stash = false;
+  let branch = 'merge';
 
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i];
@@ -56,6 +64,16 @@ function parseArgs(tokens) {
 
     if (token === '--stash') {
       stash = true;
+      continue;
+    }
+
+    if (BRANCH_FLAGS.includes(token)) {
+      const flag = token.replace(/^--/, '');
+      if (branch !== 'merge') {
+        errors.push(`Conflicting branch flags: --${branch} and ${token}; use one`);
+      } else {
+        branch = flag;
+      }
       continue;
     }
 
@@ -98,7 +116,7 @@ function parseArgs(tokens) {
     from = positionalFrom;
   }
 
-  return { to, from, stash, errors };
+  return { to, from, stash, branch, errors };
 }
 
 function main() {

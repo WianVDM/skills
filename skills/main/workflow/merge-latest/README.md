@@ -20,7 +20,7 @@ merge-latest/
 ├── SKILL.md                        # main skill instructions
 ├── README.md                       # this file
 ├── references/
-│   ├── REFERENCE.md                # full workflow, decision matrix, report format
+│   ├── REFERENCE.md                # decision detail, report format sketch, cleanup procedures
 │   ├── CONFIG_PATTERN.md           # config + notes pattern
 │   ├── CAPABILITIES.md             # VCS, remote, authentication, binary files, script detection
 │   ├── CONTEXT_REPORTS.md          # output locations and context-reports pattern
@@ -28,6 +28,7 @@ merge-latest/
 │   ├── CHECKPOINTING.md            # incremental state + resume rules
 │   ├── VALIDATION.md               # merge validation command pipeline
 │   ├── BRANCH_INFERENCE.md         # upstream branch inference
+│   ├── MERGE_INTELLIGENCE.md       # two-layer recon, pre-merge brief, interaction risk
 │   ├── CONFLICT_ANALYSIS.md        # deep conflict investigation workflow
 │   ├── MERGE_VS_REBASE.md          # when to consider rebase
 │   ├── EXAMPLES.md                 # example merges
@@ -37,17 +38,20 @@ merge-latest/
 │   ├── parse-args.js               # parse invocation tokens
 │   ├── infer-base.js               # score base-branch candidates
 │   ├── conflict-brief.js           # extract conflict versions and context
-│   ├── recon.js                    # gather merge metadata
+│   ├── recon.js                    # gather merge metadata and conflict preview
+│   ├── recon.smoke-test.js         # verify recon conflict preview against fixture repos
+│   ├── change-summary.js           # extract timelines, overlap, hotspots for the pre-merge brief
 │   ├── resolve-trivial.js          # safe trivial conflict resolution
-│   └── report.js                   # report and chat summary generation
+│   └── report.js                   # report, chat summary, confidence block generation
 └── subagents/
     ├── latest-fetcher.md           # fetch remote refs and fast-forward target
     ├── branch-researcher.md        # investigate branch relationships
     ├── preflight-checker.md        # pre-flight validation
     ├── recon-runner.md             # run reconnaissance
+    ├── change-summarizer.md        # pre-merge brief: timelines, interaction risk, tier proposal
     ├── conflict-classifier.md      # classify conflicts
-    ├── conflict-investigator.md    # deep conflict investigation
-    ├── validation-runner.md        # run the validation command pipeline
+    ├── conflict-investigator.md    # deep conflict investigation and resolution re-review
+    ├── validation-runner.md        # run verification tiers
     └── report-writer.md            # compile report
 ```
 
@@ -64,30 +68,9 @@ merge-latest/
 - Rebase is only used with explicit user approval.
 - Old backups are cleaned up periodically.
 
-## Usage
+## Usage and options
 
-```text
-/merge-latest
-/merge-latest --preview
-/merge-latest --continue
-/merge-latest --status
-/merge-latest --abort
-/merge-latest --stash
-/merge-latest <target-branch>
-/merge-latest <target-branch> <upstream-branch>
-/merge-latest --to <target-branch> --from <upstream-branch>
-/merge-latest --from <upstream-branch>
-```
-
-## Options
-
-- `--preview`: Show the plan without applying changes.
-- `--continue`: Resume a paused merge from state.
-- `--status`: Show current merge state without modifying.
-- `--abort`: Abort the in-progress merge and restore the pre-merge state.
-- `--stash`: Allow stashing a dirty working tree before checkout.
-- `--to <branch>`: Explicit target branch.
-- `--from <branch>`: Explicit upstream branch.
+See `SKILL.md` — the branch entry table and argument handling sections are canonical for invocation forms, branch flags (`--preview`, `--continue`, `--status`, `--abort`), `--to`/`--from`, and `--stash`.
 
 ## Updating this skill
 

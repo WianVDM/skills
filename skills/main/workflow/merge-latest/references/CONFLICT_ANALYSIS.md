@@ -32,15 +32,7 @@ Deep investigation is triggered when any of these is true:
 
 ## Preserve-vs-overwrite assessment
 
-Default assumption: preserve target-side changes.
-
-Prefer upstream side when:
-
-- Commit message indicates fix, revert, hotfix, or security patch.
-- Upstream change is from a protected branch and was made **after** the target was created.
-- Upstream change resolves a known bug or security issue documented in a linked ticket.
-
-When uncertain, recommend `ask`.
+Apply the preserve-vs-overwrite policy from `SKILL.md` (canonical). The investigator's job is to supply the evidence for it: commit-message signals, branch provenance and timing, and linked-ticket context. When uncertain, recommend `ask`.
 
 ## Auto-resolve rules
 

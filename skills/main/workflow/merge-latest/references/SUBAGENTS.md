@@ -2,26 +2,9 @@
 
 `merge-latest` delegates focused tasks to workers. The main skill orchestrates and integrates results.
 
-## Standard worker return format
+## Worker return contract
 
-Workers should return structured markdown:
-
-```markdown
----
-status: complete
----
-
-## Summary
-Brief summary.
-
-## Findings
-Structured findings.
-
-## Recommended Next Action
-What the main agent should do next.
-```
-
-Status values: `complete`, `in-progress`, `blocked`.
+All workers follow the canonical `worker-contract` skill's return contract: status `complete | partial | needs_input | blocked`, an artifacts list in the frontmatter, and the standard Summary / Findings / Decisions made / Open questions / Blockers sections. Workers never ask the user directly; they return `needs_input` and the main skill owns user interaction. Worker files below add role-specific output fields on top of the contract.
 
 ## Subagents
 
@@ -31,6 +14,7 @@ Status values: `complete`, `in-progress`, `blocked`.
 | `branch-researcher` | Investigate branch relationships and infer the upstream branch with high confidence. |
 | `preflight-checker` | Run pre-flight validation checks, including checkout and stash handling. |
 | `recon-runner` | Run reconnaissance and gather merge metadata using resolved remote refs. |
+| `change-summarizer` | Produce the pre-merge brief: timelined change summaries, interaction risk assessment, proposed verification tier. |
 | `conflict-classifier` | Classify each conflict as trivial, semantic, or review. |
 | `conflict-investigator` | Deep analysis of complex conflicts; produces per-file briefs and safe recommendations. |
 | `validation-runner` | Run the user-configured validation command pipeline. |

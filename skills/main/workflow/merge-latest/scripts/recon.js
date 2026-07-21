@@ -8,16 +8,17 @@
  *   node recon.js --upstream origin/development --target my-branch [--remote origin]
  *
  * Outputs JSON to stdout with merge metadata and a conflict preview.
+ *
+ * Conflict preview requires git >= 2.38 (two-commit `git merge-tree --write-tree`
+ * form). On older git the preview degrades explicitly: `status: "degraded"`,
+ * `wouldConflict: null`. Callers must treat a degraded preview as "conflicts
+ * possible" and use no-commit mode.
  */
 
-const { execSync } = require('child_process');
+const { execFileSync } = require('child_process');
 
-function quote(str) {
-  return '"' + String(str).replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
-}
-
-function run(cmd, opts = {}) {
-  return execSync(cmd, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'], ...opts }).trim();
+function git(args, opts = {}) {
+  return execFileSync('git', args, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'], ...opts }).trim();
 }
 
 function parseArgs() {
@@ -36,20 +37,20 @@ function resolveBranches(args) {
     throw new Error('--upstream is required');
   }
   const upstream = args.upstream;
-  const target = args.target || run('git rev-parse --abbrev-ref HEAD');
+  const target = args.target || git(['rev-parse', '--abbrev-ref', 'HEAD']);
   const remote = args.remote || detectRemote();
   return { upstream, target, remote };
 }
 
 function detectRemote() {
-  const remotes = run('git remote').split('\n').filter(Boolean);
+  const remotes = git(['remote']).split('\n').filter(Boolean);
   if (remotes.includes('origin')) return 'origin';
   if (remotes.length === 1) return remotes[0];
   return null;
 }
 
 function getCommits(base, head) {
-  const output = run(`git log --format='%H%x09%s' --first-parent ${quote(base)}..${quote(head)}`);
+  const output = git(['log', '--format=%H%x09%s', '--first-parent', `${base}..${head}`]);
   if (!output) return [];
   return output.split('\n').map(line => {
     const [hash, ...subjectParts] = line.split('\t');
@@ -58,44 +59,49 @@ function getCommits(base, head) {
 }
 
 function getFiles(base, head) {
-  const output = run(`git diff --name-only --merge-base ${quote(base)} ${quote(head)}`);
+  const output = git(['diff', '--name-only', '--merge-base', base, head]);
   if (!output) return [];
   return output.split('\n').filter(Boolean);
 }
 
+/**
+ * Conflict preview via `git merge-tree --write-tree --no-messages --name-only
+ * <upstream> <target>` (git >= 2.38).
+ *
+ * Exit 0: clean merge, stdout is the would-be tree OID.
+ * Exit 1: conflicts, stdout is the tree OID followed by conflicted file paths.
+ * Exit 129 (usage error) or other spawn failure: git is too old or the form is
+ * unsupported — degrade explicitly instead of guessing.
+ */
 function getConflictPreview(upstream, target) {
-  const base = run(`git merge-base ${quote(upstream)} ${quote(target)}`);
-  let treeOutput;
+  const base = git(['merge-base', upstream, target]);
+  const args = ['merge-tree', '--write-tree', '--no-messages', '--name-only', upstream, target];
   try {
-    treeOutput = run(`git merge-tree --write-tree --no-messages ${quote(base)} ${quote(upstream)} ${quote(target)}`);
+    git(args);
+    return { mergeBase: base, status: 'clean', wouldConflict: false, conflictedFiles: [] };
   } catch (err) {
-    // Older git or other failure; fall back to traditional merge-tree.
-    treeOutput = run(`git merge-tree ${quote(base)} ${quote(upstream)} ${quote(target)}`);
-  }
-
-  const lines = treeOutput.split('\n').filter(Boolean);
-  const conflictedFiles = [];
-
-  for (const line of lines) {
-    // Modern git merge-tree --write-tree emits lines like:
-    //   conflict <path>
-    if (line.startsWith('conflict ')) {
-      conflictedFiles.push(line.replace('conflict ', ''));
-      continue;
+    if (err.status === 1) {
+      const lines = String(err.stdout || '').split('\n').map(l => l.trim()).filter(Boolean);
+      // First line is the tree OID; the rest are conflicted file paths.
+      const conflictedFiles = lines.slice(1);
+      return {
+        mergeBase: base,
+        status: 'conflicts',
+        wouldConflict: true,
+        conflictedFiles: [...new Set(conflictedFiles)],
+      };
     }
-    // Traditional merge-tree emits conflict markers in diff hunks.
-    // We detect the file path from lines like "+++ <path>".
-    const match = line.match(/^\+\+\+ ([^\s]+)/);
-    if (match && treeOutput.includes(`<<<<<<< ${match[1]}`)) {
-      conflictedFiles.push(match[1]);
+    if (err.status === 129 || err.code === 'ENOENT') {
+      return {
+        mergeBase: base,
+        status: 'degraded',
+        degradedReason: 'conflict preview requires git >= 2.38 (merge-tree --write-tree two-commit form)',
+        wouldConflict: null,
+        conflictedFiles: [],
+      };
     }
+    throw err;
   }
-
-  return {
-    mergeBase: base,
-    wouldConflict: conflictedFiles.length > 0,
-    conflictedFiles: [...new Set(conflictedFiles)],
-  };
 }
 
 function main() {
@@ -113,14 +119,16 @@ function main() {
       upstream,
       target,
       remote,
-      upstreamCommit: run(`git rev-parse ${upstream}`),
-      targetCommit: run(`git rev-parse ${target}`),
+      upstreamCommit: git(['rev-parse', upstream]),
+      targetCommit: git(['rev-parse', target]),
       mergeBase: preview.mergeBase,
       upstreamCommits,
       targetCommits,
       upstreamFiles,
       targetFiles,
       conflictPreview: {
+        status: preview.status,
+        degradedReason: preview.degradedReason,
         wouldConflict: preview.wouldConflict,
         conflictedFiles: preview.conflictedFiles,
       },

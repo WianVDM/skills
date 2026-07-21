@@ -2,9 +2,6 @@
 name: merge-latest
 description: Merge the latest upstream branch into the correct target branch safely. Classifies conflicts as trivial, semantic, or review; resolves only trivial ones automatically; validates the merge with a user-configured command pipeline; and produces a report. Use when the user says '/merge-latest', 'merge latest', 'merge upstream', or wants to sync a feature branch before opening a PR.
 invocation: user-invoked
-depends:
-  - context-reports
-  - checkpoint
 ---
 
 # Merge Latest
@@ -21,9 +18,13 @@ Conductor.
 
 - Parse merge arguments and resolve the target and upstream branches.
 - Fetch remote state and fast-forward the local target branch when safe.
+- Produce a pre-merge brief: timelined change summaries of both branches and an interaction risk assessment.
+- Present the pre-merge gate and wait for user confirmation when conflicts or interaction risks exist.
 - Classify conflicts as trivial, semantic, or review.
 - Resolve only trivial conflicts automatically.
 - Run a user-configured validation command pipeline before completing the merge.
+- Scale verification with merge risk: resolution re-review for semantic resolutions, interactive UI verification (pre-commit) for UI-path conflicts and interaction risks.
+- Report an evidence-based confidence grade and wait for user acknowledgment.
 - Pause on semantic conflicts and review-file conflicts for user input.
 - Abort the merge if validation fails.
 - Produce a merge report and checkpoint state for resumption.
@@ -41,8 +42,9 @@ Conductor.
 
 - No changes are pushed.
 - The target branch is never a protected branch.
-- A merge is only committed if the validation pipeline passes.
+- A merge is only committed if every active verification tier passes.
 - Every non-trivial resolution is recorded with a reason.
+- The report's confidence grade is capped by rule when evidence is missing; it is never inflated.
 - State is checkpointed so a paused merge can be resumed.
 
 ## When to use
@@ -58,7 +60,7 @@ Conductor.
 | Branch | Trigger | Outcome |
 |---|---|---|
 | **merge** | `/merge-latest` (default) | Run the full merge workflow. |
-| **preview** | `/merge-latest --preview` | Show the plan without applying changes. |
+| **preview** | `/merge-latest --preview` | Run recon and the pre-merge brief; show the plan, predicted conflict map, and proposed verification tier without applying changes. |
 | **continue** | `/merge-latest --continue` | Resume a paused merge from state. |
 | **status** | `/merge-latest --status` | Show current merge state without modifying. |
 | **abort** | `/merge-latest --abort` | Abort the in-progress merge and restore state. |
@@ -66,6 +68,8 @@ Conductor.
 **Completion criterion:** the branch is one of {merge, preview, continue, status, abort} and the user has confirmed or corrected the default.
 
 ## Argument handling (merge branch only)
+
+Branch selection comes from the branch-entry table above. `scripts/parse-args.js` recognizes the four branch flags (`--preview`, `--continue`, `--status`, `--abort`) and passes them through as `branch`; the steps below parse `to`/`from`/`stash` for the merge branch.
 
 1. Parse tokens with `scripts/parse-args.js`.
 2. Supported forms:
@@ -132,17 +136,20 @@ STOP and ask the user if any of these are true:
 6. **Pre-flight checks** — delegate to `preflight-checker`.
 7. **Checkpoint** — record the start of the run.
 8. **Reconnaissance** — delegate to `recon-runner` using resolved remote refs.
-9. **Backup** — create a backup of current HEAD.
-10. **Merge** — attempt merge. If conflicts are expected, use no-commit mode.
-11. **Classify conflicts** — delegate to `conflict-classifier`.
-12. **Investigate conflicts** — for semantic or review conflicts, delegate to `conflict-investigator`.
-13. **Resolve trivial conflicts** — apply only safe resolutions with `scripts/resolve-trivial.js`.
-14. **Pause on semantic conflicts** — stop and present context. Do not guess.
-15. **Surface review files** — lockfiles and generated files are classified as `review`; ask the user.
-16. **Surface binary files** — binary file conflicts are classified as `review`; ask the user.
-17. **Run validation pipeline** — delegate to `validation-runner`.
-18. **Report** — delegate to `report-writer`.
-19. **Update state** — record run, inferences, resolutions, validation result, and decisions.
+9. **Pre-merge brief** — delegate to `change-summarizer`: timelined change summaries, interaction risk assessment, proposed verification tier; persist the brief.
+10. **Pre-merge gate** — present the brief, predicted conflict map, and proposed verification tier; wait for go. Mandatory when conflicts are predicted, the preview is degraded, or interaction risks are flagged.
+11. **Backup** — create a backup of current HEAD. If the brief flagged UI-path collisions or interaction risks, capture a pre-merge UI baseline via the `baseline` skill when available; disclose and note the degradation when not.
+12. **Merge** — attempt merge. If conflicts are expected or the conflict preview is degraded, use no-commit mode.
+13. **Classify conflicts** — delegate to `conflict-classifier`.
+14. **Investigate conflicts** — for semantic or review conflicts, delegate to `conflict-investigator`.
+15. **Resolve trivial conflicts** — apply only safe resolutions with `scripts/resolve-trivial.js`.
+16. **Pause on semantic conflicts** — stop and present context. Do not guess.
+17. **Surface review files** — lockfiles and generated files are classified as `review`; ask the user.
+18. **Surface binary files** — binary file conflicts are classified as `review`; ask the user.
+19. **Run verification** — at the confirmed tier: the configured pipeline (always, via `validation-runner`); resolution re-review when semantic resolutions exist (via `conflict-investigator`); interactive UI verification when UI-path conflicts or interaction risks were flagged (pre-commit, via `validation-runner`, against the baseline when one exists). All tiers run pre-commit; the merge commits only when every tier passes.
+20. **Report** — delegate to `report-writer`; the report includes the confidence block.
+21. **Present confidence** — show the confidence block and wait for acknowledgment; on rejection, offer the restore-from-backup path.
+22. **Update state** — record run, inferences, resolutions, verification results, confidence grade, and decisions.
 
 ## Incremental output and checkpointing
 
@@ -223,7 +230,7 @@ Default strategy is **merge**. Rebase is considered only if:
 - The branch has not been shared.
 - History is clean and linear.
 - No semantic conflicts are expected.
-- User config `prefer_rebase: true`.
+- User config `merge_strategy: rebase-if-clean`.
 
 Rebase always requires explicit user approval.
 
@@ -231,20 +238,13 @@ See [references/MERGE_VS_REBASE.md](references/MERGE_VS_REBASE.md).
 
 ## Authentication and private remotes
 
-If the remote is private or requires authentication:
-
-1. Prefer SSH keys or credential helpers.
-2. If `git fetch` fails with an authentication error, stop and explain.
-3. Do not ask for credentials directly; direct the user to configure git authentication.
-
-See [references/CAPABILITIES.md](references/CAPABILITIES.md).
+If `git fetch` fails with an authentication error, stop and explain. The skill never asks for credentials directly; see [references/CAPABILITIES.md](references/CAPABILITIES.md) (canonical) for the detection and fallback rules.
 
 ## Output location
 
 ```text
 .agents/context/merge-latest/
 ├── {target}-merge-report.md
-├── {target}-merge-state.md
 └── {target}/
     └── state.md          # canonical state (preferred)
 ```
@@ -262,10 +262,11 @@ Old backups may be cleaned up periodically.
 Stop and consult the user if:
 
 - Pre-flight checks fail.
+- Predicted conflicts or interaction risks exist and the user has not confirmed the pre-merge gate.
 - The upstream branch cannot be inferred.
 - A semantic conflict is found.
 - A review file conflict is found.
-- The validation pipeline fails.
+- Any verification tier fails (validation pipeline, re-review, or interactive UI verification).
 - The working tree has unresolved state after a resolution attempt.
 
 ## Rules
@@ -293,6 +294,7 @@ See [references/DEPENDENCIES.md](references/DEPENDENCIES.md).
 - [Reports and context](references/CONTEXT_REPORTS.md)
 - [Subagent delegation](references/SUBAGENTS.md)
 - [Branch inference](references/BRANCH_INFERENCE.md)
+- [Merge intelligence](references/MERGE_INTELLIGENCE.md)
 - [Conflict analysis](references/CONFLICT_ANALYSIS.md)
 - [Merge validation pipeline](references/VALIDATION.md)
 - [Merge vs rebase](references/MERGE_VS_REBASE.md)

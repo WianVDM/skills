@@ -277,10 +277,16 @@
     },
     "merge-latest": {
       "required": [
-        "checkpoint"
+        "checkpoint",
+        "worker-contract"
       ],
       "recommended": [
-        "context-reports"
+        "context-reports",
+        "jira-adapter",
+        "token-resolver"
+      ],
+      "optional": [
+        "baseline"
       ]
     },
     "orchestrate": {

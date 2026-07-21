@@ -13,10 +13,19 @@
 ## Required skills
 
 - `checkpoint` — owns the state file schema and phase-checklist operations for pause/resume.
+- `worker-contract` — canonical return contract embedded in all worker prompts (see SUBAGENTS.md).
 
 ## Recommended skills
 
-- `context-reports` — the skill produces structured merge reports that follow the context-reports conventions.
+- `context-reports` — the skill produces structured merge reports that follow the context-reports shared envelope.
+- `jira-adapter` — Jira ticket enrichment when `ticket_tracker_adapter: jira`.
+- `token-resolver` — credential resolution for ticket adapters.
+
+Missing recommended skills degrade to git metadata with disclosure; see CAPABILITIES.md.
+
+## Optional skills
+
+- `baseline` — pre/post UI snapshots for the interactive verification tier. When absent, the tier falls back to un-baselined checks with disclosure.
 
 ## Optional MCP servers
 

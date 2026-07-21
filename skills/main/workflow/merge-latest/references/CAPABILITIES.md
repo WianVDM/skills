@@ -54,13 +54,17 @@ If `ticket_tracker_adapter` is configured, verify the adapter is usable:
 
 | Adapter | Required evidence |
 |---|---|
-| `jira` | `jira.base_url`, `jira.project_key`, and `JIRA_API_TOKEN` env var |
+| `jira` | `jira-adapter` skill installed; `token-resolver` resolves Jira credentials (e.g. `JIRA_API_TOKEN`); `jira.base_url`, `jira.project_key` set |
 | `github` | `github.owner`, `github.repo`, and `GITHUB_TOKEN` env var |
 | `linear` | `linear.team_key` and `LINEAR_API_KEY` env var |
 | `asana` | `asana.project_gid` and `ASANA_ACCESS_TOKEN` env var |
 | `custom` | `custom_adapter.command` exists and is executable |
 
 If detection fails, fall back to git metadata. A missing adapter is not a hard stop.
+
+## Degraded enrichment disclosure
+
+Whenever enrichment falls back to a weaker source — a missing ticket adapter, an unavailable MCP server, a degraded recon preview — the skill must say so in its user-facing output: name the stronger source that was unavailable, state what the fallback is, and continue only with the user's consent or a persisted config note recording the preference. Silent degradation is not allowed.
 
 ## Script runtime
 
@@ -77,6 +81,7 @@ Scripts used by this skill:
 - `scripts/infer-base.js` — score base-branch candidates.
 - `scripts/conflict-brief.js` — extract conflict versions and context.
 - `scripts/recon.js` — gather merge metadata.
+- `scripts/change-summary.js` — extract timelines, overlap, and hotspots for the pre-merge brief.
 - `scripts/resolve-trivial.js` — safe trivial conflict resolution.
 - `scripts/report.js` — generate report and chat summary.
 
@@ -87,4 +92,4 @@ For deep conflict analysis, the skill may use:
 - GitHub MCP or REST — PR metadata, commit context, author info.
 - Jira MCP — ticket context for branch names containing ticket keys.
 
-If these are unavailable, fall back to git metadata and configured ticket adapters.
+If these are unavailable, fall back to git metadata and configured ticket adapters — with the disclosure rule above.

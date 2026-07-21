@@ -77,4 +77,45 @@ A long-running validation command can hang the merge. The skill should use a con
 
 ## Default behavior for existing users
 
-For users who have an existing `build_command` or `custom_build_command` in config, migrate it to a single-item `validation.commands` list on first run and ask the user to confirm or add more commands.
+For users who have an existing `build_command` or `custom_build_command` in config, migrate it to a single-item `validation.commands` list on first run and ask the user to confirm or add more commands. These legacy keys are deprecated and will be removed in a future version.
+
+---
+
+## Verification tiers
+
+Verification effort scales with merge risk. The tier is proposed in the pre-merge brief (see [MERGE_INTELLIGENCE.md](MERGE_INTELLIGENCE.md)) and confirmed at the pre-merge gate.
+
+| Tier | Trigger | What runs |
+|---|---|---|
+| 1. Pipeline | Always | The configured `validation.commands` pipeline above. |
+| 2. Re-review | Any semantic resolution applied | `conflict-investigator` re-reads each resolution against the final tree and its original brief, confirming both sides' intent survived. |
+| 3. Interactive | UI-path collisions or interaction risks flagged | Interactive UI verification, pre-commit, against the pre-merge baseline when one exists. |
+
+All tiers run before the merge commit. A failure in any tier aborts the merge exactly like a pipeline failure. The merge commits only when every active tier passes.
+
+### Interactive tier: tool capability slot
+
+UI verification is a capability, not a fixed tool. Detection order:
+
+1. User config `verification.ui_tool` (if set).
+2. The repo's own e2e suite (Playwright/Cypress config present) — run the suite or the specs covering affected routes.
+3. Playwright MCP (or equivalent browser tool the harness provides) — drive the affected routes directly against `verification.dev_server_url`.
+4. Manual checklist for the user — degraded; disclose that stronger options exist and continue only with consent (see [CAPABILITIES.md](CAPABILITIES.md#degraded-enrichment-disclosure)).
+
+The skill never guesses the dev server URL or port; it comes from `verification.dev_server_url` or the user. When the `baseline` skill is available and UI areas were flagged, capture a pre-merge baseline at backup time and diff against it post-merge; when it is not available, disclose the degradation and fall back to un-baselined checks.
+
+## Confidence assessment
+
+The merge report carries a confidence block so the user can judge how much to trust the outcome. `scripts/report.js` renders it from data the conductor supplies.
+
+Structure: **Grade** (high | medium | low), **Verified** (claims with evidence), **Not verified** (claims that could not be checked), **Assumptions**, **Reasons** (why the grade).
+
+Grade caps — the grade cannot be **high** when any of these is true:
+
+- A semantic resolution was not exercised by a verification run.
+- A flagged interaction risk was not verified.
+- A configured validation command was skipped.
+- The conflict preview was degraded (see recon).
+- A review-classified file (lockfile, generated, binary) was left unresolved.
+
+**Medium** is for minor gaps the user knowingly accepted; **low** is for material gaps. The confidence block is presented to the user after the report; the run is not considered complete until the user acknowledges it. On rejection, offer the restore-from-backup path.

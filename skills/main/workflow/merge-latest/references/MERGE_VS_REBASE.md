@@ -15,7 +15,7 @@ Merge is preferred because:
 
 Rebase is considered only if all of these are true:
 
-1. The user has set `prefer_rebase: true` in config, or explicitly asks for rebase.
+1. The user has set `merge_strategy: rebase-if-clean` in config, or explicitly asks for rebase.
 2. The branch has not been pushed to a shared remote (or user confirms force-push is acceptable).
 3. The branch history is linear and clean.
 4. No semantic conflicts are expected.
