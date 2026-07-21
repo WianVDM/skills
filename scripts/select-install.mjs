@@ -108,12 +108,41 @@ const ask = async (q) => {
 
 function run(cmd, { quiet = false } = {}) {
   return new Promise((res) => {
-    const child = spawn(cmd, { shell: true, stdio: quiet ? 'pipe' : 'inherit' });
+    const child = spawn(cmd, { shell: true, stdio: ['inherit', 'pipe', 'pipe'] });
     let out = '';
-    if (quiet) child.stdout.on('data', (d) => (out += d));
+    const cap = (d) => {
+      const s = d.toString();
+      out += s;
+      if (!quiet) process.stdout.write(s);
+    };
+    child.stdout.on('data', cap);
+    child.stderr.on('data', cap);
     child.on('close', (code) => res({ code, out }));
     child.on('error', () => res({ code: 1, out }));
   });
+}
+
+// Known CLI bug (vercel-labs/skills#1352, fixed upstream by #1421): a global
+// install without -a expands to all agents, including project-only agents like
+// PromptScript that have no global skills dir. The CLI prints a per-skill
+// failure for those targets and exits non-zero, but the install succeeded for
+// every supported agent. Detect that exact case so we can tolerate it.
+function onlyProjectOnlyAgentFailures(out) {
+  // Per-skill failure lines carry a ✗/✖/× marker; "Failed to install N" is a
+  // summary header and is judged by the detail lines, not on its own.
+  const failLines = stripAnsi(out)
+    .split('\n')
+    .filter((l) => /✗|✖|×/.test(l));
+  if (failLines.length === 0) return false;
+  return failLines.every((l) => l.includes('does not support global skill installation'));
+}
+
+function reportBenignGlobalFailures() {
+  console.warn(
+    '\n! The CLI reported "does not support global skill installation" for project-only agents\n' +
+      '  (e.g. PromptScript) — a known upstream bug (vercel-labs/skills#1352). The install\n' +
+      '  succeeded for all supported agents; the failure lines are noise.',
+  );
 }
 
 const stripAnsi = (s) => s.replace(/\x1b\[[0-9;]*m/g, '');
@@ -320,14 +349,20 @@ async function runUpdate(scope, scopeFlag) {
   rl.close();
 
   if (removeCmd) {
-    const { code } = await run(removeCmd);
-    if (code !== 0) {
+    const { code, out } = await run(removeCmd);
+    if (code !== 0 && onlyProjectOnlyAgentFailures(out)) {
+      reportBenignGlobalFailures();
+    } else if (code !== 0) {
       console.error('Remove failed; aborting before reinstall. Re-run to retry.');
       process.exit(code ?? 1);
     }
   }
-  const { code } = await run(addCmd);
-  if (code !== 0) process.exit(code ?? 1);
+  const { code, out } = await run(addCmd);
+  if (code !== 0 && onlyProjectOnlyAgentFailures(out)) {
+    reportBenignGlobalFailures();
+  } else if (code !== 0) {
+    process.exit(code ?? 1);
+  }
 
   console.log('\nDone. Follow-up:');
   console.log('  1. Re-run /setup-wian-skills in your agent — config keys may have been added; reinstalling does not reset existing config.');
@@ -442,5 +477,9 @@ if (!flags.yes) {
 }
 
 rl.close();
-const { code } = await run(cmd);
+const { code, out } = await run(cmd);
+if (code !== 0 && onlyProjectOnlyAgentFailures(out)) {
+  reportBenignGlobalFailures();
+  process.exit(0);
+}
 process.exit(code ?? 0);

@@ -65,6 +65,10 @@ The CLI's add overwrites existing files, so a plain `--update` refreshes content
 
 The CLI's own `skills update` only handles global installs, updates *every* globally installed skill (not just this bundle), and does not resolve dependencies. This script's `--update` is bundle-scoped, works in both scopes, and reconciles dependencies.
 
+### Known CLI issues
+
+**`… does not support global skill installation` (upstream: vercel-labs/skills#1352).** Since CLI v1.5.10, a global install without `-a` expands the target agents to all agents, including project-only agents like PromptScript that have no global skills directory. The CLI prints a per-skill failure for those targets and exits non-zero — but the install succeeded for every supported agent. This script captures the output, confirms the only failures are of this kind, warns you, and treats the run as successful. If a failure line is anything else, the exit code passes through as a real failure. To silence the noise entirely, pass explicit agents with `-a` (e.g. `-a claude-code -a pi`).
+
 ### After any update
 
 - Re-run `/setup-wian-skills` in your agent. Config keys may have been added, and reinstalling does not reset existing config in `.agents/config/`.

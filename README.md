@@ -68,6 +68,8 @@ curl -sL https://raw.githubusercontent.com/WianVDM/skills/main/scripts/select-in
 
 The script prints the plan for approval, then runs the official CLI. It only touches skills from this bundle. Use `-p` instead of `-g` for a project-scoped install. Afterwards, re-run `/setup-wian-skills` in your agent and restart the agent.
 
+If the CLI prints `… does not support global skill installation` (PromptScript or similar), that's a known upstream bug — the install succeeded for your agents, and the script treats those lines as noise.
+
 ## Removing
 
 Uninstall bundle skills through the same script — it shows a checklist of what you have installed from this bundle:
