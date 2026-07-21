@@ -49,7 +49,7 @@ Selector input: numbers (`3`), ranges (`12-15`), bundle names (`main`, `blocks`,
 | `--clean` | With `--update`: remove installed bundle skills first, then reinstall. |
 | `--with-optional` | With `--update`: also install optional dependencies. |
 | `--no-recommended` | With `--update`: required dependencies only. |
-| `-a`, `--agent <name>` | Target a specific agent (repeatable), passed through to the CLI. |
+| `-a`, `--agent <name>` | Target a specific agent by CLI id (repeatable). On `--update`, defaults to the agents from your current install. |
 | `--print` | Print the CLI command(s) without running anything. |
 | `-y`, `--yes` | Skip the final run confirmation. |
 | `--source <path>` | Load the catalog from a local `skills.json` instead of GitHub. |
@@ -67,7 +67,11 @@ The CLI's own `skills update` only handles global installs, updates *every* glob
 
 ### Known CLI issues
 
-**`… does not support global skill installation` (upstream: vercel-labs/skills#1352).** Since CLI v1.5.10, a global install without `-a` expands the target agents to all agents, including project-only agents like PromptScript that have no global skills directory. The CLI prints a per-skill failure for those targets and exits non-zero — but the install succeeded for every supported agent. This script captures the output, confirms the only failures are of this kind, warns you, and treats the run as successful. If a failure line is anything else, the exit code passes through as a real failure. To silence the noise entirely, pass explicit agents with `-a` (e.g. `-a claude-code -a pi`).
+**`… does not support global skill installation` (upstream: vercel-labs/skills#1352).** Since CLI v1.5.10, a global install without `-a` expands the target agents to all agents, including project-only agents like PromptScript that have no global skills directory. The CLI prints a per-skill ✗ for those targets — one per skill — even though the install succeeded for every supported agent.
+
+This script sidesteps the bug in `--update` mode by targeting the agents from your current install (derived from `skills list --json`, slugified to CLI ids), so an update run is clean. Explicit `-a` flags override the derived set; ids the CLI rejects are dropped with a warning and the command retried without them.
+
+Install and remove mode still use the CLI's default agent expansion (a fresh install should reach every detected agent), so the noise can still appear there. The script checks every run: if all failure lines are this bug, it tells you so and treats the run as successful; any other failure line is surfaced as a real failure with a non-zero exit.
 
 ### After any update
 

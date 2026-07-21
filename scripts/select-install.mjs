@@ -122,27 +122,46 @@ function run(cmd, { quiet = false } = {}) {
   });
 }
 
-// Known CLI bug (vercel-labs/skills#1352, fixed upstream by #1421): a global
-// install without -a expands to all agents, including project-only agents like
-// PromptScript that have no global skills dir. The CLI prints a per-skill
-// failure for those targets and exits non-zero, but the install succeeded for
-// every supported agent. Detect that exact case so we can tolerate it.
-function onlyProjectOnlyAgentFailures(out) {
-  // Per-skill failure lines carry a ✗/✖/× marker; "Failed to install N" is a
-  // summary header and is judged by the detail lines, not on its own.
-  const failLines = stripAnsi(out)
+// Known CLI bug (vercel-labs/skills#1352): a global install without -a expands
+// to all agents, including project-only agents like PromptScript that have no
+// global skills dir. The CLI prints a per-skill ✗ for those targets — noise,
+// not failure. Update mode avoids it by targeting the user's current agents;
+// these helpers classify whatever failure lines remain.
+function splitFailureLines(out) {
+  const failures = stripAnsi(out)
     .split('\n')
     .filter((l) => /✗|✖|×/.test(l));
-  if (failLines.length === 0) return false;
-  return failLines.every((l) => l.includes('does not support global skill installation'));
+  return {
+    noise: failures.filter((l) => l.includes('does not support global skill installation')),
+    real: failures.filter((l) => !l.includes('does not support global skill installation')),
+  };
 }
 
-function reportBenignGlobalFailures() {
+function explainNoise(noise) {
   console.warn(
-    '\n! The CLI reported "does not support global skill installation" for project-only agents\n' +
-      '  (e.g. PromptScript) — a known upstream bug (vercel-labs/skills#1352). The install\n' +
-      '  succeeded for all supported agents; the failure lines are noise.',
+    `\n! The ${noise.length} red ✗ line(s) above — "… does not support global skill installation" —\n` +
+      '  are a known CLI bug (vercel-labs/skills#1352), not real failures. The skills\n' +
+      '  installed fine for your agents. Verify with: npx skills list',
   );
+}
+
+function parseInvalidAgents(out) {
+  const m = stripAnsi(out).match(/Invalid agents: ([^\n]+)/);
+  if (!m) return [];
+  return m[1].split(',').map((s) => s.trim()).filter(Boolean);
+}
+
+// Handle the outcome of a mutation command (add/remove). Real failures exit;
+// PromptScript noise is explained; noise-induced non-zero exits are tolerated.
+function handleMutationOutcome({ code, out }) {
+  const { noise, real } = splitFailureLines(out);
+  if (real.length) {
+    console.error('\nFailed for these skills/agents:');
+    for (const l of real) console.error(`  ${l.trim()}`);
+    process.exit(code || 1);
+  }
+  if (noise.length) explainNoise(noise);
+  if (code !== 0 && noise.length === 0) process.exit(code ?? 1);
 }
 
 const stripAnsi = (s) => s.replace(/\x1b\[[0-9;]*m/g, '');
@@ -210,12 +229,26 @@ async function fromCliList() {
 
 async function loadInstalled(scopeFlag) {
   const { code, out } = await run(`npx -y ${CLI} list --json${scopeFlag}`, { quiet: true });
-  if (code !== 0) return { installed: new Set(), ok: false };
+  if (code !== 0) return { installed: new Set(), entries: [], ok: false };
   try {
-    return { installed: new Set(JSON.parse(out).map((s) => s.name)), ok: true };
+    const entries = JSON.parse(out);
+    return { installed: new Set(entries.map((s) => s.name)), entries, ok: true };
   } catch {
-    return { installed: new Set(), ok: false };
+    return { installed: new Set(), entries: [], ok: false };
   }
+}
+
+// CLI agent ids are kebab-case; `skills list --json` reports display names
+// ("Claude Code"). Slugify maps them back (claude-code, gemini-cli, pi, …).
+function deriveAgentIds(entries) {
+  const set = new Set();
+  for (const e of entries) {
+    for (const a of e.agents ?? []) {
+      const id = a.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      if (id) set.add(id);
+    }
+  }
+  return [...set].sort();
 }
 
 // ─── update mode ─────────────────────────────────────────────────────────────
@@ -268,7 +301,7 @@ function computeClosure(roots, deps, { recommended, optional }) {
 
 async function runUpdate(scope, scopeFlag) {
   const catalog = await loadCatalog();
-  const { installed, ok } = await loadInstalled(scopeFlag);
+  const { installed, entries, ok } = await loadInstalled(scopeFlag);
   if (!ok) {
     console.error('Could not read installed skills from the CLI. Is `npx skills` working?');
     process.exit(1);
@@ -313,7 +346,15 @@ async function runUpdate(scope, scopeFlag) {
   for (const [name, tier] of [...missing].sort()) byTier[tier].push(name);
   const toInstall = [...missing.keys()];
 
+  // Target the agents from the current install (or explicit -a). This keeps
+  // links exactly where they are and sidesteps the PromptScript global-install
+  // bug, which only fires when the CLI expands to all agents on its own.
+  const agentIds = flags.agents.length ? flags.agents : deriveAgentIds(entries);
+  const addCmdFor = (agents) =>
+    `npx -y ${CLI} add ${REPO} ${addSet.map((n) => `--skill ${n}`).join(' ')}${scopeFlag}${agents.map((a) => ` -a ${a}`).join('')} -y`;
+
   console.log(`\nUpdate plan (${scope} scope) — ${REPO}`);
+  console.log(`  Agents: ${agentIds.length ? agentIds.join(', ') : 'all detected by the CLI'}`);
   console.log(`  Refresh (${refresh.length}): ${refresh.join(', ')}`);
   if (toInstall.length) {
     console.log('  Install missing dependencies:');
@@ -330,9 +371,9 @@ async function runUpdate(scope, scopeFlag) {
   for (const w of warnings) console.log(`  ! ${w}`);
 
   const addSet = [...new Set([...refresh, ...toInstall])];
-  const addCmd = `npx -y ${CLI} add ${REPO} ${addSet.map((n) => `--skill ${n}`).join(' ')}${scopeFlag}${flags.agents.map((a) => ` -a ${a}`).join('')} -y`;
   const removeSet = flags.clean ? [...new Set([...refresh, ...orphans])] : [];
   const removeCmd = flags.clean ? `npx -y ${CLI} remove ${removeSet.join(' ')}${scopeFlag} -y` : null;
+  const addCmd = addCmdFor(agentIds);
 
   console.log('\nCommand(s):');
   if (removeCmd) console.log(`  ${removeCmd}`);
@@ -349,20 +390,25 @@ async function runUpdate(scope, scopeFlag) {
   rl.close();
 
   if (removeCmd) {
-    const { code, out } = await run(removeCmd);
-    if (code !== 0 && onlyProjectOnlyAgentFailures(out)) {
-      reportBenignGlobalFailures();
-    } else if (code !== 0) {
+    const res = await run(removeCmd);
+    const { noise, real } = splitFailureLines(res.out);
+    if (real.length || (res.code !== 0 && noise.length === 0)) {
       console.error('Remove failed; aborting before reinstall. Re-run to retry.');
-      process.exit(code ?? 1);
+      process.exit(res.code || 1);
     }
+    if (noise.length) explainNoise(noise);
   }
-  const { code, out } = await run(addCmd);
-  if (code !== 0 && onlyProjectOnlyAgentFailures(out)) {
-    reportBenignGlobalFailures();
-  } else if (code !== 0) {
-    process.exit(code ?? 1);
+  let outcome = await run(addCmd);
+  const invalid = parseInvalidAgents(outcome.out);
+  if (invalid.length) {
+    const keep = agentIds.filter((a) => !invalid.includes(a));
+    console.warn(
+      `\n! The CLI rejected agent id(s): ${invalid.join(', ')} — retrying without them.\n` +
+      '  If one of your agents was dropped, re-run with its correct id via -a.',
+    );
+    outcome = await run(addCmdFor(keep));
   }
+  handleMutationOutcome(outcome);
 
   console.log('\nDone. Follow-up:');
   console.log('  1. Re-run /setup-wian-skills in your agent — config keys may have been added; reinstalling does not reset existing config.');
@@ -477,9 +523,5 @@ if (!flags.yes) {
 }
 
 rl.close();
-const { code, out } = await run(cmd);
-if (code !== 0 && onlyProjectOnlyAgentFailures(out)) {
-  reportBenignGlobalFailures();
-  process.exit(0);
-}
-process.exit(code ?? 0);
+handleMutationOutcome(await run(cmd));
+process.exit(0);
