@@ -1,9 +1,9 @@
 {
   "version": "1.0.0",
-  "generated_at": "2026-07-20T10:59:52.135099+00:00",
+  "generated_at": "2026-07-21T08:32:36.118607+00:00",
   "source_check": {
-    "skills_json_hash": "sha256:225d7224dcfdf709bc1361e2d3a77213d658c8803859a4d66b3a513eb8de93a4",
-    "latest_skill_mtime": "2026-07-20T10:59:48.231718+00:00"
+    "skills_json_hash": "sha256:7f9aa794ee9d244632f106d48f95a466b3757d07abb513ef796e463c7d67707c",
+    "latest_skill_mtime": "2026-07-21T08:32:34.235224+00:00"
   },
   "skills": [
     {
@@ -674,6 +674,24 @@
           ]
         },
         {
+          "id": "merge-latest:produce-a-pre-merge-brief-timelined-change-summaries-of-both",
+          "name": "Produce a pre-merge brief: timelined change summaries of both branches and an interaction risk assessment",
+          "category": "identity-resolution",
+          "description": "Produce a pre-merge brief: timelined change summaries of both branches and an interaction risk assessment.",
+          "sources": [
+            "SKILL.md:In scope"
+          ]
+        },
+        {
+          "id": "merge-latest:present-the-pre-merge-gate-and-wait-for-user-confirmation-wh",
+          "name": "Present the pre-merge gate and wait for user confirmation when conflicts or interaction risks exist",
+          "category": "uncategorized",
+          "description": "Present the pre-merge gate and wait for user confirmation when conflicts or interaction risks exist.",
+          "sources": [
+            "SKILL.md:In scope"
+          ]
+        },
+        {
           "id": "merge-latest:classify-conflicts-as-trivial-semantic-or-review",
           "name": "Classify conflicts as trivial, semantic, or review",
           "category": "uncategorized",
@@ -696,6 +714,24 @@
           "name": "Run a user-configured validation command pipeline before completing the merge",
           "category": "config-initialization",
           "description": "Run a user-configured validation command pipeline before completing the merge.",
+          "sources": [
+            "SKILL.md:In scope"
+          ]
+        },
+        {
+          "id": "merge-latest:scale-verification-with-merge-risk-resolution-re-review-for",
+          "name": "Scale verification with merge risk: resolution re-review for semantic resolutions, interactive UI verification (pre-commit) for UI-path conflicts and interaction risks",
+          "category": "checkout",
+          "description": "Scale verification with merge risk: resolution re-review for semantic resolutions, interactive UI verification (pre-commit) for UI-path conflicts and interaction risks.",
+          "sources": [
+            "SKILL.md:In scope"
+          ]
+        },
+        {
+          "id": "merge-latest:report-an-evidence-based-confidence-grade-and-wait-for-user",
+          "name": "Report an evidence-based confidence grade and wait for user acknowledgment",
+          "category": "uncategorized",
+          "description": "Report an evidence-based confidence grade and wait for user acknowledgment.",
           "sources": [
             "SKILL.md:In scope"
           ]
@@ -743,6 +779,15 @@
           "description": "Subagent role for merge-latest.",
           "sources": [
             "subagents/branch-researcher.md"
+          ]
+        },
+        {
+          "id": "merge-latest:subagent-change-summarizer",
+          "name": "Change Summarizer",
+          "category": "uncategorized",
+          "description": "Subagent role for merge-latest.",
+          "sources": [
+            "subagents/change-summarizer.md"
           ]
         },
         {
@@ -809,6 +854,15 @@
           ]
         },
         {
+          "id": "merge-latest:script-change-summary",
+          "name": "Run change summary",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: change-summary.js",
+          "sources": [
+            "scripts/change-summary.js"
+          ]
+        },
+        {
           "id": "merge-latest:script-conflict-brief",
           "name": "Run conflict brief",
           "category": "uncategorized",
@@ -845,6 +899,15 @@
           ]
         },
         {
+          "id": "merge-latest:script-recon-smoke-test",
+          "name": "Run recon.smoke test",
+          "category": "uncategorized",
+          "description": "Deterministic helper script: recon.smoke-test.js",
+          "sources": [
+            "scripts/recon.smoke-test.js"
+          ]
+        },
+        {
           "id": "merge-latest:script-report",
           "name": "Run report",
           "category": "uncategorized",
@@ -864,11 +927,17 @@
         }
       ],
       "references": [
+        "baseline",
         "checkpoint",
-        "context-reports"
+        "context-reports",
+        "jira-adapter",
+        "token-resolver",
+        "verify-branch",
+        "worker-contract"
       ],
       "subagents": [
         "branch-researcher.md",
+        "change-summarizer.md",
         "conflict-classifier.md",
         "conflict-investigator.md",
         "latest-fetcher.md",
@@ -878,10 +947,12 @@
         "validation-runner.md"
       ],
       "scripts": [
+        "change-summary.js",
         "conflict-brief.js",
         "infer-base.js",
         "parse-args.js",
         "recon.js",
+        "recon.smoke-test.js",
         "report.js",
         "resolve-trivial.js"
       ],
@@ -890,10 +961,7 @@
       "consumes": [
         "data-collection"
       ],
-      "depends": [
-        "checkpoint",
-        "context-reports"
-      ]
+      "depends": []
     },
     {
       "name": "orchestrate",
