@@ -38,8 +38,9 @@ Merge the latest upstream branch into the correct target branch safely. Classifi
 - **Invocation:** `/merge-latest`
 - **Location:** `../skills/main/workflow/merge-latest/`
 - **Dependencies:**
-  - **Required:** checkpoint
-  - **Recommended:** context-reports
+  - **Required:** checkpoint, worker-contract
+  - **Recommended:** context-reports, jira-adapter, token-resolver
+  - **Optional:** baseline
 - **Details:** [merge-latest/SKILL.md](../skills/main/workflow/merge-latest/SKILL.md)
 
 #### `orchestrate`
