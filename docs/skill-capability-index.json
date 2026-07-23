@@ -1,9 +1,9 @@
 {
   "version": "1.0.0",
-  "generated_at": "2026-07-23T07:14:56.094426+00:00",
+  "generated_at": "2026-07-23T13:52:53.112386+00:00",
   "source_check": {
-    "skills_json_hash": "sha256:b60bca4378e31b3d73e5c30d256cafea9cbcdddbdf85e8934690e1d07d7abac4",
-    "latest_skill_mtime": "2026-07-23T07:14:51.884375+00:00"
+    "skills_json_hash": "sha256:9e87ff82d859372a1945003eff6bcf575a9aa35bd419646279c5ea405fadf831",
+    "latest_skill_mtime": "2026-07-23T13:52:49.358339+00:00"
   },
   "skills": [
     {
@@ -1358,7 +1358,7 @@
       "origin": "bundle",
       "type": "conductor",
       "invocation": "model-invoked",
-      "description": "Help the user review a pull request by gathering context, checking the branch locally in a worktree, running targeted checks on changed files, drafting a review that does not duplicate existing comments, and posting it only after explicit user approval. If posting confidence is not high, it hands back an exact manual payload.",
+      "description": "Help the user review a pull request by gathering context, reading the PR's existing discussion for what it already settled, inspecting the branch locally in a worktree, running targeted checks on changed files, and drafting a review worth posting \u2014 user-facing report separate from the PR-facing draft \u2014 then posting only after explicit user approval, with an exact manual payload when posting confidence is not high.",
       "capabilities": [
         {
           "id": "pr-review:resolve-pr-identity-from-a-number-ticket-key-branch-name-or",
@@ -1370,19 +1370,28 @@
           ]
         },
         {
-          "id": "pr-review:discover-the-best-available-tool-for-every-load-bearing-capa",
-          "name": "Discover the best available tool for every load-bearing capability",
+          "id": "pr-review:resolve-the-best-available-tool-for-every-load-bearing-capab",
+          "name": "Resolve the best available tool for every load-bearing capability, model-first, with per-project recipes cached for reuse",
           "category": "tool-discovery",
-          "description": "Discover the best available tool for every load-bearing capability.",
+          "description": "Resolve the best available tool for every load-bearing capability, model-first, with per-project recipes cached for reuse.",
           "sources": [
             "SKILL.md:In scope"
           ]
         },
         {
-          "id": "pr-review:collect-pr-metadata-existing-reviews-inline-threads-changed",
-          "name": "Collect PR metadata, existing reviews, inline threads, changed files, CI status, and ticket scope",
+          "id": "pr-review:collect-pr-metadata-reviews-inline-threads-conversation-comm",
+          "name": "Collect PR metadata, reviews, inline threads, conversation comments, changed files, CI status, and ticket scope",
           "category": "scope-checking",
-          "description": "Collect PR metadata, existing reviews, inline threads, changed files, CI status, and ticket scope.",
+          "description": "Collect PR metadata, reviews, inline threads, conversation comments, changed files, CI status, and ticket scope.",
+          "sources": [
+            "SKILL.md:In scope"
+          ]
+        },
+        {
+          "id": "pr-review:classify-existing-discussion-into-settled-open-and-declared",
+          "name": "Classify existing discussion into settled, open, and declared intent; never re-flag settled items without user consent",
+          "category": "uncategorized",
+          "description": "Classify existing discussion into settled, open, and declared intent; never re-flag settled items without user consent.",
           "sources": [
             "SKILL.md:In scope"
           ]
@@ -1397,64 +1406,37 @@
           ]
         },
         {
-          "id": "pr-review:read-changed-files-locally-and-run-targeted-checks-on-them",
-          "name": "Read changed files locally and run targeted checks on them",
+          "id": "pr-review:read-changed-files-in-full-and-run-targeted-checks-scoped-to",
+          "name": "Read changed files in full and run targeted checks scoped to them",
           "category": "scope-checking",
-          "description": "Read changed files locally and run targeted checks on them.",
+          "description": "Read changed files in full and run targeted checks scoped to them.",
           "sources": [
             "SKILL.md:In scope"
           ]
         },
         {
-          "id": "pr-review:synthesize-a-review-draft-that-considers-ticket-scope-and-pr",
-          "name": "Synthesize a review draft that considers ticket scope and project conventions",
-          "category": "scope-checking",
-          "description": "Synthesize a review draft that considers ticket scope and project conventions.",
+          "id": "pr-review:synthesize-findings-per-the-review-rubric-budgeted-for-signa",
+          "name": "Synthesize findings per the review rubric, budgeted for signal-to-noise, positioned by reviewer position",
+          "category": "validation",
+          "description": "Synthesize findings per the review rubric, budgeted for signal-to-noise, positioned by reviewer position.",
           "sources": [
             "SKILL.md:In scope"
           ]
         },
         {
-          "id": "pr-review:avoid-duplicating-existing-review-comments",
-          "name": "Avoid duplicating existing review comments",
+          "id": "pr-review:produce-a-user-facing-report-and-a-pr-facing-draft-as-separa",
+          "name": "Produce a user-facing report and a PR-facing draft as separate artifacts",
           "category": "uncategorized",
-          "description": "Avoid duplicating existing review comments.",
+          "description": "Produce a user-facing report and a PR-facing draft as separate artifacts.",
           "sources": [
             "SKILL.md:In scope"
           ]
         },
         {
-          "id": "pr-review:distinguish-required-changes-from-optional-suggestions",
-          "name": "Distinguish required changes from optional suggestions",
-          "category": "uncategorized",
-          "description": "Distinguish required changes from optional suggestions.",
-          "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "pr-review:anchor-inline-comments-to-changed-diff-hunks",
-          "name": "Anchor inline comments to changed diff hunks",
-          "category": "uncategorized",
-          "description": "Anchor inline comments to changed diff hunks.",
-          "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "pr-review:write-the-review-draft-to-a-context-report",
-          "name": "Write the review draft to a context report",
-          "category": "report-writing",
-          "description": "Write the review draft to a context report.",
-          "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "pr-review:present-the-draft-ask-for-feedback-iterate-and-require-expli",
-          "name": "Present the draft, ask for feedback, iterate, and require explicit approval before posting",
+          "id": "pr-review:present-both-answer-open-questions-with-the-user-iterate-and",
+          "name": "Present both, answer open questions with the user, iterate, and require explicit approval before posting",
           "category": "posting",
-          "description": "Present the draft, ask for feedback, iterate, and require explicit approval before posting.",
+          "description": "Present both, answer open questions with the user, iterate, and require explicit approval before posting.",
           "sources": [
             "SKILL.md:In scope"
           ]
@@ -1478,87 +1460,6 @@
           ]
         },
         {
-          "id": "pr-review:initialize",
-          "name": "Initialize",
-          "category": "config-initialization",
-          "description": "Initialize \u2014 detect project context, load or create {configdir}/pr-review.yaml, discover required capabilities, record state.",
-          "sources": [
-            "SKILL.md:Workflow"
-          ]
-        },
-        {
-          "id": "pr-review:resolve-pr",
-          "name": "Resolve PR",
-          "category": "identity-resolution",
-          "description": "Resolve PR \u2014 invoke identity-resolver to get prnumber, repo, branch, base, ticketkey, url.",
-          "sources": [
-            "SKILL.md:Workflow"
-          ]
-        },
-        {
-          "id": "pr-review:discover-tools",
-          "name": "Discover tools",
-          "category": "tool-discovery",
-          "description": "Discover tools \u2014 for each capability (PR source, reviews, changed files, CI, issue tracker, checkout, posting), invoke tool-discovery and record the preferred tool.",
-          "sources": [
-            "SKILL.md:Workflow"
-          ]
-        },
-        {
-          "id": "pr-review:collect-context",
-          "name": "Collect context",
-          "category": "tool-discovery",
-          "description": "Collect context \u2014 invoke the preferred tool for each capability and store output in chainlog.",
-          "sources": [
-            "SKILL.md:Workflow"
-          ]
-        },
-        {
-          "id": "pr-review:checkout-and-inspect",
-          "name": "Checkout and inspect",
-          "category": "checkout",
-          "description": "Checkout and inspect \u2014 invoke git-worktree-inspector to check out the branch and list changed files.",
-          "sources": [
-            "SKILL.md:Workflow"
-          ]
-        },
-        {
-          "id": "pr-review:synthesize-review",
-          "name": "Synthesize review",
-          "category": "scope-checking",
-          "description": "Synthesize review \u2014 compare changes against ticket scope and project conventions; use scope-checker to flag scope drift.",
-          "sources": [
-            "SKILL.md:Workflow"
-          ]
-        },
-        {
-          "id": "pr-review:draft-review",
-          "name": "Draft review",
-          "category": "report-writing",
-          "description": "Draft review \u2014 write the review draft to {contextdir}/pr-review/{key}/{key}-review-draft.md with event, body, and inline comments.",
-          "sources": [
-            "SKILL.md:Workflow"
-          ]
-        },
-        {
-          "id": "pr-review:review-with-user",
-          "name": "Review with user",
-          "category": "uncategorized",
-          "description": "Review with user \u2014 present the draft, ask for feedback, iterate until explicit confirmation.",
-          "sources": [
-            "SKILL.md:Workflow"
-          ]
-        },
-        {
-          "id": "pr-review:post-or-hand-back",
-          "name": "Post or hand back",
-          "category": "posting",
-          "description": "Post or hand back \u2014 if posting confidence is high and the user confirmed, post in one shot.",
-          "sources": [
-            "SKILL.md:Workflow"
-          ]
-        },
-        {
           "id": "pr-review:subagent-check-selector",
           "name": "Check Selector",
           "category": "uncategorized",
@@ -1574,60 +1475,6 @@
           "description": "Subagent role for pr-review.",
           "sources": [
             "subagents/checkout-coordinator.md"
-          ]
-        },
-        {
-          "id": "pr-review:subagent-checkpoint-manager",
-          "name": "Checkpoint Manager",
-          "category": "state-management",
-          "description": "Subagent role for pr-review.",
-          "sources": [
-            "subagents/checkpoint-manager.md"
-          ]
-        },
-        {
-          "id": "pr-review:subagent-context-scout",
-          "name": "Context Scout",
-          "category": "uncategorized",
-          "description": "Subagent role for pr-review.",
-          "sources": [
-            "subagents/context-scout.md"
-          ]
-        },
-        {
-          "id": "pr-review:subagent-normalize-ci",
-          "name": "Normalize Ci",
-          "category": "data-normalization",
-          "description": "Subagent role for pr-review.",
-          "sources": [
-            "subagents/normalize-ci.md"
-          ]
-        },
-        {
-          "id": "pr-review:subagent-normalize-issue-tracker",
-          "name": "Normalize Issue Tracker",
-          "category": "data-collection",
-          "description": "Subagent role for pr-review.",
-          "sources": [
-            "subagents/normalize-issue-tracker.md"
-          ]
-        },
-        {
-          "id": "pr-review:subagent-normalize-pr",
-          "name": "Normalize Pr",
-          "category": "data-normalization",
-          "description": "Subagent role for pr-review.",
-          "sources": [
-            "subagents/normalize-pr.md"
-          ]
-        },
-        {
-          "id": "pr-review:subagent-normalize-reviews",
-          "name": "Normalize Reviews",
-          "category": "data-normalization",
-          "description": "Subagent role for pr-review.",
-          "sources": [
-            "subagents/normalize-reviews.md"
           ]
         },
         {
@@ -1656,12 +1503,22 @@
           "sources": [
             "subagents/review-writer.md"
           ]
+        },
+        {
+          "id": "pr-review:script-validate-review-coordinates",
+          "name": "Run validate review coordinates",
+          "category": "validation",
+          "description": "Deterministic helper script: validate-review-coordinates.py",
+          "sources": [
+            "scripts/validate-review-coordinates.py"
+          ]
         }
       ],
       "references": [
         "artifact-freshness",
         "baseline",
         "chainlog",
+        "checkpoint",
         "context-reports",
         "debrief",
         "detect-project-context",
@@ -1675,69 +1532,41 @@
         "post-github-pr-review",
         "pr-adapter-contract",
         "research-ticket",
+        "scan-context",
         "scope-checker",
         "sonarcloud-adapter",
         "token-resolver",
         "tool-discovery",
-        "verify-branch",
         "worker-contract"
       ],
       "subagents": [
         "check-selector.md",
         "checkout-coordinator.md",
-        "checkpoint-manager.md",
-        "context-scout.md",
-        "normalize-ci.md",
-        "normalize-issue-tracker.md",
-        "normalize-pr.md",
-        "normalize-reviews.md",
         "posting-coordinator.md",
         "review-synthesizer.md",
         "review-writer.md"
       ],
-      "scripts": [],
-      "config_keys": [
-        "pr-review.tools.pr-source.provider",
-        "pr-review.tools.reviews.provider",
-        "pr-review.tools.changed-files.provider",
-        "pr-review.tools.ci.provider",
-        "pr-review.tools.issue-tracker.provider",
-        "pr-review.tools.checkout.provider",
-        "pr-review.tools.posting.provider",
-        "pr-review.tooling.preference",
-        "pr-review.tooling.degraded_mode",
-        "pr-review.review.default_event",
-        "pr-review.review.require_tests_for_new_logic",
-        "pr-review.review.allow_post_without_confirmation",
-        "pr-review.gates",
-        "pr-review.project_conventions"
+      "scripts": [
+        "validate-review-coordinates.py"
       ],
-      "produces": [
-        "Draft review",
-        "Write the review draft to a context report"
-      ],
-      "consumes": [
-        "data-collection"
-      ],
+      "config_keys": [],
+      "produces": [],
+      "consumes": [],
       "depends": [
         "artifact-freshness",
         "chainlog",
+        "checkpoint",
         "context-reports",
         "detect-project-context",
         "git-worktree-inspector",
-        "github-actions-adapter",
-        "github-pr-adapter",
         "identity-resolver",
         "initialize-skill",
-        "jira-adapter",
-        "manual-pr-adapter",
         "post-github-pr-review",
         "pr-adapter-contract",
+        "scan-context",
         "scope-checker",
-        "sonarcloud-adapter",
         "token-resolver",
         "tool-discovery",
-        "verify-branch",
         "worker-contract"
       ]
     },
@@ -5474,31 +5303,49 @@
       "origin": "bundle",
       "type": "building-block",
       "invocation": "model-invoked",
-      "description": "Discover and rank available tools for a given capability. Given a capability like pr-source or ci-source, returns a ranked list of available tools with confidence, source category, and fallback ordering.",
+      "description": "Discover and rank available tools for a given capability, resolve them into validated per-project recipes, and cache those recipes for reuse. Given a capability like pr-source or ci-source, returns ranked tools with confidence, platform detection, and a recipe cache that survives across runs.",
       "capabilities": [
         {
-          "id": "tool-discovery:discover-mcp-tools-native-binaries-direct-api-endpoints-harn",
-          "name": "Discover MCP tools, native binaries, direct API endpoints, harness tools, and manual fallback for a capability",
-          "category": "tool-discovery",
-          "description": "Discover MCP tools, native binaries, direct API endpoints, harness tools, and manual fallback for a capability.",
-          "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "tool-discovery:rank-discovered-tools-by-confidence-and-configured-preferenc",
-          "name": "Rank discovered tools by confidence and configured preference",
-          "category": "config-initialization",
-          "description": "Rank discovered tools by confidence and configured preference.",
-          "sources": [
-            "SKILL.md:In scope"
-          ]
-        },
-        {
-          "id": "tool-discovery:return-a-deterministic-reproducible-ranking",
-          "name": "Return a deterministic, reproducible ranking",
+          "id": "tool-discovery:model-first-detection-in-session-mcp-harness-tools-platform",
+          "name": "Model-first detection: in-session MCP/harness tools, platform detection from the git origin remote, CLI probes with auth checks",
           "category": "uncategorized",
-          "description": "Return a deterministic, reproducible ranking.",
+          "description": "Model-first detection: in-session MCP/harness tools, platform detection from the git origin remote, CLI probes with auth checks.",
+          "sources": [
+            "SKILL.md:In scope"
+          ]
+        },
+        {
+          "id": "tool-discovery:script-based-detection-as-the-offline-fallback-scripts-disco",
+          "name": "Script-based detection as the offline fallback: scripts/discover-tools",
+          "category": "config-initialization",
+          "description": "Script-based detection as the offline fallback: scripts/discover-tools.py searches known MCP config locations, probes CLIs, detects platform, and ranks tools.",
+          "sources": [
+            "SKILL.md:In scope"
+          ]
+        },
+        {
+          "id": "tool-discovery:capability-resolution-deriving-a-concrete-recipe-per-referen",
+          "name": "Capability resolution: deriving a concrete recipe per [references/RESOLUTIONGUIDE",
+          "category": "tool-discovery",
+          "description": "Capability resolution: deriving a concrete recipe per [references/RESOLUTIONGUIDE.md](references/RESOLUTIONGUIDE.md).",
+          "sources": [
+            "SKILL.md:In scope"
+          ]
+        },
+        {
+          "id": "tool-discovery:the-per-project-recipe-cache-configdir-tool-recipes",
+          "name": "The per-project recipe cache ({configdir}/tool-recipes",
+          "category": "config-initialization",
+          "description": "The per-project recipe cache ({configdir}/tool-recipes.yaml): read, write, invalidate via script operations.",
+          "sources": [
+            "SKILL.md:In scope"
+          ]
+        },
+        {
+          "id": "tool-discovery:ranking-discovered-tools-by-confidence-and-configured-prefer",
+          "name": "Ranking discovered tools by confidence and configured preference",
+          "category": "config-initialization",
+          "description": "Ranking discovered tools by confidence and configured preference.",
           "sources": [
             "SKILL.md:In scope"
           ]
@@ -5535,7 +5382,6 @@
         "artifact-freshness",
         "chainlog",
         "context-reports",
-        "github-pr-adapter",
         "initialize-skill",
         "token-resolver",
         "worker-contract"

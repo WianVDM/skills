@@ -75,13 +75,13 @@ Build an actionable understanding of a pull request. Gather PR metadata, review 
 
 #### `pr-review`
 
-Help the user review a pull request by gathering context, checking the branch locally in a worktree, running targeted checks on changed files, drafting a review that does not duplicate existing comments, and posting it only after explicit user approval. If posting confidence is not high, it hands back an exact manual payload.
+Help the user review a pull request by gathering context, reading the PR's existing discussion for what it already settled, inspecting the branch locally in a worktree, running targeted checks on changed files, and drafting a review worth posting — user-facing report separate from the PR-facing draft — then posting only after explicit user approval, with an exact manual payload when posting confidence is not high.
 
 - **Invocation:** `model-invoked`
 - **Location:** `../skills/main/workflow/pr-review/`
 - **Dependencies:**
-  - **Required:** detect-project-context, initialize-skill, context-reports, worker-contract, token-resolver, identity-resolver, tool-discovery, artifact-freshness, chainlog, git-worktree-inspector, scope-checker, pr-adapter-contract
-  - **Recommended:** verify-branch, github-pr-adapter, github-actions-adapter, jira-adapter, sonarcloud-adapter, manual-pr-adapter, post-github-pr-review
+  - **Required:** detect-project-context, initialize-skill, context-reports, worker-contract, identity-resolver, tool-discovery, artifact-freshness, chainlog, git-worktree-inspector, scope-checker, pr-adapter-contract, checkpoint, scan-context, token-resolver
+  - **Recommended:** post-github-pr-review
   - **Optional:** debrief, baseline, research-ticket
 - **Details:** [pr-review/SKILL.md](../skills/main/workflow/pr-review/SKILL.md)
 
@@ -495,7 +495,7 @@ Static-analysis source adapter that fetches SonarCloud findings and returns the 
 
 #### `tool-discovery`
 
-Discover and rank available tools for a given capability. Given a capability like pr-source or ci-source, returns a ranked list of available tools with confidence, source category, and fallback ordering.
+Discover and rank available tools for a given capability, resolve them into validated per-project recipes, and cache those recipes for reuse. Given a capability like pr-source or ci-source, returns ranked tools with confidence, platform detection, and a recipe cache that survives across runs.
 
 - **Invocation:** `model-invoked`
 - **Location:** `../skills/blocks/project/tool-discovery/`
