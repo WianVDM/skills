@@ -362,22 +362,18 @@
         "initialize-skill",
         "context-reports",
         "worker-contract",
-        "token-resolver",
         "identity-resolver",
         "tool-discovery",
         "artifact-freshness",
         "chainlog",
         "git-worktree-inspector",
         "scope-checker",
-        "pr-adapter-contract"
+        "pr-adapter-contract",
+        "checkpoint",
+        "scan-context",
+        "token-resolver"
       ],
       "recommended": [
-        "verify-branch",
-        "github-pr-adapter",
-        "github-actions-adapter",
-        "jira-adapter",
-        "sonarcloud-adapter",
-        "manual-pr-adapter",
         "post-github-pr-review"
       ],
       "optional": [

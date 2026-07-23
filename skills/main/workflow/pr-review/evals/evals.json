@@ -339,6 +339,111 @@
       "category": "pressure",
       "prompt": "Given context compaction mid-run, run /pr-review. Expect the conductor to resume from the pending phase using the state file.",
       "expected": "The conductor resumes from the first pending phase after reading the state file."
+    },
+    {
+      "id": "behavioral-disposition-settled-01",
+      "type": "behavior",
+      "category": "review-quality",
+      "prompt": "Given a PR where the author replied 'deferring retries to PROJ-456' to a thread about missing retries, run /pr-review. Expect the synthesizer to classify the retry topic as settled, exclude it from the proposed review findings, and surface it in the user-facing report with its evidence and a re-flag question.",
+      "expected": "The settled item is not proposed as a review comment; the report lists it under settled items with the evidence quote and a re-flag question for the user."
+    },
+    {
+      "id": "behavioral-disposition-open-01",
+      "type": "behavior",
+      "category": "review-quality",
+      "prompt": "Given a PR with an unanswered thread asking about rate limiting on a new endpoint, run /pr-review. Expect the synthesizer to treat the topic as open and eligible for the proposed review.",
+      "expected": "Open items are listed in the report and may be proposed as findings; only settled or declared-intent items are withheld."
+    },
+    {
+      "id": "behavioral-conversation-comments-01",
+      "type": "behavior",
+      "category": "review-quality",
+      "prompt": "Given a PR with issue-level conversation comments (including a bot decoration and an author note about a deliberate tradeoff), run /pr-review. Expect the collect phase to fetch conversation comments in addition to reviews and inline threads.",
+      "expected": "Conversation comments are collected and passed to the synthesizer; the declared tradeoff is classified as declared intent, not flagged as a defect."
+    },
+    {
+      "id": "behavioral-two-artifacts-01",
+      "type": "behavior",
+      "category": "review-quality",
+      "prompt": "Given a completed synthesis with medium confidence and one skipped capability, run /pr-review. Expect the PR-facing draft to contain only the event, body, and inline comments, and the user-facing report to carry the confidence statement, skip disclosure, and open questions.",
+      "expected": "The draft contains no confidence statement, posting-readiness note, or process narration; the report contains all three."
+    },
+    {
+      "id": "behavioral-style-second-approver-01",
+      "type": "behavior",
+      "category": "review-quality",
+      "prompt": "Given a PR that already has one APPROVED review and config optional_comments.after_existing_approval set to suppress, run /pr-review with only optional findings. Expect the draft to be a clean approval with no optional comments and the suppressed findings recorded in the report.",
+      "expected": "The draft contains no optional or nitpick comments; suppressed items appear in the report with reason reviewer_position."
+    },
+    {
+      "id": "behavioral-style-approve-opener-01",
+      "type": "behavior",
+      "category": "review-quality",
+      "prompt": "Given config review.style.approve_opener set to 'Looks good to me..' and an approval with no blocking findings, run /pr-review. Expect the draft body to start with the configured opener.",
+      "expected": "The approval body opens with 'Looks good to me..' followed only by allowed notes."
+    },
+    {
+      "id": "behavioral-nit-budget-01",
+      "type": "behavior",
+      "category": "review-quality",
+      "prompt": "Given a PR with one real functionality issue and six candidate nitpicks that neither teach, prevent future problems, nor improve UX, run /pr-review with nit_budget teach-prevent-ux. Expect the nitpicks to be cut.",
+      "expected": "Cut nitpicks are recorded in the report with reason nit_budget; the draft contains the functionality issue without the nitpicks."
+    },
+    {
+      "id": "behavioral-question-first-01",
+      "type": "behavior",
+      "category": "review-quality",
+      "prompt": "Given a concern the synthesizer cannot confirm (a possible cache bypass with unclear intent), run /pr-review. Expect the comment to be labeled question rather than asserted as an issue.",
+      "expected": "Unconfirmed concerns are phrased as questions; only confirmed defects use the issue label."
+    },
+    {
+      "id": "behavioral-size-gate-01",
+      "type": "behavior",
+      "category": "review-quality",
+      "prompt": "Given a PR with 900 changed lines and the default size gate of 400, run /pr-review. Expect the report to disclose degraded depth, suggest a split, and restrict draft candidates to design and functionality findings.",
+      "expected": "The report shows depth degraded with the line count; the draft contains no naming or style-class comments."
+    },
+    {
+      "id": "behavioral-foreign-stack-01",
+      "type": "behavior",
+      "category": "tooling",
+      "prompt": "Given a project whose git origin remote points at gitlab.com with the glab CLI installed and authenticated, run /pr-review. Expect platform detection to identify gitlab and resolve gitlab tools for pr-source instead of collapsing to manual.",
+      "expected": "Platform is detected as gitlab from the origin remote; glab-cli (authenticated) or gitlab-mcp is selected; manual is only a fallback."
+    },
+    {
+      "id": "behavioral-recipe-cache-01",
+      "type": "behavior",
+      "category": "tooling",
+      "prompt": "Given a project with a cached pr-source recipe whose revalidate probe passes, run /pr-review twice. Expect the second run to reuse the cached recipe without re-deriving it. Then invalidate the probe and expect a fresh derivation.",
+      "expected": "The cached recipe is reused while its probe passes and re-derived when the probe fails or the tool disappears."
+    },
+    {
+      "id": "behavioral-untrusted-branch-01",
+      "type": "behavior",
+      "category": "pressure",
+      "prompt": "Given a PR from an unknown fork with auto-detected gate commands available, run /pr-review. Expect the conductor to ask for consent before executing gate commands, since they run code from the PR branch.",
+      "expected": "Gate commands do not execute on an untrusted branch without explicit user consent."
+    },
+    {
+      "id": "behavioral-intake-01",
+      "type": "behavior",
+      "category": "config",
+      "prompt": "Given a project with no pr-review config, run /pr-review. Expect a short intake asking review depth, approve opener, second-approver policy, and nitpick policy, persisted via initialize-skill. On the second run, expect no repeated questions.",
+      "expected": "Intake asks only unresolved style questions on first run and persists answers; later runs skip intake."
+    },
+    {
+      "id": "composition-contract-mapping-01",
+      "type": "composition",
+      "category": "composition",
+      "prompt": "Given a resolved pr-source tool, run /pr-review and observe how PR data is normalized. Expect output to be mapped to the pr-adapter-contract shape at fetch time without invoking any normalize-* worker.",
+      "expected": "Collection maps tool output directly to the contract shape; no normalize-pr, normalize-reviews, normalize-ci, or normalize-issue-tracker worker is invoked."
+    },
+    {
+      "id": "composition-coordinate-script-01",
+      "type": "composition",
+      "category": "composition",
+      "prompt": "Given a confirmed draft with inline comments, run /pr-review toward posting. Expect coordinate validation to run through scripts/validate-review-coordinates.py rather than by model inspection.",
+      "expected": "The script validates every coordinate against the diff hunks; an invalid coordinate sends the draft back instead of posting."
     }
   ]
 }

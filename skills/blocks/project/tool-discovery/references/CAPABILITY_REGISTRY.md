@@ -44,6 +44,10 @@ capabilities:
 
 MCP matching uses both signals: a tool is available when any keyword or any identifier appears in a detected MCP config file. The `detail` field in the output reports which signal matched (e.g., `MCP keywords github matched` or `MCP identifiers github_get_pull_request matched`).
 
+## Platform coverage
+
+PR, CI, and posting capabilities cover GitHub, GitLab, Azure DevOps, and Bitbucket. Issue-tracker covers Jira, Linear, GitHub Issues, GitLab Issues, and Azure Boards. MCP identifiers use the common tool-naming conventions per provider (`github_*`, `gitlab_*`/`mcp_gitlab_*`, `mcp_ado_*`, `bitbucket_*`); keywords match on server names, so a self-hosted GitLab server named `gitlab` still matches.
+
 ## Bundled capabilities
 
 | Capability | Description |
@@ -62,6 +66,6 @@ MCP matching uses both signals: a tool is available when any keyword or any iden
 
 Add new tools to the bundled YAML or pass a custom `registry` path to `discover`. Custom registries must follow the same schema. The bundled registry lives at `scripts/capability-registry.yaml`.
 
-## Relationship to adapters
+## Relationship to resolution
 
-Tool names in the registry should align with adapter skills where possible. For example, `github-mcp` maps to the `github-pr-adapter` contract. The registry is about discovery; adapter contracts define the normalized interface after the tool is selected.
+The registry is about discovery: which known tools exist per capability. Turning a discovered tool into a working, cached recipe — exact calls, field mappings, validation — is covered by [RESOLUTION_GUIDE.md](RESOLUTION_GUIDE.md). Provider-specific adapter skills are deprecated in favor of that flow.

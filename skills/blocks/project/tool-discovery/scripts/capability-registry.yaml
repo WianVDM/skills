@@ -11,16 +11,52 @@ capabilities:
           - github_get_pull_request
           - github_get_pull_request_reviews
           - github_get_pull_request_files
+      - name: gitlab-mcp
+        category: mcp
+        confidence: high
+        keywords:
+          - gitlab
+        identifiers:
+          - get_merge_request
+          - gitlab_get_merge_request
+          - mcp_gitlab_get_merge_request
+      - name: azure-devops-mcp
+        category: mcp
+        confidence: high
+        keywords:
+          - azure
+          - devops
+        identifiers:
+          - mcp_ado_repo_get_pull_request
+          - repo_get_pull_request
+      - name: bitbucket-mcp
+        category: mcp
+        confidence: high
+        keywords:
+          - bitbucket
+        identifiers:
+          - bitbucket_get_pull_request
+          - bb_get_pull_request
       - name: gh-cli
         category: cli
         confidence: medium
         identifiers:
           - gh
+      - name: glab-cli
+        category: cli
+        confidence: medium
+        identifiers:
+          - glab
       - name: github-api
         category: api
         confidence: medium
         identifiers:
           - GITHUB_TOKEN
+      - name: gitlab-api
+        category: api
+        confidence: medium
+        identifiers:
+          - GITLAB_TOKEN
       - name: git-cli
         category: cli
         confidence: low
@@ -42,16 +78,44 @@ capabilities:
         identifiers:
           - github_get_pull_request_reviews
           - github_get_pull_request_review_comments
+      - name: gitlab-mcp
+        category: mcp
+        confidence: high
+        keywords:
+          - gitlab
+        identifiers:
+          - list_merge_request_discussions
+          - gitlab_list_merge_request_discussions
+          - mcp_gitlab_list_merge_request_discussions
+      - name: azure-devops-mcp
+        category: mcp
+        confidence: high
+        keywords:
+          - azure
+          - devops
+        identifiers:
+          - mcp_ado_repo_list_pull_request_threads
+          - repo_list_pull_request_threads
       - name: gh-cli
         category: cli
         confidence: medium
         identifiers:
           - gh
+      - name: glab-cli
+        category: cli
+        confidence: medium
+        identifiers:
+          - glab
       - name: github-api
         category: api
         confidence: medium
         identifiers:
           - GITHUB_TOKEN
+      - name: gitlab-api
+        category: api
+        confidence: medium
+        identifiers:
+          - GITLAB_TOKEN
       - name: manual
         category: manual
         confidence: low
@@ -67,11 +131,25 @@ capabilities:
           - github
         identifiers:
           - github_get_pull_request_files
+      - name: gitlab-mcp
+        category: mcp
+        confidence: high
+        keywords:
+          - gitlab
+        identifiers:
+          - get_merge_request_diffs
+          - gitlab_get_merge_request_diffs
+          - mcp_gitlab_get_merge_request_diffs
       - name: gh-cli
         category: cli
         confidence: medium
         identifiers:
           - gh
+      - name: glab-cli
+        category: cli
+        confidence: medium
+        identifiers:
+          - glab
       - name: git-cli
         category: cli
         confidence: low
@@ -92,16 +170,44 @@ capabilities:
           - github
         identifiers:
           - github_get_check_runs
+      - name: gitlab-mcp
+        category: mcp
+        confidence: high
+        keywords:
+          - gitlab
+        identifiers:
+          - get_pipeline
+          - gitlab_get_pipeline
+          - mcp_gitlab_get_pipeline
+      - name: azure-devops-mcp
+        category: mcp
+        confidence: high
+        keywords:
+          - azure
+          - devops
+        identifiers:
+          - mcp_ado_build_get_builds
+          - build_get_builds
       - name: gh-cli
         category: cli
         confidence: medium
         identifiers:
           - gh
+      - name: glab-cli
+        category: cli
+        confidence: medium
+        identifiers:
+          - glab
       - name: github-api
         category: api
         confidence: medium
         identifiers:
           - GITHUB_TOKEN
+      - name: gitlab-api
+        category: api
+        confidence: medium
+        identifiers:
+          - GITLAB_TOKEN
       - name: manual
         category: manual
         confidence: low
@@ -130,6 +236,11 @@ capabilities:
           - semgrep
         identifiers:
           - semgrep_scan
+      - name: codeql-cli
+        category: cli
+        confidence: medium
+        identifiers:
+          - codeql
       - name: manual
         category: manual
         confidence: low
@@ -164,6 +275,41 @@ capabilities:
         confidence: medium
         identifiers:
           - LINEAR_API_TOKEN
+      - name: github-issues-mcp
+        category: mcp
+        confidence: high
+        keywords:
+          - github
+        identifiers:
+          - github_get_issue
+      - name: gitlab-mcp
+        category: mcp
+        confidence: high
+        keywords:
+          - gitlab
+        identifiers:
+          - get_issue
+          - gitlab_get_issue
+          - mcp_gitlab_get_issue
+      - name: azure-boards-mcp
+        category: mcp
+        confidence: high
+        keywords:
+          - azure
+          - devops
+        identifiers:
+          - mcp_ado_work_get_work_item
+          - work_get_work_item
+      - name: gh-cli
+        category: cli
+        confidence: medium
+        identifiers:
+          - gh
+      - name: glab-cli
+        category: cli
+        confidence: medium
+        identifiers:
+          - glab
       - name: manual
         category: manual
         confidence: low
@@ -201,16 +347,35 @@ capabilities:
           - github
         identifiers:
           - github_create_pull_request_review
+      - name: gitlab-mcp
+        category: mcp
+        confidence: high
+        keywords:
+          - gitlab
+        identifiers:
+          - create_merge_request_note
+          - gitlab_create_merge_request_note
+          - mcp_gitlab_create_merge_request_note
       - name: gh-cli
         category: cli
         confidence: medium
         identifiers:
           - gh
+      - name: glab-cli
+        category: cli
+        confidence: medium
+        identifiers:
+          - glab
       - name: github-api
         category: api
         confidence: medium
         identifiers:
           - GITHUB_TOKEN
+      - name: gitlab-api
+        category: api
+        confidence: medium
+        identifiers:
+          - GITLAB_TOKEN
       - name: manual
         category: manual
         confidence: low

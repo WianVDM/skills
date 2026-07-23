@@ -1,40 +1,42 @@
 # Validation
 
-Pre-flight checklist and validation rules for `pr-review`.
+Pre-flight checklist and validation rules for `pr-review`. Each phase's detailed rules live in its own reference; this file is the quick gate list.
 
 ## Before starting the workflow
 
 - [ ] `detect-project-context` found a project root.
 - [ ] `{config_dir}/pr-review.yaml` exists or `initialize-skill` created it.
-- [ ] At least one PR source tool is available.
-- [ ] At least one local checkout method is available.
+- [ ] Style profile resolved (intake done or config already answers it).
+- [ ] PR source and checkout each have one working path (manual fallback counts).
 - [ ] The user has provided a PR identifier or the current branch context allows resolution.
 
 ## Before collecting context
 
 - [ ] `identity-resolver` returned a complete identity (`pr_number`, `repo`, `branch`, `base`, `url`).
-- [ ] `tool-discovery` found preferred tools for all required capabilities.
+- [ ] Each capability has a selected tool: cached recipe re-validated, or a fresh derivation validated against the contract.
 
 ## Before running checks
 
 - [ ] `git-worktree-inspector` created a clean worktree.
 - [ ] Changed files are known.
 - [ ] Gate commands are scoped to changed files.
+- [ ] The user consented to running checks against this branch when the branch is untrusted.
 
-## Before drafting the review
+## Before drafting
 
-- [ ] All required context capabilities have evidence or a documented skip.
-- [ ] Existing reviews and threads have been compared against proposed comments.
-- [ ] `scope-checker` has flagged any scope-drift or unrelated items.
-- [ ] Every proposed comment is anchored to a changed diff hunk or a nearby changed line.
+- [ ] Conversation comments were collected (or the gap is disclosed in the report).
+- [ ] Existing discussion classified: settled items carry evidence and are out of the draft unless the user re-flags them.
+- [ ] `scope-checker` has flagged scope-drift or unrelated items.
+- [ ] Every proposed finding has evidence; the signal-to-noise budget held.
+- [ ] Reviewer position determined; optional-comments policy applied.
 
 ## Before posting
 
 - [ ] The user explicitly approved the exact draft.
-- [ ] Every inline comment line is inside a changed diff hunk.
+- [ ] `scripts/validate-review-coordinates.py` returned `ok` for every comment.
 - [ ] The `commit_id` matches the current PR head.
-- [ ] The posting tool is available and has required permissions.
-- [ ] Posting confidence is `high`.
+- [ ] The posting tool is present and authenticated.
+- [ ] The draft contains no report content (confidence notes, process narration, settled-item discussion).
 
 ## If any item fails
 

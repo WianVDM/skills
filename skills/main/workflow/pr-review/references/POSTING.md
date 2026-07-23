@@ -1,34 +1,24 @@
 # Posting gate
 
-Confidence rules and manual fallback for posting a PR review.
+Confidence rules and the manual fallback for posting a PR review. This file owns the posting-gate rules; SKILL.md carries only a two-line summary and links here.
 
 ## Confidence levels
 
 | Level | Conditions | Action |
 |---|---|---|
-| `high` | Tool is configured and tested; line coordinates verified against diff hunks; user explicitly approved. | Post in one shot. |
-| `medium` | Some uncertainty about tool behavior or line coordinates. | Do not post; provide manual payload. |
-| `low` | Missing data, untested tool, or conflicting information. | Do not post; provide manual payload and explain gaps. |
+| `high` | User approved the exact draft; every coordinate validated by `scripts/validate-review-coordinates.py`; `commit_id` matches the PR head; posting tool present and authenticated. | Post in one shot. |
+| `medium` | Some uncertainty about tool behavior, auth, or coordinates. | Do not post; provide the manual payload. |
+| `low` | Missing data, untested tool, or conflicting information. | Do not post; provide the manual payload and explain gaps. |
 
-## Posting checklist
-
-Before posting, confirm all of the following:
-
-1. The user has explicitly approved the exact draft.
-2. Every inline comment line is inside a changed diff hunk.
-3. The `commit_id` matches the current PR head.
-4. The posting tool is available and has required permissions.
-5. The payload is complete: `event`, `body`, `commit_id`, `comments`.
+Always ask for explicit approval before posting, even at high confidence.
 
 ## Posting flow
 
-1. Assemble the payload from the confirmed draft.
-2. Validate coordinates by mapping each comment to the diff hunk.
-3. Invoke the preferred posting tool with the full payload.
+1. Assemble the complete payload from the confirmed draft: `event`, `body`, `commit_id`, `comments`.
+2. Validate coordinates by running `scripts/validate-review-coordinates.py` with the diff and all comments. Any invalid coordinate sends the draft back to the user — never fix silently.
+3. Post via the selected posting tool **in one call**. On GitHub, follow the `post-github-pr-review` skill: one `github_create_pull_request_review` call with the complete payload; never body-first, never split comments out of the review.
 4. If the post succeeds, record the URL and set state to `complete`.
-5. If the post fails with a 422 or line-resolution error:
-   - Fix the coordinate if the cause is clear and retry confidence remains high.
-   - Otherwise, stop and hand back the manual payload.
+5. If the post fails with a 422 or line-resolution error, fix the coordinate only when the cause is unambiguous and the user confirms; otherwise hand back the manual payload.
 
 ## Manual fallback
 
@@ -49,14 +39,17 @@ commit_id: abc123def456
 - path: src/auth/login.ts
   line: 42
   side: RIGHT
-  body: ...
+  body: |
+    issue (blocking): Empty passwords reach the hash call and throw.
+    Validate here or return a 400 before this point.
 ```
 
-Tell the user how to post it manually (e.g., via GitHub UI or `gh pr review`).
+Tell the user how to post it manually (platform web UI, or `gh pr review` / `glab mr note` equivalents). The payload must be complete enough to paste without editing.
 
 ## Never allowed
 
 - Posting without explicit user confirmation.
 - Posting placeholder or "test" reviews.
-- Leaving a partial review on the PR.
+- Leaving a partial review on the PR (body posted without its comments).
 - Posting when confidence is medium or low.
+- Posting any content from the user-facing report. Only the confirmed PR-facing draft is postable.

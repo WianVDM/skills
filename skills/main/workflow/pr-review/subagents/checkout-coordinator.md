@@ -64,6 +64,8 @@ unintended_changes:
 ## Rules
 
 - Use `git-worktree-inspector` with a detached HEAD so the user's current branch is not disturbed.
+- Read each changed file **in full**, not just the diff — the synthesizer needs the context around the hunks.
+- Before running any gate command, confirm the branch is trusted. Gate commands execute code from the PR branch; on an untrusted branch, return `needs_input` and let the conductor get user consent.
 - On Windows, normalize line endings before treating formatting failures as real issues.
 - Stop on the first failed check only if the conductor explicitly requested strict mode; otherwise, run all checks and report all results.
 - Never leave a dirty worktree; reset unintended changes and, if needed, run cleanup via `git-worktree-inspector`.

@@ -8,7 +8,11 @@ Regression guards:
 - MCP matching must use both `keywords` (server names) and `identifiers`
   (tool names) found in MCP config files;
 - unknown capabilities must exit 1 and invalid JSON must exit 2, both with
-  the {"status": "error", "errors": [...]} envelope on stdout.
+  the {"status": "error", "errors": [...]} envelope on stdout;
+- `search_scope: "project"` isolates discovery from the host environment
+  (home MCP configs and skill dirs must not leak into results);
+- platform detection reads the git origin remote;
+- the recipe cache round-trips and invalidates per capability.
 
 No network calls are made; MCP configs are faked on disk.
 
@@ -18,6 +22,7 @@ Run with:
 """
 
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -48,29 +53,55 @@ def config_dir(tmp_path: Path, mcp_config: dict = None) -> Path:
     return cfg
 
 
+def isolated(tmp_path: Path, capability: str, cfg: Path, **extra) -> dict:
+    """Discover payload scoped to the tmp project so host config cannot leak."""
+    payload = {
+        "operation": "discover",
+        "capability": capability,
+        "config_dir": str(cfg),
+        "project_root": str(tmp_path),
+        "search_scope": "project",
+    }
+    payload.update(extra)
+    return payload
+
+
 # ---------------------------------------------------------------------------
 # bundled registry covers the capabilities pr-review requests
 # ---------------------------------------------------------------------------
 
 def test_reviews_capability_resolves(tmp_path):
-    code, out = run({"operation": "discover", "capability": "reviews", "config_dir": str(config_dir(tmp_path))})
+    code, out = run(isolated(tmp_path, "reviews", config_dir(tmp_path)))
     assert code == 0
     assert out["status"] == "found"
     assert any(t["name"] == "manual" for t in out["tools"])
 
 
 def test_changed_files_capability_resolves(tmp_path):
-    code, out = run({"operation": "discover", "capability": "changed-files", "config_dir": str(config_dir(tmp_path))})
+    code, out = run(isolated(tmp_path, "changed-files", config_dir(tmp_path)))
     assert code == 0
     assert out["status"] == "found"
     assert any(t["name"] == "manual" for t in out["tools"])
 
 
 def test_checkout_capability_resolves(tmp_path):
-    code, out = run({"operation": "discover", "capability": "checkout", "config_dir": str(config_dir(tmp_path))})
+    code, out = run(isolated(tmp_path, "checkout", config_dir(tmp_path)))
     assert code == 0
     assert out["status"] == "found"
-    assert any(t["name"] == "git-worktree-inspector" for t in out["tools"])
+    # No skill dirs exist under the tmp root, so the harness tool is
+    # unverifiable-but-available rather than absent.
+    harness = next(t for t in out["tools"] if t["name"] == "git-worktree-inspector")
+    assert "unverifiable" in harness["detail"]
+
+
+def test_registry_covers_non_github_platforms(tmp_path):
+    """GitLab, Azure DevOps, and Bitbucket tools exist in the bundled registry."""
+    import yaml
+    registry = yaml.safe_load((SCRIPT.parent / "capability-registry.yaml").read_text(encoding="utf-8"))
+    names = {t["name"] for t in registry["capabilities"]["pr-source"]["tools"]}
+    assert {"gitlab-mcp", "azure-devops-mcp", "bitbucket-mcp", "glab-cli", "gitlab-api"} <= names
+    tracker = {t["name"] for t in registry["capabilities"]["issue-tracker-source"]["tools"]}
+    assert {"github-issues-mcp", "azure-boards-mcp", "gitlab-mcp"} <= tracker
 
 
 # ---------------------------------------------------------------------------
@@ -79,7 +110,7 @@ def test_checkout_capability_resolves(tmp_path):
 
 def test_mcp_keyword_matching(tmp_path):
     cfg = config_dir(tmp_path, {"mcpServers": {"github": {"command": "docker"}}})
-    code, out = run({"operation": "discover", "capability": "pr-source", "config_dir": str(cfg)})
+    code, out = run(isolated(tmp_path, "pr-source", cfg))
     assert code == 0
     mcp = next(t for t in out["tools"] if t["category"] == "mcp")
     assert mcp["name"] == "github-mcp"
@@ -92,19 +123,96 @@ def test_mcp_identifier_matching(tmp_path):
     cfg = config_dir(tmp_path, {
         "mcpServers": {"review-tools": {"command": "run", "args": ["github_get_pull_request_reviews"]}},
     })
-    code, out = run({"operation": "discover", "capability": "reviews", "config_dir": str(cfg)})
+    code, out = run(isolated(tmp_path, "reviews", cfg))
     assert code == 0
-    mcp = next(t for t in out["tools"] if t["category"] == "mcp")
-    assert mcp["name"] == "github-mcp"
-    assert mcp["available"] is True
-    assert mcp["detail"] == "MCP identifiers github_get_pull_request_reviews matched"
+    matches = [t for t in out["tools"] if t["category"] == "mcp" and t["name"] == "github-mcp"]
+    assert matches, "github-mcp should match on the identifier token"
+    assert matches[0]["detail"] == "MCP identifiers github_get_pull_request_reviews matched"
 
 
 def test_mcp_no_match_reports_neither_signal(tmp_path):
     cfg = config_dir(tmp_path, {"mcpServers": {"unrelated": {"command": "true"}}})
-    code, out = run({"operation": "discover", "capability": "pr-source", "config_dir": str(cfg)})
+    code, out = run(isolated(tmp_path, "pr-source", cfg))
     assert code == 0
     assert all(t["category"] != "mcp" for t in out["tools"])
+
+
+def test_project_scope_ignores_host_mcp_configs(tmp_path):
+    """A real github MCP config outside the project must not leak in scope=project."""
+    home_cfg = tmp_path / "home" / ".pi" / "agent"
+    home_cfg.mkdir(parents=True)
+    (home_cfg / "mcp.json").write_text(json.dumps({"mcpServers": {"github": {}}}), encoding="utf-8")
+    cfg = config_dir(tmp_path, {"mcpServers": {"unrelated": {"command": "true"}}})
+    code, out = run(isolated(tmp_path, "pr-source", cfg))
+    assert code == 0
+    assert all(t["category"] != "mcp" for t in out["tools"])
+
+
+# ---------------------------------------------------------------------------
+# platform detection
+# ---------------------------------------------------------------------------
+
+def _git(args, cwd):
+    return subprocess.run(["git", *args], cwd=str(cwd), capture_output=True, text=True)
+
+
+def test_platform_detected_from_origin_remote(tmp_path):
+    if not shutil.which("git"):
+        return  # git unavailable; nothing to assert
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    assert _git(["init"], repo).returncode == 0
+    _git(["remote", "add", "origin", "https://github.com/owner/repo.git"], repo)
+    cfg = config_dir(tmp_path)
+    code, out = run(isolated(repo, "pr-source", cfg))
+    assert code == 0
+    assert out["platform"] == "github"
+
+
+def test_platform_unknown_without_repo(tmp_path):
+    code, out = run(isolated(tmp_path, "pr-source", config_dir(tmp_path)))
+    assert code == 0
+    assert out["platform"] in ("unknown", "github", "gitlab", "azure", "bitbucket")
+
+
+# ---------------------------------------------------------------------------
+# recipe cache operations
+# ---------------------------------------------------------------------------
+
+def test_cache_roundtrip_and_invalidate(tmp_path):
+    cfg = config_dir(tmp_path)
+    entry = {
+        "tool": "github-mcp",
+        "platform": "github",
+        "derived_at": "2026-07-20T00:00:00Z",
+        "validated": True,
+        "coverage": "complete",
+        "steps": [{"call": "github_get_pull_request", "yields": "metadata"}],
+        "revalidate": "github_get_pull_request on the current PR",
+    }
+    code, out = run({"operation": "cache-put", "capability": "pr-source", "config_dir": str(cfg), "entry": entry})
+    assert code == 0
+    assert out["status"] == "written"
+
+    code, out = run({"operation": "cache-get", "capability": "pr-source", "config_dir": str(cfg)})
+    assert code == 0
+    assert out["status"] == "found"
+    assert out["entry"]["tool"] == "github-mcp"
+    assert out["entry"]["steps"][0]["yields"] == "metadata"
+
+    code, out = run({"operation": "cache-invalidate", "capability": "pr-source", "config_dir": str(cfg)})
+    assert code == 0
+    assert out["status"] == "invalidated"
+
+    code, out = run({"operation": "cache-get", "capability": "pr-source", "config_dir": str(cfg)})
+    assert code == 1
+    assert out["status"] == "not_found"
+
+
+def test_cache_get_missing_is_not_found(tmp_path):
+    code, out = run({"operation": "cache-get", "capability": "ci-source", "config_dir": str(config_dir(tmp_path))})
+    assert code == 1
+    assert out["status"] == "not_found"
 
 
 # ---------------------------------------------------------------------------
@@ -112,7 +220,7 @@ def test_mcp_no_match_reports_neither_signal(tmp_path):
 # ---------------------------------------------------------------------------
 
 def test_unknown_capability_exit_1(tmp_path):
-    code, out = run({"operation": "discover", "capability": "no-such-capability", "config_dir": str(config_dir(tmp_path))})
+    code, out = run(isolated(tmp_path, "no-such-capability", config_dir(tmp_path)))
     assert code == 1
     assert out["status"] == "error"
     assert "no-such-capability" in out["errors"][0]

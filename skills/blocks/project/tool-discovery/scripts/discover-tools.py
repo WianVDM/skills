@@ -1,16 +1,27 @@
 #!/usr/bin/env python3
 """discover-tools.py
 
-Discover and rank available tools for a given capability.
+Discover and rank available tools for a capability, detect the hosting
+platform, and manage the per-project recipe cache.
 
 Operations:
-  discover  Return ranked tools for a capability.
+  discover          Return ranked tools for a capability.
+  cache-get         Read the cached recipe for a capability.
+  cache-put         Write or update the cached recipe for a capability.
+  cache-invalidate  Remove the cached recipe for a capability.
 
 Input JSON on stdin:
-  {"operation": "discover", "capability": "pr-source", "config_dir": "...", "preference": "auto"}
+  {"operation": "discover", "capability": "pr-source", "config_dir": "...",
+   "preference": "auto", "probe": false, "project_root": "."}
 
 Output JSON to stdout:
-  {"status": "found", "capability": "pr-source", "tools": [...]}
+  {"status": "found", "capability": "pr-source", "platform": "github", "tools": [...]}
+
+Notes:
+  - The model running in-session sees more than this script (connected MCP
+    tools, harness tools). Treat script output as a floor, not a ceiling.
+    Prefer model-first detection; use this script as the offline fallback.
+  - Auth probes ("probe": true) run `<cli> auth status` for known CLIs.
 """
 
 from __future__ import annotations
@@ -19,6 +30,7 @@ import json
 import os
 import re
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -31,36 +43,66 @@ CATEGORY_ORDER = ["mcp", "cli", "api", "harness", "manual"]
 
 CONFIDENCE_ORDER = {"high": 0, "medium": 1, "low": 2}
 
+# MCP config locations, relative to the user's home directory.
+MCP_CONFIG_LOCATIONS_HOME = [
+    ".pi/agent/mcp.json",
+    ".claude.json",
+    ".claude/mcp.json",
+    ".cursor/mcp.json",
+    ".codeium/windsurf/mcp_config.json",
+]
+
+# MCP config locations, relative to the project root.
+MCP_CONFIG_LOCATIONS_PROJECT = [
+    "mcp.json",
+    "mcp.yaml",
+    "mcp.yml",
+    ".mcp.json",
+    ".cursor/mcp.json",
+    ".vscode/mcp.json",
+    ".pi/agent/mcp.json",
+]
+
+# Directories searched for harness skills (relative to home or project).
+SKILL_DIRS_HOME = [
+    ".pi/agent/skills",
+    ".claude/skills",
+]
+SKILL_DIRS_PROJECT = [
+    "skills",
+    ".claude/skills",
+    ".pi/skills",
+]
+
+# Auth probe commands for known CLIs.
+CLI_AUTH_PROBES = {
+    "gh": ["gh", "auth", "status"],
+    "glab": ["glab", "auth", "status"],
+}
+
+# Platform host markers, most specific first.
+PLATFORM_HOSTS = [
+    ("github", ["github.com", "github."]),
+    ("gitlab", ["gitlab.com", "gitlab."]),
+    ("azure", ["dev.azure.com", "visualstudio.com", "azure."]),
+    ("bitbucket", ["bitbucket.org", "bitbucket."]),
+]
+
 
 def _help() -> str:
-    return """discover-tools.py — discover available tools for a capability
+    return """discover-tools.py — discover tools, detect platform, manage the recipe cache
 
-Input JSON (stdin):
-  {"operation": "discover", "capability": "pr-source", "config_dir": "...", "preference": "auto"}
-
-Output JSON (stdout):
-  {"status": "found", "capability": "pr-source", "tools": [...]}
+Operations:
+  discover          {"operation":"discover","capability":"pr-source","config_dir":"...","preference":"auto","probe":false,"project_root":"."}
+  cache-get         {"operation":"cache-get","capability":"pr-source","config_dir":"..."}
+  cache-put         {"operation":"cache-put","capability":"pr-source","config_dir":"...","entry":{...}}
+  cache-invalidate  {"operation":"cache-invalidate","capability":"pr-source","config_dir":"..."}
 """
 
 
 def _default_registry_path() -> Path:
     """Return the path to the bundled capability registry."""
     return Path(__file__).with_name("capability-registry.yaml").resolve()
-
-
-def _find_mcp_configs(config_dir: Path) -> list[Path]:
-    """Find MCP config files under the provided config directory."""
-    found = set()
-    if not config_dir.exists():
-        return []
-    for directory in (config_dir, config_dir.parent):
-        if not directory.exists():
-            continue
-        for name in ("mcp.json", "mcp.yaml", "mcp.yml"):
-            candidate = directory / name
-            if candidate.is_file():
-                found.add(candidate.resolve())
-    return sorted(found)
 
 
 def _read_text(path: Path) -> str:
@@ -81,14 +123,62 @@ def _load_registry(path: Path) -> dict:
     return data
 
 
-def _detect_mcp_tools(config_dir: Path) -> set[str]:
-    """Return a set of keywords found in MCP config files."""
+def _find_mcp_configs(config_dir: Path, project_root: Path, scope: str = "all") -> list[Path]:
+    """Find MCP config files in the config dir, project root, and (scope=all) harness locations."""
     found = set()
-    for config_path in _find_mcp_configs(config_dir):
-        text = _read_text(config_path).lower()
-        # Use a simple tokenizer that splits on common delimiters.
-        tokens = set(re.split(r"[^a-z0-9_-]+", text))
-        found.update(tokens)
+    candidates: list[Path] = []
+
+    if config_dir.exists():
+        for directory in (config_dir, config_dir.parent):
+            for name in ("mcp.json", "mcp.yaml", "mcp.yml"):
+                candidates.append(directory / name)
+
+    if scope == "all":
+        home = Path.home()
+        candidates.extend(home / rel for rel in MCP_CONFIG_LOCATIONS_HOME)
+    candidates.extend(project_root / rel for rel in MCP_CONFIG_LOCATIONS_PROJECT)
+
+    for candidate in candidates:
+        try:
+            if candidate.is_file():
+                found.add(candidate.resolve())
+        except OSError:
+            continue
+    return sorted(found)
+
+
+def _extract_mcp_tokens(path: Path) -> set[str]:
+    """Extract matchable tokens from an MCP config file.
+
+    JSON files with an `mcpServers` object yield server names plus tokens from
+    their stringified config. Everything else falls back to full-text
+    tokenization (yaml configs, unknown formats).
+    """
+    text = _read_text(path)
+    if not text:
+        return set()
+    if path.suffix.lower() == ".json":
+        try:
+            data = json.loads(text)
+        except json.JSONDecodeError:
+            data = None
+        if isinstance(data, dict):
+            servers = data.get("mcpServers")
+            if isinstance(servers, dict) and servers:
+                tokens = set(servers.keys())
+                blob = json.dumps(servers).lower()
+                tokens.update(re.split(r"[^a-z0-9_-]+", blob))
+                return {t for t in tokens if t}
+            # JSON without mcpServers: tokenize whole document.
+    tokens = set(re.split(r"[^a-z0-9_-]+", text.lower()))
+    return {t for t in tokens if t}
+
+
+def _detect_mcp_tools(config_dir: Path, project_root: Path, scope: str = "all") -> set[str]:
+    """Return the set of tokens found across all known MCP config locations."""
+    found: set[str] = set()
+    for config_path in _find_mcp_configs(config_dir, project_root, scope):
+        found.update(_extract_mcp_tokens(config_path))
     return found
 
 
@@ -110,6 +200,23 @@ def _detect_cli_tools(identifiers: list[str]) -> bool:
     return any(shutil.which(name) for name in identifiers if name)
 
 
+def _probe_cli_auth(binary: str, timeout: float = 5.0) -> str:
+    """Probe a known CLI's auth state. Returns authenticated | not_authenticated | unknown."""
+    command = CLI_AUTH_PROBES.get(binary)
+    if not command or not shutil.which(binary):
+        return "unknown"
+    try:
+        result = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return "unknown"
+    return "authenticated" if result.returncode == 0 else "not_authenticated"
+
+
 def _detect_api_tools(identifiers: list[str]) -> bool:
     """Return True if all required env vars are present."""
     if not identifiers:
@@ -117,17 +224,78 @@ def _detect_api_tools(identifiers: list[str]) -> bool:
     return all(os.environ.get(name) for name in identifiers if name)
 
 
-def _detect_harness_tool(identifiers: list[str]) -> bool:
-    """Harness tools cannot be detected from a script; assume available if listed."""
-    return bool(identifiers)
+def _find_skill_dirs(project_root: Path, scope: str = "all") -> list[Path]:
+    """Return existing skill directories across known locations."""
+    candidates = []
+    if scope == "all":
+        home = Path.home()
+        candidates.extend(home / rel for rel in SKILL_DIRS_HOME)
+    candidates.extend(project_root / rel for rel in SKILL_DIRS_PROJECT)
+    found = []
+    for directory in candidates:
+        try:
+            if directory.is_dir():
+                found.append(directory.resolve())
+        except OSError:
+            continue
+    return found
 
 
-def _discover_tool(tool: dict, mcp_tokens: set[str]) -> dict:
-    """Return a discovered tool entry with availability and detail."""
+def _detect_harness_tool(identifiers: list[str], skills_dirs: list[Path]) -> tuple[bool, str]:
+    """Check for a harness skill by looking for {identifier}/SKILL.md in skill dirs.
+
+    Returns (available, detail). When no skill dirs exist at all, the check is
+    unverifiable; report available at reduced confidence rather than claiming
+    a negative we cannot prove.
+    """
+    names = [i for i in identifiers if i]
+    if not names:
+        return False, "harness capability not listed"
+    if not skills_dirs:
+        return True, "harness skill dirs not found; availability unverifiable"
+    for directory in skills_dirs:
+        for name in names:
+            try:
+                matches = list(directory.rglob(f"{name}/SKILL.md"))
+            except OSError:
+                matches = []
+            if matches:
+                return True, f"harness skill '{name}' found at {matches[0].parent}"
+    return False, f"harness skill {', '.join(names)} not found in known skill dirs"
+
+
+def _detect_platform(project_root: Path) -> str:
+    """Detect the hosting platform from the origin remote URL."""
+    if not shutil.which("git"):
+        return "unknown"
+    try:
+        result = subprocess.run(
+            ["git", "remote", "get-url", "origin"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            cwd=str(project_root),
+        )
+    except (OSError, subprocess.SubprocessError):
+        return "unknown"
+    if result.returncode != 0:
+        return "unknown"
+    url = result.stdout.strip().lower()
+    if not url:
+        return "unknown"
+    for platform, markers in PLATFORM_HOSTS:
+        if any(marker in url for marker in markers):
+            return platform
+    return "unknown"
+
+
+def _discover_tool(tool: dict, mcp_tokens: set[str], probe: bool, skills_dirs: list[Path]) -> dict:
+    """Return a discovered tool entry with availability, auth state, and detail."""
     category = tool.get("category", "manual")
     name = tool.get("name", "unknown")
     confidence = tool.get("confidence", "low")
     identifiers = tool.get("identifiers", [])
+    auth = None
 
     if category == "mcp":
         available, matched_kw, matched_ids = _matches_mcp(tool, mcp_tokens)
@@ -142,24 +310,42 @@ def _discover_tool(tool: dict, mcp_tokens: set[str]) -> dict:
     elif category == "cli":
         available = _detect_cli_tools(identifiers)
         detail = f"binary {', '.join(identifiers)} found on PATH" if available else f"binary {', '.join(identifiers)} not found"
+        if available and probe:
+            states = {b: _probe_cli_auth(b) for b in identifiers if b}
+            auth = next((s for s in states.values() if s == "authenticated"), None)
+            if auth is None and states:
+                auth = "not_authenticated" if "not_authenticated" in states.values() else "unknown"
+            if auth == "authenticated":
+                detail += "; authenticated"
+                if confidence == "medium":
+                    confidence = "high"
+            elif auth == "not_authenticated":
+                detail += "; installed but not authenticated"
+                confidence = "low"
+            else:
+                detail += "; auth state unknown"
     elif category == "api":
         available = _detect_api_tools(identifiers)
         detail = f"env vars {', '.join(identifiers)} present" if available else f"env vars {', '.join(identifiers)} missing"
     elif category == "harness":
-        available = _detect_harness_tool(identifiers)
-        detail = "harness capability available" if available else "harness capability not listed"
+        available, detail = _detect_harness_tool(identifiers, skills_dirs)
+        if "unverifiable" in detail and confidence == "high":
+            confidence = "medium"
     else:
         # manual fallback
         available = True
         detail = "user-provided fallback"
 
-    return {
+    entry = {
         "name": name,
         "category": category,
         "available": available,
         "confidence": confidence if available else "low",
         "detail": detail,
     }
+    if auth is not None:
+        entry["auth"] = auth
+    return entry
 
 
 def _rank_tools(tools: list[dict], preference: str) -> list[dict]:
@@ -198,7 +384,12 @@ def _do_discover(data: dict) -> dict:
         return {"status": "error", "errors": ["capability is required"]}
 
     config_dir = Path(data.get("config_dir", ".agents/config")).resolve()
+    project_root = Path(data.get("project_root", ".")).resolve()
     preference = data.get("preference") or _load_preference(config_dir, capability)
+    probe = bool(data.get("probe", False))
+    scope = str(data.get("search_scope", "all"))
+    if scope not in ("all", "project"):
+        scope = "all"
     registry_path = Path(data.get("registry", _default_registry_path())).resolve()
 
     registry = _load_registry(registry_path)
@@ -212,8 +403,9 @@ def _do_discover(data: dict) -> dict:
             "errors": [f"capability '{capability}' not found in registry"],
         }
 
-    mcp_tokens = _detect_mcp_tools(config_dir)
-    discovered = [_discover_tool(tool, mcp_tokens) for tool in capability_def.get("tools", [])]
+    mcp_tokens = _detect_mcp_tools(config_dir, project_root, scope)
+    skills_dirs = _find_skill_dirs(project_root, scope)
+    discovered = [_discover_tool(tool, mcp_tokens, probe, skills_dirs) for tool in capability_def.get("tools", [])]
 
     # Ensure manual fallback exists.
     if not any(t.get("category") == "manual" for t in discovered):
@@ -226,11 +418,13 @@ def _do_discover(data: dict) -> dict:
         })
 
     ranked = _rank_tools(discovered, preference)
+    platform = _detect_platform(project_root)
 
     if not ranked:
         return {
             "status": "not_found",
             "capability": capability,
+            "platform": platform,
             "tools": [],
         }
 
@@ -238,14 +432,82 @@ def _do_discover(data: dict) -> dict:
         "status": "found",
         "capability": capability,
         "config_dir": str(config_dir),
+        "platform": platform,
         "tools": ranked,
     }
+
+
+def _cache_path(config_dir: Path) -> Path:
+    return config_dir / "tool-recipes.yaml"
+
+
+def _load_cache(config_dir: Path) -> dict:
+    path = _cache_path(config_dir)
+    if not path.exists():
+        return {}
+    try:
+        data = yaml.safe_load(_read_text(path)) or {}
+    except yaml.YAMLError:
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def _write_cache(config_dir: Path, cache: dict) -> None:
+    config_dir.mkdir(parents=True, exist_ok=True)
+    path = _cache_path(config_dir)
+    path.write_text(yaml.safe_dump(cache, sort_keys=False), encoding="utf-8")
+
+
+def _do_cache_get(data: dict) -> dict:
+    capability = data.get("capability")
+    if not capability:
+        return {"status": "error", "errors": ["capability is required"]}
+    config_dir = Path(data.get("config_dir", ".agents/config")).resolve()
+    entry = _load_cache(config_dir).get(capability)
+    if entry is None:
+        return {"status": "not_found", "capability": capability}
+    return {"status": "found", "capability": capability, "entry": entry}
+
+
+def _do_cache_put(data: dict) -> dict:
+    capability = data.get("capability")
+    entry = data.get("entry")
+    if not capability or not isinstance(entry, dict):
+        return {"status": "error", "errors": ["capability and entry (object) are required"]}
+    config_dir = Path(data.get("config_dir", ".agents/config")).resolve()
+    cache = _load_cache(config_dir)
+    cache[capability] = entry
+    try:
+        _write_cache(config_dir, cache)
+    except OSError as exc:
+        return {"status": "error", "errors": [f"failed to write cache: {exc}"]}
+    return {"status": "written", "capability": capability, "path": str(_cache_path(config_dir))}
+
+
+def _do_cache_invalidate(data: dict) -> dict:
+    capability = data.get("capability")
+    if not capability:
+        return {"status": "error", "errors": ["capability is required"]}
+    config_dir = Path(data.get("config_dir", ".agents/config")).resolve()
+    cache = _load_cache(config_dir)
+    removed = cache.pop(capability, None)
+    try:
+        _write_cache(config_dir, cache)
+    except OSError as exc:
+        return {"status": "error", "errors": [f"failed to write cache: {exc}"]}
+    return {"status": "invalidated" if removed is not None else "not_found", "capability": capability}
 
 
 def _run(data: dict) -> dict:
     operation = data.get("operation")
     if operation == "discover":
         return _do_discover(data)
+    if operation == "cache-get":
+        return _do_cache_get(data)
+    if operation == "cache-put":
+        return _do_cache_put(data)
+    if operation == "cache-invalidate":
+        return _do_cache_invalidate(data)
     return {"status": "error", "errors": [f"unknown operation: {operation}"]}
 
 
@@ -270,7 +532,8 @@ def _main() -> int:
         print(json.dumps({"status": "error", "errors": [f"runtime failure: {exc}"]}))
         return 1
     print(json.dumps(result, indent=2))
-    return 0 if result["status"] in ("found",) else 1
+    ok_statuses = ("found", "written", "invalidated")
+    return 0 if result["status"] in ok_statuses else 1
 
 
 if __name__ == "__main__":

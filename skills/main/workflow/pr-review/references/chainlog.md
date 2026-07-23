@@ -1,6 +1,8 @@
 # pr-review chainlog declaration
 
-This document declares how `pr-review` produces and consumes observations for the [`chainlog`]({chainlog_pattern_path}) pattern.
+This document declares how `pr-review` produces and consumes observations for the [`chainlog`](../../../../blocks/project/chainlog/SKILL.md) pattern.
+
+Chainlog is **opt-in per run**: enabled for large PRs and resume runs, skippable for quick single-pass reviews. The decision is recorded in state.
 
 ## Classification
 
@@ -18,11 +20,11 @@ This skill works with the following work item types:
 
 | Capability | Source tool/adapter | When appended | Capability contract |
 | ---------- | ------------------- | ------------- | --------------------- |
-| `pr-source` | `pr-adapter` (GitHub, manual, or discovered) | After fetching PR metadata | `pr-adapter-contract` |
-| `ci-source` | `github-actions-adapter` or discovered CI adapter | After fetching CI status | `github-actions-adapter` / adapter contract |
-| `static-analysis` | `sonarcloud-adapter` or discovered static-analysis adapter | After fetching findings | `sonarcloud-adapter` / adapter contract |
-| `reviews` | `pr-adapter` | After fetching existing reviews | `pr-adapter-contract` |
-| `changed-files` | Git / `pr-adapter` | After fetching the diff | `pr-adapter-contract` |
+| `pr-source` | resolved tool per `tool-discovery` | After fetching PR metadata | `pr-adapter-contract` |
+| `ci-source` | resolved CI tool | After fetching CI status | `pr-adapter-contract` |
+| `static-analysis` | resolved static-analysis tool | After fetching findings | resolved source shape |
+| `reviews` | resolved tool per `tool-discovery` | After fetching existing reviews, threads, and conversation comments | `pr-adapter-contract` |
+| `changed-files` | git / resolved tool | After fetching the diff | `pr-adapter-contract` |
 
 ## Consumed capabilities
 
@@ -36,10 +38,10 @@ This skill works with the following work item types:
 
 ## Workflow integration
 
-1. Query `chainlog/query_latest` for required capabilities using the work item identity.
+1. Query the chainlog for the latest observations per required capability using the work item identity.
 2. Check each observation with `artifact-freshness`.
-3. Refresh stale observations by invoking the appropriate tool or adapter.
-4. Append new observations using `chainlog/append`.
+3. Refresh stale observations by invoking the selected tool.
+4. Append new observations.
 5. Synthesize the review view from the latest observations.
 
 ## Report linkage
@@ -69,7 +71,6 @@ No secret values are stored in chainlog observations. Only env-var names or refe
 
 ## Related
 
-- [`chainlog` pattern]({chainlog_pattern_path})
-- [`chainlog-contract.md` reference]({chainlog_contract_path})
-- [`artifact-freshness` building block]({artifact_freshness_path})
-- [`tool-discovery` building block]({tool_discovery_path})
+- [`chainlog` pattern](../../../../blocks/project/chainlog/SKILL.md)
+- [`artifact-freshness` building block](../../../../blocks/project/artifact-freshness/SKILL.md)
+- [`tool-discovery` building block](../../../../blocks/project/tool-discovery/SKILL.md)

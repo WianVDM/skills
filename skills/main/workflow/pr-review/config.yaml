@@ -2,23 +2,15 @@ skill:
   - key: pr-review.tools.pr-source.provider
     type: string
     default: auto
-    description: PR source provider. One of auto, github, manual.
-  - key: pr-review.tools.reviews.provider
-    type: string
-    default: auto
-    description: Existing reviews/threads provider. One of auto, github, manual.
-  - key: pr-review.tools.changed-files.provider
-    type: string
-    default: auto
-    description: Changed-files provider. One of auto, github, git.
+    description: PR source provider. One of auto, github, gitlab, bitbucket, azure, manual.
   - key: pr-review.tools.ci.provider
     type: string
     default: auto
-    description: CI/build provider. One of auto, github, manual.
+    description: CI/build provider. One of auto, github, gitlab, azure, manual.
   - key: pr-review.tools.issue-tracker.provider
     type: string
     default: auto
-    description: Issue-tracker provider. One of auto, jira, github-issues, manual.
+    description: Issue-tracker provider. One of auto, jira, linear, github-issues, azure-boards, manual.
   - key: pr-review.tools.checkout.provider
     type: string
     default: auto
@@ -26,7 +18,7 @@ skill:
   - key: pr-review.tools.posting.provider
     type: string
     default: auto
-    description: Posting provider. One of auto, github-mcp, gh-cli, manual.
+    description: Posting provider. One of auto, github-mcp, gh-cli, glab-cli, manual.
   - key: pr-review.tooling.preference
     type: string
     default: best
@@ -37,16 +29,52 @@ skill:
     description: How to handle degraded sources. One of ask, accept, reject.
   - key: pr-review.review.default_event
     type: string
-    default: REQUEST_CHANGES
-    description: Default review event when posting. One of APPROVE, COMMENT, REQUEST_CHANGES.
+    default: ""
+    description: Fallback review event when the rubric's event rules cannot decide. Empty means always follow the rubric. One of "", APPROVE, COMMENT, REQUEST_CHANGES.
   - key: pr-review.review.require_tests_for_new_logic
     type: boolean
     default: true
-    description: Whether to suggest tests for new logic by default.
+    description: Whether missing tests for new logic are blocking by default.
   - key: pr-review.review.allow_post_without_confirmation
     type: boolean
     default: false
     description: Whether posting can skip user confirmation. Always false for safety.
+  - key: pr-review.review.size_gate_lines
+    type: number
+    default: 400
+    description: Changed-line count past which review depth is degraded and the report must disclose it.
+  - key: pr-review.review.style.approve_opener
+    type: string
+    default: "Looks good to me.."
+    description: Opening line of an approval body.
+  - key: pr-review.review.style.render_labels
+    type: boolean
+    default: true
+    description: Whether label prefixes (e.g. "issue: ", "nitpick: ") are rendered into posted comment text.
+  - key: pr-review.review.style.approve_optimistically
+    type: boolean
+    default: true
+    description: Approve when items are minor rather than forcing another round-trip. Set false for junior authors, missing CI, or auto-merge setups.
+  - key: pr-review.review.style.optional_comments.first_reviewer
+    type: string
+    default: allow
+    description: Optional/worth-noting comments when the user is the first reviewer. One of allow, suppress.
+  - key: pr-review.review.style.optional_comments.after_existing_approval
+    type: string
+    default: suppress
+    description: Optional comments when approving after someone else already approved. suppress gives a clean approval since the second approver may merge.
+  - key: pr-review.review.style.nit_budget
+    type: string
+    default: teach-prevent-ux
+    description: Nitpick policy. One of teach-prevent-ux (nits must teach, prevent, or improve UX), none (never post nits), allow (no budget).
+  - key: pr-review.review.style.comment_vocabulary
+    type: string
+    default: conventional
+    description: Inline comment vocabulary. One of conventional (Conventional Comments labels), plain (no labels).
+  - key: pr-review.review.style.style_notes
+    type: string
+    default: ""
+    description: Free-text style guidance appended to the writer's rules. Per-user or per-project phrasing preferences that have no structured key.
   - key: pr-review.gates
     type: list
     default: []

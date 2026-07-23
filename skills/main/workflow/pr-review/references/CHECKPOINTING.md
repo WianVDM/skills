@@ -35,4 +35,4 @@ The state file contains a checklist of all phases. Mark each phase `complete` wh
 
 ## Observation-first design
 
-`pr-review` stores each capability's tool output in `chainlog` under the identity `{work_item_type}/{work_item_key}`. Reports are views over those observations. When resuming, query the chainlog instead of re-invoking tools if the observations are fresh.
+When chainlog is enabled for the run (default for large PRs and resume runs, optional otherwise), `pr-review` stores each capability's tool output in `chainlog` under the identity `{work_item_type}/{work_item_key}`. Reports are views over those observations. When resuming, query the chainlog instead of re-invoking tools if the observations are fresh. When chainlog is disabled, phases re-invoke tools on resume and the state file alone drives recovery.
