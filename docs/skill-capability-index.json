@@ -1,9 +1,9 @@
 {
   "version": "1.0.0",
-  "generated_at": "2026-07-21T10:28:20.562475+00:00",
+  "generated_at": "2026-07-23T07:14:56.094426+00:00",
   "source_check": {
     "skills_json_hash": "sha256:b60bca4378e31b3d73e5c30d256cafea9cbcdddbdf85e8934690e1d07d7abac4",
-    "latest_skill_mtime": "2026-07-21T10:28:17.199249+00:00"
+    "latest_skill_mtime": "2026-07-23T07:14:51.884375+00:00"
   },
   "skills": [
     {
@@ -683,10 +683,19 @@
           ]
         },
         {
-          "id": "merge-latest:present-the-pre-merge-gate-and-wait-for-user-confirmation-wh",
-          "name": "Present the pre-merge gate and wait for user confirmation when conflicts or interaction risks exist",
+          "id": "merge-latest:confirm-an-inferred-upstream-branch-with-the-user-before-rec",
+          "name": "Confirm an inferred upstream branch with the user before recon",
+          "category": "identity-resolution",
+          "description": "Confirm an inferred upstream branch with the user before recon.",
+          "sources": [
+            "SKILL.md:In scope"
+          ]
+        },
+        {
+          "id": "merge-latest:present-the-pre-merge-gate-and-wait-for-user-confirmation-be",
+          "name": "Present the pre-merge gate and wait for user confirmation before every merge attempt",
           "category": "uncategorized",
-          "description": "Present the pre-merge gate and wait for user confirmation when conflicts or interaction risks exist.",
+          "description": "Present the pre-merge gate and wait for user confirmation before every merge attempt.",
           "sources": [
             "SKILL.md:In scope"
           ]
