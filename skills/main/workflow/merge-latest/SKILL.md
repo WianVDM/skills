@@ -19,7 +19,8 @@ Conductor.
 - Parse merge arguments and resolve the target and upstream branches.
 - Fetch remote state and fast-forward the local target branch when safe.
 - Produce a pre-merge brief: timelined change summaries of both branches and an interaction risk assessment.
-- Present the pre-merge gate and wait for user confirmation when conflicts or interaction risks exist.
+- Confirm an inferred upstream branch with the user before recon.
+- Present the pre-merge gate and wait for user confirmation before every merge attempt.
 - Classify conflicts as trivial, semantic, or review.
 - Resolve only trivial conflicts automatically.
 - Run a user-configured validation command pipeline before completing the merge.
@@ -93,6 +94,7 @@ Branch selection comes from the branch-entry table above. `scripts/parse-args.js
    - Use the argument if provided.
    - Otherwise delegate to `branch-researcher` to infer it from history and name similarity.
    - If inference confidence is not high, stop and ask the user.
+   - If the upstream was inferred this run (research or config default), confirm it with the user before recon — one line with the branch, confidence, and method. Explicit and cached (previously confirmed) upstreams skip this.
 3. **Remote refs**:
    - Resolve both `to` and `from` to their remote tracking refs where possible (`<remote>/<branch>`).
    - If a remote tracking ref is missing, stop and ask.
@@ -132,12 +134,12 @@ STOP and ask the user if any of these are true:
 2. **Load config and state** — read `.agents/config/merge-latest.yaml` and `.agents/context/merge-latest/{target}/state.md`.
 3. **Resolve target** — checkout if needed.
 4. **Fetch latest state** — delegate to `latest-fetcher`.
-5. **Resolve upstream** — use explicit value or delegate to `branch-researcher`.
+5. **Resolve upstream** — use explicit value or delegate to `branch-researcher`. If inferred this run, confirm the inferred upstream with the user before continuing.
 6. **Pre-flight checks** — delegate to `preflight-checker`.
 7. **Checkpoint** — record the start of the run.
 8. **Reconnaissance** — delegate to `recon-runner` using resolved remote refs.
 9. **Pre-merge brief** — delegate to `change-summarizer`: timelined change summaries, interaction risk assessment, proposed verification tier; persist the brief.
-10. **Pre-merge gate** — present the brief, predicted conflict map, and proposed verification tier; wait for go. Mandatory when conflicts are predicted, the preview is degraded, or interaction risks are flagged.
+10. **Pre-merge gate** — present and wait for go before every merge attempt. Full gate when conflicts are predicted, the preview is degraded, or interaction risks are flagged: the brief, predicted conflict map, and proposed verification tier. Otherwise the lightweight gate: target ← upstream, gap, and verification pipeline in one or two lines.
 11. **Backup** — create a backup of current HEAD. If the brief flagged UI-path collisions or interaction risks, capture a pre-merge UI baseline via the `baseline` skill when available; disclose and note the degradation when not.
 12. **Merge** — attempt merge. If conflicts are expected or the conflict preview is degraded, use no-commit mode.
 13. **Classify conflicts** — delegate to `conflict-classifier`.
@@ -262,8 +264,9 @@ Old backups may be cleaned up periodically.
 Stop and consult the user if:
 
 - Pre-flight checks fail.
-- Predicted conflicts or interaction risks exist and the user has not confirmed the pre-merge gate.
 - The upstream branch cannot be inferred.
+- The inferred upstream has not been confirmed by the user.
+- The pre-merge gate has not been confirmed by the user.
 - A semantic conflict is found.
 - A review file conflict is found.
 - Any verification tier fails (validation pipeline, re-review, or interactive UI verification).

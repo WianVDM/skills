@@ -34,9 +34,6 @@ status: complete | partial | needs_input | blocked
 
 ## Proposed Verification Tier
 {tier} — {reason}
-
-## Gate Required
-{yes | no} — {reason}
 ```
 
 ## Rules

@@ -10,6 +10,7 @@ Clean merges and validation-failure aborts are covered by the evals in `evals/ev
 
 Result:
 - Skill infers `OC-3626` as the base branch from git history.
+- User confirms the inferred base (`OC-3626`, high confidence) before recon.
 - Merges `OC-3626` into `OC-4964`.
 - Inference is cached for future runs.
 
@@ -54,6 +55,7 @@ Result:
 - `origin/SHB-317` and `origin/SHB-315` are fetched.
 - `SHB-317` is fast-forwarded to the remote.
 - `branch-researcher` infers `origin/SHB-315` as the upstream with high confidence.
+- The user confirms the inferred upstream before recon.
 - The merge attempt reveals a conflict in `src/checkout/payment.ts`.
 - `conflict-classifier` flags it as semantic.
 - `conflict-investigator` finds:

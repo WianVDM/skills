@@ -50,4 +50,4 @@ The summarizer persists a brief at `.agents/context/merge-latest/{target}-pre-me
 
 ## Pre-merge gate
 
-Present the brief, the predicted conflict map, and the proposed verification tier to the user, then wait for go. The gate is mandatory when the prediction is non-empty (conflicts expected or preview degraded) or any interaction risk is flagged; the user may skip it for clean, independent merges. On the `preview` branch this presentation *is* the output — nothing is applied.
+The gate always fires before the merge attempt; only its content scales with the prediction. When the prediction is non-empty (conflicts expected or preview degraded) or any interaction risk is flagged, present the full gate: the brief, the predicted conflict map, and the proposed verification tier, then wait for go. For clean, independent merges, present the lightweight gate instead — target ← upstream, the gap, and the verification pipeline in one or two lines — then wait for go. The skill never skips the gate on its own; only the user decides to proceed or stop. On the `preview` branch this presentation *is* the output — nothing is applied.

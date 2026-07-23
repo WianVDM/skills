@@ -7,8 +7,12 @@
       "type": "behavior",
       "prompt": "The user is on feature branch OC-1234 and asks to merge the latest upstream changes. The upstream is origin/development. There are no local changes and no conflicts. What should you do?",
       "baseline_type": "no_skill",
-      "expected": "Fetch origin/development, fast-forward OC-1234 if behind, attempt the merge, run the configured validation pipeline, and produce a merge report.",
+      "expected": "Fetch origin/development, fast-forward OC-1234 if behind, present the lightweight pre-merge gate (target ← upstream, gap, no conflicts predicted, verification pipeline) and wait for the user's go, then attempt the merge, run the configured validation pipeline, and produce a merge report.",
       "assertions": [
+        {
+          "type": "output_contains",
+          "value": "gate"
+        },
         {
           "type": "output_contains",
           "value": "merge report"
@@ -16,6 +20,23 @@
         {
           "type": "output_contains",
           "value": "validation"
+        }
+      ]
+    },
+    {
+      "id": "behavior-inferred-upstream-confirm",
+      "type": "behavior",
+      "prompt": "The user runs /merge-latest on feature branch SHB-345 without passing --from. The branch-researcher infers origin/development as the upstream with high confidence. What should happen before recon starts?",
+      "baseline_type": "no_skill",
+      "expected": "Confirm the inferred upstream with the user (branch, confidence, method) and wait for their OK before running recon or attempting anything. Do not proceed silently on an inferred upstream, even at high confidence.",
+      "assertions": [
+        {
+          "type": "output_contains",
+          "value": "confirm"
+        },
+        {
+          "type": "output_contains",
+          "value": "origin/development"
         }
       ]
     },

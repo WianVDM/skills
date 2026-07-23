@@ -9,6 +9,7 @@ When the upstream branch (`--from`) is not provided, `merge-latest` infers it. I
 3. **Config default** — use `default_base_branch` from config.
 4. **Research** — delegate to `branch-researcher`, which scores candidates using history and name similarity.
 5. **Ask user** — if confidence is not high, ask and persist the answer.
+6. **Confirm** — if the upstream was inferred this run (steps 3–4), confirm it with the user before recon, even when confidence is high. Explicit and cached upstreams skip this step.
 
 ## Candidate scoring
 
